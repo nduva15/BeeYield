@@ -5699,12 +5699,16 @@ export function ApiaryDetailModal({
                       type="button"
                       onClick={() => {
                         setTempScannedSerial("");
-                        setShowAddHiveModal(true);
+                        requestAnimationFrame(() => {
+                          React.startTransition(() => {
+                            setShowAddHiveModal(true);
+                          });
+                        });
                       }}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
+                      className="px-3.5 py-1.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-transform duration-150 active:scale-95 touch-manipulation transform-gpu will-change-transform cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>Add Hive</span>
+                      <Plus className="w-3.5 h-3.5 stroke-[2.5] pointer-events-none" />
+                      <span className="pointer-events-none select-none">Add Hive</span>
                     </button>
                     <div className="flex items-center gap-1 bg-[#F2ECE4] dark:bg-stone-800 p-1 rounded-xl text-xs">
                       <button

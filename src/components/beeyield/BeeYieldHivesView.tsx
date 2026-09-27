@@ -497,9 +497,26 @@ export default function BeeYieldHivesView({
   }, [hives]);
 
   // Actions
-  const handleOpenAddHive = () => {
-    setShowAddHiveModal(true);
-  };
+  // Memoized props for AddHiveModal to prevent re-renders
+  const memoizedAddHiveApiaries = useMemo(() => {
+    return apiaries.map((a) => ({ id: a.id, name: a.name }));
+  }, [apiaries]);
+
+  const memoizedSuggestedCode = useMemo(() => {
+    return `KIB-${String(stats.total + 1).padStart(3, "0")}`;
+  }, [stats.total]);
+
+  const handleOpenAddHive = React.useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    requestAnimationFrame(() => {
+      React.startTransition(() => {
+        setShowAddHiveModal(true);
+      });
+    });
+  }, []);
 
   const handleAddHiveSubmit = async (newHive: AddHiveSubmitData) => {
     const toastId = toast.loading(`Registering ${newHive.code}...`);
@@ -827,12 +844,13 @@ export default function BeeYieldHivesView({
             <FileSpreadsheet className="w-4 h-4" />
           </button>
           <button
+            type="button"
             onClick={handleOpenAddHive}
-            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-amber-400/60"
+            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 active:scale-95 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-transform duration-150 border border-amber-400/60 touch-manipulation transform-gpu will-change-transform cursor-pointer"
             title="Add Hive"
           >
-            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5]" />
-            <span className="text-stone-950 font-bold">Add Hive</span>
+            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5] pointer-events-none" />
+            <span className="text-stone-950 font-bold pointer-events-none select-none">Add Hive</span>
           </button>
           {!embedded && onClose && (
             <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
@@ -859,11 +877,12 @@ export default function BeeYieldHivesView({
             </div>
           </div>
           <button
+            type="button"
             onClick={handleOpenAddHive}
-            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-amber-400/60 whitespace-nowrap shrink-0"
+            className="px-4 py-2.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 active:bg-amber-600 active:scale-95 text-stone-950 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-transform duration-150 border border-amber-400/60 whitespace-nowrap shrink-0 touch-manipulation transform-gpu will-change-transform cursor-pointer"
           >
-            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5]" />
-            <span className="text-stone-950 font-bold">Add Hive</span>
+            <Plus className="w-4 h-4 text-stone-950 stroke-[2.5] pointer-events-none" />
+            <span className="text-stone-950 font-bold pointer-events-none select-none">Add Hive</span>
           </button>
         </div>
       )}
@@ -1894,8 +1913,8 @@ export default function BeeYieldHivesView({
         <AddHiveModal
           isOpen={showAddHiveModal}
           onClose={() => setShowAddHiveModal(false)}
-          apiaries={apiaries.map((a) => ({ id: a.id, name: a.name }))}
-          suggestedCode={`KIB-${String(stats.total + 1).padStart(3, "0")}`}
+          apiaries={memoizedAddHiveApiaries}
+          suggestedCode={memoizedSuggestedCode}
           onAddHive={handleAddHiveSubmit}
         />
       )}
