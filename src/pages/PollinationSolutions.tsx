@@ -203,6 +203,7 @@ const PollinationSolutions = () => {
                 </div>
 
                 <h2 className="text-3xl font-bold mb-4 text-foreground">In-Hive Precision</h2>
+                <p className="text-xs font-semibold italic text-primary/90 mb-4 border-l-2 border-primary/30 pl-3">“Pollination powers the planet—precision sustains it.” — Timothy Nduva, Founder</p>
                 <p className="text-lg text-muted-foreground mb-8 flex-grow">
                   Our proprietary sensors live inside the hive box, monitoring acoustic signatures, temperature, and humidity 24/7. Know the strength of your colonies before they are deployed.
                 </p>
