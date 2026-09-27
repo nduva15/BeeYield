@@ -522,6 +522,18 @@ const PollinationServices = () => {
                             Crops We Pollinate: <br />
                             <span className="text-[#1B9157]">Voices From The Field</span>
                         </h2>
+                        <div className="max-w-xl mx-auto my-6 p-4 rounded-2xl bg-white border border-[#1B9157]/20 shadow-sm flex items-center gap-3.5 text-left">
+                            <Quote className="w-5 h-5 text-[#1B9157] shrink-0 fill-[#1B9157]/20" />
+                            <div>
+                                <p className="text-sm sm:text-base font-bold text-neutral-900 italic">
+                                    “Many plants are dependent on pollination from a pollinator.”
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-xs font-bold text-[#1B9157]">Timothy Nduva</span>
+                                    <span className="text-[10px] text-neutral-500">• Founder & CEO</span>
+                                </div>
+                            </div>
+                        </div>
                         <p className="text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto font-medium leading-relaxed">
                             Authentic field dispatches from commercial orchards and drip-irrigated holdings across Makueni County.
                             BeeYield IoT nodes and precision colonies maximize fruit set and protect yields across 105 acres and counting.
