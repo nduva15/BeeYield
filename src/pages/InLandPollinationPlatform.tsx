@@ -6,7 +6,7 @@ import {
   Mic, Map, LayoutDashboard, ArrowRight, Cpu,
   Quote, Activity, Mail, ChevronRight,
   BarChart3, Signal, Play, Globe, Wifi,
-  CheckCircle, CheckCircle2, Shield, MapPin, Search,
+  CheckCircle, Shield, MapPin, Search,
   Sparkles, Layers, Volume2, Zap, BookOpen,
   Calculator, Thermometer
 } from "lucide-react";
@@ -358,46 +358,7 @@ const InLandPollination = () => {
           </div>
       </section>
 
-            {/* ───────────────────────────────────────────────────────────────
-          EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT
-      ─────────────────────────────────────────────────────────────── */}
-      <section className="py-20 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800/80">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-beeyield-green/15 via-transparent to-transparent pointer-events-none" />
-          <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
-              <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-              >
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-beeyield-green/10 border border-beeyield-green/20 text-beeyield-green text-[11px] font-bold uppercase tracking-widest mb-8">
-                      <Quote className="w-3.5 h-3.5 fill-beeyield-green/20" />
-                      Founder's Perspective
-                  </div>
-                  <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto">
-                      “Pollination is mission-critical to fruit production, but it is still too often managed through assumption. Our goal is to make precision pollination scalable across crops and useful as a day-to-day production tool.”
-                  </blockquote>
-                  <div className="flex items-center justify-center gap-4">
-                      <img
-                          src={TIMOTHY_PHOTO}
-                          alt="Timothy Nduva"
-                          className="w-14 h-14 rounded-full object-cover border-2 border-beeyield-green shadow-xl"
-                      />
-                      <div className="text-left">
-                          <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
-                              Timothy Nduva
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
-                              </span>
-                          </div>
-                          <div className="text-xs sm:text-sm text-neutral-400 font-medium">
-                              BeeYield • Precision Apiculture & Agricultural Intelligence
-                          </div>
-                      </div>
-                  </div>
-              </motion.div>
-          </div>
-      </section>
+            
 
 {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID + PRODUCT SHOWCASE
