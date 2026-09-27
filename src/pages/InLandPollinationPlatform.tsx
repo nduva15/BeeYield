@@ -522,68 +522,87 @@ const InLandPollination = () => {
           DASHBOARD SHOWCASE + BEEYIELD SYSTEM SCREENSHOT
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-b border-neutral-100">
-          <div className="container mx-auto px-4">
-              <div className="grid lg:grid-cols-2 gap-20 items-center max-w-6xl mx-auto">
-                  <div>
-                      <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-4 py-1.5 font-semibold text-[10px]">
-                          Interactive Dashboard
-                      </Badge>
-                      <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-8">
-                          Easy-to-Read <span className="text-beeyield-green">PLIP Dashboard</span>
-                      </h2>
-                      <p className="text-lg text-muted-foreground leading-relaxed mb-10">
-                          The PLIP dashboard presents key metrics and delivers actionable insights every day the bees are at work. It gives highly detailed information on the per-minute bee visits from each land's data collection points.
-                      </p>
-                      <div className="space-y-5">
-                          {[
-                            "Per-minute bee visits from each land collection point",
-                            "Compare pollination activity among different genetic strains",
-                            "Filter by production practices and treatments",
-                            "Track and correlate output rates with quality levels",
-                            "Monitor germination rates and yield projections",
-                          ].map((cap, index) => (
-                              <motion.div
-                                  key={index}
-                                  initial={{ opacity: 0, x: -15 }}
-                                  whileInView={{ opacity: 1, x: 0 }}
-                                  viewport={{ once: true }}
-                                  transition={{ delay: index * 0.08 }}
-                                  className="flex items-start gap-4 group"
-                              >
-                                  <CheckCircle2 className="h-5 w-5 text-beeyield-green mt-0.5 shrink-0" />
-                                  <p className="text-neutral-600 font-medium leading-relaxed text-sm">{cap}</p>
-                              </motion.div>
-                          ))}
+          <div className="container mx-auto px-4 max-w-6xl">
+              <div className="text-center max-w-3xl mx-auto mb-14">
+                  <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+                      Interactive Field Telemetry
+                  </Badge>
+                  <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+                      Easy-to-Read <span className="text-beeyield-green">Dashboards</span>
+                  </h2>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                      Real-time Open-Meteo microclimate tracking, flight-window analytics, hourly weather curves, and verified apiary ledger yields &mdash; structured into clear, readable dashboards for growers and beekeepers.
+                  </p>
+              </div>
+
+              {/* Full high-resolution easy to read dashboard screenshot presentation */}
+              <motion.div
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5 }}
+                  className="relative mx-auto max-w-5xl mb-14"
+              >
+                  <div className="rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white p-2 sm:p-4">
+                      <div className="rounded-[2rem] overflow-hidden border border-neutral-100 bg-[#FAF9F5]">
+                          <img
+                              src={BEEYIELD_DASHBOARD}
+                              alt="BeeYield Apiary Microclimate & In-Land Telemetry Dashboard with Open-Meteo live weather, 5-day outlook, and certified harvest yields"
+                              className="w-full h-auto object-contain"
+                          />
                       </div>
                   </div>
 
-                  <motion.div
-                      initial={{ opacity: 0, x: 30 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      className="relative"
-                  >
-                      {/* BeeYield Dashboard — actual system screenshot */}
-                      <div className="relative mx-auto max-w-lg">
-                          <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-white">
-                              <img
-                                  src={BEEYIELD_DASHBOARD}
-                                  alt="BeeYield Apiary Dashboard showing weather telemetry and pollination planning"
-                                  className="w-full h-auto"
-                              />
-                          </div>
-                      </div>
+                  {/* Floating badges */}
+                  <div className="hidden sm:flex absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-beeyield-green" />
+                      <span className="text-xs font-bold text-neutral-900">Open-Meteo Live API</span>
+                  </div>
+                  <div className="hidden sm:flex absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
+                      <Activity className="h-4 w-4 text-beeyield-green" />
+                      <span className="text-xs font-bold text-neutral-900">Optimal Flight Window • 184 Hives</span>
+                  </div>
+              </motion.div>
 
-                      {/* Floating badges */}
-                      <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-beeyield-green" />
-                          <span className="text-xs font-bold text-neutral-900">Live Dashboard</span>
-                      </div>
-                      <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-3 flex items-center gap-2">
-                          <Activity className="h-4 w-4 text-beeyield-green" />
-                          <span className="text-xs font-bold text-neutral-900">Visits Per Minute</span>
-                      </div>
-                  </motion.div>
+              {/* Key dashboard capabilities breakdown */}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+                  {[
+                    {
+                      title: "Live Microclimate",
+                      desc: "Real-time 25°C ambient temperature, 58% humidity, and 10 km/h wind velocity at Kibwezi Apiary (-2.409°S, 37.967°E).",
+                      icon: Thermometer,
+                    },
+                    {
+                      title: "Flight Window Analytics",
+                      desc: "Continuous detection of optimal foraging conditions with clear green status flags for precision pollination inspections.",
+                      icon: Activity,
+                    },
+                    {
+                      title: "Hourly & 5-Day Outlook",
+                      desc: "Hourly microclimate forecast and 5-day safe foraging range tracking to time colony field releases perfectly.",
+                      icon: BarChart3,
+                    },
+                    {
+                      title: "Certified Yield Ledger",
+                      desc: "184 managed hives with 150 active colonies and 843.0 KG certified yield verified across 401 blockchain batches.",
+                      icon: Shield,
+                    },
+                  ].map((item, index) => (
+                      <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 15 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: index * 0.08 }}
+                          className="p-6 rounded-2xl bg-neutral-50/80 border border-neutral-100 hover:border-beeyield-green/30 transition-all space-y-2.5"
+                      >
+                          <div className="w-9 h-9 rounded-xl bg-beeyield-green/10 flex items-center justify-center text-beeyield-green">
+                              <item.icon className="w-5 h-5" />
+                          </div>
+                          <h4 className="font-bold text-neutral-900 text-sm">{item.title}</h4>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                      </motion.div>
+                  ))}
               </div>
           </div>
       </section>

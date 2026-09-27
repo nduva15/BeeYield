@@ -107,7 +107,7 @@ const COMB_DIAGNOSTICS_SLIDES: SlideItem[] = [
 
 const COLONY_VITALITY_SLIDES: SlideItem[] = [
   {
-    image: '/images/pollination/hive-comb-inspection-7.png',
+    image: '/images/beehub/beeyield-dashboard.png',
     title: 'Detect Bee Diseases & Brood Health',
     subtitle: 'Early pathogen detection on drawn brood comb',
     badge: 'Disease Detection',
@@ -778,7 +778,7 @@ const PrecisionPollination = () => {
                       <div className="relative mx-auto max-w-lg">
                           <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-neutral-900 aspect-[4/3]">
                               <img
-                                  src="/images/pollination/hive-comb-inspection-7.png"
+                                  src="/images/beehub/beeyield-dashboard.png"
                                   alt="Real worker bees building fresh honeycomb wax along in-hive telemetry sensor probe"
                                   className="w-full h-full object-cover"
                               />
