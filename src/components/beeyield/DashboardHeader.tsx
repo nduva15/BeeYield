@@ -241,14 +241,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             (i.id === "beeyield" || i.id === "hives")),
       ) || navItems.find((i) => i.id === activeTab);
   const CurrentIcon =
-    (currentItem as any)?.icon ||
+    currentItem?.icon ||
     (activeTab === "home"
       ? Home
       : activeTab === "beeyield" || activeTab === "hives"
         ? Hexagon
         : Sparkles);
   const currentLabel =
-    (currentItem as any)?.label ||
+    currentItem?.label ||
     (activeTab === "home"
       ? "Dashboard Home"
       : activeTab === "beeyield" || activeTab === "hives"
