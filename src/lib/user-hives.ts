@@ -1,4 +1,5 @@
 import { CANONICAL_APIARY_NAME, CANONICAL_APIARY_LOCATION, normalizeApiaryName } from "./apiary-normalization";
+export { CANONICAL_APIARY_NAME, CANONICAL_APIARY_LOCATION, normalizeApiaryName };
 
 export interface UserLike {
   id?: string | null;
