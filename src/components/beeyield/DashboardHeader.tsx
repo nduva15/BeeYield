@@ -111,7 +111,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = React.useState(false);
   const [isAddApiaryOpen, setIsAddApiaryOpen] = React.useState(false);
   const [isAddHiveOpen, setIsAddHiveOpen] = React.useState(false);
-  const [isNewRecordOpen, setIsNewRecordOpen] = React.useState(false);
   const [isNewRecordModalOpen, setIsNewRecordModalOpen] = React.useState(false);
   const [newRecordInitialTab, setNewRecordInitialTab] = React.useState<"apiary" | "hive">("apiary");
 
