@@ -445,6 +445,6 @@ export default function PandaMitiPage() {
           © {new Date().getFullYear()} BeeYield. 45,000 Trees around Kibwezi, Makueni County, Kenya.
         </p>
       </footer>
-    </BeeYieldPageShell>
+    </div>
   );
 }
