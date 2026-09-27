@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Circle, Marker, Popup, Tooltip, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import {
     Activity,
     Shield,
     Droplets,
-    ArrowRight,
+    Quote, ArrowRight,
     CheckCircle,
     CheckCircle2,
     Sparkles,
@@ -691,14 +692,25 @@ const Diseases = () => {
                                     style={{ transitionDuration: '2000ms' }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/30 to-transparent" />
-                                <div className="absolute bottom-12 left-12 right-12 p-10 bg-white/5 backdrop-blur-2xl rounded-[2rem] border border-white/10 shadow-2xl">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="h-0.5 w-12 bg-beeyield-green" />
-                                        <span className="text-[10px] font-bold text-beeyield-green">Official 2026 Partner</span>
+                                <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-neutral-950/85 backdrop-blur-2xl rounded-[2rem] border border-white/15 shadow-2xl">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <Quote className="w-5 h-5 text-beeyield-green shrink-0 fill-beeyield-green/20" />
+                                        <div className="h-0.5 w-10 bg-beeyield-green" />
+                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-beeyield-green">Timothy Nduva • Founder & CEO</span>
                                     </div>
-                                    <p className="text-white text-xl md:text-2xl font-bold leading-tight tracking-tight">
-                                        "Effective pollination is impossible without healthy, thriving colonies."
+                                    <p className="text-white text-base sm:text-lg md:text-xl font-bold leading-relaxed tracking-tight italic">
+                                        “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
                                     </p>
+                                    <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
+                                      <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-beeyield-green/40 shadow-sm" />
+                                      <div>
+                                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                                          Timothy Nduva
+                                          <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">Founder & CEO</span>
+                                        </div>
+                                        <div className="text-xs text-white/60">BeeYield Colony Health & Disease Defense</div>
+                                      </div>
+                                    </div>
                                 </div>
                             </div>
                             {/* Decorative corners */}
@@ -748,7 +760,49 @@ const Diseases = () => {
                 </div>
             </section>
 
-            {/* ═══════════════════════════════════════════════════════════════
+            
+            {/* ───────────────────────────────────────────────────────────────
+                EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT ON BEE HEALTH
+            ─────────────────────────────────────────────────────────────── */}
+            <section className="py-20 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800/80">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-beeyield-green/15 via-transparent to-transparent pointer-events-none" />
+                <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                    >
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-beeyield-green/10 border border-beeyield-green/20 text-beeyield-green text-[11px] font-bold uppercase tracking-widest mb-8">
+                            <Quote className="w-3.5 h-3.5 fill-beeyield-green/20" />
+                            Executive Vision • Colony Health & Conservation
+                        </div>
+                        <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto italic">
+                            “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
+                        </blockquote>
+                        <div className="flex items-center justify-center gap-4">
+                            <img
+                                src={TIMOTHY_PHOTO}
+                                alt="Timothy Nduva"
+                                className="w-14 h-14 rounded-full object-cover border-2 border-beeyield-green shadow-xl"
+                            />
+                            <div className="text-left">
+                                <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
+                                    Timothy Nduva
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
+                                    </span>
+                                </div>
+                                <div className="text-xs sm:text-sm text-neutral-400 font-medium">
+                                    BeeYield • Precision Pollination & Early Disease Detection
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+{/* ═══════════════════════════════════════════════════════════════
                 HOW APISENSE WORKS
             ═══════════════════════════════════════════════════════════════ */}
             <section className="py-32 bg-neutral-50/50 border-y border-neutral-100 relative">
