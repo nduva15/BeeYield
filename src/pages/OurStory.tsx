@@ -277,7 +277,7 @@ const OurStory = () => {
                 The Story of <span className="text-primary">BeeYield</span>
               </h1>
               <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8">
-                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and 22 IoT devices transforming 95 and counting acres of pollination.
+                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and 22 IoT devices transforming 105 and counting acres of pollination.
               </p>
               
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start">

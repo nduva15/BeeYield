@@ -152,7 +152,7 @@ const ESG = () => {
 
   const impactStats = [
     { value: "22", label: "IoT Devices", icon: Radio, description: "Deployed across apiaries" },
-    { value: "95+", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
+    { value: "105+", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
     { value: "3t", label: "Carbon Offset", icon: TreePine, description: "CO₂ sequestered to date" },
     { value: "2,500+", label: "Trees Planted", icon: Sprout, description: "Flora restoration" },
     { value: "184+", label: "Intelligent Hives", icon: Bug, description: "Active colony inventory" },
@@ -189,7 +189,7 @@ const ESG = () => {
               <span className="text-beeyield-green">by Integrity.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 95 and counting pollinated acres and 3 tons of carbon offset — zero AI imagery, 100% ground truth.
+              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 105 and counting pollinated acres and 3 tons of carbon offset — zero AI imagery, 100% ground truth.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -303,7 +303,7 @@ const ESG = () => {
                   image: ESG_IMAGES.apisenseCluster1,
                   title: "Active Colony Around Probe",
                   subtitle: "Hundreds of bees clustered on sensor",
-                  badge: "95+ Acres Served (and counting)",
+                  badge: "105+ Acres Served (and counting)",
                   description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
                 }
               ]}
@@ -395,7 +395,7 @@ const ESG = () => {
                   Biodiversity Stewardship & Carbon Offsets
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Through precision pollination across 95 and counting client acres and the restoration of 2,500+ indigenous trees in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
+                  Through precision pollination across 105 and counting client acres and the restoration of 2,500+ indigenous trees in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
@@ -438,7 +438,7 @@ const ESG = () => {
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
-                    <span className="text-3xl font-black text-amber-600">95+</span>
+                    <span className="text-3xl font-black text-amber-600">105+</span>
                     <p className="text-xs font-semibold text-neutral-500 mt-1">Acres Pollinated (and counting)</p>
                   </div>
                   <div>
@@ -499,12 +499,12 @@ const ESG = () => {
                 Data-Driven <br />Food Security.
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 intelligent hives across 95 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
+                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 intelligent hives across 105 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
               </p>
 
               <div className="grid grid-cols-2 gap-10">
                 <div className="space-y-2">
-                  <p className="text-4xl font-bold text-beeyield-green">95+</p>
+                  <p className="text-4xl font-bold text-beeyield-green">105+</p>
                   <p className="text-sm font-semibold text-muted-foreground">Acres supported (and counting)</p>
                 </div>
                 <div className="space-y-2">
@@ -547,7 +547,7 @@ const ESG = () => {
             </div>
             <h3 className="text-3xl md:text-5xl font-bold text-neutral-900 tracking-tight">Verified by Design.</h3>
             <p className="text-muted-foreground text-lg">
-              22 IoT devices deployed. 95 and counting acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
+              22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
               <Link to="/contact" className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
