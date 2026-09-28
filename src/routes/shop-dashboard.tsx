@@ -8,7 +8,7 @@ export const Route = (createFileRoute as any)("/shop-dashboard")({
       {
         name: "description",
         content:
-          "Manage direct honey harvest orders, IoT sensor hardware, deliveries, payments, and 843kg batch traceability with BeeYield Shop Dashboard.",
+          "Manage direct honey orders, IoT sensor hardware, deliveries, and payments with BeeYield Shop Dashboard.",
       },
       { property: "og:title", content: "BeeYield Shop Dashboard" },
     ],

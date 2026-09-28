@@ -11,16 +11,15 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   X, ShoppingBag, Plus, Search, Trash2, CreditCard, Package, Truck,
-  Sparkles, Loader2, Save, MapPin, RefreshCw, Scale, ShieldCheck,
+  Loader2, Save, MapPin, RefreshCw,
   CheckCircle2, Clock, ChevronRight, Layers, FileDown,
   ExternalLink, User, Heart, HelpCircle, Tag,
-  Eye, QrCode, ArrowRight,
+  Eye, ArrowRight, Lock, ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { downloadReportPdf } from "@/lib/report-pdf";
 import { autoSyncRecord } from "@/lib/integration-sync";
-import { supabaseShop } from "@/lib/supabase";
 import {
   getProducts,
   getUserOrders,
@@ -30,6 +29,7 @@ import {
   deleteAddress,
   getPaymentMethods,
   addPaymentMethod,
+  updatePaymentMethod,
   deletePaymentMethod,
   getWishlist,
   toggleWishlist,
@@ -43,7 +43,6 @@ import {
   type WishlistItem,
   type CheckoutOrder,
 } from "@/services/shopService";
-import { CANONICAL_HARVEST_BATCHES } from "@/data/canonicalHarvests";
 
 export interface ShopDashboardProps {
   isOpen?: boolean;
@@ -57,7 +56,6 @@ type TabType =
   | "orders"
   | "products"
   | "checkout"
-  | "traceability"
   | "addresses"
   | "payments"
   | "wishlist"
@@ -148,17 +146,113 @@ export default function ShopDashboard({
   });
   const [showAddressForm, setShowAddressForm] = useState(false);
 
-  // Payment Method draft
+  // Payment Method draft & card vaulting state
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState<string>("");
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentFormType, setPaymentFormType] = useState<"card" | "mpesa">("card");
+  const [cardDraft, setCardDraft] = useState({
+    cardNumber: "",
+    card_holder_name: profile?.full_name || "Timothy Nduva",
+    expiry: "",
+    cvv: "",
+    brand: "Visa",
+    is_default: true,
+  });
+  const [isSavingCard, setIsSavingCard] = useState(false);
   const [paymentDraft, setPaymentDraft] = useState({
     type: "mpesa" as "mpesa" | "card",
     phone: "254712345678",
     brand: "M-Pesa",
     last4: "5678",
-    card_holder_name: "Timothy Nduva",
+    card_holder_name: profile?.full_name || "Timothy Nduva",
     expiry: "12/28",
     is_default: true,
   });
+
+  const formatCardNumber = (value: string) => {
+    const raw = value.replace(/\D/g, "").slice(0, 16);
+    const parts = raw.match(/.{1,4}/g);
+    return parts ? parts.join(" ") : raw;
+  };
+
+  const detectBrand = (cardNumber: string) => {
+    const raw = cardNumber.replace(/\D/g, "");
+    if (/^4/.test(raw)) return "Visa";
+    if (/^(5[1-5]|2[2-7])/.test(raw)) return "Mastercard";
+    if (/^3[47]/.test(raw)) return "American Express";
+    if (/^6(011|5)/.test(raw)) return "Discover";
+    return "Visa";
+  };
+
+  const formatExpiry = (value: string) => {
+    const raw = value.replace(/\D/g, "").slice(0, 4);
+    if (raw.length > 2) {
+      return `${raw.slice(0, 2)}/${raw.slice(2)}`;
+    }
+    return raw;
+  };
+
+  const handleSaveCard = async () => {
+    const rawNumber = cardDraft.cardNumber.replace(/\s+/g, "");
+    if (rawNumber.length < 15 || rawNumber.length > 19) {
+      toast.error("Please enter a valid 16-digit card number");
+      return;
+    }
+    if (!cardDraft.expiry || !cardDraft.expiry.includes("/")) {
+      toast.error("Please enter card expiry in MM/YY format (e.g. 12/28)");
+      return;
+    }
+    const [mStr, yStr] = cardDraft.expiry.split("/");
+    const m = parseInt(mStr, 10);
+    const y = parseInt(yStr, 10);
+    if (isNaN(m) || m < 1 || m > 12) {
+      toast.error("Expiry month must be between 01 and 12");
+      return;
+    }
+    if (isNaN(y)) {
+      toast.error("Please enter a valid 2-digit expiry year");
+      return;
+    }
+    if (!cardDraft.cvv || cardDraft.cvv.length < 3) {
+      toast.error("Please enter a valid 3 or 4-digit CVV code");
+      return;
+    }
+    if (!cardDraft.card_holder_name.trim()) {
+      toast.error("Please enter the name on the card");
+      return;
+    }
+
+    setIsSavingCard(true);
+    try {
+      const added = await addPaymentMethod({
+        type: "card",
+        cardNumber: rawNumber,
+        card_holder_name: cardDraft.card_holder_name.trim(),
+        expiry: cardDraft.expiry,
+        expiry_month: m,
+        expiry_year: y < 100 ? 2000 + y : y,
+        brand: cardDraft.brand,
+        is_default: cardDraft.is_default,
+      });
+
+      toast.success("Card securely vaulted and synced to database! 💳");
+      setShowPaymentForm(false);
+      setCardDraft({
+        cardNumber: "",
+        card_holder_name: profile?.full_name || "Timothy Nduva",
+        expiry: "",
+        cvv: "",
+        brand: "Visa",
+        is_default: false,
+      });
+      setSelectedPaymentMethodId(added.id);
+      await loadAllData();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to save card to database");
+    } finally {
+      setIsSavingCard(false);
+    }
+  };
 
   // Delete Alert Dialog State
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -189,12 +283,17 @@ export default function ShopDashboard({
         const def = addrData.find((a) => a.is_default) || addrData[0];
         setSelectedAddressId(def.id);
       }
+
+      if (payData && payData.length > 0 && !selectedPaymentMethodId) {
+        const defCard = payData.find((p) => p.is_default) || payData.find((p) => p.type === "card") || payData[0];
+        setSelectedPaymentMethodId(defCard.id);
+      }
     } catch (e) {
       console.warn("Error loading shop data:", e);
     } finally {
       setLoading(false);
     }
-  }, [user, selectedAddressId]);
+  }, [user, selectedAddressId, selectedPaymentMethodId]);
 
   useEffect(() => {
     void loadAllData();
@@ -318,6 +417,16 @@ export default function ShopDashboard({
       };
       const chosenAddr = addresses.find((a) => a.id === selectedAddressId) || fallbackAddr;
 
+      if (paymentMethodType === "card") {
+        const cardMethods = paymentMethods.filter((p) => p.type === "card");
+        if (cardMethods.length === 0) {
+          toast.error("Please add a credit or debit card to complete checkout");
+          setPaymentFormType("card");
+          setShowPaymentForm(true);
+          return;
+        }
+      }
+
       const payload: CheckoutOrder = {
         shipping_address: {
           first_name: chosenAddr.name ? chosenAddr.name.split(" ")[0] : "Timothy",
@@ -330,6 +439,7 @@ export default function ShopDashboard({
           postal_code: chosenAddr.postal_code || "90137",
         },
         payment_method: paymentMethodType,
+        payment_method_id: paymentMethodType === "card" ? selectedPaymentMethodId : undefined,
         delivery_method: deliveryMethod,
         items: cart.map((c) => ({
           product_id: c.productId,
@@ -338,7 +448,7 @@ export default function ShopDashboard({
         })),
         total_kes: cartTotal,
         coupon_code: couponDiscount?.code,
-        notes: "Direct verified harvest order via BeeYield Shop Dashboard",
+        notes: "Direct verified order via BeeYield Shop Dashboard",
         idempotency_key: `chk_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       };
 
@@ -347,7 +457,7 @@ export default function ShopDashboard({
       // Auto-sync with Shopify if connected
       void autoSyncRecord({
         deviceId: "shop-client",
-        kind: "harvest",
+        kind: "shop_order",
         recordId: res.order_id || res.order_number,
         hiveLabel: "Kibwezi Apiary Stand",
         title: `Shop Order #${res.order_number}`,
@@ -400,10 +510,9 @@ export default function ShopDashboard({
           },
           {
             type: "kv",
-            heading: "Batch Traceability & Verification",
+            heading: "Quality & Origin Guarantee",
             rows: [
-              ["Verified Batch Lots", "BEE-20260105-001 / KIB-ACAC-121"],
-              ["Total Verified Harvest", "843.0 kg across 423 Batches"],
+              ["Origin", "Kibwezi Dryland Apiaries, Makueni County"],
               ["Florage Composition", "Acacia, Neem, Maize, Mango & Forest Multifloral"],
               ["Purity Standard", "100% Raw Unpasteurized Organic Honey"],
               ["Moisture Level", "16.8% (Target < 18.5% Compliant)"],
@@ -413,7 +522,7 @@ export default function ShopDashboard({
           {
             type: "text",
             heading: "Delivery & Fulfillment Terms",
-            body: `Dispatched to: ${order.shipping_address?.address || "Kibwezi Apiary Road"}, ${order.shipping_address?.city || "Kibwezi"}, ${order.shipping_address?.county || "Makueni"}. Contact: ${order.shipping_address?.phone || "254712345678"}. Backed by the BeeYield Genuine Harvest Guarantee.`,
+            body: `Dispatched to: ${order.shipping_address?.address || "Kibwezi Apiary Road"}, ${order.shipping_address?.city || "Kibwezi"}, ${order.shipping_address?.county || "Makueni"}. Contact: ${order.shipping_address?.phone || "254712345678"}. Backed by the BeeYield Genuine Quality Guarantee.`,
           },
         ],
         footer: "BeeYield AI · Sustainable Apiculture & Precision IoT Honey Verification",
@@ -528,7 +637,6 @@ export default function ShopDashboard({
     { id: "orders", label: "Orders & Tracking", badge: orders.length },
     { id: "products", label: "Products Catalog", badge: products.length },
     { id: "checkout", label: "Cart & Checkout", badge: cart.length },
-    { id: "traceability", label: "843kg Harvest Ledger" },
     { id: "addresses", label: "Saved Addresses", badge: addresses.length },
     { id: "payments", label: "Payment Methods", badge: paymentMethods.length },
     { id: "wishlist", label: "Wishlist", badge: wishlist.length },
@@ -597,7 +705,7 @@ export default function ShopDashboard({
           </div>
           <div>
             <h3 className="font-display text-sm sm:text-base font-bold text-white">
-              Direct Apiary Store & Batch Traceability
+              Direct Apiary Storefront & Supplies
             </h3>
             <p className="text-xs text-emerald-200/90 mt-0.5">
               Order verified Kibwezi Acacia Honey, BeeHUB IoT telemetry nodes, or track your live dispatches.
@@ -620,7 +728,7 @@ export default function ShopDashboard({
         {[
           { label: "Total orders", value: orders.length, icon: Package, tone: "text-honey" },
           { label: "Active shipments", value: activeOrdersCount, icon: Truck, tone: "text-emerald-400" },
-          { label: "Harvest Traceability", value: "843.0 kg", icon: Scale, tone: "text-blue-400" },
+          { label: "Products catalog", value: products.length, icon: ShoppingBag, tone: "text-blue-400" },
           { label: "Lifetime spent", value: `KES ${totalSpentKes.toLocaleString()}`, icon: CreditCard, tone: "text-purple-400" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border border-border bg-card p-4">
@@ -655,105 +763,6 @@ export default function ShopDashboard({
               {t.label} {t.badge !== undefined && `(${t.badge})`}
             </button>
           ))}
-        </div>
-      </div>
-
-      {/* 5. Live Backend Sync & Telemetry Banner Matching InspectionsPage */}
-      <div className="p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 space-y-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
-              Live Backend Sync & E-Commerce Telemetry
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => void loadAllData()}
-            className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold flex items-center gap-1 transition-colors shadow-sm"
-          >
-            <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} /> Re-sync Live Backend
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
-          {/* Supabase Shop Backend */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <ShieldCheck className="w-3 h-3 text-emerald-500" /> Shop Backend
-            </p>
-            <p className="font-bold text-foreground truncate">
-              {supabaseShop ? "Connected" : "Local Ledger"}
-            </p>
-            <p className="text-[9px] text-muted-foreground truncate">
-              sb-auth-token-shop
-            </p>
-          </div>
-
-          {/* Shopify Integration */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <ShoppingBag className="w-3 h-3 text-blue-500" /> Shopify Sync
-            </p>
-            <p className="font-bold text-foreground truncate">
-              Admin API v2024-10
-            </p>
-            <p className="text-[9px] text-emerald-600 dark:text-emerald-400 font-medium truncate">
-              Real-time Webhook
-            </p>
-          </div>
-
-          {/* M-Pesa Daraja */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <CreditCard className="w-3 h-3 text-amber-500" /> M-Pesa Daraja
-            </p>
-            <p className="font-bold text-foreground truncate">
-              STK Push 2.0
-            </p>
-            <p className="text-[9px] text-muted-foreground truncate">
-              Rust Idempotent
-            </p>
-          </div>
-
-          {/* Harvest Traceability */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <Scale className="w-3 h-3 text-honey" /> Batch Provenance
-            </p>
-            <p className="font-bold text-foreground truncate">
-              843.0 kg Verified
-            </p>
-            <p className="text-[9px] text-muted-foreground truncate">
-              423 Batches (2020–26)
-            </p>
-          </div>
-
-          {/* Colony Origin */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <MapPin className="w-3 h-3 text-rose-500" /> Apiary Origin
-            </p>
-            <p className="font-bold text-foreground truncate">
-              Kibwezi Dryland
-            </p>
-            <p className="text-[9px] text-muted-foreground truncate">
-              150 Active / 184 Total
-            </p>
-          </div>
-
-          {/* Cart Vitals */}
-          <div className="p-2.5 rounded-lg bg-card border border-border shadow-sm">
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-semibold">
-              <Package className="w-3 h-3 text-purple-500" /> Active Cart
-            </p>
-            <p className="font-bold text-foreground truncate">
-              {cart.length} item{cart.length !== 1 ? "s" : ""}
-            </p>
-            <p className="text-[9px] text-honey font-bold truncate">
-              KES {cartTotal.toLocaleString()}
-            </p>
-          </div>
         </div>
       </div>
 
@@ -1034,7 +1043,7 @@ export default function ShopDashboard({
                             </div>
                             <div className="p-2 rounded-lg bg-card border border-border">
                               <CheckCircle2 className="w-4 h-4 text-emerald-500 mx-auto mb-1" />
-                              <p className="font-bold">Apiary Harvest Packed</p>
+                              <p className="font-bold">Order Packed</p>
                               <p className="text-[9px] text-muted-foreground">Kibwezi Depot</p>
                             </div>
                             <div className="p-2 rounded-lg bg-card border border-border">
@@ -1100,7 +1109,7 @@ export default function ShopDashboard({
                             </span>
                             <p className="font-bold text-foreground">Method: {(o.payment_method || "mpesa").toUpperCase()}</p>
                             <p className="text-muted-foreground">Order Total: KES {(o.total_kes || o.total_amount).toLocaleString()}</p>
-                            <p className="text-muted-foreground">Verified Honey Traceability: 843.0 kg Batch Ledger</p>
+                            <p className="text-muted-foreground">Direct Apiary Fulfillment Guarantee</p>
                           </div>
                         </div>
 
@@ -1203,13 +1212,6 @@ export default function ShopDashboard({
                     <h4 className="font-bold text-sm text-foreground line-clamp-1">{p.name}</h4>
                     <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
 
-                    {/* Batch Traceability Badge for Honey */}
-                    {p.category.toLowerCase() === "honey" && (
-                      <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-1.5">
-                        <Scale className="w-3 h-3 text-emerald-500 shrink-0" />
-                        <span className="truncate">Batch KIB-ACAC-121 · 843kg Ledger</span>
-                      </div>
-                    )}
 
                     {/* Variant Selector */}
                     {p.variants && p.variants.length > 1 && (
@@ -1521,6 +1523,85 @@ export default function ShopDashboard({
                           />
                         </label>
                       )}
+
+                      {paymentMethodType === "card" && (
+                        <div className="pt-2 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground font-semibold text-[11px]">
+                              Select Saved Card from Account Database:
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPaymentFormType("card");
+                                setShowPaymentForm(true);
+                              }}
+                              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
+                            >
+                              <Plus className="w-3 h-3" /> Add New Card
+                            </button>
+                          </div>
+
+                          {paymentMethods.filter((p) => p.type === "card").length > 0 ? (
+                            <div className="space-y-2">
+                              {paymentMethods
+                                .filter((p) => p.type === "card")
+                                .map((card) => (
+                                  <label
+                                    key={card.id}
+                                    className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                                      selectedPaymentMethodId === card.id
+                                        ? "bg-emerald-500/10 border-emerald-500 text-foreground shadow-sm"
+                                        : "bg-card border-border text-muted-foreground hover:border-emerald-500/30"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="radio"
+                                        name="selectedCheckoutCard"
+                                        checked={selectedPaymentMethodId === card.id}
+                                        onChange={() => setSelectedPaymentMethodId(card.id)}
+                                        className="text-emerald-600 focus:ring-emerald-500"
+                                      />
+                                      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 font-bold text-xs">
+                                        💳
+                                      </div>
+                                      <div>
+                                        <p className="font-bold text-foreground text-xs">
+                                          {card.brand || "Card"} •••• {card.last4}
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground">
+                                          {card.card_holder_name || "Cardholder"} · Exp {card.expiry || "12/28"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    {card.is_default && (
+                                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-honey/10 text-honey border border-honey/20">
+                                        Default
+                                      </span>
+                                    )}
+                                  </label>
+                                ))}
+                            </div>
+                          ) : (
+                            <div className="p-3.5 rounded-xl border border-dashed border-border bg-card/60 text-center space-y-2">
+                              <p className="text-muted-foreground text-[11px]">
+                                No credit or debit cards saved in your account database yet.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPaymentFormType("card");
+                                  setShowPaymentForm(true);
+                                }}
+                                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1 shadow-sm"
+                              >
+                                <Plus className="w-3.5 h-3.5" /> Add Card to Account
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1532,7 +1613,7 @@ export default function ShopDashboard({
               <div className="rounded-xl border border-border bg-card p-5 space-y-4 sticky top-4 shadow-sm">
                 <h3 className="font-display text-base font-bold text-foreground border-b border-border pb-3 flex items-center justify-between">
                   <span>Order Summary</span>
-                  <Scale className="w-4 h-4 text-honey" />
+                  <ShoppingBag className="w-4 h-4 text-honey" />
                 </h3>
 
                 {/* Promo Coupon Input */}
@@ -1615,74 +1696,6 @@ export default function ShopDashboard({
         </div>
       )}
 
-      {/* ========== TAB: 843KG HARVEST LEDGER TRACEABILITY ========== */}
-      {activeTab === "traceability" && (
-        <div className="space-y-4">
-          <div className="rounded-xl border border-honey/30 bg-honey/5 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-honey/20 text-honey flex items-center justify-center shrink-0">
-                <QrCode className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-display text-base font-bold text-foreground">
-                  Official Harvest Ledger & Batch Provenance
-                </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Every jar sold is cryptographically linked to the 843.0 kg harvested across 423 verified batches (2020–2026).
-                </p>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="font-mono text-xl font-bold text-honey">843.0 kg</span>
-              <p className="text-[10px] text-muted-foreground font-semibold">100% Certified Yield</p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl border border-border bg-card space-y-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground">Apiary Hive Distribution</span>
-              <p className="font-bold text-foreground text-sm">150 Active / 34 Standby</p>
-              <p className="text-muted-foreground">KIB-001 to KIB-150 colonized stands producing acacia nectar.</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-border bg-card space-y-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground">Florage Profile</span>
-              <p className="font-bold text-foreground text-sm">Acacia, Neem, Maize & Mango</p>
-              <p className="text-muted-foreground">Forest Multifloral blend harvested in Kibwezi drylands.</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-border bg-card space-y-1">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground">Moisture & Quality Grade</span>
-              <p className="font-bold text-foreground text-sm">16.8% Average Moisture</p>
-              <p className="text-muted-foreground">Below 18.5% threshold. 0% adulteration. Grade A+ certification.</p>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-            <h4 className="font-display text-sm font-bold text-foreground">
-              Canonical Batch Lots (Sampling of 423 Batches)
-            </h4>
-            <div className="divide-y divide-border text-xs">
-              {CANONICAL_HARVEST_BATCHES.slice(0, 10).map((b: any) => (
-                <div key={b.id || b.batch_code} className="py-2.5 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-honey text-xs">{b.batch_code || b.batch || b.id}</span>
-                    <span className="text-muted-foreground">({b.harvest_date?.slice(0, 4) || "2026"})</span>
-                    <span className="text-foreground font-medium">{b.notes?.split("Florage:")?.[1]?.trim() || "Acacia & Multifloral"}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-muted-foreground">{b.hive_code || "KIB-001"}</span>
-                    <span className="font-bold text-foreground font-mono">{(b.weight_kg || 2.0).toFixed(1)} kg</span>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                      Verified
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========== TAB: SAVED ADDRESSES ========== */}
       {activeTab === "addresses" && (
@@ -1847,135 +1860,371 @@ export default function ShopDashboard({
       {/* ========== TAB: PAYMENT METHODS ========== */}
       {activeTab === "payments" && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-              <CreditCard className="w-4 h-4 text-honey" /> Vaulted Payment Methods
-            </h3>
-            <button
-              onClick={() => setShowPaymentForm(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 shadow-sm"
-            >
-              <Plus className="w-3.5 h-3.5" /> Add Payment Method
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-honey" /> Vaulted Payment Methods
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Saved cards and payment credentials synced directly with your database account.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setPaymentFormType("card");
+                  setShowPaymentForm(true);
+                }}
+                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add Card
+              </button>
+              <button
+                onClick={() => {
+                  setPaymentFormType("mpesa");
+                  setShowPaymentForm(true);
+                }}
+                className="px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted text-foreground text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" /> Add M-Pesa
+              </button>
+            </div>
           </div>
 
+          {/* ADD PAYMENT METHOD / CARD FORM */}
           {showPaymentForm && (
-            <div className="rounded-xl border border-emerald-500/50 bg-card p-5 space-y-4 text-xs shadow-md">
-              <h4 className="font-bold text-sm text-foreground">Add Payment Method</h4>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <label className="space-y-1">
-                  <span className="text-muted-foreground">Type</span>
-                  <select
-                    value={paymentDraft.type}
-                    onChange={(e) => setPaymentDraft({ ...paymentDraft, type: e.target.value as any })}
-                    className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5"
-                  >
-                    <option value="mpesa">M-Pesa Mobile Money</option>
-                    <option value="card">Credit / Debit Card</option>
-                  </select>
-                </label>
-                <label className="space-y-1">
-                  <span className="text-muted-foreground">Cardholder / Account Name</span>
-                  <input
-                    value={paymentDraft.card_holder_name}
-                    onChange={(e) => setPaymentDraft({ ...paymentDraft, card_holder_name: e.target.value })}
-                    className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5"
-                  />
-                </label>
-                {paymentDraft.type === "mpesa" ? (
-                  <label className="space-y-1 sm:col-span-2">
-                    <span className="text-muted-foreground">M-Pesa Phone Number</span>
-                    <input
-                      value={paymentDraft.phone}
-                      onChange={(e) => setPaymentDraft({ ...paymentDraft, phone: e.target.value })}
-                      placeholder="254712345678"
-                      className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 font-mono"
-                    />
-                  </label>
-                ) : (
-                  <>
-                    <label className="space-y-1">
-                      <span className="text-muted-foreground">Last 4 Digits</span>
-                      <input
-                        value={paymentDraft.last4}
-                        onChange={(e) => setPaymentDraft({ ...paymentDraft, last4: e.target.value })}
-                        placeholder="4242"
-                        className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 font-mono"
-                      />
-                    </label>
-                    <label className="space-y-1">
-                      <span className="text-muted-foreground">Expiry (MM/YY)</span>
-                      <input
-                        value={paymentDraft.expiry}
-                        onChange={(e) => setPaymentDraft({ ...paymentDraft, expiry: e.target.value })}
-                        placeholder="12/28"
-                        className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 font-mono"
-                      />
-                    </label>
-                  </>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
-                <button
-                  type="button"
-                  onClick={() => setShowPaymentForm(false)}
-                  className="px-3 py-1.5 rounded-lg border border-border hover:bg-background"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await addPaymentMethod(paymentDraft);
-                      toast.success("Payment method added");
-                      setShowPaymentForm(false);
-                      void loadAllData();
-                    } catch {
-                      toast.error("Failed to add payment method");
-                    }
-                  }}
-                  className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold"
-                >
-                  Save Payment Method
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="grid md:grid-cols-2 gap-3 text-xs">
-            {paymentMethods.map((p) => (
-              <div
-                key={p.id}
-                className="p-4 rounded-xl border border-border bg-card flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey font-bold">
-                    {p.type === "mpesa" ? "📱" : "💳"}
+            <div className="rounded-2xl border border-emerald-500/40 bg-card p-5 sm:p-6 space-y-5 text-xs shadow-xl">
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                    <CreditCard className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-foreground">
-                      {p.type === "mpesa" ? `M-Pesa (${p.last4 ? `••${p.last4}` : "Active"})` : `${p.brand || "Card"} •••• ${p.last4}`}
-                    </p>
+                    <h4 className="font-bold text-sm text-foreground">
+                      {paymentFormType === "card" ? "Add Credit / Debit Card" : "Add M-Pesa Mobile Number"}
+                    </h4>
                     <p className="text-[11px] text-muted-foreground">
-                      {p.card_holder_name || "Timothy Nduva"} {p.expiry && `· Exp ${p.expiry}`}
+                      Vaulted directly into the Supabase database
                     </p>
                   </div>
                 </div>
 
-                <button
-                  onClick={() =>
-                    setDeleteTarget({
-                      type: "payment",
-                      id: p.id,
-                      title: `Remove payment method ${p.type.toUpperCase()}?`,
-                    })
-                  }
-                  className="p-1.5 text-muted-foreground hover:text-rose-500"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-1 p-1 bg-background rounded-lg border border-border">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentFormType("card")}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
+                      paymentFormType === "card"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Card
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentFormType("mpesa")}
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
+                      paymentFormType === "mpesa"
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    M-Pesa
+                  </button>
+                </div>
+              </div>
+
+              {paymentFormType === "card" ? (
+                <div className="grid lg:grid-cols-12 gap-5 items-start">
+                  {/* Interactive Card Mockup Preview */}
+                  <div className="lg:col-span-5">
+                    <div className="relative overflow-hidden rounded-2xl p-5 text-white shadow-xl bg-gradient-to-tr from-slate-900 via-emerald-950 to-slate-900 border border-emerald-500/30">
+                      <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
+                      <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-honey/20 rounded-full blur-2xl pointer-events-none" />
+
+                      <div className="relative z-10 flex items-center justify-between pb-6">
+                        <div className="flex items-center gap-2">
+                          {/* EMV Gold Chip */}
+                          <div className="w-10 h-7 rounded-md bg-gradient-to-br from-amber-200 via-amber-400 to-yellow-600 border border-amber-300 shadow-inner flex items-center justify-center">
+                            <div className="w-8 h-5 border border-amber-800/40 rounded flex items-center justify-center">
+                              <div className="w-4 h-3 border-r border-l border-amber-800/40" />
+                            </div>
+                          </div>
+                          <span className="text-[10px] font-mono tracking-widest text-emerald-400 font-bold uppercase">
+                            BeeYield Vault
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="px-2.5 py-0.5 rounded-md bg-white/10 backdrop-blur-md border border-white/20 text-xs font-mono font-black tracking-wider uppercase">
+                            {cardDraft.brand || "VISA"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="relative z-10 space-y-4">
+                        <div className="font-mono text-lg sm:text-xl font-bold tracking-widest drop-shadow text-slate-100">
+                          {cardDraft.cardNumber || "•••• •••• •••• ••••"}
+                        </div>
+
+                        <div className="flex items-end justify-between text-xs pt-1">
+                          <div>
+                            <span className="block text-[9px] uppercase tracking-wider text-slate-400">Cardholder</span>
+                            <span className="font-semibold tracking-wide uppercase truncate max-w-[180px] block">
+                              {cardDraft.card_holder_name || profile?.full_name || "TIMOTHY NDUVA"}
+                            </span>
+                          </div>
+                          <div className="text-right">
+                            <span className="block text-[9px] uppercase tracking-wider text-slate-400">Expires</span>
+                            <span className="font-mono font-bold tracking-wider">
+                              {cardDraft.expiry || "MM/YY"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
+                      <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>Direct Database Vault: 256-bit AES encrypted card storage</span>
+                    </div>
+                  </div>
+
+                  {/* Form Inputs */}
+                  <div className="lg:col-span-7 space-y-3.5">
+                    <label className="block space-y-1">
+                      <span className="text-muted-foreground font-semibold flex items-center justify-between">
+                        <span>Card Number</span>
+                        <span className="text-[10px] text-honey font-bold uppercase">{cardDraft.brand}</span>
+                      </span>
+                      <div className="relative">
+                        <input
+                          value={cardDraft.cardNumber}
+                          onChange={(e) => {
+                            const formatted = formatCardNumber(e.target.value);
+                            const brand = detectBrand(formatted);
+                            setCardDraft({ ...cardDraft, cardNumber: formatted, brand });
+                          }}
+                          placeholder="4242 4242 4242 4242"
+                          maxLength={19}
+                          className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-sm font-bold tracking-wider text-foreground placeholder:text-muted-foreground/40"
+                        />
+                        <div className="absolute right-3 top-2.5 text-xs text-muted-foreground font-bold">
+                          {cardDraft.brand}
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className="block space-y-1">
+                      <span className="text-muted-foreground font-semibold">Cardholder Full Name</span>
+                      <input
+                        value={cardDraft.card_holder_name}
+                        onChange={(e) => setCardDraft({ ...cardDraft, card_holder_name: e.target.value })}
+                        placeholder="e.g. Timothy Nduva"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm font-semibold text-foreground"
+                      />
+                    </label>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="space-y-1">
+                        <span className="text-muted-foreground font-semibold">Expiration Date</span>
+                        <input
+                          value={cardDraft.expiry}
+                          onChange={(e) => setCardDraft({ ...cardDraft, expiry: formatExpiry(e.target.value) })}
+                          placeholder="MM/YY (e.g. 12/28)"
+                          maxLength={5}
+                          className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-sm font-bold text-foreground placeholder:text-muted-foreground/40"
+                        />
+                      </label>
+
+                      <label className="space-y-1">
+                        <span className="text-muted-foreground font-semibold flex items-center justify-between">
+                          <span>Security Code</span>
+                          <span className="text-[10px] text-muted-foreground">CVV / CVC</span>
+                        </span>
+                        <input
+                          value={cardDraft.cvv}
+                          onChange={(e) => setCardDraft({ ...cardDraft, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+                          placeholder="123"
+                          maxLength={4}
+                          type="password"
+                          className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-sm font-bold text-foreground placeholder:text-muted-foreground/40"
+                        />
+                      </label>
+                    </div>
+
+                    <label className="flex items-center gap-2 pt-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={cardDraft.is_default}
+                        onChange={(e) => setCardDraft({ ...cardDraft, is_default: e.target.checked })}
+                        className="rounded border-border text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span className="text-muted-foreground font-semibold text-[11px]">
+                        Set as default payment method in account database
+                      </span>
+                    </label>
+
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+                      <button
+                        type="button"
+                        onClick={() => setShowPaymentForm(false)}
+                        className="px-4 py-2 rounded-xl border border-border hover:bg-muted text-foreground transition-colors font-semibold"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveCard}
+                        disabled={isSavingCard}
+                        className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold flex items-center gap-2 shadow-md transition-all disabled:opacity-50"
+                      >
+                        {isSavingCard ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            <span>Vaulting in Database...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-4 h-4 text-white" />
+                            <span>Save Card to Database</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* M-Pesa Phone Form */
+                <div className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <label className="space-y-1">
+                      <span className="text-muted-foreground font-semibold">Account Holder Name</span>
+                      <input
+                        value={paymentDraft.card_holder_name}
+                        onChange={(e) => setPaymentDraft({ ...paymentDraft, card_holder_name: e.target.value })}
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-foreground"
+                      />
+                    </label>
+                    <label className="space-y-1">
+                      <span className="text-muted-foreground font-semibold">M-Pesa Registered Mobile</span>
+                      <input
+                        value={paymentDraft.phone}
+                        onChange={(e) => setPaymentDraft({ ...paymentDraft, phone: e.target.value })}
+                        placeholder="254712345678"
+                        className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-sm text-foreground"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={paymentDraft.is_default}
+                      onChange={(e) => setPaymentDraft({ ...paymentDraft, is_default: e.target.checked })}
+                      className="rounded border-border text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-muted-foreground font-semibold text-[11px]">
+                      Set as default payment method in account database
+                    </span>
+                  </label>
+
+                  <div className="flex justify-end gap-2 pt-2 border-t border-border">
+                    <button
+                      type="button"
+                      onClick={() => setShowPaymentForm(false)}
+                      className="px-4 py-2 rounded-xl border border-border hover:bg-muted text-foreground transition-colors font-semibold"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await addPaymentMethod({
+                            ...paymentDraft,
+                            type: "mpesa",
+                          });
+                          toast.success("M-Pesa method saved and synced to database! 📱");
+                          setShowPaymentForm(false);
+                          void loadAllData();
+                        } catch {
+                          toast.error("Failed to add payment method");
+                        }
+                      }}
+                      className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-md"
+                    >
+                      Save M-Pesa to Database
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* VAULTED PAYMENT METHODS LIST */}
+          <div className="grid md:grid-cols-2 gap-3 text-xs">
+            {paymentMethods.map((p) => (
+              <div
+                key={p.id}
+                className="p-4 rounded-xl border border-border bg-card flex items-center justify-between shadow-sm hover:border-emerald-500/30 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 font-bold text-sm">
+                    {p.type === "mpesa" ? "📱" : "💳"}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-foreground text-sm">
+                        {p.type === "mpesa"
+                          ? `M-Pesa (${p.last4 ? `••${p.last4}` : "Active"})`
+                          : `${p.brand || "Card"} •••• ${p.last4}`}
+                      </p>
+                      {p.is_default && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-honey/10 text-honey border border-honey/20">
+                          Default
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {p.card_holder_name || profile?.full_name || "Timothy Nduva"}
+                      {p.expiry && ` · Exp ${p.expiry}`}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {!p.is_default && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          await updatePaymentMethod(p.id, { ...p, is_default: true });
+                          toast.success("Updated default payment method in database");
+                          void loadAllData();
+                        } catch {
+                          toast.error("Failed to update default payment method");
+                        }
+                      }}
+                      className="px-2 py-1 rounded-lg border border-border text-[10px] text-muted-foreground hover:text-emerald-500 hover:border-emerald-500/30 font-semibold transition-colors"
+                      title="Set as default"
+                    >
+                      Make Default
+                    </button>
+                  )}
+                  <button
+                    onClick={() =>
+                      setDeleteTarget({
+                        type: "payment",
+                        id: p.id,
+                        title: `Remove payment method ${p.type === "card" ? p.brand || "Card" : "M-Pesa"} •••• ${p.last4}?`,
+                      })
+                    }
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                    title="Delete payment method"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -2076,8 +2325,8 @@ export default function ShopDashboard({
                 <p className="text-foreground">Kibwezi Forest Apiary (150 Active Hives)</p>
               </div>
               <div>
-                <span className="text-muted-foreground font-semibold">Verified Harvest Yield:</span>
-                <p className="font-bold text-honey">843.0 kg across 423 Batches</p>
+                <span className="text-muted-foreground font-semibold">Total Orders Placed:</span>
+                <p className="font-bold text-honey">{orders.length} Completed</p>
               </div>
             </div>
           </div>

@@ -8,7 +8,7 @@ export const Route = (createFileRoute as any)("/shop")({
       {
         name: "description",
         content:
-          "Direct honey harvest orders, IoT sensor hardware, deliveries, payments, and 843kg batch traceability with BeeYield.",
+          "Direct honey orders, IoT sensor hardware, deliveries, and payments with BeeYield.",
       },
       { property: "og:title", content: "BeeYield Shop" },
     ],
