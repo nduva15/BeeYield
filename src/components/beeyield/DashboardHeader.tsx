@@ -424,31 +424,74 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
 
         {/* Quick Action: New Record Button (Pops out Apiary & Hive forms matching Inspections UI/UX) */}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            // Defer heavy modal mount to keep INP well below 16ms
-            requestAnimationFrame(() => {
-              setTimeout(() => {
-                React.startTransition(() => {
-                  if (onQuickAction) {
-                    onQuickAction();
-                  } else {
+        <div className="relative inline-flex items-center shrink-0">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              React.startTransition(() => {
+                setNewRecordInitialTab("apiary");
+                setIsNewRecordModalOpen(true);
+              });
+            }}
+            className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-l-2xl rounded-r-none bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-md transition-all duration-150 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation transform-gpu will-change-transform shrink-0"
+            aria-label="Create new record (Add Apiary or Add Hive)"
+            title="Create new record (Add Apiary or Add Hive with Inspections UI/UX)"
+          >
+            <Plus className="w-4 h-4 pointer-events-none stroke-[2.5]" />
+            <span className="pointer-events-none select-none">New Record</span>
+          </button>
+
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="h-10 px-2 rounded-r-2xl rounded-l-none bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white border-l border-emerald-500/40 text-xs font-bold transition-all shrink-0 cursor-pointer flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation"
+                aria-label="Choose Record Type: Apiary or Hive"
+                title="Choose form: Add Apiary Station or Add Hive Colony"
+              >
+                <ChevronDown className="w-3.5 h-3.5 pointer-events-none" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-1.5 rounded-2xl bg-card border border-border shadow-xl z-[90]">
+              <DropdownMenuItem
+                onSelect={() => {
+                  React.startTransition(() => {
                     setNewRecordInitialTab("apiary");
                     setIsNewRecordModalOpen(true);
-                  }
-                });
-              }, 0);
-            });
-          }}
-          className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-md transition-transform duration-150 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation transform-gpu will-change-transform shrink-0"
-          aria-label="Create new record (Add Apiary or Add Hive)"
-          title="Create new record (Add Apiary or Add Hive)"
-        >
-          <Plus className="w-4 h-4 pointer-events-none stroke-[2.5]" />
-          <span className="pointer-events-none select-none">New Record</span>
-        </button>
+                  });
+                }}
+                className="p-2.5 rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold hover:bg-emerald-500/10 text-emerald-950 dark:text-emerald-200"
+              >
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-600 shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="leading-tight">Add Apiary Station</p>
+                  <p className="text-[10px] font-normal text-muted-foreground mt-0.5">3-step GPS, flora & capacity</p>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onSelect={() => {
+                  React.startTransition(() => {
+                    setNewRecordInitialTab("hive");
+                    setIsNewRecordModalOpen(true);
+                  });
+                }}
+                className="p-2.5 rounded-xl cursor-pointer flex items-center gap-2.5 text-xs font-bold hover:bg-amber-500/10 text-amber-950 dark:text-amber-200"
+              >
+                <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center text-amber-600 shrink-0">
+                  <Layers className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="leading-tight">Add Hive Colony</p>
+                  <p className="text-[10px] font-normal text-muted-foreground mt-0.5">Queen genetics & sensor pairing</p>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Notifications Dropdown */}
         <DropdownMenu modal={false}>
