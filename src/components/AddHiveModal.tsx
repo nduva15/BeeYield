@@ -224,8 +224,8 @@ export function AddHiveModal({
           setLoadedApiaries(list);
           if (apiary?.id) {
             setSelectedApiaryId(apiary.id);
-          } else if (!selectedApiaryId && list.length > 0) {
-            setSelectedApiaryId(list[0].id);
+          } else if (list.length > 0) {
+            setSelectedApiaryId((prev) => prev || list[0].id);
           }
         }
       } catch {

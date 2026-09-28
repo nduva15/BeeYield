@@ -126,6 +126,30 @@ const Media = () => {
   // Verified Photo Gallery Dispatches across the 105 Acres
   const latestPollinationMedia = [
     {
+      id: "mango-fruitlet-set",
+      title: "Successful Pollination: Pea-Stage Mango Fruitlets Developing",
+      farmer: "Farmer Christopher",
+      location: "Kiunduani, Makueni",
+      acres: 18,
+      crop: "Mangoes",
+      cropScientific: "Mangifera indica (Anthesis to Pea-Stage Fruitlet Transition)",
+      category: "Pollination Verification & Fruit Set",
+      badge: "Verified Fruitlet Set (Pea Stage)",
+      badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
+      description:
+        "Remarkable photographic proof of successful bee pollination on Farmer Christopher's 18-acre orchard in Kiunduani. Where honeybees transferred viable pollen across receptive stigmas, floral florets have successfully fertilized and set into clusters of healthy, pea-sized young green mangoes.",
+      image: "/images/pollination/mango-pollination-fruitlet-set.jpg",
+      thumbLabel: "Fruitlet Set",
+      cropType: "Mangoes",
+      fieldObservations: [
+        "Farmer Christopher (Kiunduani) — 18-acre orchard showing verified fruit set",
+        "Confirmed ovule fertilization with multiple uniform pea-stage fruitlets per panicle cluster",
+        "Transition from floral anthesis to early fruit expansion without flower abortion",
+      ],
+      agronomicImpact:
+        "Active honeybee pollination ensures multiple florets are fertilized per panicle, resulting in heavy clusters of symmetrical fruitlets and directly preventing premature fruit drop.",
+    },
+    {
       id: "mango-dense-pink-spikes",
       title: "Full Tree Canopy Smothered in Pink Flower Spikes",
       farmer: "Farmer Christopher",
@@ -138,7 +162,7 @@ const Media = () => {
       badgeColor: "bg-rose-500/15 text-rose-700 border-rose-300 dark:text-rose-300",
       description:
         "Dramatic close shot of a mature mango tree completely engulfed in thousands of dense pink and cream floral spikes against the open sky in Ndeini. Honeybees provide the essential multiple stigmatic visits needed to transform each panicle into clusters of premium export fruits.",
-      image: "/images/pollination/mango-tree-dense-pink-blossoms.jpg",
+      image: "/images/pollination/mango-tree-dense-pink-blossoms.png",
       thumbLabel: "Pink Canopy Bloom",
       cropType: "Mangoes",
       fieldObservations: [

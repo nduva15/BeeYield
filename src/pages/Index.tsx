@@ -890,36 +890,6 @@ export default function Index() {
             >
               New Chat
             </button>
-            {user ? (
-              <button
-                type="button"
-                onClick={async () => {
-                  await signOut();
-                  toast.success("Signed out of BeeYield account");
-                }}
-                className="flex items-center gap-1.5 text-xs text-rose-500 hover:text-rose-400 border border-rose-500/30 hover:border-rose-500/60 bg-rose-500/10 px-3 py-1.5 rounded-lg transition-all font-semibold active:scale-95 cursor-pointer"
-                title={`Signed in as ${profile?.full_name || user.email}. Click to sign out.`}
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sign Out</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  requestAnimationFrame(() => {
-                    React.startTransition(() => {
-                      navigate({ to: "/auth" as any });
-                    });
-                  });
-                }}
-                className="flex items-center gap-1.5 text-xs text-black font-bold bg-honey hover:bg-honey-dark px-3 py-1.5 rounded-lg transition-all shadow-sm active:scale-95 cursor-pointer"
-                title="Sign in or create account"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
-              </button>
-            )}
           </div>
         </header>
 

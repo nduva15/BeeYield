@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   CreditCard,
   Plus,
@@ -59,24 +59,22 @@ export default function ShopCardWidget({
     isDefault: false,
   });
 
-  const loadCards = async () => {
+  const loadCards = useCallback(async () => {
     setIsLoading(true);
     try {
       const fetched = await getShopCards(shopUser?.id);
       setCards(fetched);
-      if (fetched.length > 0 && selectedCardIndex >= fetched.length) {
-        setSelectedCardIndex(0);
-      }
+      setSelectedCardIndex((prev) => (fetched.length > 0 && prev >= fetched.length ? 0 : prev));
     } catch {
       toast.error("Could not sync cards with shop database");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [shopUser?.id]);
 
   useEffect(() => {
     void loadCards();
-  }, [shopUser?.id]);
+  }, [loadCards]);
 
   const activeCard: ShopCard | undefined = cards[selectedCardIndex] || cards[0];
 

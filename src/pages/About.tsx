@@ -450,8 +450,6 @@ export default function About() {
   const [activeYear, setActiveYear] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<HivePhoto | null>(null);
   const [photoFilter, setPhotoFilter] = useState<string>("All");
-  const { user, profile, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const filteredPhotos = photoFilter === "All"
     ? HIVE_PHOTOS
@@ -477,94 +475,6 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Top Navbar with Sign In / Sign Out & Global Nav */}
-      <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/85 backdrop-blur-md">
-        <div className="container max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-3 group">
-            <img
-              src={beeyieldLogo}
-              alt="BeeYield"
-              className="h-8 w-auto transition-transform group-hover:scale-105"
-            />
-            <div className="flex flex-col">
-              <span className="font-display font-black text-lg text-foreground tracking-tight flex items-center gap-2">
-                BeeYield
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/25">
-                  Our Story
-                </span>
-              </span>
-              <span className="text-[10px] text-muted-foreground hidden sm:block">
-                Precision Pollination &amp; Honey Traceability
-              </span>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/"
-              className="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
-            >
-              AI Platform
-            </Link>
-            <Link
-              to="/panda-miti"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10 transition-colors"
-            >
-              <Trees className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Panda Miti</span>
-            </Link>
-            <Link
-              to="/shop-dashboard"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
-            >
-              <ShoppingBag className="w-3.5 h-3.5 text-amber-500" />
-              <span>Shop</span>
-            </Link>
-
-            {/* Auth Buttons: Sign In / Sign Out */}
-            {user ? (
-              <div className="flex items-center gap-2">
-                <div
-                  className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-card border border-border/80 text-xs font-medium"
-                  title={user.email || "Active User"}
-                >
-                  <div className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-[10px]">
-                    {(profile?.full_name || user.email || "U").charAt(0).toUpperCase()}
-                  </div>
-                  <span className="max-w-[100px] truncate text-foreground text-[11px] font-semibold">
-                    {profile?.full_name?.split(" ")[0] || user.email?.split("@")[0]}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await signOut();
-                    toast.success("Signed out of BeeYield");
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
-                  title="Sign out of your BeeYield account"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => navigate({ to: "/auth" as any })}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition-all shadow-sm cursor-pointer active:scale-95"
-                  title="Sign in or register your account"
-                >
-                  <LogIn className="w-3.5 h-3.5" />
-                  <span>Sign In</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
-
       {/* ============================================================ */}
       {/*  HERO                                                        */}
       {/* ============================================================ */}

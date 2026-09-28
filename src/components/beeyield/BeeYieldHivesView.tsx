@@ -293,7 +293,6 @@ export default function BeeYieldHivesView({
   embedded = false,
 }: BeeYieldHivesViewProps) {
   const { user } = useAuth();
-  if (!isOpen && !embedded) return null;
 
   // View state
   const [selectedPlace, setSelectedPlace] = useState("all");
@@ -910,6 +909,8 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
       setIsExporting(false);
     }
   };
+
+  if (!isOpen && !embedded) return null;
 
   // If viewing deep placement / health view for a single hive
   if (selectedHiveId) {
