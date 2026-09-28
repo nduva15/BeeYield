@@ -176,14 +176,25 @@ export default function BeeDiseasesPage({ isOpen, onClose, embedded = false }: {
       </div>
 
       {/* Executive Quote • Timothy Nduva */}
-      <div className="p-3.5 sm:p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start sm:items-center gap-3">
-        <Quote className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
-        <p className="text-xs sm:text-sm font-medium text-stone-800 italic">
-          “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
-          <span className="ml-2 font-bold text-emerald-700 not-italic text-[11px] sm:text-xs tracking-wide">
-            — Timothy Nduva, Founder & CEO
-          </span>
-        </p>
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-50/80 border border-amber-200/90 flex items-center gap-3 sm:gap-4 shadow-xs">
+        <img
+          src="/images/timothy-nduva.png"
+          alt="Timothy Nduva, Founder & CEO"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover object-center border-2 border-amber-500/70 shadow-sm shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs sm:text-sm font-medium text-stone-800 italic leading-relaxed">
+            “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="font-bold text-emerald-800 text-xs tracking-tight">
+              Timothy Nduva
+            </span>
+            <span className="text-[11px] text-amber-800 font-medium">
+              • Founder &amp; CEO, BeeYield
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="space-y-2 mb-4">
