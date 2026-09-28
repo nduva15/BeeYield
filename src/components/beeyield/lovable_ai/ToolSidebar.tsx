@@ -91,22 +91,17 @@ export default function ToolSidebar({
                       ((activeTab === 'beeyield' || activeTab === 'hives') && (item.id === 'beeyield' || item.id === 'hives'))
                     )
                   );
-                  const handleItemClick = () => {
-                    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-                      onClose();
-                    }
-                    // Yield immediately to the browser event loop to paint interaction before dispatching heavy view switch
-                    if (typeof window !== 'undefined' && 'requestAnimationFrame' in window) {
-                      window.requestAnimationFrame(() => {
-                        startTransition(() => {
-                          item.onClick();
-                        });
-                      });
-                    } else {
+                  const handleItemClick = (e: React.MouseEvent) => {
+                    e.preventDefault();
+                    // Defer heavy tab transition to next event loop turn so click feedback paints in <16ms
+                    setTimeout(() => {
                       startTransition(() => {
+                        if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                          onClose();
+                        }
                         item.onClick();
                       });
-                    }
+                    }, 0);
                   };
 
                   return (
@@ -115,7 +110,7 @@ export default function ToolSidebar({
                       type="button"
                       onClick={handleItemClick}
                       className={cn(
-                        "w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-left text-xs transition-colors cursor-pointer",
+                        "w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl text-left text-xs transition-all duration-150 cursor-pointer touch-manipulation select-none active:scale-[0.99]", 
                         isActive
                           ? "bg-amber-500/15 border border-amber-500/30 text-foreground font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground hover:bg-muted/60"

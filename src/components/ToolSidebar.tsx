@@ -100,23 +100,19 @@ export default function ToolSidebar({
                 {g.items.map((item) => (
                   <button
                     key={item.label}
-                    onClick={() => {
-                      onClose();
-                      if (typeof window !== "undefined" && "requestAnimationFrame" in window) {
-                        window.requestAnimationFrame(() => {
-                          React.startTransition(() => {
-                            item.onClick();
-                          });
-                        });
-                      } else {
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setTimeout(() => {
                         React.startTransition(() => {
+                          onClose();
                           item.onClick();
                         });
-                      }
+                      }, 0);
                     }}
-                    className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-left text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left text-xs text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80 active:scale-[0.99] transition-all duration-150 touch-manipulation cursor-pointer select-none"
                   >
-                    <item.icon className="w-4 h-4 flex-shrink-0 text-honey/80" />
+                    <item.icon className="w-4 h-4 flex-shrink-0 text-honey/80 pointer-events-none select-none" />
                     <span className="truncate pointer-events-none select-none">{item.label}</span>
                   </button>
                 ))}
