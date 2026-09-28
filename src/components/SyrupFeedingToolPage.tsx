@@ -25,6 +25,8 @@ import {
   ClipboardList,
   MoreVertical,
   Activity,
+  RefreshCw,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -97,9 +99,6 @@ export function SyrupFeedingToolPage({
 
   const hiveDisplayName = selectedHive.code || selectedHive.hive_code || selectedHive.name || "beeyield 001";
 
-  // Sub-nav tab: "syrup" (active), "hive_state", "framesense", "notes", "inspection"
-  const [activeSubTab, setActiveSubTab] = useState<"syrup" | "hive_state" | "framesense" | "notes" | "inspection">("syrup");
-
   // Local FrameSense and Notes intact navigation
   const [isFrameSenseOpen, setIsFrameSenseOpen] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
@@ -107,12 +106,12 @@ export function SyrupFeedingToolPage({
   // View mode inside Syrup: "calculator" vs "feeding_history"
   const [viewMode, setViewMode] = useState<"calculator" | "feeding_history">("calculator");
 
-  // Calculator State (defaults matching screenshot: 3:2 ratio)
+  // Calculator State (defaults: 3:2 ratio)
   const [ratio, setRatio] = useState<"1:1" | "3:2" | "2:1">("3:2");
   const [targetVolumeStr, setTargetVolumeStr] = useState<string>("");
   const [showHowToPrepare, setShowHowToPrepare] = useState(true);
 
-  // Feeding Log Form
+  // Feeding Log Form Modal
   const [showLogForm, setShowLogForm] = useState(false);
   const [logAmount, setLogAmount] = useState<string>("5.0");
   const [logDate, setLogDate] = useState<string>(new Date().toISOString().slice(0, 10));
@@ -196,11 +195,11 @@ export function SyrupFeedingToolPage({
   const ratioDescription = useMemo(() => {
     switch (ratio) {
       case "1:1":
-        return "Thin — spring stimulation, brood rearing";
+        return "Thin (1:1) — spring stimulation & rapid brood rearing";
       case "3:2":
-        return "Medium — all-purpose, summer and autumn";
+        return "Medium (3:2) — all-purpose summer dearth & colony upkeep";
       case "2:1":
-        return "Thick — winter feed, rapid stores build-up";
+        return "Thick (2:1) — rapid stores build-up & dry season emergency";
     }
   }, [ratio]);
 
@@ -240,47 +239,76 @@ export function SyrupFeedingToolPage({
 
   const totalFedLiters = feedingLogs.reduce((acc, curr) => acc + curr.amountLiters, 0);
 
-  // Intact page view: NOT a popup card, but an intact full-height view that fills the viewport edge-to-edge
+  // Intact page view matching NotesPage full-height design system
   const content = (
     <div
       className={
         embedded
-          ? "w-full max-w-xl mx-auto py-2"
-          : "fixed inset-0 z-[100] bg-background overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
+          ? "w-full max-w-2xl mx-auto py-2"
+          : "fixed inset-0 z-[100] bg-background text-foreground overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
       }
     >
       <div
-        className={`w-full max-w-lg mx-auto flex-1 flex flex-col p-4 sm:p-6 text-foreground min-h-screen ${
+        className={`w-full max-w-xl mx-auto flex-1 flex flex-col p-4 sm:p-6 text-foreground min-h-screen ${
           embedded ? "h-auto min-h-0" : ""
         }`}
       >
-        {/* TOP BAR: Back Arrow and Menu */}
-        <div className="flex items-center justify-between pb-2 shrink-0">
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer"
-            aria-label="Back"
-          >
-            <ChevronLeft className="w-6 h-6 stroke-[2.2]" />
-          </button>
+        {/* TOP APP BAR: Matching NotesPage Design */}
+        <div className="flex items-center justify-between pb-3.5 border-b border-border shrink-0">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer"
+              aria-label="Back"
+            >
+              <ChevronLeft className="w-6 h-6 stroke-[2.2]" />
+            </button>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-sans">
+              Syrup Feeding
+            </h2>
+          </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={() => {
-                toast.info(`${hiveDisplayName} • ${CANONICAL_APIARY_NAME} (${selectedHive.frame_count || 10} Frames)`);
+                toast.success("Syrup calculations and logs refreshed");
               }}
-              className="p-1.5 rounded-full text-muted-foreground hover:text-stone-900 dark:hover:text-white hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors cursor-pointer"
-              aria-label="More options"
+              className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              title="Refresh"
             >
-              <MoreVertical className="w-5 h-5" />
+              <RefreshCw className="w-4 h-4" />
+            </button>
+
+            {/* View Mode Toggle Pill */}
+            <button
+              type="button"
+              onClick={() => setViewMode(viewMode === "calculator" ? "feeding_history" : "calculator")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                viewMode === "feeding_history"
+                  ? "bg-card border border-border text-foreground hover:bg-muted"
+                  : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white shadow-md border border-emerald-500/40"
+              }`}
+              title="Toggle View"
+            >
+              {viewMode === "feeding_history" ? (
+                <>
+                  <Calculator className="w-3.5 h-3.5" />
+                  <span>Calculator</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Ledger ({feedingLogs.length})</span>
+                </>
+              )}
             </button>
           </div>
         </div>
 
-        {/* HIVE TITLE: beeyield 001 with selector dropdown */}
-        <div className="flex items-center justify-between pb-3 shrink-0">
+        {/* HIVE TITLE & SELECTOR: Matching NotesPage & FrameSense */}
+        <div className="flex items-center justify-between pt-3 pb-2 shrink-0">
           <div className="relative group">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
               {hiveDisplayName}
@@ -292,34 +320,23 @@ export function SyrupFeedingToolPage({
               >
                 {allHives.map((h) => {
                   const num = h.code?.replace(/\D+/g, "") || "";
-                  const label = num ? `beeyield ${num.padStart(3, "0")}` : h.name;
+                  const label = num ? `beeyield ${num.padStart(3, "0")}` : (h.name || h.code);
                   return (
-                    <option key={h.id} value={h.id}>
+                    <option key={h.id} value={h.id} className="text-foreground bg-card">
                       {label}
                     </option>
                   );
                 })}
               </select>
-              <ChevronDown className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors pointer-events-none" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-honey transition-colors pointer-events-none" />
             </h1>
           </div>
 
-          {/* Quick Feeding Ledger Switcher */}
-          <button
-            type="button"
-            onClick={() => setViewMode(viewMode === "calculator" ? "feeding_history" : "calculator")}
-            className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-              viewMode === "feeding_history"
-                ? "bg-amber-500 text-stone-950 shadow-xs"
-                : "bg-card border border-border hover:bg-muted text-foreground"
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" />
-            <span>Ledger</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-black/10 text-[10px]">
-              {feedingLogs.length}
+          <div className="flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-xl bg-card border border-border text-xs font-bold text-muted-foreground">
+              <strong className="text-honey">{feedingLogs.length}</strong> {feedingLogs.length === 1 ? "Feed" : "Feeds"}
             </span>
-          </button>
+          </div>
         </div>
 
         {/* SUB-NAV TOOL BAR: Hive state | Syrup | FrameSense | Notes | Inspection */}
@@ -341,7 +358,6 @@ export function SyrupFeedingToolPage({
             type="button"
             onClick={() => {
               setViewMode("calculator");
-              setActiveSubTab("syrup");
             }}
             className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-honey relative cursor-pointer group font-bold"
           >
@@ -361,9 +377,9 @@ export function SyrupFeedingToolPage({
                 setIsFrameSenseOpen(true);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
-            <Layers className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-muted-foreground" />
+            <Layers className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-amber-500" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">FrameSense</span>
           </button>
 
@@ -377,7 +393,7 @@ export function SyrupFeedingToolPage({
                 setIsNotesOpen(true);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
             <FileText className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Notes</span>
@@ -393,27 +409,50 @@ export function SyrupFeedingToolPage({
                 toast.info(`Opening Inspections for ${hiveDisplayName}...`);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
-            <ClipboardList className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
+            <ClipboardList className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-emerald-500" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Inspection</span>
           </button>
         </div>
 
         {/* ========================================================================= */}
-        {/* VIEW 1: SYRUP CALCULATOR (EXACT SCREENSHOT IMPLEMENTATION) */}
+        {/* VIEW 1: SYRUP CALCULATOR                                                  */}
         {/* ========================================================================= */}
         {viewMode === "calculator" && (
           <div className="flex-1 flex flex-col space-y-4">
-            {/* Title: Syrup calculator */}
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-              Syrup calculator
-            </h2>
+            {/* Prominent Action Banner matching NotesPage */}
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <Droplets className="w-4 h-4 text-white stroke-[2.5]" />
+                </div>
+                <div>
+                  <h3 className="font-display text-sm font-bold text-white">
+                    Syrup Recipe Calculator
+                  </h3>
+                  <p className="text-[11px] text-emerald-200/90">
+                    Precision ratio balancing and dearth feeding schedules.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setLogAmount(targetVolumeStr || "5.0");
+                  setShowLogForm(true);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                <span>Log Feed</span>
+              </button>
+            </div>
 
-            {/* Section 1: Ratio */}
+            {/* Section 1: Ratio Pills matching NotesPage filter buttons */}
             <div className="space-y-1.5">
               <span className="text-xs sm:text-sm font-semibold text-foreground block">
-                Ratio:
+                Sugar-to-Water Ratio:
               </span>
               <div className="flex items-center gap-2">
                 {(["1:1", "3:2", "2:1"] as const).map((r) => (
@@ -421,17 +460,17 @@ export function SyrupFeedingToolPage({
                     key={r}
                     type="button"
                     onClick={() => setRatio(r)}
-                    className={`px-6 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       ratio === r
-                        ? "bg-honey/15 border border-honey/40 text-honey font-bold shadow-xs"
-                        : "bg-card border border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                        ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs border-emerald-500/40"
+                        : "bg-card border-border text-muted-foreground hover:border-honey/40 hover:text-foreground"
                     }`}
                   >
-                    {r}
+                    {r} Ratio
                   </button>
                 ))}
               </div>
-              <p className="text-[12px] sm:text-[13px] text-muted-foreground font-normal pt-0.5">
+              <p className="text-[12px] text-muted-foreground font-normal pt-0.5">
                 {ratioDescription}
               </p>
             </div>
@@ -439,7 +478,7 @@ export function SyrupFeedingToolPage({
             {/* Section 2: How much syrup do I want to make? */}
             <div className="space-y-1.5 pt-1">
               <span className="text-xs sm:text-sm font-semibold text-foreground block">
-                How much syrup do I want to make?
+                Target Syrup Volume (Liters):
               </span>
               <div className="relative">
                 <input
@@ -449,11 +488,11 @@ export function SyrupFeedingToolPage({
                   max="500"
                   value={targetVolumeStr}
                   onChange={(e) => setTargetVolumeStr(e.target.value)}
-                  placeholder="Enter a value"
-                  className="w-full bg-background border border-border rounded-xl px-4 py-3.5 text-sm sm:text-base font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-honey shadow-xs"
+                  placeholder="Enter volume in liters (e.g. 5.0)"
+                  className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-honey shadow-xs"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-sm pointer-events-none">
-                  l
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-mono text-sm pointer-events-none">
+                  L
                 </span>
               </div>
 
@@ -466,8 +505,8 @@ export function SyrupFeedingToolPage({
                     onClick={() => setTargetVolumeStr(preset)}
                     className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                       targetVolumeStr === preset
-                        ? "bg-amber-500 text-stone-950 border-amber-500 shadow-xs font-bold"
-                        : "bg-card text-muted-foreground border-stone-200 dark:border-stone-800 hover:border-amber-400"
+                        ? "bg-emerald-600 text-white border-emerald-500 shadow-xs font-bold"
+                        : "bg-card text-muted-foreground border-border hover:border-honey/40 hover:text-foreground"
                     }`}
                   >
                     {preset} L
@@ -477,7 +516,7 @@ export function SyrupFeedingToolPage({
                   <button
                     type="button"
                     onClick={() => setTargetVolumeStr("")}
-                    className="text-[11px] text-stone-400 hover:text-stone-600 ml-auto cursor-pointer"
+                    className="text-[11px] text-muted-foreground hover:text-foreground ml-auto cursor-pointer"
                   >
                     Clear
                   </button>
@@ -485,24 +524,30 @@ export function SyrupFeedingToolPage({
               </div>
             </div>
 
-            {/* Section 3: Calculated Water & Sugar Output Card */}
-            <div className="bg-card rounded-xl border border-border p-4 sm:p-5 flex items-center justify-between shadow-sm">
-              <div className="space-y-1">
-                <span className="text-xs font-medium text-muted-foreground block">
-                  Water
+            {/* Section 3: Calculated Output Stats Cards matching NotesPage */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="p-3 bg-card rounded-xl border border-border space-y-0.5">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Water Needed</span>
+                <span className="text-xl sm:text-2xl font-black text-blue-500">
+                  {recipe.valid && recipe.waterL !== null ? `${recipe.waterL} L` : "— L"}
                 </span>
-                <span className="text-base sm:text-lg font-bold text-foreground">
-                  {recipe.valid && recipe.waterL !== null ? `${recipe.waterL} l` : "— l"}
-                </span>
+                <span className="text-[10px] text-muted-foreground block">Boiled water</span>
               </div>
 
-              <div className="space-y-1 text-right">
-                <span className="text-xs font-medium text-muted-foreground block">
-                  Sugar
-                </span>
-                <span className="text-base sm:text-lg font-bold text-foreground">
+              <div className="p-3 bg-card rounded-xl border border-border space-y-0.5">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Granulated Sugar</span>
+                <span className="text-xl sm:text-2xl font-black text-honey">
                   {recipe.valid && recipe.sugarKg !== null ? `${recipe.sugarKg} kg` : "— kg"}
                 </span>
+                <span className="text-[10px] text-muted-foreground block">Pure white sucrose</span>
+              </div>
+
+              <div className="p-3 bg-card rounded-xl border border-border space-y-0.5 col-span-2 sm:col-span-1">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground block">Energy Yield</span>
+                <span className="text-xl sm:text-2xl font-black text-emerald-500">
+                  {recipe.valid ? `${recipe.caloriesKcal} kcal` : "—"}
+                </span>
+                <span className="text-[10px] text-muted-foreground block">Colony caloric nutrition</span>
               </div>
             </div>
 
@@ -513,29 +558,29 @@ export function SyrupFeedingToolPage({
                 onClick={() => setShowHowToPrepare(!showHowToPrepare)}
                 className="w-full flex items-center justify-between text-left cursor-pointer group"
               >
-                <h3 className="text-xs sm:text-sm font-bold text-foreground">
-                  How to prepare
-                </h3>
+                <h4 className="text-xs sm:text-sm font-bold text-foreground">
+                  Preparation & Safety Protocol
+                </h4>
                 {showHowToPrepare ? (
-                  <ChevronUp className="w-4 h-4 text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-200 transition-colors" />
+                  <ChevronUp className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-200 transition-colors" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 )}
               </button>
 
               {showHowToPrepare && (
-                <div className="space-y-3 text-xs sm:text-[12.5px] text-stone-700 dark:text-stone-300 leading-relaxed font-normal pt-1">
+                <div className="space-y-2.5 text-xs text-muted-foreground leading-relaxed font-normal pt-1">
                   <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600/15 text-emerald-600 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                       1
                     </span>
                     <p>
-                      <strong className="text-foreground">Stick strictly to pure white granulated sugar (food-grade sucrose).</strong> Avoid raw, brown, organic cane, or unrefined sugar varieties. Dark syrups contain complex carbohydrates and mineral ash that honeybees cannot break down, which quickly causes fatal bowel infections and dysentery.
+                      <strong className="text-foreground">Stick strictly to pure white granulated sugar (food-grade sucrose).</strong> Avoid raw, brown, organic cane, or unrefined sugar varieties. Dark syrups contain complex carbohydrates and mineral ash that honeybees cannot break down, which causes bowel infections and dysentery.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600/15 text-emerald-600 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                       2
                     </span>
                     <p>
@@ -544,61 +589,25 @@ export function SyrupFeedingToolPage({
                   </div>
 
                   <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600/15 text-emerald-600 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                       3
                     </span>
                     <p>
-                      <strong className="text-foreground">Bring water to a boil, take it off the burner, and only then stir in the sugar.</strong> Syrup must never be boiled directly over a flame: high thermal exposure turns sucrose into Hydroxymethylfurfural (HMF), a compound poisonous to bees. The residual hot water is entirely sufficient to dissolve all grains.
+                      <strong className="text-foreground">Bring water to a boil, take it off the burner, and only then stir in the sugar.</strong> Syrup must never be boiled directly over a flame: high thermal exposure turns sucrose into Hydroxymethylfurfural (HMF), a compound poisonous to bees. The residual hot water is sufficient to dissolve all grains.
                     </p>
                   </div>
 
                   <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-5 h-5 rounded-full bg-emerald-600/15 text-emerald-600 font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                       4
-                    </span>
-                    <p>
-                      <strong className="text-foreground">Pour sugar in gradual portions and stir until the solution turns clear.</strong> Granules left at the bottom of the feeder will be ignored by bees and accelerate crystallization throughout the feeder. Thick 2:1 winter feed sits right at maximum physical solubility, requiring very hot water and steady stirring.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
-                      5
                     </span>
                     <p>
                       <strong className="text-foreground">Administer feed lukewarm (~20–25°C), never hot.</strong> Pouring warm syrup into the feeder spikes core hive temperatures and condensation levels, stressing the brood nest and nurse bees.
                     </p>
                   </div>
 
-                  <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
-                      6
-                    </span>
-                    <p>
-                      <strong className="text-foreground">Mix only the volume your colony will finish within 48 to 72 hours.</strong> Syrup sitting stagnant inside the hive or bucket rapidly attracts wild yeasts and ferments. Feeding fermented syrup ruins gut health and causes severe winter dysentery.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
-                      7
-                    </span>
-                    <p>
-                      <strong className="text-foreground">Prevent spills around the hive stand and keep all feeding vessels sealed.</strong> The exposed scent of sugar syrup during a nectar dearth incites frantic robbing frenzies, causing neighboring foragers and wasps to invade and destroy weaker colonies. Rinse accidental drops immediately with water.
-                    </p>
-                  </div>
-
-                  <div className="flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-400 font-black text-[11px] flex items-center justify-center shrink-0 mt-0.5">
-                      8
-                    </span>
-                    <p>
-                      <strong className="text-foreground">Inspect feeder uptake within 2 to 4 days of application.</strong> Verify that the colony is actively consuming the feed. If syrup sits untouched, inspect immediately for queenlessness, disease, feeder obstruction, or an early natural honey flow.
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 sm:p-4 rounded-xl bg-card border border-honey/30 text-xs sm:text-[12.5px] text-card-foreground leading-relaxed font-medium mt-3 flex items-start gap-2.5">
-                    <AlertCircle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <div className="p-3 rounded-xl bg-background border border-honey/30 text-xs text-foreground leading-relaxed font-medium mt-3 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-honey shrink-0 mt-0.5" />
                     <p>
                       <strong className="text-foreground">Do not feed syrup during an active nectar flow intended for harvesting</strong> — the bees will store sucrose in the supers, adulterating the pure honey harvest.
                     </p>
@@ -607,10 +616,10 @@ export function SyrupFeedingToolPage({
               )}
             </div>
 
-            {/* Bottom Actions: Log Feed in Hive Ledger */}
-            <div className="mt-auto pt-3 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between">
-              <span className="text-xs text-stone-500">
-                Season Total: <strong>{totalFedLiters.toFixed(1)} L</strong>
+            {/* Bottom Actions: Log Feed in Hive Ledger matching NotesPage CTA */}
+            <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                Season Total: <strong className="text-foreground">{totalFedLiters.toFixed(1)} L</strong>
               </span>
 
               <button
@@ -619,7 +628,7 @@ export function SyrupFeedingToolPage({
                   setLogAmount(targetVolumeStr || "5.0");
                   setShowLogForm(true);
                 }}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:from-amber-300 hover:to-amber-500 active:scale-[0.98] text-stone-950 font-black text-xs shadow-md shadow-amber-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Log Feed for {hiveDisplayName}</span>
@@ -629,7 +638,7 @@ export function SyrupFeedingToolPage({
         )}
 
         {/* ========================================================================= */}
-        {/* VIEW 2: FEEDING LEDGER & LOGS */}
+        {/* VIEW 2: FEEDING LEDGER & LOGS (MATCHING NOTESPAGE LEDGER LIST)            */}
         {/* ========================================================================= */}
         {viewMode === "feeding_history" && (
           <div className="flex-1 flex flex-col space-y-3">
@@ -638,7 +647,7 @@ export function SyrupFeedingToolPage({
                 <h3 className="font-bold text-sm text-foreground">
                   Feeding Events for {hiveDisplayName}
                 </h3>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-muted-foreground">
                   {feedingLogs.length} feeding records logged ({totalFedLiters.toFixed(1)} L total)
                 </p>
               </div>
@@ -647,15 +656,15 @@ export function SyrupFeedingToolPage({
                 <button
                   type="button"
                   onClick={() => setShowLogForm(true)}
-                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-xs flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md border border-emerald-400/40 flex items-center gap-1 cursor-pointer"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Log Feed</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setViewMode("calculator")}
-                  className="px-3 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 text-foreground text-xs font-semibold hover:bg-stone-50 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl border border-border bg-card text-foreground text-xs font-semibold hover:bg-muted cursor-pointer"
                 >
                   Calculator
                 </button>
@@ -663,20 +672,23 @@ export function SyrupFeedingToolPage({
             </div>
 
             {feedingLogs.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 my-4 space-y-2">
-                <Droplets className="w-10 h-10 text-stone-400 mb-1 stroke-[1.5]" />
+              <div className="py-12 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-6 my-4">
+                <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-2.5">
+                  <Droplets className="w-5 h-5" />
+                </div>
                 <h4 className="font-bold text-sm text-foreground">
                   No Feedings Logged Yet
                 </h4>
-                <p className="text-xs text-stone-500 max-w-sm">
+                <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
                   Log syrup distributions to track seasonal nutrition, spring build-up, and dearth sustenance for {hiveDisplayName}.
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowLogForm(true)}
-                  className="mt-2 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs cursor-pointer"
+                  className="mt-3 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  Record First Feed
+                  <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                  <span>Record First Feed</span>
                 </button>
               </div>
             ) : (
@@ -684,28 +696,28 @@ export function SyrupFeedingToolPage({
                 {feedingLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3.5 rounded-2xl bg-card border border-stone-200 dark:border-stone-800 shadow-xs flex items-center justify-between flex-wrap gap-2 text-xs"
+                    className="p-3.5 rounded-xl bg-card border border-border shadow-xs flex items-center justify-between flex-wrap gap-2 text-xs hover:border-honey/30 transition-all"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-stone-900 dark:text-stone-100 text-sm">
+                        <span className="font-mono font-bold text-foreground text-sm">
                           {log.amountLiters.toFixed(1)} Liters
                         </span>
-                        <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 font-bold text-[10px]">
+                        <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
                           {log.ratio} Ratio
                         </span>
-                        <span className="text-stone-400">•</span>
+                        <span className="text-muted-foreground">•</span>
                         <span className="text-muted-foreground font-medium">{log.date}</span>
                       </div>
-                      <div className="text-[11px] text-stone-500 flex items-center gap-2">
-                        <span>Feeder: <strong>{log.feederType}</strong></span>
+                      <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+                        <span>Feeder: <strong className="text-foreground">{log.feederType}</strong></span>
                         {log.notes && <span>• "{log.notes}"</span>}
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleDeleteLog(log.id)}
-                      className="p-1.5 text-stone-400 hover:text-rose-600 transition-colors rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+                      className="p-1.5 text-muted-foreground hover:text-rose-500 transition-colors rounded-lg hover:bg-muted cursor-pointer"
                       title="Delete Log"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -717,30 +729,41 @@ export function SyrupFeedingToolPage({
           </div>
         )}
 
-        {/* Modal: Log Feeding Event */}
+        {/* Modal: Log Feeding Event matching NotesPage Form Modal */}
         {showLogForm && (
           <div
-            className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 animate-in fade-in select-text"
+            className="fixed inset-0 z-[120] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in select-text"
             onClick={() => setShowLogForm(false)}
           >
             <div
-              className="w-full max-w-md bg-card rounded-2xl p-6 border border-border shadow-2xl relative space-y-4"
+              className="w-full max-w-md bg-card rounded-2xl border border-border shadow-2xl overflow-hidden relative space-y-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between pb-3 border-b border-stone-300 dark:border-stone-800">
-                <span className="font-bold text-base text-foreground">
-                  Log Syrup Feed for {hiveDisplayName}
-                </span>
+              <div className="bg-emerald-600 px-4 py-3 flex items-center justify-between text-white">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                    <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-sm font-bold text-white tracking-wide">
+                      Log Syrup Feed
+                    </h3>
+                    <p className="text-[10px] text-emerald-100">
+                      {hiveDisplayName} • {CANONICAL_APIARY_NAME}
+                    </p>
+                  </div>
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowLogForm(false)}
-                  className="p-1 rounded-full text-stone-500 hover:text-stone-950 dark:hover:text-white cursor-pointer"
+                  className="p-1 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors cursor-pointer"
+                  aria-label="Close"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 text-white" />
                 </button>
               </div>
 
-              <form onSubmit={handleAddLog} className="space-y-3.5 text-xs">
+              <form onSubmit={handleAddLog} className="p-4 space-y-3.5 text-xs">
                 <div>
                   <label className="text-xs font-semibold text-foreground block mb-1">
                     Volume Fed (Liters):
@@ -752,7 +775,7 @@ export function SyrupFeedingToolPage({
                     value={logAmount}
                     onChange={(e) => setLogAmount(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:outline-none focus:border-amber-600"
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:outline-none focus:ring-1 focus:ring-honey"
                   />
                 </div>
 
@@ -765,7 +788,7 @@ export function SyrupFeedingToolPage({
                     value={logDate}
                     onChange={(e) => setLogDate(e.target.value)}
                     required
-                    className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs font-medium text-foreground focus:outline-none focus:border-amber-600"
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-honey"
                   />
                 </div>
 
@@ -776,7 +799,7 @@ export function SyrupFeedingToolPage({
                   <select
                     value={feederType}
                     onChange={(e) => setFeederType(e.target.value)}
-                    className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs font-medium text-foreground focus:outline-none focus:border-amber-600"
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-honey"
                   >
                     <option value="Rapid Top Feeder (Hive Cover)">Rapid Top Feeder (Hive Cover)</option>
                     <option value="Internal Frame Feeder Pouch">Internal Frame Feeder Pouch</option>
@@ -795,23 +818,24 @@ export function SyrupFeedingToolPage({
                     value={logNotes}
                     onChange={(e) => setLogNotes(e.target.value)}
                     placeholder="e.g. Taken down in 24 hours, brood expanded"
-                    className="w-full bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:border-amber-600"
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-honey"
                   />
                 </div>
 
-                <div className="pt-3 flex items-center justify-end gap-2">
+                <div className="pt-3 border-t border-border flex items-center justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowLogForm(false)}
-                    className="px-4 py-2 rounded-full border border-stone-800 text-stone-900 dark:text-stone-100 font-medium text-xs hover:bg-stone-200/50 cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background text-foreground cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs cursor-pointer shadow-xs"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
                   >
-                    Save to Hive
+                    <Save className="w-3.5 h-3.5 text-white" />
+                    <span>Save to Hive</span>
                   </button>
                 </div>
               </form>
