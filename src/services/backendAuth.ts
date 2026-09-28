@@ -42,15 +42,17 @@ export async function isolateBackendSession(targetBackend: AuthBackend): Promise
         b => b !== targetBackend
     );
 
-    // Sign out from other backends (don't wait - fire and forget)
-    otherBackends.forEach(backend => {
-        const client = backend === 'shop' ? supabaseShop : backend === 'beeyield' ? supabaseBeeYield : supabaseCEBA;
-        if (client) {
-            console.log(`[Auth] Signing out from ${backend}`);
-            client.auth.signOut().catch(err => console.warn(`[Auth] Logout from ${backend} failed:`, err));
-            clearBackendStorage(backend);
-        }
-    });
+    // Run asynchronously outside current execution tick so lock contention never blocks sign in
+    setTimeout(() => {
+        otherBackends.forEach(backend => {
+            const client = backend === 'shop' ? supabaseShop : backend === 'beeyield' ? supabaseBeeYield : supabaseCEBA;
+            if (client) {
+                console.log(`[Auth] Signing out from ${backend}`);
+                client.auth.signOut().catch(err => console.warn(`[Auth] Logout from ${backend} failed:`, err));
+                clearBackendStorage(backend);
+            }
+        });
+    }, 50);
 }
 
 /**
@@ -133,7 +135,16 @@ export async function completeLoginFlow(
 
         // Sign in on Supabase (THIS MUST BE FAST)
         console.log(`[${backend}] Signing in on Supabase:`, email);
-        const { data, error } = await client.auth.signInWithPassword({ email, password });
+        const timeoutPromise = new Promise<{ data: any; error: any }>((_, reject) => {
+            setTimeout(() => {
+                reject(new Error('Sign in request timed out. Please check your network connection and try again.'));
+            }, 8000);
+        });
+
+        const { data, error } = await Promise.race([
+            client.auth.signInWithPassword({ email, password }),
+            timeoutPromise
+        ]);
 
         if (error) {
             console.error(`[${backend}] Supabase signin error:`, error.message);

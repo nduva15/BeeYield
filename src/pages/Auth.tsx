@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, startTransition } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -553,10 +553,22 @@ export default function Auth() {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                startTransition(() => {
+                  setEmail(val);
+                });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && mode !== "reset") {
+                  e.preventDefault();
+                  document.getElementById("password")?.focus();
+                }
+              }}
               placeholder="owner@beeyield.com"
               required
-              className="h-10 rounded-xl text-xs"
+              autoComplete="email username"
+              className="h-10 rounded-xl text-xs touch-manipulation"
             />
           </div>
 
@@ -569,9 +581,9 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+                  className="text-[11px] text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer touch-manipulation active:scale-95"
                 >
-                  {showPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                  {showPassword ? <EyeOff className="w-3 h-3 pointer-events-none select-none" /> : <Eye className="w-3 h-3 pointer-events-none select-none" />}
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
@@ -580,11 +592,17 @@ export default function Auth() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    startTransition(() => {
+                      setPassword(val);
+                    });
+                  }}
                   required
                   minLength={6}
                   placeholder={mode === "signup" ? "At least 6 characters" : "••••••••"}
-                  className="h-10 rounded-xl text-xs pr-10"
+                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                  className="h-10 rounded-xl text-xs pr-10 touch-manipulation"
                 />
               </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,47 +21,73 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
     onSwitchToRegister
 }) => {
     const { signInWithGoogle, verifyMFAChallenge } = useAuth();
-    const [email, setEmail] = useState(() => localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail')) || '');
+    const [email, setEmail] = useState(() => {
+        try {
+            return localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail')) || '';
+        } catch {
+            return '';
+        }
+    });
     const [password, setPassword] = useState('');
     const [mfaCode, setMfaCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [showMFAInput, setShowMFAInput] = useState(false);
-    const [rememberMe, setRememberMe] = useState(() => Boolean(localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail'))));
+    const [rememberMe, setRememberMe] = useState(() => {
+        try {
+            return Boolean(localStorage.getItem(getBackendStorageKey('beeyield', 'savedEmail')));
+        } catch {
+            return false;
+        }
+    });
+    const [, startTransition] = useTransition();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email || !password) {
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail || !password) {
             toast.error('Please enter email and password');
             return;
         }
 
+        // Fast synchronous visual update in next animation frame to prevent INP blocking
         setLoading(true);
 
-        try {
-            const result = await completeLoginFlow('beeyield', email, password);
+        requestAnimationFrame(() => {
+            startTransition(async () => {
+                try {
+                    const result = await completeLoginFlow('beeyield', trimmedEmail, password);
 
-            if (!result.success) {
-                if (result.needsMFA) {
-                    setShowMFAInput(true);
-                    toast.info('Two-step verification required');
-                } else {
-                    toast.error('Login failed', { description: result.error || 'Invalid credentials' });
+                    if (!result.success) {
+                        if (result.needsMFA) {
+                            setShowMFAInput(true);
+                            toast.info('Two-step verification required');
+                        } else {
+                            toast.error('Login failed', { description: result.error || 'Invalid credentials' });
+                        }
+                    } else {
+                        toast.success('Logged in!');
+                        try {
+                            if (rememberMe) {
+                                localStorage.setItem(getBackendStorageKey('beeyield', 'savedEmail'), trimmedEmail);
+                            } else {
+                                localStorage.removeItem(getBackendStorageKey('beeyield', 'savedEmail'));
+                            }
+                        } catch {
+                            // Non-blocking storage
+                        }
+                        onSuccess?.();
+                    }
+                } catch (error: any) {
+                    toast.error('Login failed', { description: error.message || 'An error occurred' });
+                } finally {
+                    setLoading(false);
                 }
-            } else {
-                toast.success('Logged in!');
-                if (rememberMe) localStorage.setItem(getBackendStorageKey('beeyield', 'savedEmail'), email);
-                else localStorage.removeItem(getBackendStorageKey('beeyield', 'savedEmail'));
-                onSuccess?.();
-            }
-        } catch (error: any) {
-            toast.error('Login failed', { description: error.message || 'An error occurred' });
-        } finally {
-            setLoading(false);
-        }
+            });
+        });
     };
 
-    const handleMFAVerify = async (e: React.FormEvent) => {
+    const handleMFAVerify = (e: React.FormEvent) => {
         e.preventDefault();
         if (!mfaCode || mfaCode.length !== 6) {
             toast.error('Enter valid 6-digit code');
@@ -70,38 +96,46 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
         setLoading(true);
 
-        try {
-            const { error } = await verifyMFAChallenge(mfaCode, 'beeyield');
+        requestAnimationFrame(() => {
+            startTransition(async () => {
+                try {
+                    const { error } = await verifyMFAChallenge(mfaCode, 'beeyield');
 
-            if (error) {
-                toast.error('Invalid code', { description: error.message });
-            } else {
-                toast.success('Verified!');
-                setShowMFAInput(false);
-                onSuccess?.();
-            }
-        } catch (error: any) {
-            toast.error('Verification failed', { description: error.message });
-        } finally {
-            setLoading(false);
-        }
+                    if (error) {
+                        toast.error('Invalid code', { description: error.message });
+                    } else {
+                        toast.success('Verified!');
+                        setShowMFAInput(false);
+                        onSuccess?.();
+                    }
+                } catch (error: any) {
+                    toast.error('Verification failed', { description: error.message });
+                } finally {
+                    setLoading(false);
+                }
+            });
+        });
     };
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignIn = () => {
         setGoogleLoading(true);
-        try {
-            const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
-            persistAuthRedirectState({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
+        requestAnimationFrame(() => {
+            startTransition(async () => {
+                try {
+                    const redirectTo = buildAuthCallbackUrl({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
+                    persistAuthRedirectState({ backend: 'beeyield', returnTo: '/beeyield-dashboard', intent: 'login' });
 
-            const { error } = await signInWithGoogle(undefined, 'beeyield', { redirectTo });
-            if (error) {
-                toast.error('Google login failed', { description: error.message });
-            }
-        } catch (error: any) {
-            toast.error('Google login failed', { description: error.message });
-        } finally {
-            setGoogleLoading(false);
-        }
+                    const { error } = await signInWithGoogle(undefined, 'beeyield', { redirectTo });
+                    if (error) {
+                        toast.error('Google login failed', { description: error.message });
+                    }
+                } catch (error: any) {
+                    toast.error('Google login failed', { description: error.message });
+                } finally {
+                    setGoogleLoading(false);
+                }
+            });
+        });
     };
 
     if (showMFAInput) {
@@ -123,17 +157,23 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         name="mfa_code"
                         autoComplete="one-time-code"
                         type="text"
+                        inputMode="numeric"
                         placeholder="000 000"
                         value={mfaCode}
-                        onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl"
+                        onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                            startTransition(() => {
+                                setMfaCode(val);
+                            });
+                        }}
+                        className="text-center text-3xl font-bold h-16 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl touch-manipulation"
                         maxLength={6}
                         required
                         autoFocus
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-md transition-all active:scale-95" disabled={loading || mfaCode.length !== 6}>
+                <Button type="submit" className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-md transition-all active:scale-95 touch-manipulation" disabled={loading || mfaCode.length !== 6}>
                     {loading ? (
                         <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
@@ -147,7 +187,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         setShowMFAInput(false);
                         setMfaCode('');
                     }}
-                    className="w-full text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors py-2"
+                    className="w-full text-xs font-bold text-gray-400 hover:text-gray-900 transition-colors py-2 cursor-pointer touch-manipulation active:scale-95"
                 >
                     Back to login
                 </button>
@@ -160,14 +200,14 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
             <Button
                 type="button"
                 variant="outline"
-                className="w-full h-12 bg-white border border-gray-200 hover:border-beeyield-green/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3"
+                className="w-full h-12 bg-white border border-gray-200 hover:border-beeyield-green/50 hover:bg-gray-50 text-gray-600 font-bold rounded-xl transition-all flex items-center justify-center gap-3 touch-manipulation active:scale-95"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
             >
                 {googleLoading ? (
                     <Loader2 className="h-5 w-5 animate-spin text-beeyield-green" />
                 ) : (
-                    <svg className="h-5 w-5" viewBox="0 0 24 24">
+                    <svg className="h-5 w-5 pointer-events-none select-none" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
@@ -190,17 +230,28 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                 <div className="space-y-2">
                     <Label htmlFor="beeyield-email" className="text-xs font-bold text-gray-500 ml-1 uppercase tracking-wider">Email Address</Label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none select-none" />
                         <Input
                             id="beeyield-email"
                             name="email"
                             type="email"
                             placeholder="name@example.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl font-medium"
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                startTransition(() => {
+                                    setEmail(val);
+                                });
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    document.getElementById('beeyield-password')?.focus();
+                                }
+                            }}
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl font-medium touch-manipulation"
                             required
-                            autoComplete="username"
+                            autoComplete="email username"
                         />
                     </div>
                 </div>
@@ -212,22 +263,27 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                             <button
                                 type="button"
                                 onClick={onForgotPassword}
-                                className="text-xs font-bold text-beeyield-green hover:underline"
+                                className="text-xs font-bold text-beeyield-green hover:underline cursor-pointer touch-manipulation active:scale-95"
                             >
                                 Forgot?
                             </button>
                         )}
                     </div>
                     <div className="relative">
-                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none select-none" />
                         <Input
                             id="beeyield-password"
                             name="password"
                             type="password"
                             placeholder="••••••••"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl font-medium"
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                startTransition(() => {
+                                    setPassword(val);
+                                });
+                            }}
+                            className="pl-10 h-12 bg-gray-50 border-gray-200 focus:border-beeyield-green focus:ring-beeyield-green/20 rounded-xl font-medium touch-manipulation"
                             required
                             autoComplete="current-password"
                         />
@@ -239,11 +295,11 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                         id="beeyield-remember"
                         checked={rememberMe}
                         onCheckedChange={(checked) => setRememberMe(checked === true)}
-                        className="rounded-md border-gray-300 text-beeyield-green focus:ring-beeyield-green/20"
+                        className="rounded-md border-gray-300 text-beeyield-green focus:ring-beeyield-green/20 touch-manipulation"
                     />
                     <label
                         htmlFor="beeyield-remember"
-                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900 transition-colors"
+                        className="text-xs font-bold text-gray-500 cursor-pointer hover:text-gray-900 transition-colors select-none"
                     >
                         Remember me on this device
                     </label>
@@ -252,7 +308,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
 
             <Button
                 type="submit"
-                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg shadow-beeyield-green/20 transition-all active:scale-95 flex items-center justify-center gap-2"
+                className="w-full h-12 bg-beeyield-green hover:bg-beeyield-green/90 text-white font-bold rounded-xl shadow-lg shadow-beeyield-green/20 transition-all active:scale-95 flex items-center justify-center gap-2 touch-manipulation"
                 disabled={loading || !email || !password}
             >
                 {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <LogIn className="w-5 h-5 transition-transform group-hover:translate-x-1" />}
@@ -265,7 +321,7 @@ const BeeYieldLoginForm: React.FC<BeeYieldLoginFormProps> = ({
                     <button
                         type="button"
                         onClick={onSwitchToRegister}
-                        className="text-beeyield-green font-bold hover:underline"
+                        className="text-beeyield-green font-bold hover:underline cursor-pointer touch-manipulation"
                     >
                         Create one
                     </button>
