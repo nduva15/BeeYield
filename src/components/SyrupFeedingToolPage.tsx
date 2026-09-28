@@ -122,53 +122,34 @@ export function SyrupFeedingToolPage({
   // Feeding History stored per hive
   const [feedingLogs, setFeedingLogs] = useState<SyrupFeedLog[]>([]);
 
-  // Load history for selected hive
+  // Load history for selected hive (real user records only)
   useEffect(() => {
     if (!selectedHive?.id) return;
     try {
       const stored = localStorage.getItem(`syrup_feeding_${selectedHive.id}`);
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setFeedingLogs(parsed);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Filter out legacy hardcoded mock records
+          const realOnly = parsed.filter(
+            (item: any) =>
+              !item.id?.endsWith("-1") &&
+              !item.id?.endsWith("-2") &&
+              !item.notes?.includes("Mid-season dearth nourishment before acacia burst") &&
+              !item.notes?.includes("Stimulated queen egg laying")
+          );
+          setFeedingLogs(realOnly);
+          if (realOnly.length !== parsed.length) {
+            localStorage.setItem(`syrup_feeding_${selectedHive.id}`, JSON.stringify(realOnly));
+          }
           return;
         }
       }
     } catch {}
 
-    // Default canonical records for active producing hives
-    const isStandby = (selectedHive.status || "").toLowerCase() === "standby" || !selectedHive.hasColony;
-    if (isStandby) {
-      setFeedingLogs([]);
-    } else {
-      const defaults: SyrupFeedLog[] = [
-        {
-          id: `feed-${selectedHive.id}-1`,
-          hiveId: selectedHive.id,
-          hiveCode: hiveDisplayName,
-          date: "2026-09-18",
-          amountLiters: 5.0,
-          ratio: "3:2",
-          feederType: "Rapid Top Feeder (Hive Cover)",
-          notes: "Mid-season dearth nourishment before acacia burst",
-        },
-        {
-          id: `feed-${selectedHive.id}-2`,
-          hiveId: selectedHive.id,
-          hiveCode: hiveDisplayName,
-          date: "2026-09-02",
-          amountLiters: 4.0,
-          ratio: "1:1",
-          feederType: "Rapid Top Feeder (Hive Cover)",
-          notes: "Stimulated queen egg laying",
-        },
-      ];
-      setFeedingLogs(defaults);
-      try {
-        localStorage.setItem(`syrup_feeding_${selectedHive.id}`, JSON.stringify(defaults));
-      } catch {}
-    }
-  }, [selectedHive?.id, hiveDisplayName, selectedHive.status, selectedHive.hasColony]);
+    // Strictly real feeding logs only - zero fake data
+    setFeedingLogs([]);
+  }, [selectedHive?.id]);
 
   const saveFeedingLogs = (newList: SyrupFeedLog[]) => {
     setFeedingLogs(newList);
