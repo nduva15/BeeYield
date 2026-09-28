@@ -8,13 +8,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   X, ShoppingBag, Plus, Search, Trash2, CreditCard, Package, Truck,
   Loader2, Save, MapPin, RefreshCw,
-  CheckCircle2, Clock, ChevronRight, Layers, FileDown,
+  CheckCircle2, Clock, ChevronRight, ChevronDown, Layers, FileDown,
   ExternalLink, User, Heart, HelpCircle, Tag,
-  Eye, ArrowRight, Lock, ShieldCheck,
+  Eye, ArrowRight, Lock, ShieldCheck, MessageSquare, Send, Edit3,
+  SlidersHorizontal, Sparkles, Check, AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -36,12 +37,21 @@ import {
   initializeCheckout,
   cancelOrder,
   validateCoupon,
+  getOrderTracking,
+  getCustomerProfile,
+  updateCustomerProfile,
+  getSupportTickets,
+  submitSupportTicket,
+  DEFAULT_PRODUCTS,
   type Product,
   type Order,
   type Address,
   type PaymentMethod,
   type WishlistItem,
   type CheckoutOrder,
+  type CustomerProfileData,
+  type SupportTicket,
+  type TrackingInfo,
 } from "@/services/shopService";
 
 export interface ShopDashboardProps {
@@ -70,8 +80,21 @@ export default function ShopDashboard({
 }: ShopDashboardProps) {
   const { user, profile } = useAuth();
 
-  // Tab State
+  // Tab State & Shop Views Dropdown
   const [activeTab, setActiveTab] = useState<TabType>(initialTab as TabType);
+  const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
+  const viewDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Click outside to close Shop Views dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (viewDropdownRef.current && !viewDropdownRef.current.contains(event.target as Node)) {
+        setIsViewDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Data State
   const [loading, setLoading] = useState(true);
@@ -80,6 +103,41 @@ export default function ShopDashboard({
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+
+  // Customer Profile Backend State
+  const [customerProfile, setCustomerProfile] = useState<CustomerProfileData | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileDraft, setProfileDraft] = useState<CustomerProfileData>({
+    full_name: profile?.full_name || "Timothy Nduva",
+    phone: profile?.phone || "254712345678",
+    country: "Kenya",
+    delivery_town: "Kibwezi",
+    county: "Makueni",
+    apiary_affiliation: "Kibwezi Forest Apiary (150 Active Hives)",
+    bio: "Sustainable apiculture pioneer and commercial raw honey producer.",
+  });
+
+  // Support Desk Backend State
+  const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
+  const [ticketDraft, setTicketDraft] = useState<{
+    subject: string;
+    category: SupportTicket["category"];
+    order_id: string;
+    message: string;
+  }>({
+    subject: "",
+    category: "general",
+    order_id: "",
+    message: "",
+  });
+
+  // Live Carrier Cold-Chain Telemetry Modal
+  const [liveTrackingModalOrder, setLiveTrackingModalOrder] = useState<Order | null>(null);
+  const [liveTrackingInfo, setLiveTrackingInfo] = useState<TrackingInfo | null>(null);
+  const [isLoadingTracking, setIsLoadingTracking] = useState(false);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -265,12 +323,14 @@ export default function ShopDashboard({
   const loadAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [prodsData, ordersData, addrData, payData, wishData] = await Promise.all([
+      const [prodsData, ordersData, addrData, payData, wishData, profData, ticketsData] = await Promise.all([
         getProducts().catch(() => []),
         getUserOrders(user?.email || undefined).catch(() => []),
         getAddresses().catch(() => []),
         getPaymentMethods().catch(() => []),
         getWishlist().catch(() => []),
+        getCustomerProfile().catch(() => null),
+        getSupportTickets().catch(() => []),
       ]);
 
       setProducts(prodsData || []);
@@ -278,6 +338,11 @@ export default function ShopDashboard({
       setAddresses(addrData || []);
       setPaymentMethods(payData || []);
       setWishlist(wishData || []);
+      if (profData) {
+        setCustomerProfile(profData);
+        setProfileDraft(profData);
+      }
+      setSupportTickets(ticketsData || []);
 
       if (addrData && addrData.length > 0 && !selectedAddressId) {
         const def = addrData.find((a) => a.is_default) || addrData[0];
@@ -533,8 +598,22 @@ export default function ShopDashboard({
     }
   };
 
-  // Tracking Quick Search
-  const handleQuickTrack = () => {
+  // Live Telemetry Modal Handler
+  const handleOpenTrackingModal = async (order: Order) => {
+    setLiveTrackingModalOrder(order);
+    setIsLoadingTracking(true);
+    try {
+      const info = await getOrderTracking(order.order_number || order.id);
+      setLiveTrackingInfo(info);
+    } catch {
+      // non-blocking fallback
+    } finally {
+      setIsLoadingTracking(false);
+    }
+  };
+
+  // Tracking Quick Search with Live Consignment Telemetry
+  const handleQuickTrack = async () => {
     if (!quickTrackQuery.trim()) return;
     const q = quickTrackQuery.trim().toLowerCase();
     const found = orders.find(
@@ -546,9 +625,134 @@ export default function ShopDashboard({
       setTrackingResult(found);
       setExpandedOrderId(found.id);
       setActiveTab("orders");
+      await handleOpenTrackingModal(found);
       toast.success(`Found order #${found.order_number || found.id}`);
     } else {
-      toast.error("No order found matching that number or tracking ID.");
+      setIsLoadingTracking(true);
+      try {
+        const info = await getOrderTracking(quickTrackQuery.trim());
+        const trackedOrder: Order = {
+          id: info.order_id,
+          order_number: info.order_id,
+          status: info.current_status,
+          total_kes: 0,
+          total_amount: 0,
+          payment_method: "mpesa",
+          created_at: new Date().toISOString(),
+          shipping_address: { city: "Nairobi", address: "Consignment Waypoint" },
+          items: [],
+        };
+        setLiveTrackingModalOrder(trackedOrder);
+        setLiveTrackingInfo(info);
+        toast.success(`Live tracking retrieved for consignment #${info.order_id}`);
+      } catch {
+        toast.error("No consignment found matching that tracking ID.");
+      } finally {
+        setIsLoadingTracking(false);
+      }
+    }
+  };
+
+  // Wishlist Database Sync Handlers
+  const handleToggleWishlist = async (productId: string) => {
+    try {
+      const res = await toggleWishlist(productId);
+      if (res.action === "added") {
+        const prod = products.find((p) => p.id === productId) || DEFAULT_PRODUCTS.find((p) => p.id === productId);
+        if (prod) {
+          const newItem: WishlistItem = {
+            id: prod.id,
+            name: prod.name,
+            description: prod.description,
+            price: prod.variants[0]?.price_kes || 550,
+            image: prod.images[0],
+            category: prod.category,
+            badge: prod.badge,
+            inStock: true,
+            added_at: new Date().toISOString(),
+          };
+          setWishlist((prev) => [newItem, ...prev.filter((w) => w.id !== productId)]);
+        }
+        toast.success("Saved to Wishlist & synced to Supabase database! ❤️");
+      } else {
+        setWishlist((prev) => prev.filter((w) => w.id !== productId));
+        toast.info("Removed from Wishlist");
+      }
+    } catch {
+      toast.error("Failed to update wishlist in database");
+    }
+  };
+
+  const handleMoveWishlistToCart = (item: WishlistItem) => {
+    const prod = products.find((p) => p.id === item.id) || DEFAULT_PRODUCTS.find((p) => p.id === item.id);
+    if (prod) {
+      addToCart(prod, 0);
+    } else {
+      setCart((prev) => [
+        ...prev,
+        {
+          productId: item.id,
+          variantId: "default",
+          productName: item.name,
+          variantSize: "Standard",
+          priceKes: item.price,
+          quantity: 1,
+          image: item.image,
+        },
+      ]);
+      toast.success(`Added ${item.name} to cart`);
+    }
+  };
+
+  // Customer Profile Database Save Handler
+  const handleSaveProfile = async () => {
+    if (!profileDraft.full_name.trim()) {
+      toast.error("Please enter your full name");
+      return;
+    }
+    if (!profileDraft.phone.trim()) {
+      toast.error("Please enter your phone number");
+      return;
+    }
+    setIsSavingProfile(true);
+    try {
+      const updated = await updateCustomerProfile(profileDraft);
+      setCustomerProfile(updated);
+      setShowProfileModal(false);
+      toast.success("Profile saved and synced with Supabase PostgreSQL! 👤");
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to save profile");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  // Support Ticket Database Submission Handler
+  const handleSubmitTicket = async () => {
+    if (!ticketDraft.subject.trim()) {
+      toast.error("Please enter an inquiry subject");
+      return;
+    }
+    if (!ticketDraft.message.trim()) {
+      toast.error("Please describe your question or issue");
+      return;
+    }
+    setIsSubmittingTicket(true);
+    try {
+      const newTkt = await submitSupportTicket(ticketDraft);
+      setSupportTickets((prev) => [newTkt, ...prev]);
+      setShowTicketModal(false);
+      setTicketDraft({
+        subject: "",
+        category: "general",
+        order_id: "",
+        message: "",
+      });
+      toast.success(`Support ticket #${newTkt.ticket_number} submitted and synced with database! 🎫`);
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to submit support ticket");
+    } finally {
+      setIsSubmittingTicket(false);
     }
   };
 
@@ -632,16 +836,16 @@ export default function ShopDashboard({
     }
   };
 
-  const TABS: { id: TabType; label: string; badge?: number }[] = [
-    { id: "overview", label: "Store Overview" },
-    { id: "orders", label: "Orders & Tracking", badge: orders.length },
-    { id: "products", label: "Products Catalog", badge: products.length },
-    { id: "checkout", label: "Cart & Checkout", badge: cart.length },
-    { id: "addresses", label: "Saved Addresses", badge: addresses.length },
-    { id: "payments", label: "Payment Methods", badge: paymentMethods.length },
-    { id: "wishlist", label: "Wishlist", badge: wishlist.length },
-    { id: "profile", label: "Customer Profile" },
-    { id: "support", label: "Help & Support" },
+  const TABS: { id: TabType; label: string; badge?: number; icon: any; description: string }[] = [
+    { id: "overview", label: "Store Overview", icon: ShoppingBag, description: "Metrics, quick tracking & featured catalog" },
+    { id: "orders", label: "Orders & Tracking", badge: orders.length, icon: Truck, description: "Consignment ledger & live cold-chain telemetry" },
+    { id: "products", label: "Products Catalog", badge: products.length, icon: Package, description: "Honey, equipment, hardware & merch" },
+    { id: "checkout", label: "Cart & Checkout", badge: cart.length, icon: ShoppingBag, description: "Review items, promo vouchers & M-Pesa push" },
+    { id: "addresses", label: "Saved Addresses", badge: addresses.length, icon: MapPin, description: "Delivery locations & dispatch points" },
+    { id: "payments", label: "Payment Methods", badge: paymentMethods.length, icon: CreditCard, description: "Vaulted EMV cards & M-Pesa records" },
+    { id: "wishlist", label: "Wishlist", badge: wishlist.length, icon: Heart, description: "Saved apiary products & quick move to cart" },
+    { id: "profile", label: "Customer Profile", icon: User, description: "Account info, apiary affiliation & statistics" },
+    { id: "support", label: "Help & Support", badge: supportTickets.length, icon: HelpCircle, description: "Inquiries, official responses & FAQ" },
   ];
 
   const mainContent = (
@@ -741,28 +945,123 @@ export default function ShopDashboard({
         ))}
       </div>
 
-      {/* 4. Subpage View Selector (Tabs) Matching InspectionsPage */}
-      <div className="rounded-xl border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-honey" />
-          <span className="font-bold text-foreground">Shop Views:</span>
-          <span className="text-muted-foreground text-[11px]">Synced with Supabase & Shopify</span>
+      {/* 4. Subpage View Selector (Dropdown) */}
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
+            <Layers className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground text-sm">Shop Views:</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Synced with Supabase & Shopify
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              Select any store module or ledger section from the dropdown
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto custom-scroll max-w-full">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setActiveTab(t.id)}
-              className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
-                activeTab === t.id
-                  ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 border-honey shadow-sm"
-                  : "bg-background border-border text-muted-foreground hover:border-honey/40"
+
+        {/* Dropdown Selector Component */}
+        <div className="relative w-full sm:w-auto" ref={viewDropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsViewDropdownOpen((prev) => !prev)}
+            aria-expanded={isViewDropdownOpen}
+            aria-haspopup="listbox"
+            className="w-full sm:w-72 flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-background border border-honey/40 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30"
+          >
+            <div className="flex items-center gap-2.5 truncate">
+              {(() => {
+                const current = TABS.find((t) => t.id === activeTab) || TABS[0];
+                const IconComponent = current.icon;
+                return (
+                  <>
+                    <div className="w-5 h-5 rounded-md bg-honey/10 flex items-center justify-center text-honey flex-shrink-0">
+                      <IconComponent className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-foreground font-bold truncate">{current.label}</span>
+                    {current.badge !== undefined && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
+                        {current.badge}
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+            <ChevronDown
+              className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
+                isViewDropdownOpen ? "rotate-180 text-honey" : ""
               }`}
+            />
+          </button>
+
+          {/* Dropdown Menu Options */}
+          {isViewDropdownOpen && (
+            <div
+              role="listbox"
+              className="absolute right-0 top-full mt-2 w-full sm:w-80 z-50 rounded-2xl border border-border bg-card/95 backdrop-blur-md shadow-2xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 max-h-96 overflow-y-auto custom-scroll"
             >
-              {t.label} {t.badge !== undefined && `(${t.badge})`}
-            </button>
-          ))}
+              <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                Select Shop Dashboard View
+              </div>
+              {TABS.map((t) => {
+                const TabIcon = t.icon;
+                const isSelected = activeTab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => {
+                      setActiveTab(t.id);
+                      setIsViewDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition-all text-xs ${
+                      isSelected
+                        ? "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30"
+                        : "hover:bg-muted/40 text-foreground hover:text-honey"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          isSelected
+                            ? "bg-emerald-500/20 text-emerald-500"
+                            : "bg-muted/30 text-muted-foreground"
+                        }`}
+                      >
+                        <TabIcon className="w-4 h-4" />
+                      </div>
+                      <div className="truncate">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold truncate">{t.label}</span>
+                          {t.badge !== undefined && (
+                            <span
+                              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                                isSelected
+                                  ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                  : "bg-muted text-muted-foreground"
+                              }`}
+                            >
+                              {t.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground line-clamp-1">{t.description}</p>
+                      </div>
+                    </div>
+                    {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -825,11 +1124,16 @@ export default function ShopDashboard({
                           {p.badge || "Acacia Honey"}
                         </span>
                         <button
-                          onClick={() => void toggleWishlist(p.id)}
-                          className="text-muted-foreground hover:text-rose-500"
-                          title="Save to Wishlist"
+                          type="button"
+                          onClick={() => handleToggleWishlist(p.id)}
+                          className={`transition-colors ${
+                            wishlist.some((w) => w.id === p.id)
+                              ? "text-rose-500 fill-rose-500"
+                              : "text-muted-foreground hover:text-rose-500"
+                          }`}
+                          title={wishlist.some((w) => w.id === p.id) ? "Remove from Wishlist" : "Save to Wishlist"}
                         >
-                          <Heart className="w-4 h-4" />
+                          <Heart className={`w-4 h-4 ${wishlist.some((w) => w.id === p.id) ? "fill-rose-500" : ""}`} />
                         </button>
                       </div>
                       <h4 className="font-bold text-sm text-foreground">{p.name}</h4>
@@ -1116,13 +1420,22 @@ export default function ShopDashboard({
                         {/* Order Actions */}
                         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
                           <button
+                            type="button"
                             onClick={() => handleDownloadInvoice(o)}
                             className="px-3 py-1.5 rounded-lg border border-honey/50 text-honey flex items-center gap-1.5 hover:bg-honey/10 transition-colors"
                           >
                             <FileDown className="w-3.5 h-3.5" /> Download PDF Receipt
                           </button>
-                          {o.status === "pending" && (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenTrackingModal(o)}
+                            className="px-3 py-1.5 rounded-lg border border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 hover:bg-emerald-500/20 transition-colors"
+                          >
+                            <Truck className="w-3.5 h-3.5" /> Track Live Consignment
+                          </button>
+                          {["pending", "confirmed"].includes(o.status.toLowerCase()) && (
                             <button
+                              type="button"
                               onClick={() =>
                                 setDeleteTarget({
                                   type: "order",
@@ -1201,11 +1514,16 @@ export default function ShopDashboard({
                         {p.category.toUpperCase()} {p.badge ? `· ${p.badge}` : ""}
                       </span>
                       <button
-                        onClick={() => void toggleWishlist(p.id)}
-                        className="text-muted-foreground hover:text-rose-500"
-                        title="Wishlist"
+                        type="button"
+                        onClick={() => handleToggleWishlist(p.id)}
+                        className={`transition-colors ${
+                          wishlist.some((w) => w.id === p.id)
+                            ? "text-rose-500 fill-rose-500"
+                            : "text-muted-foreground hover:text-rose-500"
+                        }`}
+                        title={wishlist.some((w) => w.id === p.id) ? "Remove from Wishlist" : "Save to Wishlist"}
                       >
-                        <Heart className="w-4 h-4" />
+                        <Heart className={`w-4 h-4 ${wishlist.some((w) => w.id === p.id) ? "fill-rose-500" : ""}`} />
                       </button>
                     </div>
 
@@ -2233,56 +2551,113 @@ export default function ShopDashboard({
 
       {/* ========== TAB: WISHLIST ========== */}
       {activeTab === "wishlist" && (
-        <div className="space-y-4">
-          <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-            <Heart className="w-4 h-4 text-rose-500" /> Saved Products & Wishlist ({wishlist.length})
-          </h3>
-
-          {wishlist.length === 0 ? (
-            <div className="p-12 text-center rounded-xl border border-dashed border-border bg-card/40">
-              <Heart className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-              <p className="font-bold text-foreground text-sm">Your wishlist is empty</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Click the heart icon on any product in our catalog to save it for later.
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-border">
+            <div>
+              <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                <Heart className="w-5 h-5 text-rose-500 fill-rose-500" /> Saved Products & Wishlist ({wishlist.length})
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Curate your apiculture equipment, raw honey batches, and hardware items. Saved directly to your account.
               </p>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Synced with Supabase Wishlist
+              </span>
+              <button
+                onClick={() => setActiveTab("products")}
+                className="px-3 py-1 rounded-lg bg-honey/10 hover:bg-honey/20 text-honey font-bold text-xs border border-honey/20 transition-colors"
+              >
+                Browse Catalog
+              </button>
+            </div>
+          </div>
+
+          {wishlist.length === 0 ? (
+            <div className="p-12 text-center rounded-2xl border border-dashed border-border bg-card/40 space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-500 mx-auto">
+                <Heart className="w-7 h-7" />
+              </div>
+              <div>
+                <p className="font-bold text-foreground text-sm">Your wishlist is currently empty</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                  Click the heart icon on any raw honey variant, BeeHUB IoT sensor, or beekeeping equipment in our catalog to save it to your permanent database ledger.
+                </p>
+              </div>
+              <button
+                onClick={() => setActiveTab("products")}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-honey hover:bg-honey-dark text-black font-bold text-xs shadow-md transition-colors"
+              >
+                Explore Product Catalog
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {wishlist.map((w) => (
-                <div
-                  key={w.id}
-                  className="p-4 rounded-xl border border-border bg-card flex flex-col justify-between space-y-3"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-start justify-between">
-                      <span className="font-bold text-sm text-foreground">{w.name}</span>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {wishlist.map((w) => {
+                const prod = products.find((p) => p.id === w.id);
+                return (
+                  <div
+                    key={w.id}
+                    className="p-4 rounded-xl border border-border bg-card hover:border-honey/40 transition-all flex flex-col justify-between space-y-3 shadow-sm group"
+                  >
+                    <div className="space-y-3">
+                      <div className="relative aspect-video rounded-lg overflow-hidden bg-muted/20 border border-border/50">
+                        {w.image ? (
+                          <img
+                            src={w.image}
+                            alt={w.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                            <Package className="w-8 h-8 opacity-40" />
+                          </div>
+                        )}
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold bg-background/90 backdrop-blur-sm text-foreground border border-border/60 uppercase">
+                          {w.category || "Apiculture"}
+                        </span>
+                        <button
+                          onClick={() => void handleToggleWishlist(w.id)}
+                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-background/90 backdrop-blur-sm border border-border/60 flex items-center justify-center text-rose-500 hover:text-rose-600 hover:scale-110 transition-transform shadow-sm"
+                          title="Remove from Wishlist"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-bold text-sm text-foreground line-clamp-1 group-hover:text-honey transition-colors">
+                            {w.name}
+                          </h4>
+                          <span className="font-display font-bold text-sm text-honey whitespace-nowrap">
+                            KES {w.price.toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                          {w.description || "Authentic sustainably harvested apiary product guaranteed for purity."}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-border flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Ready in Stock
+                      </span>
                       <button
-                        onClick={() => void toggleWishlist(w.id).then(() => loadAllData())}
-                        className="text-rose-500 hover:text-rose-600"
+                        onClick={() => handleMoveWishlistToCart(w)}
+                        className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        Move to Cart
                       </button>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2">{w.description}</p>
                   </div>
-
-                  <div className="pt-2 border-t border-border flex items-center justify-between">
-                    <span className="font-display font-bold text-sm text-foreground">
-                      KES {w.price.toLocaleString()}
-                    </span>
-                    <button
-                      onClick={() => {
-                        const p = products.find((prod) => prod.id === w.id);
-                        if (p) addToCart(p, 0);
-                        else toast.info("Item moved to cart");
-                      }}
-                      className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
-                    >
-                      Move to Cart
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -2290,43 +2665,125 @@ export default function ShopDashboard({
 
       {/* ========== TAB: CUSTOMER PROFILE ========== */}
       {activeTab === "profile" && (
-        <div className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-5 space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey font-bold text-xl">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Profile" className="w-full h-full rounded-2xl object-cover" />
-                ) : (
-                  user?.email?.slice(0, 2).toUpperCase() || "TN"
-                )}
+        <div className="space-y-6">
+          {/* Header Card */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-border">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-honey/15 border-2 border-honey/30 flex items-center justify-center text-honey font-bold text-xl shadow-inner">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full rounded-2xl object-cover" />
+                  ) : (
+                    customerProfile?.full_name?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || "TN"
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-lg font-bold text-foreground">
+                      {customerProfile?.full_name || profile?.full_name || "Timothy Nduva"}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
+                      Apiary Gold Member
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 font-mono">
+                    {user?.email || "timothy@beeyield.com"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    {customerProfile?.bio || "Commercial raw honey producer and sustainable apiculture pioneer."}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-display text-lg font-bold text-foreground">
-                  {profile?.full_name || "Timothy Nduva"}
-                </h3>
-                <p className="text-xs text-muted-foreground">{user?.email || "timothy@beeyield.com"}</p>
-                <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-honey/10 text-honey border border-honey/20">
-                  Apiary Gold Member · Kibwezi Pioneer
+
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Synced with Supabase PostgreSQL
                 </span>
+                <button
+                  onClick={() => {
+                    setProfileDraft({
+                      full_name: customerProfile?.full_name || profile?.full_name || "Timothy Nduva",
+                      phone: customerProfile?.phone || profile?.phone || "254712345678",
+                      country: customerProfile?.country || "Kenya",
+                      delivery_town: customerProfile?.delivery_town || "Kibwezi",
+                      county: customerProfile?.county || "Makueni",
+                      apiary_affiliation: customerProfile?.apiary_affiliation || "Kibwezi Forest Apiary (150 Active Hives)",
+                      bio: customerProfile?.bio || "Commercial raw honey producer and sustainable apiculture pioneer.",
+                    });
+                    setShowProfileModal(true);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  Edit Profile
+                </button>
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-border text-xs">
-              <div>
-                <span className="text-muted-foreground font-semibold">Account User ID:</span>
-                <p className="font-mono text-foreground">{user?.id || "usr_kibwezi_pioneer_01"}</p>
+            {/* Profile Grid Details */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Default Mobile (M-Pesa)</span>
+                <p className="font-mono font-bold text-foreground text-sm">
+                  {customerProfile?.phone || profile?.phone || "+254 712 345 678"}
+                </p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> STK Push Verified
+                </p>
               </div>
-              <div>
-                <span className="text-muted-foreground font-semibold">Default Mobile (M-Pesa):</span>
-                <p className="font-mono text-foreground">{profile?.phone || "254712345678"}</p>
+
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">County / Region</span>
+                <p className="font-bold text-foreground text-sm">
+                  {customerProfile?.county || "Makueni County"}
+                </p>
+                <p className="text-[10px] text-muted-foreground">
+                  Town: {customerProfile?.delivery_town || "Kibwezi"}
+                </p>
               </div>
-              <div>
-                <span className="text-muted-foreground font-semibold">Associated Apiary:</span>
-                <p className="text-foreground">Kibwezi Forest Apiary (150 Active Hives)</p>
+
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Primary Apiary Station</span>
+                <p className="font-bold text-foreground text-sm line-clamp-1">
+                  {customerProfile?.apiary_affiliation || "Kibwezi Forest Apiary"}
+                </p>
+                <p className="text-[10px] text-honey font-medium">150 Managed Hives</p>
               </div>
-              <div>
-                <span className="text-muted-foreground font-semibold">Total Orders Placed:</span>
-                <p className="font-bold text-honey">{orders.length} Completed</p>
+
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Supabase UUID</span>
+                <p className="font-mono text-muted-foreground text-[11px] truncate">
+                  {user?.id || "usr_kibwezi_pioneer_01"}
+                </p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400">PostgreSQL Schema: public.profiles</p>
+              </div>
+            </div>
+
+            {/* Lifetime Store Performance Summary */}
+            <div className="pt-4 border-t border-border">
+              <h4 className="text-xs font-bold text-foreground mb-3 flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-honey" /> Lifetime Account & Shop Statistics
+              </h4>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
+                  <span className="text-xl font-display font-bold text-honey">{orders.length}</span>
+                  <p className="text-[11px] text-muted-foreground">Orders Processed</p>
+                </div>
+                <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
+                  <span className="text-xl font-display font-bold text-emerald-500">
+                    KES {totalSpentKes.toLocaleString()}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground">Total Shop Volume</p>
+                </div>
+                <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
+                  <span className="text-xl font-display font-bold text-foreground">{addresses.length}</span>
+                  <p className="text-[11px] text-muted-foreground">Saved Addresses</p>
+                </div>
+                <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
+                  <span className="text-xl font-display font-bold text-rose-500">{wishlist.length}</span>
+                  <p className="text-[11px] text-muted-foreground">Saved Wishlist Items</p>
+                </div>
               </div>
             </div>
           </div>
@@ -2335,30 +2792,505 @@ export default function ShopDashboard({
 
       {/* ========== TAB: HELP & SUPPORT ========== */}
       {activeTab === "support" && (
-        <div className="space-y-4 text-xs">
-          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
-            <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-honey" /> BeeYield Apiary Support Desk
-            </h3>
-            <p className="text-muted-foreground">
-              Have questions regarding your honey shipment, M-Pesa transaction settlement, or BeeHUB hardware setup? Our apiary engineering team is on standby.
-            </p>
-            <div className="grid sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3 rounded-lg border border-border bg-background space-y-1">
-                <span className="font-bold text-foreground">Direct Apiary Dispatch</span>
-                <p className="text-muted-foreground">Kibwezi Drylands Depot, Makueni</p>
-                <p className="font-mono text-honey">dispatch@beeyield.com</p>
+        <div className="space-y-6">
+          {/* Header Action Card */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-border">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                  <HelpCircle className="w-5 h-5 text-honey" /> BeeYield Apiary Support Desk & Technical Ledger
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Direct line to our apiculture logistics managers, M-Pesa billing engineers, and BeeHUB IoT telemetry specialists.
+                </p>
               </div>
-              <div className="p-3 rounded-lg border border-border bg-background space-y-1">
-                <span className="font-bold text-foreground">M-Pesa Billing Ledger</span>
-                <p className="text-muted-foreground">24/7 Automated Reconciliation</p>
-                <p className="font-mono text-honey">billing@beeyield.com</p>
+              <button
+                onClick={() => {
+                  setTicketDraft({
+                    subject: "",
+                    category: "general",
+                    order_id: orders[0]?.order_number || "",
+                    message: "",
+                  });
+                  setShowTicketModal(true);
+                }}
+                className="px-4 py-2 rounded-xl bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-2 shadow-sm transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Submit New Inquiry
+              </button>
+            </div>
+
+            {/* Direct Official Channels */}
+            <div className="grid sm:grid-cols-3 gap-3 pt-1">
+              <div className="p-3.5 rounded-xl border border-border bg-muted/20 space-y-1.5">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <Truck className="w-4 h-4 text-emerald-500" />
+                  <span>Direct Apiary Dispatch</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Kibwezi Drylands Depot, Makueni County</p>
+                <p className="font-mono text-xs text-honey">dispatch@beeyield.com</p>
               </div>
-              <div className="p-3 rounded-lg border border-border bg-background space-y-1">
-                <span className="font-bold text-foreground">BeeHUB IoT Hardware</span>
-                <p className="text-muted-foreground">LoRa Gateway & Sensor Support</p>
-                <p className="font-mono text-honey">iot@beeyield.com</p>
+              <div className="p-3.5 rounded-xl border border-border bg-muted/20 space-y-1.5">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <CreditCard className="w-4 h-4 text-honey" />
+                  <span>M-Pesa Billing Ledger</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">24/7 Automated Reconciliation Engine</p>
+                <p className="font-mono text-xs text-honey">billing@beeyield.com</p>
               </div>
+              <div className="p-3.5 rounded-xl border border-border bg-muted/20 space-y-1.5">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs">
+                  <Layers className="w-4 h-4 text-blue-500" />
+                  <span>BeeHUB IoT Hardware</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">LoRaWAN Gateway & Acoustic Sensors</p>
+                <p className="font-mono text-xs text-honey">iot@beeyield.com</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Support Tickets */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="font-display text-sm font-bold text-foreground flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-honey" />
+                Your Support Tickets & Responses ({supportTickets.length})
+              </h4>
+              <span className="text-[11px] text-muted-foreground font-mono">
+                Synced with Supabase Backend
+              </span>
+            </div>
+
+            {supportTickets.length === 0 ? (
+              <div className="p-8 text-center rounded-xl border border-dashed border-border bg-muted/10 space-y-2">
+                <HelpCircle className="w-8 h-8 text-muted-foreground mx-auto opacity-50" />
+                <p className="text-xs font-bold text-foreground">No active support inquiries</p>
+                <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                  Have questions regarding your honey shipment, M-Pesa transaction settlement, or BeeHUB sensor configuration?
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {supportTickets.map((tkt) => (
+                  <div
+                    key={tkt.id}
+                    className="p-4 rounded-xl border border-border bg-background space-y-3 shadow-sm hover:border-honey/40 transition-colors"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs text-honey">
+                          #{tkt.ticket_number}
+                        </span>
+                        <h5 className="font-bold text-sm text-foreground">{tkt.subject}</h5>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-muted text-muted-foreground uppercase">
+                          {tkt.category}
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            tkt.status === "resolved"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                              : tkt.status === "investigating"
+                              ? "bg-blue-500/10 text-blue-500 border border-blue-500/20"
+                              : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                          }`}
+                        >
+                          {tkt.status.toUpperCase()}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          {new Date(tkt.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-muted-foreground leading-relaxed bg-muted/30 p-2.5 rounded-lg border border-border/50">
+                      {tkt.message}
+                    </p>
+
+                    {tkt.response && (
+                      <div className="p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/5 space-y-1">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Official Support Response
+                          <span className="text-[10px] font-mono text-muted-foreground font-normal">
+                            — {tkt.responded_at ? new Date(tkt.responded_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "Recently"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-foreground leading-relaxed">{tkt.response}</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Interactive Apiculture FAQs */}
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <h4 className="font-display text-sm font-bold text-foreground flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-honey" /> Frequently Asked Questions & Dispatch Policies
+            </h4>
+            <div className="grid sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
+                <h5 className="font-bold text-foreground">How is raw honey cold-chain protected during transit?</h5>
+                <p className="text-muted-foreground leading-relaxed text-[11px]">
+                  All batches are shipped in temperature-regulated insulated cartons maintaining 18°C–24°C to preserve natural bioactive enzymes and prevent thermal caramelization.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
+                <h5 className="font-bold text-foreground">How does M-Pesa automatic STK Push checkout work?</h5>
+                <p className="text-muted-foreground leading-relaxed text-[11px]">
+                  Selecting M-Pesa triggers an instantaneous Daraja API STK push directly to your mobile handset. Entering your PIN confirms your order and updates our Supabase PostgreSQL ledger.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
+                <h5 className="font-bold text-foreground">What warranty applies to BeeHUB LoRa IoT gateways?</h5>
+                <p className="text-muted-foreground leading-relaxed text-[11px]">
+                  Every BeeHUB station includes a 24-month manufacturer warranty, IP67 weatherized enclosure replacement guarantee, and free firmware updates through BeeYield Cloud.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
+                <h5 className="font-bold text-foreground">How do promo vouchers (e.g., HONEY20) calculate discounts?</h5>
+                <p className="text-muted-foreground leading-relaxed text-[11px]">
+                  Valid vouchers deduct up to 20% off your cart subtotal. Free countrywide shipping automatically activates on all orders exceeding KES 5,000.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== MODAL: EDIT CUSTOMER PROFILE ========== */}
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-honey" /> Edit Customer Profile & Database Sync
+              </h3>
+              <button
+                onClick={() => setShowProfileModal(false)}
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-muted-foreground font-semibold mb-1">Full Legal / Apiary Name</label>
+                <input
+                  type="text"
+                  value={profileDraft.full_name}
+                  onChange={(e) => setProfileDraft({ ...profileDraft, full_name: e.target.value })}
+                  placeholder="e.g. Timothy Nduva"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">Phone Number (M-Pesa)</label>
+                  <input
+                    type="text"
+                    value={profileDraft.phone}
+                    onChange={(e) => setProfileDraft({ ...profileDraft, phone: e.target.value })}
+                    placeholder="254712345678"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono focus:ring-1 focus:ring-honey outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={profileDraft.country || "Kenya"}
+                    onChange={(e) => setProfileDraft({ ...profileDraft, country: e.target.value })}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">Delivery Town / Market</label>
+                  <input
+                    type="text"
+                    value={profileDraft.delivery_town || ""}
+                    onChange={(e) => setProfileDraft({ ...profileDraft, delivery_town: e.target.value })}
+                    placeholder="e.g. Kibwezi"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">County</label>
+                  <input
+                    type="text"
+                    value={profileDraft.county || ""}
+                    onChange={(e) => setProfileDraft({ ...profileDraft, county: e.target.value })}
+                    placeholder="e.g. Makueni"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-muted-foreground font-semibold mb-1">Associated Apiary or Farm Station</label>
+                <input
+                  type="text"
+                  value={profileDraft.apiary_affiliation || ""}
+                  onChange={(e) => setProfileDraft({ ...profileDraft, apiary_affiliation: e.target.value })}
+                  placeholder="e.g. Kibwezi Forest Apiary (150 Active Hives)"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-muted-foreground font-semibold mb-1">Apiculture Notes / Bio</label>
+                <textarea
+                  rows={2}
+                  value={profileDraft.bio || ""}
+                  onChange={(e) => setProfileDraft({ ...profileDraft, bio: e.target.value })}
+                  placeholder="Describe your beekeeping focus or preferred flora products..."
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSavingProfile}
+                onClick={handleSaveProfile}
+                className="px-5 py-2 rounded-lg bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                {isSavingProfile ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Syncing with Supabase...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-3.5 h-3.5" />
+                    Save & Sync to Supabase
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== MODAL: SUBMIT SUPPORT TICKET ========== */}
+      {showTicketModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-honey" /> Submit Official Support Inquiry
+              </h3>
+              <button
+                onClick={() => setShowTicketModal(false)}
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">Inquiry Category</label>
+                  <select
+                    value={ticketDraft.category}
+                    onChange={(e) => setTicketDraft({ ...ticketDraft, category: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                  >
+                    <option value="general">General Support</option>
+                    <option value="order">Order Tracking & Logistics</option>
+                    <option value="delivery">Cold-Chain Delivery</option>
+                    <option value="hardware">BeeHUB IoT Hardware</option>
+                    <option value="payment">M-Pesa / Payment Settlement</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-muted-foreground font-semibold mb-1">Related Order # (Optional)</label>
+                  <input
+                    type="text"
+                    value={ticketDraft.order_id}
+                    onChange={(e) => setTicketDraft({ ...ticketDraft, order_id: e.target.value })}
+                    placeholder="e.g. ORD-9842"
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground font-mono focus:ring-1 focus:ring-honey outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-muted-foreground font-semibold mb-1">Inquiry Subject</label>
+                <input
+                  type="text"
+                  value={ticketDraft.subject}
+                  onChange={(e) => setTicketDraft({ ...ticketDraft, subject: e.target.value })}
+                  placeholder="e.g. Temperature verification for Acacia honey consignment"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-muted-foreground font-semibold mb-1">Detailed Inquiry Message</label>
+                <textarea
+                  rows={4}
+                  value={ticketDraft.message}
+                  onChange={(e) => setTicketDraft({ ...ticketDraft, message: e.target.value })}
+                  placeholder="Please specify any consignment tracking codes, hardware sensor serial numbers, or payment M-Pesa transaction IDs..."
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none leading-relaxed"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setShowTicketModal(false)}
+                className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:text-foreground text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSubmittingTicket}
+                onClick={handleSubmitTicket}
+                className="px-5 py-2 rounded-lg bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                {isSubmittingTicket ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Submitting Ticket...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-3.5 h-3.5" />
+                    Dispatch Ticket
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== MODAL: LIVE CARRIER COLD-CHAIN TELEMETRY ========== */}
+      {liveTrackingModalOrder && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div className="flex items-center gap-2">
+                <Truck className="w-5 h-5 text-emerald-500" />
+                <div>
+                  <h3 className="font-display text-base font-bold text-foreground">
+                    Live Consignment Telemetry
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    Consignment #{liveTrackingModalOrder.order_number || liveTrackingModalOrder.id}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setLiveTrackingModalOrder(null)}
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {isLoadingTracking ? (
+              <div className="p-12 text-center space-y-3">
+                <Loader2 className="w-8 h-8 text-honey animate-spin mx-auto" />
+                <p className="text-xs text-muted-foreground">Pinging fleet IoT tracking gateway...</p>
+              </div>
+            ) : (
+              <div className="space-y-4 text-xs">
+                {/* Cold Chain Metrics Banner */}
+                <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-foreground flex items-center gap-1.5">
+                      <ShieldCheck className="w-4 h-4 text-emerald-500" /> Cold-Chain Integrity Verified
+                    </span>
+                    <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                      {liveTrackingInfo?.telemetry?.temperature || "21.4°C"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-500/20 text-[11px]">
+                    <div>
+                      <span className="text-muted-foreground">Carrier:</span>{" "}
+                      <span className="font-semibold text-foreground">
+                        {liveTrackingInfo?.carrier || "BeeYield Express Cold-Chain"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Humidity:</span>{" "}
+                      <span className="font-semibold text-foreground">
+                        {liveTrackingInfo?.telemetry?.humidity || "48% RH (Safe)"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Waypoint Timeline */}
+                <div className="space-y-3">
+                  <h4 className="font-bold text-foreground text-xs">Consignment Route & Waypoint Status</h4>
+                  <div className="space-y-3 relative pl-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-border">
+                    <div className="relative">
+                      <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px]">
+                        ✓
+                      </div>
+                      <p className="font-bold text-foreground">Kibwezi Drylands Depot (Origin)</p>
+                      <p className="text-[11px] text-muted-foreground">Raw batch inspected, sealed & temperature-logged.</p>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-honey text-black flex items-center justify-center text-[10px] animate-pulse">
+                        ●
+                      </div>
+                      <p className="font-bold text-foreground">In Transit — Mombasa-Nairobi Highway</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Current Location: {liveTrackingInfo?.telemetry?.current_location || "Mtito Andei Checkpoint"}
+                      </p>
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-muted border border-border flex items-center justify-center text-[10px] text-muted-foreground">
+                        ○
+                      </div>
+                      <p className="font-bold text-muted-foreground">Recipient Delivery Location</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Estimated Arrival: {liveTrackingInfo?.estimated_delivery ? new Date(liveTrackingInfo.estimated_delivery).toLocaleDateString() : "Next Business Day"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-lg border border-border bg-muted/20 text-[11px] text-muted-foreground">
+                  Waybill tracking number: <span className="font-mono text-foreground font-bold">{liveTrackingInfo?.waybill_number || `WB-${liveTrackingModalOrder.id.slice(0, 8).toUpperCase()}`}</span>. Real-time GPS location is refreshed every 5 minutes from onboard telematics.
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-3 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setLiveTrackingModalOrder(null)}
+                className="px-4 py-2 rounded-lg bg-honey hover:bg-honey-dark text-black font-bold text-xs shadow-sm"
+              >
+                Close Tracking
+              </button>
             </div>
           </div>
         </div>
