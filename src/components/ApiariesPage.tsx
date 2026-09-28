@@ -70,6 +70,7 @@ import {
   MicOff,
   Calculator,
   Clock,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,6 +94,7 @@ import {
   removeAllSensorsFully,
   subscribeToSensorSync,
   SyncedSensorDevice,
+  DeviceStatus,
 } from "@/services/sensorSyncService";
 import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
 import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
@@ -163,7 +165,7 @@ export interface ApiaryDeviceItem {
   deviceType: string;
   serial: string;
   hiveCode?: string;
-  status: "active" | "online" | "optimal" | "low_battery" | "calibrating";
+  status: DeviceStatus;
   lastSync?: string;
   telemetrySummary?: string;
   model?: string;
@@ -7730,6 +7732,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               });
                               const healthStatus = hiveInspection?.colony_health || (hive.queenPresent ? "Healthy" : "Standby");
                               const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
+                              const hiveKg = hive.batches.reduce((acc: number, b: any) => acc + (b.total_weight_kg || b.weight_kg || 0), 0);
 
                               return (
                                 <React.Fragment key={hive.id}>
@@ -8045,6 +8048,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                   <button
                     type="button"
                     onClick={() => {
+                      window.dispatchEvent(new CustomEvent("open-measurement-tools"));
+                    }}
+                    className="px-3.5 py-2 rounded-xl border border-border hover:bg-muted text-muted-foreground hover:text-foreground font-semibold text-xs flex items-center justify-center gap-1.5 transition-all"
+                    title="Open Device Telemetry & Pairing Tools"
+                  >
+                    <Cpu className="w-3.5 h-3.5" />
+                    <span>Device Tools</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setTempScannedDeviceCode("");
                       setShowAddDeviceModal(true);
                     }}
@@ -8069,7 +8083,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                       All connected sensors have been fully cleared and verified. When you pair a new sensor, it will automatically synchronize across your phone, laptop, and tablet in real time.
                     </p>
                   </div>
-                  <div className="flex items-center justify-center gap-3 pt-2">
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent("open-measurement-tools"));
+                      }}
+                      className="px-5 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center gap-2 shadow-sm transition-all"
+                    >
+                      <Cpu className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      <span>Open Measurement Tools</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => {

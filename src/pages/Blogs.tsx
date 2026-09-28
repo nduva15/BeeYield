@@ -398,9 +398,6 @@ export default function BlogsPage() {
               The Science of Precision <br />
               <span className="text-emerald-600 dark:text-emerald-400">Crop Pollination in Kenya</span>
             </h1>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-              Dispatches directly from our research apiaries and commercial mango, avocado, and macadamia orchards across Makueni and Kibwezi. Written by founder Timothy Mathuva.
-            </p>
           </section>
 
           {/* Search and Tag Filter Bar */}
@@ -578,7 +575,7 @@ export default function BlogsPage() {
                 Ready to Maximize Fruit Set on Your Orchard?
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Macadamia in Embu, our intelligent hive precision pollination teams deliver verified yield improvements.
+                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Citrus & Oranges in Kibwezi, our intelligent hive precision pollination teams deliver verified yield improvements.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4">

@@ -333,6 +333,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+const defaultAuth: AuthContextType = {
+  user: null,
+  session: null,
+  profile: null,
+  loading: false,
+  signOut: async () => {},
+  signInWithGoogle: async () => {},
+  signInWithApple: async () => {},
+  signInDemoOwner: () => {},
+  updateProfile: async () => {},
+  updateAvatar: async () => {},
+  isDemo: false,
+  beeyieldUser: null,
+};
+
 export function useAuth() {
-  return useContext(Ctx);
+  const context = useContext(Ctx);
+  return context ?? defaultAuth;
 }

@@ -41,6 +41,7 @@ import {
   ArrowRight,
   Droplets,
   FileText,
+  Hexagon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -87,6 +88,7 @@ import FeedingSchedule from "@/components/FeedingSchedule";
 import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import ApiariesPage from "@/components/ApiariesPage";
+import BeeYieldHivesView from "@/components/beeyield/BeeYieldHivesView";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
 import TasksPage from "@/components/TasksPage";
@@ -254,6 +256,7 @@ export default function Index() {
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [apiariesOpen, setApiariesOpen] = useState(false);
+  const [hivesOpen, setHivesOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
   const [tasksOpen, setTasksOpen] = useState(false);
@@ -385,9 +388,28 @@ export default function Index() {
       });
     };
 
+    const handleOpenMeasurement = () => {
+      setMeasurementToolsOpen(true);
+    };
+
+    const handleNavigateTab = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === "hives" || detail === "beeyield" || detail === "colonies") {
+        setHivesOpen(true);
+      }
+    };
+
     window.addEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    window.addEventListener("open-measurement-tools", handleOpenMeasurement);
+    window.addEventListener("beeyield-open-device-pairing", handleOpenMeasurement);
+    window.addEventListener("beeyield-navigate-tab", handleNavigateTab);
+    window.addEventListener("open-hives-modal", () => setHivesOpen(true));
     return () => {
       window.removeEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+      window.removeEventListener("open-measurement-tools", handleOpenMeasurement);
+      window.removeEventListener("beeyield-open-device-pairing", handleOpenMeasurement);
+      window.removeEventListener("beeyield-navigate-tab", handleNavigateTab);
+      window.removeEventListener("open-hives-modal", () => setHivesOpen(true));
     };
   }, [conversationId]);
 
@@ -561,6 +583,11 @@ export default function Index() {
           label: "Apiary & IoT Onboarding Wizard",
           icon: Sparkles,
           onClick: () => setOnboardingOpen(true),
+        },
+        {
+          label: "Hives & Colonies Directory",
+          icon: Hexagon,
+          onClick: () => setHivesOpen(true),
         },
         {
           label: "Apiaries & Live Weather",
@@ -1187,6 +1214,20 @@ export default function Index() {
       <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
+      <BeeYieldHivesView
+        isOpen={hivesOpen}
+        onClose={() => setHivesOpen(false)}
+        onTabChange={(tab) => {
+          setHivesOpen(false);
+          if (tab === "inspections") setInspectionsOpen(true);
+          else if (tab === "tasks") setTasksOpen(true);
+          else if (tab === "devices" || tab === "measurement-tools") setMeasurementToolsOpen(true);
+          else if (tab === "apiaries-weather") setApiariesOpen(true);
+          else if (tab === "hive-health") setHealthDashOpen(true);
+          else if (tab === "harvests") setHarvestsOpen(true);
+          else if (tab === "forage-zones") setForageZonesOpen(true);
+        }}
+      />
       <ShopDashboard isOpen={shopDashOpen} onClose={() => setShopDashOpen(false)} />
       <FrameSenseToolPage isOpen={frameSenseOpen} onClose={() => setFrameSenseOpen(false)} />
       <SyrupFeedingToolPage isOpen={syrupToolOpen} onClose={() => setSyrupToolOpen(false)} />

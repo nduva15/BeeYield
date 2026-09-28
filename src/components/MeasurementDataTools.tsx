@@ -108,7 +108,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Core brood nest temperature (34–36°C) and relative humidity monitoring",
         telemetryType: "Temp (°C) + Humidity (%)",
         defaultLabel: "VitalSensor Brood Core",
-        defaultSerialPrefix: "SENS-INP",
+        defaultSerialPrefix: "APISENSE-BROOD",
       },
       {
         id: "acoustic_mic",
@@ -117,7 +117,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "24/7 frequency FFT listening for Queen piping, swarming roar & queenlessness",
         telemetryType: "Acoustic FFT (Hz)",
         defaultLabel: "Bio-Acoustic Queen Mic",
-        defaultSerialPrefix: "SENS-MIC",
+        defaultSerialPrefix: "APISENSE-MIC",
       },
       {
         id: "scale_brood",
@@ -126,7 +126,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Sub-ounce load cells tracking daily nectar flows and winter consumption",
         telemetryType: "Weight Mass (kg)",
         defaultLabel: "Continuous Hive Scale",
-        defaultSerialPrefix: "SENS-SCL",
+        defaultSerialPrefix: "APISENSE-SCALE",
       },
     ],
   },
@@ -147,7 +147,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Ambient barometric pressure, external temperature, solar irradiance & rain",
         telemetryType: "Weather + Solar (W/m²)",
         defaultLabel: "Solar Microclimate Station",
-        defaultSerialPrefix: "SENS-LAND",
+        defaultSerialPrefix: "APISENSE-ENV",
       },
       {
         id: "forage_sensor",
@@ -156,7 +156,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Entrance optical gate tracking forager exit/return velocity & pollen pulses",
         telemetryType: "Flight count / min",
         defaultLabel: "Forage Flight Sensor",
-        defaultSerialPrefix: "SENS-FOR",
+        defaultSerialPrefix: "APISENSE-FORAGE",
       },
       {
         id: "gateway_hub",
@@ -165,7 +165,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Central telemetry gateway connecting all Bluetooth brood tags across 200m",
         telemetryType: "Network Signal (dBm)",
         defaultLabel: "Apiary Solar Hub",
-        defaultSerialPrefix: "HUB-KBZ",
+        defaultSerialPrefix: "APISENSE-HUB",
       },
     ],
   },
@@ -186,7 +186,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Infrared entrance scanner counting Varroa destructor mite drop & phoretic load",
         telemetryType: "Varroa Mite Load (%)",
         defaultLabel: "Spectral Varroa Scanner",
-        defaultSerialPrefix: "SENS-DIS",
+        defaultSerialPrefix: "APISENSE-VARROA",
       },
       {
         id: "pathogen_voc",
@@ -195,7 +195,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Sniffer sensor for American Foulbrood (AFB), European Foulbrood & Nosema volatiles",
         telemetryType: "VOC Pathogen Index (ppm)",
         defaultLabel: "Pathogen VOC Sniffer",
-        defaultSerialPrefix: "SENS-VOC",
+        defaultSerialPrefix: "APISENSE-VOC",
       },
       {
         id: "beetle_trap",
@@ -204,7 +204,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Optical entrance sensor flagging hive beetle ingress and wasp robber alerts",
         telemetryType: "Beetle intrusion count",
         defaultLabel: "Beetle Optical Counter",
-        defaultSerialPrefix: "SENS-BTL",
+        defaultSerialPrefix: "APISENSE-BEETLE",
       },
     ],
   },
@@ -650,25 +650,20 @@ function AddDeviceWizard({
     setCategory(newCat);
     const firstKind = DEVICE_CATEGORIES[newCat].kinds[0];
     setSelectedKindId(firstKind.id);
-    const randNum = 100 + ((newCat.length * 73 + firstKind.id.length * 19) % 900);
-    setSerial(`${firstKind.defaultSerialPrefix}-${randNum}`);
     const targetHive = hives.find((h) => h.id === selectedHiveId);
     setLabel(`${targetHive?.name || "Hive"} ${firstKind.name}`);
   }, [hives, selectedHiveId]);
 
-  // If initialHiveId provided on mount, auto-set serial and label
+  // If initialHiveId provided on mount, auto-set label
   useEffect(() => {
     if (initialHiveId) {
       setSelectedHiveId(initialHiveId);
       const target = hives.find((h) => h.id === initialHiveId);
       if (target) {
         setLabel(`${target.name} VitalSensor`);
-        const num = target.name.replace(/\D+/g, "") || "001";
-        setSerial(`SENS-INP-${num.padStart(3, "0")}`);
       }
     } else {
       const firstHive = hives[0];
-      setSerial("");
       setLabel(firstHive ? `${firstHive.name} VitalSensor` : "");
     }
   }, [initialHiveId, hives]);
@@ -1906,12 +1901,21 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                 )}
 
                 {visibleDevices.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40">
-                    <Boxes className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-60" />
-                    <p className="font-semibold text-sm">No devices registered</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Click "+ Add device" to pair an In-Hive brood sensor, In-Land weather node, or Disease scanner.
-                    </p>
+                  <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40 space-y-3">
+                    <Boxes className="w-8 h-8 mx-auto text-muted-foreground opacity-60" />
+                    <div>
+                      <p className="font-semibold text-sm">No devices registered</p>
+                      <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+                        Click "+ Add device" to pair an In-Hive brood sensor, In-Land weather node, or Disease scanner.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => openAddDeviceForHive(null)}
+                      className="bg-honey hover:bg-honey/90 text-primary-foreground font-semibold text-xs h-8 px-4"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1.5" /> Pair New Device
+                    </Button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

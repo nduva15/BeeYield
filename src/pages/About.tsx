@@ -21,6 +21,13 @@ import {
   Globe,
   Sprout,
   BookOpen,
+  Camera,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  Eye,
+  ShieldCheck,
 } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 
@@ -333,10 +340,121 @@ function ImpactStatCard({ stat }: { stat: (typeof IMPACT_STATS)[number] }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Our Hives & Living Apiary Photography                              */
+/* ------------------------------------------------------------------ */
+export interface HivePhoto {
+  id: string;
+  image: string;
+  title: string;
+  category: "Canopy Hives" | "Modern Boxes" | "Field Work";
+  badge: string;
+  location: string;
+  description: string;
+  details: string;
+}
+
+export const HIVE_PHOTOS: HivePhoto[] = [
+  {
+    id: "canopy-cluster",
+    image: "/images/story/hives/hanging-log-hives-canopy.jpg",
+    title: "Suspended Acacia Canopy Apiary",
+    category: "Canopy Hives",
+    badge: "Traditional Mwatu",
+    location: "Kibwezi, Makueni County",
+    description: "Multiple traditional African log hives suspended high within the sprawling canopy of native acacia trees.",
+    details: "Suspended 3 to 5 meters above the ground, this indigenous Kenyan technique shields colonies from honey badgers, safari ants, and extreme soil heat radiation. The bees have clear flight trajectories directly into surrounding flowering thorn crowns.",
+  },
+  {
+    id: "acacia-keystone",
+    image: "/images/story/hives/acacia-tree-log-hive.jpg",
+    title: "Keystone Acacia Fork Hive",
+    category: "Canopy Hives",
+    badge: "Keystone Colony",
+    location: "Kibwezi East Apiary Zone",
+    description: "Traditional hollowed log hive wedged securely in the primary trunk fork of a mature wild acacia.",
+    details: "Thick natural hardwood combined with heavy tree shade keeps brood temperature rock-steady at approximately 35°C even during severe semi-arid droughts. African honeybees (Apis mellifera scutellata) thrive here naturally.",
+  },
+  {
+    id: "yellow-box",
+    image: "/images/story/hives/yellow-langstroth-hive.jpg",
+    title: "Elevated Modern Apiary Box",
+    category: "Modern Boxes",
+    badge: "Modern Apiculture",
+    location: "Makueni Demonstration Yard",
+    description: "Reflective yellow painted hive box mounted on elevated timber stands in the forage undergrowth.",
+    details: "Raised platforms keep the hive dry, deter crawling pests, and allow precision under-hive weight scales and acoustic sensors to monitor colony health and honey flow without disturbing comb wax.",
+  },
+  {
+    id: "twilight-inspection",
+    image: "/images/story/hives/beekeeper-inspection-twilight.jpg",
+    title: "Twilight Apiary Inspection",
+    category: "Field Work",
+    badge: "Zero-Chemical Care",
+    location: "Kibwezi Bush Apiary",
+    description: "BeeYield beekeeper in full protective gear inspecting suspended log hives at dusk.",
+    details: "Field checks are carried out at dawn or dusk once worker foragers have safely returned. BeeYield enforces a strict no-smoke, zero-chemical policy to protect bee immunity and preserve 100% enzyme purity in the honey.",
+  },
+  {
+    id: "savannah-solitary",
+    image: "/images/story/hives/savannah-hanging-hive.jpg",
+    title: "Savanna Dryland Suspended Hive",
+    category: "Canopy Hives",
+    badge: "Wild Forage Corridor",
+    location: "Kibwezi Bush Reserve",
+    description: "Solitary traditional log hive floating gracefully between acacia branches in semi-arid scrub.",
+    details: "Positioned along natural pollinator highways where worker bees gather nectar from indigenous acacia flushes, neem, and desert blossoms. The aerodynamic cylinder naturally sheds heavy seasonal rainstorms.",
+  },
+  {
+    id: "apiary-landscape-1",
+    image: "/images/story/hives/apiary-hive-field-1.jpg",
+    title: "105+ Acre Forage Habitat",
+    category: "Field Work",
+    badge: "Natural Ecology",
+    location: "Kibwezi Agroforestry Reserve",
+    description: "Deep bush landscape showing how our 184 hives are harmoniously spaced across natural ecosystems.",
+    details: "Dispersing hives across wide forage corridors prevents resource depletion and competition between colonies, ensuring robust nutrition and high disease resistance for all resident colonies.",
+  },
+  {
+    id: "canopy-thermoregulation",
+    image: "/images/story/hives/apiary-hive-field-2.jpg",
+    title: "Canopy Shade & Thermal Comfort",
+    category: "Canopy Hives",
+    badge: "Microclimate Balance",
+    location: "Makueni Wild Lands",
+    description: "Hives shaded beneath dense green thorn leaves to prevent heat exhaustion in the colony.",
+    details: "Natural tree canopies lower ambient temperatures by 4–8°C compared to exposed ground, drastically reducing the water and energy worker bees need to expend on internal hive cooling.",
+  },
+];
+
+/* ------------------------------------------------------------------ */
 /*  Main Component                                                     */
 /* ------------------------------------------------------------------ */
 export default function About() {
   const [activeYear, setActiveYear] = useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<HivePhoto | null>(null);
+  const [photoFilter, setPhotoFilter] = useState<string>("All");
+
+  const filteredPhotos = photoFilter === "All"
+    ? HIVE_PHOTOS
+    : HIVE_PHOTOS.filter((p) => p.category === photoFilter);
+
+  // Lightbox keyboard navigation
+  useEffect(() => {
+    if (!selectedPhoto) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedPhoto(null);
+      if (e.key === "ArrowRight") {
+        const idx = HIVE_PHOTOS.findIndex((p) => p.id === selectedPhoto.id);
+        if (idx !== -1) setSelectedPhoto(HIVE_PHOTOS[(idx + 1) % HIVE_PHOTOS.length]);
+      }
+      if (e.key === "ArrowLeft") {
+        const idx = HIVE_PHOTOS.findIndex((p) => p.id === selectedPhoto.id);
+        if (idx !== -1) setSelectedPhoto(HIVE_PHOTOS[(idx - 1 + HIVE_PHOTOS.length) % HIVE_PHOTOS.length]);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPhoto]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -554,6 +672,246 @@ export default function About() {
           </FadeIn>
         </div>
       </section>
+
+      {/* ============================================================ */}
+      {/*  OUR HIVES & APIARIES IN PHOTOS                               */}
+      {/* ============================================================ */}
+      <section
+        id="our-hives"
+        className="py-20 bg-gradient-to-b from-background via-amber-950/10 to-background border-t border-border"
+      >
+        <div className="container mx-auto px-4 max-w-6xl">
+          <FadeIn>
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs sm:text-sm font-semibold mb-4">
+                <Camera className="w-4 h-4" />
+                <span>Real Field Photography • Kibwezi &amp; Makueni, Kenya</span>
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
+                Our Living Apiary &amp; Hives in Photos
+              </h2>
+              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                Step inside our actual apiary grounds across 105+ acres in southeastern Kenya. Witness our indigenous suspended acacia log hives (<em>Mwatu</em>), modern elevated box hives, and sustainable twilight inspection protocols.
+              </p>
+
+              {/* Quick stats pills */}
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
+                  <Hexagon className="w-3.5 h-3.5 text-amber-500" /> 184 Hives in Semi-Arid Kenya
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
+                  <TreePine className="w-3.5 h-3.5 text-emerald-500" /> Acacia Canopy Placement
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
+                  <ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> 100% Smoke &amp; Chemical-Free
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
+                  <Thermometer className="w-3.5 h-3.5 text-orange-500" /> ~35°C Natural Thermoregulation
+                </span>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Category Tabs */}
+          <FadeIn delay={100}>
+            <div className="flex flex-wrap justify-center gap-2 mb-10">
+              {["All", "Canopy Hives", "Modern Boxes", "Field Work"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setPhotoFilter(cat)}
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border cursor-pointer ${
+                    photoFilter === cat
+                      ? "bg-amber-500 text-stone-950 border-amber-500 shadow-md font-bold"
+                      : "bg-card border-border text-muted-foreground hover:border-amber-500/40 hover:text-foreground"
+                  }`}
+                >
+                  {cat === "All" ? `All Field Photos (${HIVE_PHOTOS.length})` : cat}
+                </button>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Photos Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPhotos.map((photo, i) => (
+              <FadeIn key={photo.id} delay={i * 70}>
+                <div
+                  onClick={() => setSelectedPhoto(photo)}
+                  className="group relative rounded-2xl overflow-hidden border border-border bg-card shadow-lg hover:border-amber-500/50 hover:shadow-2xl transition-all duration-500 cursor-pointer flex flex-col h-full"
+                >
+                  {/* Photo Container */}
+                  <div className="relative aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-stone-900">
+                    <img
+                      src={photo.image}
+                      alt={photo.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-amber-500 text-stone-950 shadow-sm">
+                        {photo.badge}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 backdrop-blur-md text-white/90 border border-white/20 flex items-center gap-1">
+                        <MapPin className="w-2.5 h-2.5 text-amber-400" />
+                        {photo.location.split(",")[0]}
+                      </span>
+                    </div>
+
+                    {/* Hover Prompt */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                      <span className="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-stone-900 text-xs font-bold flex items-center gap-1.5 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                        <Maximize2 className="w-3.5 h-3.5 text-amber-600" /> View Full Photo
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Caption */}
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-display text-base sm:text-lg font-bold text-foreground group-hover:text-amber-500 transition-colors mb-1.5">
+                        {photo.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                        {photo.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 mt-3 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-medium">
+                      <span className="text-amber-500/90 font-semibold">{photo.category}</span>
+                      <span className="flex items-center gap-1 group-hover:text-foreground transition-colors">
+                        <Eye className="w-3 h-3 text-amber-500" /> Click to enlarge
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Educational Callout: Dual-Hive Philosophy */}
+          <FadeIn delay={200}>
+            <div className="mt-14 p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-card to-emerald-500/5 shadow-xl">
+              <div className="grid md:grid-cols-2 gap-6 items-center">
+                <div className="space-y-3">
+                  <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                    Our Apiculture Doctrine
+                  </span>
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                    Bridging Indigenous Wisdom with Modern Precision
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Rather than abandoning traditional African beekeeping, BeeYield honors centuries-old Kamba and Maasai tree-hanging methods while augmenting them with IoT telemetry and modern raised hive architecture.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="p-3.5 rounded-2xl bg-background/80 border border-border space-y-1">
+                    <p className="font-bold text-amber-500 flex items-center gap-1.5">
+                      <TreePine className="w-3.5 h-3.5" /> Suspended Tree Hives
+                    </p>
+                    <p className="text-muted-foreground text-[11px] leading-relaxed">
+                      Superior thermal insulation during 38°C dry spells. Natural pest barriers against honey badgers. Preferred nesting choice of wild African bees.
+                    </p>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-background/80 border border-border space-y-1">
+                    <p className="font-bold text-emerald-500 flex items-center gap-1.5">
+                      <Wifi className="w-3.5 h-3.5" /> Elevated Box Hives
+                    </p>
+                    <p className="text-muted-foreground text-[11px] leading-relaxed">
+                      Seamless integration with load cells, acoustic varroa sensors, and frame inspection. Clean separation of 50% harvest without damaging comb.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* Lightbox Modal */}
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in"
+          onClick={() => setSelectedPhoto(null)}
+        >
+          <div
+            className="relative bg-card border border-border/80 rounded-2xl sm:rounded-3xl max-w-4xl w-full overflow-hidden shadow-2xl my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer"
+              title="Close (Esc)"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Prev / Next Navigation Buttons */}
+            <button
+              onClick={() => {
+                const idx = HIVE_PHOTOS.findIndex((p) => p.id === selectedPhoto.id);
+                if (idx !== -1) setSelectedPhoto(HIVE_PHOTOS[(idx - 1 + HIVE_PHOTOS.length) % HIVE_PHOTOS.length]);
+              }}
+              className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer"
+              title="Previous photo (←)"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => {
+                const idx = HIVE_PHOTOS.findIndex((p) => p.id === selectedPhoto.id);
+                if (idx !== -1) setSelectedPhoto(HIVE_PHOTOS[(idx + 1) % HIVE_PHOTOS.length]);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white flex items-center justify-center transition-colors border border-white/20 shadow-lg cursor-pointer"
+              title="Next photo (→)"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Full Image */}
+            <div className="relative aspect-[4/3] sm:aspect-[16/10] bg-black max-h-[60vh] overflow-hidden flex items-center justify-center">
+              <img
+                src={selectedPhoto.image}
+                alt={selectedPhoto.title}
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            {/* Modal Body / Information */}
+            <div className="p-5 sm:p-7 space-y-3 bg-card border-t border-border">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-stone-950">
+                    {selectedPhoto.badge}
+                  </span>
+                  <span className="text-xs text-muted-foreground flex items-center gap-1 font-medium">
+                    <MapPin className="w-3.5 h-3.5 text-amber-500" /> {selectedPhoto.location}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground font-mono">
+                  Photo {HIVE_PHOTOS.findIndex((p) => p.id === selectedPhoto.id) + 1} of {HIVE_PHOTOS.length}
+                </span>
+              </div>
+
+              <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                {selectedPhoto.title}
+              </h3>
+
+              <p className="text-xs sm:text-sm text-foreground font-medium leading-relaxed">
+                {selectedPhoto.description}
+              </p>
+
+              <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground font-semibold">Field Context &amp; Significance: </strong>
+                {selectedPhoto.details}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ============================================================ */}
       {/*  YEAR-BY-YEAR TIMELINE                                        */}

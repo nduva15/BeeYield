@@ -116,7 +116,7 @@ function HiveDetailView({
 }: {
   hiveId: string;
   onBack: () => void;
-  onTabChange: (tab: string) => void;
+  onTabChange?: (tab: string) => void;
 }) {
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -133,7 +133,7 @@ function HiveDetailView({
         <div className="flex gap-2 pt-2">
           <button
             type="button"
-            onClick={() => onTabChange("inspections")}
+            onClick={() => onTabChange?.("inspections")}
             className="px-3 py-1.5 rounded-xl bg-honey text-primary-foreground font-semibold text-xs"
           >
             Go to Inspections
@@ -152,7 +152,7 @@ function HiveDetailView({
 }
 
 export interface BeeYieldHivesViewProps {
-  onTabChange: (tab: string, message?: string, action?: string) => void;
+  onTabChange?: (tab: string, message?: string, action?: string) => void;
   initialParams?: { message?: string; action?: string } | null;
   onboardingMode?: boolean;
   isOpen?: boolean;
@@ -293,6 +293,7 @@ export default function BeeYieldHivesView({
   embedded = false,
 }: BeeYieldHivesViewProps) {
   const { user } = useAuth();
+  if (!isOpen && !embedded) return null;
 
   // View state
   const [selectedPlace, setSelectedPlace] = useState("all");
@@ -741,7 +742,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
             apiaryId: created.apiary_id ?? undefined,
             hiveId: created.id,
           });
-          onTabChange("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);
+          onTabChange?.("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);
         }
       }
 
@@ -1824,22 +1825,34 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                 </p>
               </div>
             </div>
-            {devices.length > 0 && (
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={async () => {
-                  const confirmed = window.confirm("Are you sure you want to remove ALL connected sensors fully across your account?");
-                  if (!confirmed) return;
-                  await removeAllSensorsFully();
-                  setDevices([]);
-                  toast.success("All connected sensors have been completely removed across phone, laptop, and tablet.");
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("open-measurement-tools"));
                 }}
-                className="px-3.5 py-1.5 rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Remove All Sensors</span>
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Pair Telemetry Device</span>
               </button>
-            )}
+              {devices.length > 0 && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const confirmed = window.confirm("Are you sure you want to remove ALL connected sensors fully across your account?");
+                    if (!confirmed) return;
+                    await removeAllSensorsFully();
+                    setDevices([]);
+                    toast.success("All connected sensors have been completely removed across phone, laptop, and tablet.");
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Remove All Sensors</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -1856,8 +1869,23 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
               <tbody className="divide-y divide-border">
                 {devices.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
-                      No IoT sensor hardware devices detected on this account.
+                    <td colSpan={5} className="py-10 text-center text-muted-foreground">
+                      <div className="max-w-sm mx-auto space-y-3">
+                        <p className="font-semibold text-sm text-foreground">No IoT sensor hardware devices detected</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          All fake and mock telemetry connections have been cleared. Pair a genuine In-Hive or Apiary sensor in the Measurement Tools to stream live telemetry.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            window.dispatchEvent(new CustomEvent("open-measurement-tools"));
+                          }}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm transition-all"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>Pair Device in Measurement Tools</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ) : (

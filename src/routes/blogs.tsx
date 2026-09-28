@@ -8,7 +8,7 @@ export const Route = createFileRoute("/blogs")({
       {
         name: "description",
         content:
-          "Agronomy dispatches, mango blossom science, and precision pollinator protection field notes from Makueni & Kibwezi, Kenya. Written by BeeYield founder Timothy Mathuva.",
+          "Agronomy dispatches, mango blossom science, and precision pollinator protection field notes from Makueni & Kibwezi, Kenya. Written by BeeYield founder Timothy Nduva.",
       },
       {
         property: "og:title",
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/blogs")({
       {
         property: "og:description",
         content:
-          "Agronomy dispatches, mango blossom science, and precision pollinator protection field notes from Makueni & Kibwezi, Kenya. Written by BeeYield founder Timothy Mathuva.",
+          "Agronomy dispatches, mango blossom science, and precision pollinator protection field notes from Makueni & Kibwezi, Kenya. Written by BeeYield founder Timothy Nduva.",
       },
       {
         property: "og:image",

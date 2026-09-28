@@ -352,7 +352,7 @@ export default function ShopDashboard({
         is_default: cardDraft.is_default,
       });
 
-      toast.success("Card securely vaulted and synced to database! 💳");
+      toast.success("Card securely vaulted and saved! 💳");
       setShowPaymentForm(false);
       setCardDraft({
         cardNumber: "",
@@ -365,7 +365,7 @@ export default function ShopDashboard({
       setSelectedPaymentMethodId(added.id);
       await loadAllData();
     } catch (err: any) {
-      toast.error(err?.message || "Failed to save card to database");
+      toast.error(err?.message || "Failed to save card");
     } finally {
       setIsSavingCard(false);
     }
@@ -1162,71 +1162,84 @@ export default function ShopDashboard({
       </div>
 
       {/* 4. Subpage View Selector (Intact Dropdown & Quick-Nav) */}
+      {/* 5. SHOP VIEWS SELECTOR & NAVIGATION (UP-TO-DOWN DROPDOWN) */}
       <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-4 space-y-3 text-xs shadow-sm">
-        {/* Top Header Row with Title & Status on Left, Intact Dropdown on Right */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-honey/15 border border-honey/25 flex items-center justify-center text-honey flex-shrink-0 shadow-xs">
-              <Layers className="w-4 h-4 text-honey" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-foreground text-sm">Shop Views:</span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Synced with Supabase & Shopify
-                </span>
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-honey/15 border border-honey/25 flex items-center justify-center text-honey flex-shrink-0 shadow-xs">
+                <Layers className="w-4 h-4 text-honey" />
               </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Select any store module or ledger section from the dropdown
-              </p>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-foreground text-sm">Shop Views:</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Synced with Supabase & Shopify
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Select any store module or ledger section from the dropdown menu below
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Intact Dropdown Selector Component */}
-          <div className="relative w-full sm:w-auto" ref={viewDropdownRef}>
+          {/* Up-to-Down Dropdown Selector Component */}
+          <div className="relative w-full" ref={viewDropdownRef}>
             <button
               type="button"
               id="shop-views-dropdown-btn"
               onClick={() => setIsViewDropdownOpen((prev) => !prev)}
               aria-expanded={isViewDropdownOpen}
               aria-haspopup="listbox"
-              className="w-full sm:w-72 flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-background border-2 border-honey/60 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30 cursor-pointer"
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-background border-2 border-honey/60 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30 cursor-pointer"
             >
-              <div className="flex items-center gap-2.5 truncate">
+              <div className="flex items-center gap-3 truncate">
                 {(() => {
                   const current = TABS.find((t) => t.id === activeTab) || TABS[0];
                   const IconComponent = current.icon;
                   return (
                     <>
-                      <div className="w-5 h-5 rounded-md bg-honey/20 flex items-center justify-center text-honey flex-shrink-0">
-                        <IconComponent className="w-3.5 h-3.5" />
+                      <div className="w-8 h-8 rounded-lg bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                        <IconComponent className="w-4 h-4" />
                       </div>
-                      <span className="text-foreground font-bold truncate">{current.label}</span>
-                      {current.badge !== undefined && (
-                        <span className="px-1.5 py-0.2 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
-                          {current.badge}
-                        </span>
-                      )}
+                      <div className="text-left truncate">
+                        <div className="flex items-center gap-2">
+                          <span className="text-foreground font-bold text-sm truncate">{current.label}</span>
+                          {current.badge !== undefined && (
+                            <span className="px-2 py-0.5 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
+                              {current.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground font-normal line-clamp-1">
+                          {current.description}
+                        </p>
+                      </div>
                     </>
                   );
                 })()}
               </div>
-              <ChevronDown
-                className={`w-4 h-4 text-honey flex-shrink-0 transition-transform duration-200 ${
-                  isViewDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-[11px] text-muted-foreground font-medium hidden sm:inline">Change View</span>
+                <ChevronDown
+                  className={`w-4 h-4 text-honey transition-transform duration-200 ${
+                    isViewDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
             </button>
 
-            {/* Dropdown Menu Options */}
+            {/* Dropdown Menu Options (Up to Down) */}
             {isViewDropdownOpen && (
               <div
                 role="listbox"
-                className="absolute right-0 top-full mt-2 w-full sm:w-80 z-50 rounded-2xl border border-border bg-card/95 backdrop-blur-md shadow-2xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 max-h-96 overflow-y-auto custom-scroll"
+                className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-2xl border border-border bg-card/98 backdrop-blur-md shadow-2xl p-2 space-y-1 animate-in fade-in zoom-in-95 max-h-[460px] overflow-y-auto custom-scroll"
               >
-                <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                  Select Shop Dashboard View
+                <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center justify-between">
+                  <span>Shop Dashboard Views</span>
+                  <span className="text-[10px] font-normal lowercase">{TABS.length} views available</span>
                 </div>
                 {TABS.map((t) => {
                   const TabIcon = t.icon;
@@ -1241,30 +1254,30 @@ export default function ShopDashboard({
                         setActiveTab(t.id);
                         setIsViewDropdownOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition-all text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer ${
                         isSelected
-                          ? "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30"
-                          : "hover:bg-muted/40 text-foreground hover:text-honey"
+                          ? "bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/40 shadow-xs"
+                          : "hover:bg-muted/60 text-foreground hover:text-honey border border-transparent"
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isSelected
-                              ? "bg-emerald-500/20 text-emerald-500"
-                              : "bg-muted/30 text-muted-foreground"
+                              ? "bg-emerald-500/20 text-emerald-500 border border-emerald-500/30"
+                              : "bg-muted/50 text-muted-foreground"
                           }`}
                         >
                           <TabIcon className="w-4 h-4" />
                         </div>
                         <div className="truncate">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-bold truncate">{t.label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-xs truncate">{t.label}</span>
                             {t.badge !== undefined && (
                               <span
                                 className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                                   isSelected
-                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
                                     : "bg-muted text-muted-foreground"
                                 }`}
                               >
@@ -1272,7 +1285,7 @@ export default function ShopDashboard({
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-muted-foreground line-clamp-1">{t.description}</p>
+                          <p className="text-[11px] text-muted-foreground line-clamp-1">{t.description}</p>
                         </div>
                       </div>
                       {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
@@ -1282,25 +1295,6 @@ export default function ShopDashboard({
               </div>
             )}
           </div>
-        </div>
-
-        {/* Intact Horizontal Quick-Bar (Always cleanly rendered beneath the header) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll pt-2.5 border-t border-border/40">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setActiveTab(t.id)}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                activeTab === t.id
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-xs font-bold"
-                  : "border-border bg-card/60 hover:bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <t.icon className="w-3.5 h-3.5" />
-              <span>{t.label}</span>
-            </button>
-          ))}
         </div>
       </div>
 
@@ -2092,7 +2086,7 @@ export default function ShopDashboard({
                         <div className="pt-2 space-y-3">
                           <div className="flex items-center justify-between">
                             <span className="text-muted-foreground font-semibold text-[11px]">
-                              Select Saved Card from Account Database:
+                              Select Saved Card:
                             </span>
                             <button
                               type="button"
@@ -2150,7 +2144,7 @@ export default function ShopDashboard({
                           ) : (
                             <div className="p-3.5 rounded-xl border border-dashed border-border bg-card/60 text-center space-y-2">
                               <p className="text-muted-foreground text-[11px]">
-                                No credit or debit cards saved in your account database yet.
+                                No credit or debit cards saved in your account yet.
                               </p>
                               <button
                                 type="button"
@@ -2433,7 +2427,7 @@ export default function ShopDashboard({
                 <CreditCard className="w-4 h-4 text-honey" /> Vaulted Payment Methods & Cards
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Saved cards and payment credentials synced directly with your dedicated shop database account.
+                Saved cards and payment credentials synced directly with your dedicated shop account.
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -2471,7 +2465,7 @@ export default function ShopDashboard({
                       {paymentFormType === "card" ? "Add Credit / Debit Card" : "Add M-Pesa Mobile Number"}
                     </h4>
                     <p className="text-[11px] text-muted-foreground">
-                      Vaulted directly into the Supabase database
+                      Securely vaulted with end-to-end encryption
                     </p>
                   </div>
                 </div>
@@ -2553,7 +2547,7 @@ export default function ShopDashboard({
 
                     <div className="mt-3 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-500/10 p-2.5 rounded-xl border border-emerald-500/20">
                       <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>Direct Database Vault: 256-bit AES encrypted card storage</span>
+                      <span>Secure Vault: 256-bit AES encrypted card storage</span>
                     </div>
                   </div>
 
@@ -2628,7 +2622,7 @@ export default function ShopDashboard({
                         className="rounded border-border text-emerald-600 focus:ring-emerald-500"
                       />
                       <span className="text-muted-foreground font-semibold text-[11px]">
-                        Set as default payment method in account database
+                        Set as default payment method for this account
                       </span>
                     </label>
 
@@ -2649,12 +2643,12 @@ export default function ShopDashboard({
                         {isSavingCard ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin text-white" />
-                            <span>Vaulting in Database...</span>
+                            <span>Saving Card...</span>
                           </>
                         ) : (
                           <>
                             <Lock className="w-4 h-4 text-white" />
-                            <span>Save Card to Database</span>
+                            <span>Save Card</span>
                           </>
                         )}
                       </button>
@@ -2692,7 +2686,7 @@ export default function ShopDashboard({
                       className="rounded border-border text-emerald-600 focus:ring-emerald-500"
                     />
                     <span className="text-muted-foreground font-semibold text-[11px]">
-                      Set as default payment method in account database
+                      Set as default payment method for this account
                     </span>
                   </label>
 
@@ -2712,7 +2706,7 @@ export default function ShopDashboard({
                             ...paymentDraft,
                             type: "mpesa",
                           });
-                          toast.success("M-Pesa method saved and synced to database! 📱");
+                          toast.success("M-Pesa method saved and synced! 📱");
                           setShowPaymentForm(false);
                           void loadAllData();
                         } catch {
@@ -2721,7 +2715,7 @@ export default function ShopDashboard({
                       }}
                       className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-md"
                     >
-                      Save M-Pesa to Database
+                      Save M-Pesa
                     </button>
                   </div>
                 </div>
@@ -2766,7 +2760,7 @@ export default function ShopDashboard({
                       onClick={async () => {
                         try {
                           await updatePaymentMethod(p.id, { ...p, is_default: true });
-                          toast.success("Updated default payment method in database");
+                          toast.success("Updated default payment method");
                           void loadAllData();
                         } catch {
                           toast.error("Failed to update default payment method");

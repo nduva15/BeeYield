@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type DeviceCategory = "in_hive" | "in_land" | "disease_devices";
 export type DeviceLinkType = "bluetooth" | "usb" | "online" | "cellular" | "lorawan";
-export type DeviceStatus = "optimal" | "active" | "warning" | "offline" | "standby";
+export type DeviceStatus = "optimal" | "active" | "online" | "warning" | "offline" | "standby" | "low_battery" | "calibrating";
 
 export interface SyncedSensorDevice {
   id: string;
