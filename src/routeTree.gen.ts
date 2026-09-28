@@ -29,6 +29,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
 import { Route as ApiShopCardsRouteImport } from './routes/api/shop/cards'
 import { Route as ApiShopWishlistRouteImport } from './routes/api/shop/wishlist'
+import { Route as ApiShopWishlistIdRouteImport } from './routes/api/shop/wishlist.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -130,6 +131,11 @@ const ApiShopWishlistRoute = ApiShopWishlistRouteImport.update({
   path: '/api/shop/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiShopWishlistIdRoute = ApiShopWishlistIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiShopWishlistRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,7 +157,8 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
   '/api/shop/cards': typeof ApiShopCardsRoute
-  '/api/shop/wishlist': typeof ApiShopWishlistRoute
+  '/api/shop/wishlist': typeof ApiShopWishlistRouteWithChildren
+  '/api/shop/wishlist/$id': typeof ApiShopWishlistIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,7 +180,8 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
   '/api/shop/cards': typeof ApiShopCardsRoute
-  '/api/shop/wishlist': typeof ApiShopWishlistRoute
+  '/api/shop/wishlist': typeof ApiShopWishlistRouteWithChildren
+  '/api/shop/wishlist/$id': typeof ApiShopWishlistIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,7 +204,8 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
   '/api/shop/cards': typeof ApiShopCardsRoute
-  '/api/shop/wishlist': typeof ApiShopWishlistRoute
+  '/api/shop/wishlist': typeof ApiShopWishlistRouteWithChildren
+  '/api/shop/wishlist/$id': typeof ApiShopWishlistIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/api/public/beegpt'
     | '/api/shop/cards'
     | '/api/shop/wishlist'
+    | '/api/shop/wishlist/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/api/public/beegpt'
     | '/api/shop/cards'
     | '/api/shop/wishlist'
+    | '/api/shop/wishlist/$id'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/api/public/beegpt'
     | '/api/shop/cards'
     | '/api/shop/wishlist'
+    | '/api/shop/wishlist/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -287,7 +299,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
   ApiShopCardsRoute: typeof ApiShopCardsRoute
-  ApiShopWishlistRoute: typeof ApiShopWishlistRoute
+  ApiShopWishlistRoute: typeof ApiShopWishlistRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -432,8 +444,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiShopWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/shop/wishlist/$id': {
+      id: '/api/shop/wishlist/$id'
+      path: '/$id'
+      fullPath: '/api/shop/wishlist/$id'
+      preLoaderRoute: typeof ApiShopWishlistIdRouteImport
+      parentRoute: typeof ApiShopWishlistRoute
+    }
   }
 }
+
+interface ApiShopWishlistRouteChildren {
+  ApiShopWishlistIdRoute: typeof ApiShopWishlistIdRoute
+}
+
+const ApiShopWishlistRouteChildren: ApiShopWishlistRouteChildren = {
+  ApiShopWishlistIdRoute: ApiShopWishlistIdRoute,
+}
+
+const ApiShopWishlistRouteWithChildren = ApiShopWishlistRoute._addFileChildren(
+  ApiShopWishlistRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -455,7 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicBeegptRoute: ApiPublicBeegptRoute,
   ApiShopCardsRoute: ApiShopCardsRoute,
-  ApiShopWishlistRoute: ApiShopWishlistRoute,
+  ApiShopWishlistRoute: ApiShopWishlistRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
