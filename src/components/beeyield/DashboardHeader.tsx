@@ -305,16 +305,28 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       )}
     >
       {/* Left: Mobile Sidebar Trigger & View Directory Dropdown */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
+      <div className="flex items-center gap-2 sm:gap-2.5 touch-manipulation">
         {/* Mobile Menu Button - Harmonious glassmorphic styling */}
         {(onToggleMobileSidebar || onToggleToolsDrawer) && (
           <button
-            onClick={onToggleMobileSidebar || onToggleToolsDrawer}
-            className="lg:hidden h-10 w-10 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl flex items-center justify-center transition-all group shadow-xs shrink-0 active:scale-95"
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              requestAnimationFrame(() => {
+                React.startTransition(() => {
+                  if (onToggleMobileSidebar) {
+                    onToggleMobileSidebar();
+                  } else if (onToggleToolsDrawer) {
+                    onToggleToolsDrawer();
+                  }
+                });
+              });
+            }}
+            className="lg:hidden h-10 w-10 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl flex items-center justify-center transition-transform duration-150 group shadow-xs shrink-0 active:scale-95 touch-manipulation transform-gpu will-change-transform cursor-pointer"
             aria-label="Open BeeYield Dashboard Menu"
             title="Open BeeYield Dashboard Menu"
           >
-            <Menu className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform" />
+            <Menu className="w-5 h-5 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform pointer-events-none select-none" />
           </button>
         )}
 
