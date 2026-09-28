@@ -720,7 +720,6 @@ export default function Index() {
           icon: SettingsIcon,
           onClick: () => setSettingsOpen(true),
         },
-        { label: "About Beeyield AI", icon: Info, onClick: () => setAboutOpen(true) },
         user
           ? {
               label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`,

@@ -35,7 +35,15 @@ import {
   Camera,
   Upload,
   LogIn,
+  Info,
+  Database,
+  Globe,
+  Microscope,
+  Heart,
+  Zap,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import beeyieldLogo from "@/assets/beeyield-logo.png";
 import {
   Dialog,
   DialogContent,
@@ -51,7 +59,7 @@ import AvatarPickerDialog from "@/components/beeyield/AvatarPickerDialog";
 import { PRESET_AVATARS } from "@/lib/preset-avatars";
 import { subscribeToAvatarSync, getCachedAvatar } from "@/services/avatarSyncService";
 
-type Tab = "profile" | "modules" | "alerting" | "security" | "billing";
+type Tab = "profile" | "modules" | "alerting" | "security" | "billing" | "about";
 
 const TABS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "profile", label: "Profile", icon: User },
@@ -59,6 +67,7 @@ const TABS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "alerting", label: "Alerting", icon: BellRing },
   { id: "security", label: "Security", icon: ShieldCheck },
   { id: "billing", label: "Billing", icon: CreditCard },
+  { id: "about", label: "About BeeYield AI", icon: Info },
 ];
 
 const MODULES: { key: string; label: string; help: string }[] = [
@@ -198,10 +207,12 @@ export default function SettingsPage({
   isOpen = true,
   onClose,
   embedded = false,
+  initialTab = "profile",
 }: {
   isOpen?: boolean;
   onClose?: () => void;
   embedded?: boolean;
+  initialTab?: Tab;
 }) {
   const deviceId = useDeviceId();
   const {
@@ -255,7 +266,13 @@ export default function SettingsPage({
         "timothy@beeyield.com"
       : "timothy@beeyield.com");
 
-  const [tab, setTab] = useState<Tab>("profile");
+  const [tab, setTab] = useState<Tab>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setTab(initialTab);
+    }
+  }, [initialTab]);
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = useState(false);
 
   const [fullName, setFullName] = useState(
@@ -1237,6 +1254,261 @@ export default function SettingsPage({
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {tab === "about" && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Hero / System Overview Card */}
+            <div className="rounded-2xl border border-border bg-card p-6 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-honey/10 dark:bg-honey/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-border">
+                <div className="flex items-center gap-3.5">
+                  <img
+                    src={beeyieldLogo}
+                    alt="BeeYield AI Logo"
+                    className="h-12 w-auto object-contain shrink-0 drop-shadow-sm"
+                  />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xl font-bold font-display text-foreground">
+                        About BeeYield AI
+                      </h2>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-honey/15 text-honey border border-honey/30">
+                        v2.4.0 Engine
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Neural Hive Intelligence & Comprehensive Global Apiculture Knowledge System
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Neural Hive Active
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed pt-4">
+                BeeYield AI is the world’s most comprehensive bee intelligence system, powered by over{" "}
+                <strong className="text-foreground font-semibold">750,000 curated datasets</strong> covering every aspect of apiculture,
+                entomology, and pollination science. From precision species identification to pathogen detection protocols,
+                honey botanical composition analysis to global commodity statistics and real-time hive IoT telemetry.
+              </p>
+            </div>
+
+            {/* Global Bee Data Stats Grid */}
+            <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                    <Globe className="w-4 h-4 text-honey" />
+                    Global Apiculture Benchmarks
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Aggregated research datasets, international registries, and worldwide pollination indices
+                  </p>
+                </div>
+                <span className="text-[11px] text-muted-foreground/80 font-mono hidden sm:inline-block">
+                  Verified Research Sources
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {[
+                  { label: "Bee Species Covered", value: "20,000+", icon: "🐝", note: "Global taxonomic indexing" },
+                  { label: "Honey Varieties", value: "300+", icon: "🍯", note: "Monofloral & polyfloral profiles" },
+                  { label: "Pathology Protocols", value: "50+", icon: "🦠", note: "OIE & USDA compliant treatments" },
+                  { label: "Research Datasets", value: "750K+", icon: "🔬", note: "Peer-reviewed apiculture papers" },
+                  { label: "Managed Hives Worldwide", value: "91 Million", icon: "🏡", note: "FAO global census" },
+                  { label: "Pollination Value / Year", value: "$577 Billion", icon: "🌸", note: "IPBES economic valuation" },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="p-4 rounded-xl border border-border/80 bg-background/50 hover:bg-muted/30 transition-all text-center flex flex-col items-center justify-center group"
+                  >
+                    <div className="text-2xl mb-1.5 transition-transform group-hover:scale-110">{s.icon}</div>
+                    <div className="font-display text-lg font-bold text-honey tracking-tight">{s.value}</div>
+                    <div className="text-xs font-semibold text-foreground mt-0.5">{s.label}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{s.note}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Capabilities Grid */}
+            <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-honey" />
+                  Core AI Intelligence Capabilities
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Specialized domain models trained exclusively on apiculture and hive ecology
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                {[
+                  {
+                    icon: Database,
+                    title: "Comprehensive Apicultural Corpus",
+                    desc: "Every known bee species, honey varietal profile, disease pathology, botanical forage index, and peer-reviewed research finding unified into a multi-expert neural retrieval network.",
+                  },
+                  {
+                    icon: Microscope,
+                    title: "Computer Vision & Comb Diagnostic",
+                    desc: "High-resolution machine vision models trained to recognize queen cells, capped brood patterns, pollen stores, varroa mite infestations, and hive beetle infiltration.",
+                  },
+                  {
+                    icon: Globe,
+                    title: "Global Industry & Commodity Analytics",
+                    desc: "Market telemetry on honey wholesale/retail pricing, global bulk export volumes, colony mortality trends, and predictive climate impacts on upcoming nectar flows.",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Pathogen & Treatment Protocols",
+                    desc: "Actionable veterinarian-backed protocols for Varroa destructor, American & European Foulbrood (AFB/EFB), Nosema ceranae, Chalkbrood, and CCD with IPM rotations.",
+                  },
+                  {
+                    icon: Heart,
+                    title: "Bee Products Science & Pharmacopeia",
+                    desc: "Chemical and medicinal properties of raw honey, propolis, royal jelly, bee pollen, beeswax, and apitoxin — with moisture, diastase, and HMF standard verification.",
+                  },
+                  {
+                    icon: Zap,
+                    title: "Acoustic & Sensor IoT Telemetry",
+                    desc: "Real-time spectral analysis of hive acoustics to detect swarming intent, queenlessness, stress, brood heating anomalies, and colony defense vibrations before visible symptoms occur.",
+                  },
+                ].map((c) => (
+                  <div
+                    key={c.title}
+                    className="flex gap-3.5 p-4 rounded-xl border border-border bg-background/40 hover:bg-background/80 transition-all hover:border-honey/40 group"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-honey/10 text-honey border border-honey/20 flex items-center justify-center shrink-0 group-hover:bg-honey/20 transition-colors">
+                      <c.icon className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-xs sm:text-sm font-semibold text-foreground group-hover:text-honey transition-colors">
+                        {c.title}
+                      </h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {c.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Facts Callout Box */}
+            <div className="p-5 rounded-2xl border border-honey/30 bg-honey/5 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base">⚡</span>
+                <h3 className="font-display text-sm font-bold text-honey">
+                  Apiculture & Entomology Quick Facts
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Oldest honey discovered:</strong> 5,500 years old in Georgian/Egyptian tombs, chemically intact and edible.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Largest bee known:</strong> Wallace’s giant bee (<em>Megachile pluto</em>) with a 38mm wingspan.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Fastest bee flight:</strong> Carpenter bee reaching bursts of ~30 mph (48 km/h).
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">World honey leader:</strong> China with over 446,000 metric tonnes annual production.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Honeybee Genome:</strong> Sequenced in 2006 comprising 236 million base pairs.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Brood Nest Homeostasis:</strong> Colonies maintain 34.5°C to 35.5°C year-round regardless of outside freeze.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2 sm:col-span-2">
+                  <span className="text-honey font-bold">•</span>
+                  <span>
+                    <strong className="text-foreground">Global Pollination Dependency:</strong> Over 75% of global food crops rely on insect pollinators, valued at $235B to $577B annually.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Our Story Banner & Links */}
+            <div className="p-4 sm:p-5 rounded-2xl border border-border bg-gradient-to-r from-amber-500/10 via-honey/5 to-transparent flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <Heart className="w-4 h-4 text-honey" />
+                  <span className="font-display font-bold text-sm text-foreground">
+                    From 4 Hives to 184 — The BeeYield Journey
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Three siblings, zero external investors, pure grit. Founded in Kibwezi & Makueni, Kenya.
+                </p>
+              </div>
+              <Link
+                to="/our-story"
+                onClick={() => onClose?.()}
+                className="shrink-0 px-4 py-2.5 rounded-xl bg-honey hover:bg-honey/90 text-stone-950 font-bold text-xs flex items-center gap-2 transition-all shadow-md shadow-honey/20"
+              >
+                Read Our Story →
+              </Link>
+            </div>
+
+            {/* System Architecture & Partners Footer */}
+            <div className="pt-2 pb-1 text-center space-y-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground/80">
+                <span className="text-honey font-semibold uppercase tracking-wider text-[10px]">
+                  Technology & Research Partners:
+                </span>
+                <span className="text-foreground font-medium">Local Apiary Network</span>
+                <span>•</span>
+                <a
+                  href="https://apisense.ai/en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-honey transition-colors inline-flex items-center gap-1"
+                >
+                  ApiSense <ExternalLink className="w-3 h-3" />
+                </a>
+                <span>•</span>
+                <a
+                  href="https://intelligenthives.eu/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-honey transition-colors inline-flex items-center gap-1"
+                >
+                  Intelligent Hives <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                BeeYield AI — Specialized exclusively in bees, honey, apiculture engineering, and precision pollination science.
+              </p>
             </div>
           </div>
         )}
