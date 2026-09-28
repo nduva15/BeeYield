@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, startTransition, memo } from "react";
+import React, { useState, useEffect, useMemo, useCallback, startTransition, useDeferredValue, memo, Suspense } from "react";
 import { createPortal } from "react-dom";
 import {
   X,
@@ -8387,11 +8387,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
       return;
     }
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        startTransition(() => {
-          onOpenDetails(apiary);
-        });
-      }, 0);
+      startTransition(() => {
+        onOpenDetails(apiary);
+      });
     });
   };
 
@@ -8399,11 +8397,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          startTransition(() => {
-            onOpenDetails(apiary);
-          });
-        }, 0);
+        startTransition(() => {
+          onOpenDetails(apiary);
+        });
       });
     }
   };
@@ -8667,6 +8663,8 @@ export default function ApiariesPage({
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingApiary, setEditingApiary] = useState<ApiarySite | null>(null);
   const [selectedDetailApiary, setSelectedDetailApiary] = useState<ApiarySite | null>(null);
+  // Defer the heavy modal render so the browser can paint interaction feedback first (INP fix)
+  const deferredDetailApiary = useDeferredValue(selectedDetailApiary);
   const [addApiaryStep, setAddApiaryStep] = useState<1 | 2>(1);
   const [addApiaryMode, setAddApiaryMode] = useState<"with_devices" | "without_devices">("with_devices");
   const [addDeviceCategory, setAddDeviceCategory] = useState<DeviceCategory>("in_hive");
@@ -9027,15 +9025,13 @@ export default function ApiariesPage({
   }, [apiaries, userKey, user?.id, selectedDetailApiary]);
 
   const handleOpenDetails = useCallback((site: ApiarySite) => {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        startTransition(() => {
-          setSelectedDetailApiary(site);
-          if (onSelectApiary) {
-            onSelectApiary(site);
-          }
-        });
-      }, 0);
+    // Use startTransition alone — the card handler already yields to the browser
+    // via rAF before calling this, so no need for additional rAF/setTimeout nesting
+    startTransition(() => {
+      setSelectedDetailApiary(site);
+      if (onSelectApiary) {
+        onSelectApiary(site);
+      }
     });
   }, [onSelectApiary]);
 
@@ -9104,16 +9100,22 @@ export default function ApiariesPage({
             : "relative w-full max-w-6xl max-h-[92vh] bg-card border border-border rounded-2xl shadow-2xl overflow-y-auto flex flex-col"
         }
       >
-        {selectedDetailApiary ? (
+        {deferredDetailApiary ? (
           <div className="p-4 sm:p-6 space-y-6 flex-1">
-            <ApiaryDetailModal
-              apiary={selectedDetailApiary}
-              weather={weatherMap[selectedDetailApiary.id]}
-              onClose={() => setSelectedDetailApiary(null)}
-              onEdit={handleEdit}
-              onDelete={handleDeleteApiary}
-              onHivesCountChanged={handleHivesCountChanged}
-            />
+            <Suspense fallback={
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+              </div>
+            }>
+              <ApiaryDetailModal
+                apiary={deferredDetailApiary}
+                weather={weatherMap[deferredDetailApiary.id]}
+                onClose={() => setSelectedDetailApiary(null)}
+                onEdit={handleEdit}
+                onDelete={handleDeleteApiary}
+                onHivesCountChanged={handleHivesCountChanged}
+              />
+            </Suspense>
           </div>
         ) : (
           <>
