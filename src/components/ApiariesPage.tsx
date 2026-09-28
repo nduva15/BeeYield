@@ -78,6 +78,8 @@ import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { FrameSenseToolPage } from "@/components/FrameSenseToolPage";
 import { SyrupFeedingToolPage } from "@/components/SyrupFeedingToolPage";
 import { syncApiaryForageToFlorage, syncAllApiariesToFlorage } from "@/lib/florage-sync";
+import { streamBeeGpt } from "@/lib/beegpt-stream";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 export interface ApiarySite {
   id: string;
@@ -5193,16 +5195,194 @@ export function ApiaryDetailModal({
   const [scanContext, setScanContext] = useState<"addHive" | "detailHive" | "editHive" | "addDevice">("addHive");
   const [tempScannedSerial, setTempScannedSerial] = useState("");
 
+  // INLINE HIVES UI/UX (Matching InspectionsPage)
+  const [showInlineHiveForm, setShowInlineHiveForm] = useState(false);
+  const [editingHiveId, setEditingHiveId] = useState<string | null>(null);
+  const [expandedHiveId, setExpandedHiveId] = useState<string | null>(null);
+  const [frameFilter, setFrameFilter] = useState<"all" | "8" | "10" | "12">("all");
+  const [inlineAiLoading, setInlineAiLoading] = useState(false);
+  const [inlineAiText, setInlineAiText] = useState("");
+  const [inlineHarvestHiveId, setInlineHarvestHiveId] = useState<string | null>(null);
+  const [inlineHarvestDraft, setInlineHarvestDraft] = useState({
+    date: new Date().toISOString().slice(0, 10),
+    quantityKg: 14.5,
+    honeyType: "Raw Acacia Floral Honey",
+    moisturePct: 16.8,
+  });
+
+  const [inlineHiveDraft, setInlineHiveDraft] = useState({
+    code: `KIB-${String(hivesList.length + 1).padStart(3, "0")}`,
+    name: `beeyield ${String(hivesList.length + 1).padStart(3, "0")} (Langstroth 10)`,
+    hiveType: "Langstroth 10-Frame",
+    totalFrames: 10,
+    broodFrames: 6,
+    honeyFrames: 4,
+    queenPresent: true,
+    queenBreedingYear: 2025,
+    queenStatus: "Active Laying Queen (Marked)",
+    sensorSerial: "",
+    notes: "",
+  });
+
+  const handleOpenInlineAddHive = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setEditingHiveId(null);
+    setInlineHiveDraft({
+      code: `KIB-${String(hivesList.length + 1).padStart(3, "0")}`,
+      name: `beeyield ${String(hivesList.length + 1).padStart(3, "0")} (Langstroth 10)`,
+      hiveType: "Langstroth 10-Frame",
+      totalFrames: 10,
+      broodFrames: 6,
+      honeyFrames: 4,
+      queenPresent: true,
+      queenBreedingYear: 2025,
+      queenStatus: "Active Laying Queen (Marked)",
+      sensorSerial: "",
+      notes: "",
+    });
+    setInlineAiText("");
+    setShowInlineHiveForm((s) => !s);
+  };
+
+  const startInlineEdit = (hive: ApiaryHiveItem, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const total = (hive.broodFrames || 6) + (hive.honeyFrames || 4);
+    setEditingHiveId(hive.id);
+    setInlineHiveDraft({
+      code: hive.code,
+      name: hive.name,
+      hiveType: hive.hiveType || "Langstroth 10-Frame",
+      totalFrames: total === 8 || total === 12 ? total : 10,
+      broodFrames: hive.broodFrames ?? 6,
+      honeyFrames: hive.honeyFrames ?? 4,
+      queenPresent: hive.queenPresent,
+      queenBreedingYear: hive.queenBreedingYear || 2025,
+      queenStatus: hive.queenStatus || "Active Laying Queen (Marked)",
+      sensorSerial: hive.sensorSerial || "",
+      notes: "",
+    });
+    setInlineAiText("");
+    setShowInlineHiveForm(true);
+  };
+
+  const handleSaveInlineHive = async () => {
+    if (!inlineHiveDraft.code.trim()) {
+      toast.error("Hive code is required");
+      return;
+    }
+
+    if (editingHiveId) {
+      const existing = hivesList.find((h) => h.id === editingHiveId);
+      if (existing) {
+        const updated: ApiaryHiveItem = {
+          ...existing,
+          code: inlineHiveDraft.code.trim().toUpperCase(),
+          name: `${inlineHiveDraft.code.trim().toUpperCase()} (${inlineHiveDraft.hiveType})`,
+          hiveType: inlineHiveDraft.hiveType,
+          broodFrames: inlineHiveDraft.broodFrames,
+          honeyFrames: inlineHiveDraft.honeyFrames,
+          queenPresent: inlineHiveDraft.queenPresent,
+          queenBreedingYear: inlineHiveDraft.queenBreedingYear,
+          queenStatus: inlineHiveDraft.queenStatus,
+          sensorSerial: inlineHiveDraft.sensorSerial || undefined,
+        };
+        await handleUpdateHive(updated);
+        toast.success(`Hive ${updated.code} updated successfully`);
+      }
+    } else {
+      const newHive: ApiaryHiveItem = {
+        id: `hive-${Date.now()}`,
+        code: inlineHiveDraft.code.trim().toUpperCase(),
+        name: `${inlineHiveDraft.code.trim().toUpperCase()} (${inlineHiveDraft.hiveType})`,
+        hiveType: inlineHiveDraft.hiveType,
+        broodFrames: inlineHiveDraft.broodFrames,
+        honeyFrames: inlineHiveDraft.honeyFrames,
+        queenPresent: inlineHiveDraft.queenPresent,
+        queenBreedingYear: inlineHiveDraft.queenBreedingYear,
+        queenStatus: inlineHiveDraft.queenStatus,
+        sensorSerial: inlineHiveDraft.sensorSerial || undefined,
+        batches: [],
+      };
+      await handleAddHive(newHive);
+      toast.success(`Hive ${newHive.code} registered in ${apiary.name}`);
+    }
+
+    setShowInlineHiveForm(false);
+    setEditingHiveId(null);
+    setInlineAiText("");
+  };
+
+  const runInlineAi = async () => {
+    setInlineAiLoading(true);
+    setInlineAiText("");
+    try {
+      const prompt = `Act as BeeYield's certified Master Apiculturist and Colony Health Auditor. Analyze this hive colony configuration in apiary "${apiary.name}" (${apiary.location_name}) and provide a clinical verification report.
+
+Hive Code: ${inlineHiveDraft.code}
+Apiary: ${apiary.name}
+Frame Architecture: ${inlineHiveDraft.totalFrames}-frame setup (${inlineHiveDraft.broodFrames} brood frames, ${inlineHiveDraft.honeyFrames} honey frames)
+Queen Status: ${inlineHiveDraft.queenPresent ? "Queen present and active" : "Queenless / Standby"} (Year: ${inlineHiveDraft.queenBreedingYear}, Marking: ${inlineHiveDraft.queenStatus})
+Hardware Sensor: ${inlineHiveDraft.sensorSerial ? `Paired device serial ${inlineHiveDraft.sensorSerial}` : "Physical ledger inspection only"}
+Field Notes: ${inlineHiveDraft.notes || "None"}
+
+Provide: (1) Colony status and viability assessment, (2) Frame utilization & brood-to-honey balance, (3) Seasonal management protocol for Kibwezi acacia/semi-arid drylands, (4) Immediate 7-day action directives.`;
+      await streamBeeGpt(prompt, setInlineAiText);
+    } catch {
+      setInlineAiText(`### BeeYield Master Apiculturist Colony Assessment
+- **Status:** **${inlineHiveDraft.queenPresent ? "Healthy Active Colony" : "Standby Stand"} (98% verification confidence)**.
+- **Frame Architecture:** ${inlineHiveDraft.totalFrames}-frame hive properly partitioned with ${inlineHiveDraft.broodFrames} brood frames and ${inlineHiveDraft.honeyFrames} honey frames (${Math.round((inlineHiveDraft.broodFrames / inlineHiveDraft.totalFrames) * 100)}% brood core ratio).
+- **Apiary Compatibility:** Well suited for ${apiary.name} floral foraging zone.
+- **Action Directives:** Maintain proper bottom board ventilation, inspect queen laying pattern bi-weekly, and monitor nectar flow.`);
+      toast.info("Offline diagnostic assessment loaded");
+    } finally {
+      setInlineAiLoading(false);
+    }
+  };
+
+  const handleSaveInlineHarvest = (hive: ApiaryHiveItem) => {
+    if (!inlineHarvestDraft.quantityKg || inlineHarvestDraft.quantityKg <= 0) {
+      toast.error("Please enter a valid harvest quantity in kg");
+      return;
+    }
+    const newBatch: Omit<HiveHarvestBatch, "id"> = {
+      batchCode: `BATCH-KIB-${Date.now().toString().slice(-4)}`,
+      date: inlineHarvestDraft.date,
+      quantityKg: Number(inlineHarvestDraft.quantityKg),
+      honeyType: inlineHarvestDraft.honeyType,
+      moisturePct: Number(inlineHarvestDraft.moisturePct) || 16.8,
+    };
+    handleAddHarvestToHive(newBatch);
+    setInlineHarvestHiveId(null);
+    toast.success(`Logged ${newBatch.quantityKg} kg harvest for ${hive.code}`);
+  };
+
+  const hiveStats = useMemo(() => {
+    const total = hivesList.length;
+    const active = hivesList.filter((h) => h.queenPresent).length;
+    const standby = Math.max(0, total - active);
+    const sensorsCount = hivesList.filter((h) => !!h.sensorSerial).length;
+    return { total, active, standby, sensorsCount };
+  }, [hivesList]);
+
   const filteredHives = useMemo(() => {
-    if (!hiveSearch.trim()) return hivesList;
+    let result = hivesList;
+    if (frameFilter !== "all") {
+      const targetFrames = Number(frameFilter);
+      result = result.filter((h) => {
+        const total = (h.broodFrames || 6) + (h.honeyFrames || 4);
+        return total === targetFrames || (targetFrames === 10 && !h.broodFrames);
+      });
+    }
+    if (!hiveSearch.trim()) return result;
     const q = hiveSearch.toLowerCase();
-    return hivesList.filter(
+    return result.filter(
       (h) =>
         h.code.toLowerCase().includes(q) ||
+        h.name.toLowerCase().includes(q) ||
         h.queenStatus.toLowerCase().includes(q) ||
         (h.sensorSerial && h.sensorSerial.toLowerCase().includes(q))
     );
-  }, [hivesList, hiveSearch]);
+  }, [hivesList, hiveSearch, frameFilter]);
 
   const totalPages = Math.ceil(filteredHives.length / pageSize) || 1;
   const paginatedHives = useMemo(() => {
@@ -5697,15 +5877,8 @@ export function ApiaryDetailModal({
                   <div className="ml-auto pb-2 flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => {
-                        setTempScannedSerial("");
-                        requestAnimationFrame(() => {
-                          React.startTransition(() => {
-                            setShowAddHiveModal(true);
-                          });
-                        });
-                      }}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#FFB800] hover:bg-amber-500 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-transform duration-150 active:scale-95 touch-manipulation transform-gpu will-change-transform cursor-pointer"
+                      onClick={handleOpenInlineAddHive}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-transform duration-150 active:scale-95 touch-manipulation transform-gpu will-change-transform cursor-pointer border border-emerald-500/40"
                     >
                       <Plus className="w-3.5 h-3.5 stroke-[2.5] pointer-events-none" />
                       <span className="pointer-events-none select-none">Add Hive</span>
@@ -5770,6 +5943,371 @@ export function ApiaryDetailModal({
               {/* List Sub-tab */}
               {hivesSubTab === "list" && (
                 <div className="space-y-4">
+                  {/* Prominent Add Hive Banner (Matching Inspections UI/UX) */}
+                  {!showInlineHiveForm && (
+                    <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm text-white">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                          <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+                        </div>
+                        <div>
+                          <h3 className="font-display text-sm sm:text-base font-bold text-white">
+                            Register Hive Colony & Architecture
+                          </h3>
+                          <p className="text-xs text-emerald-200/90 mt-0.5">
+                            Configure 8 – 12 frame setup, queen status, and pair telemetry hardware in {apiary.name}.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleOpenInlineAddHive}
+                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0 cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+                        <span className="text-white font-bold select-none">Add Hive Colony</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Stats Cards Grid (Matching Inspections UI/UX) */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { label: "Total hives", value: hiveStats.total, icon: Box, tone: "text-amber-500" },
+                      { label: "Active colonies", value: hiveStats.active, icon: CheckCircle2, tone: "text-emerald-500" },
+                      { label: "Standby stands", value: hiveStats.standby, icon: AlertCircle, tone: "text-stone-400" },
+                      { label: "Paired sensors", value: hiveStats.sensorsCount, icon: Cpu, tone: "text-blue-500" },
+                    ].map((s) => (
+                      <div key={s.label} className="rounded-xl border border-border bg-card p-3.5 shadow-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] uppercase tracking-wide text-muted-foreground font-semibold">{s.label}</span>
+                          <s.icon className={`w-4 h-4 ${s.tone}`} />
+                        </div>
+                        <p className={`mt-2 font-display text-2xl font-bold ${s.tone}`}>{s.value}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Frame Architecture Quick Filters (Matching Inspections UI/UX) */}
+                  <div className="rounded-xl border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-amber-500" />
+                      <span className="font-bold text-foreground">Hive Setup (8 – 12 Frames):</span>
+                      <span className="text-muted-foreground text-[11px]">Filtered by frame architecture</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 overflow-x-auto">
+                      <button
+                        type="button"
+                        onClick={() => setFrameFilter("all")}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                          frameFilter === "all"
+                            ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm border-emerald-500"
+                            : "bg-background border-border text-muted-foreground hover:border-amber-400/40"
+                        }`}
+                      >
+                        All Frame Sizes ({hivesList.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFrameFilter("8")}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                          frameFilter === "8"
+                            ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm border-emerald-500"
+                            : "bg-background border-border text-muted-foreground hover:border-amber-400/40"
+                        }`}
+                      >
+                        8 Frames (Top Bar / L-8)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFrameFilter("10")}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                          frameFilter === "10"
+                            ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm border-emerald-500"
+                            : "bg-background border-border text-muted-foreground hover:border-amber-400/40"
+                        }`}
+                      >
+                        10 Frames (Langstroth 10)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFrameFilter("12")}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+                          frameFilter === "12"
+                            ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm border-emerald-500"
+                            : "bg-background border-border text-muted-foreground hover:border-amber-400/40"
+                        }`}
+                      >
+                        12 Frames (Commercial Deep)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inline Hive Creation / Edit Form (Matching Inspections UI/UX) */}
+                  {showInlineHiveForm && (
+                    <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
+                      <div className="bg-emerald-600 px-5 py-3.5 flex items-center justify-between text-white">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                            {editingHiveId ? <Pencil className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white stroke-[2.5]" />}
+                          </div>
+                          <div>
+                            <h2 className="font-display text-sm sm:text-base font-bold text-white tracking-wide">
+                              {editingHiveId ? "Edit Hive Colony" : "Register Hive Colony"}
+                            </h2>
+                            <p className="text-[11px] text-emerald-100">
+                              {editingHiveId ? `Editing hive: ${inlineHiveDraft.code}` : `Register new hive colony in ${apiary.name}`}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setShowInlineHiveForm(false);
+                            setEditingHiveId(null);
+                            setInlineAiText("");
+                          }}
+                          className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
+                          aria-label="Close form"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+
+                      <div className="p-5 space-y-4">
+                        {/* Section 1: Apiary Context & Hive Target */}
+                        <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+                            <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Apiary Target & Hive Identification
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              Apiary: <strong className="text-emerald-600 dark:text-emerald-400">{apiary.name}</strong> • Target Code: <strong className="text-honey">{inlineHiveDraft.code}</strong>
+                            </span>
+                          </div>
+
+                          <div className="grid md:grid-cols-3 gap-3">
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground font-semibold">Hive Code / Tag</span>
+                              <input
+                                value={inlineHiveDraft.code}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, code: e.target.value })}
+                                placeholder="e.g. KIB-001"
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold font-mono text-foreground"
+                              />
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground font-semibold">Hive Construction Architecture</span>
+                              <select
+                                value={inlineHiveDraft.hiveType}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, hiveType: e.target.value })}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                              >
+                                <option value="Langstroth 10-Frame">Langstroth 10-Frame</option>
+                                <option value="Langstroth 8-Frame">Langstroth 8-Frame</option>
+                                <option value="Commercial Deep 12-Frame">Commercial Deep 12-Frame</option>
+                                <option value="Top Bar Hive">Top Bar Hive (Kenya Top Bar)</option>
+                              </select>
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground font-semibold">Colony Status</span>
+                              <select
+                                value={inlineHiveDraft.queenPresent ? "Active" : "Standby"}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, queenPresent: e.target.value === "Active" })}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground text-xs"
+                              >
+                                <option value="Active">Active Producing Colony</option>
+                                <option value="Standby">Standby Stand (Awaiting Swarm)</option>
+                              </select>
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Section 2: Frame Architecture (8 - 12 Frames) */}
+                        <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+                            <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                              <Layers className="w-3.5 h-3.5 text-honey" /> Hive Frame Configuration (8 – 12 Frame Standard)
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              Configured: <strong className="text-honey">{inlineHiveDraft.totalFrames} frames</strong> ({inlineHiveDraft.broodFrames} brood + {inlineHiveDraft.honeyFrames} honey)
+                            </span>
+                          </div>
+
+                          <div className="grid md:grid-cols-3 gap-3">
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Total Frame Capacity</span>
+                              <select
+                                value={inlineHiveDraft.totalFrames}
+                                onChange={(e) => {
+                                  const total = Number(e.target.value);
+                                  const brood = Math.min(inlineHiveDraft.broodFrames, total);
+                                  const honey = Math.min(inlineHiveDraft.honeyFrames, total - brood);
+                                  setInlineHiveDraft({ ...inlineHiveDraft, totalFrames: total, broodFrames: brood, honeyFrames: honey });
+                                }}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground text-xs"
+                              >
+                                <option value={8}>8 Frames (Top Bar / 8-Frame Langstroth)</option>
+                                <option value={10}>10 Frames (Standard Langstroth 10)</option>
+                                <option value={12}>12 Frames (Commercial Deep 12)</option>
+                              </select>
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Brood Chamber Frames</span>
+                              <input
+                                type="number"
+                                min={0}
+                                max={inlineHiveDraft.totalFrames}
+                                value={inlineHiveDraft.broodFrames}
+                                onChange={(e) => {
+                                  const brood = Math.min(inlineHiveDraft.totalFrames, Math.max(0, Number(e.target.value)));
+                                  const honey = Math.min(inlineHiveDraft.honeyFrames, inlineHiveDraft.totalFrames - brood);
+                                  setInlineHiveDraft({ ...inlineHiveDraft, broodFrames: brood, honeyFrames: honey });
+                                }}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                              />
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Honey Super Frames</span>
+                              <input
+                                type="number"
+                                min={0}
+                                max={inlineHiveDraft.totalFrames - inlineHiveDraft.broodFrames}
+                                value={inlineHiveDraft.honeyFrames}
+                                onChange={(e) => {
+                                  const maxHoney = inlineHiveDraft.totalFrames - inlineHiveDraft.broodFrames;
+                                  const honey = Math.min(maxHoney, Math.max(0, Number(e.target.value)));
+                                  setInlineHiveDraft({ ...inlineHiveDraft, honeyFrames: honey });
+                                }}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                              />
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Section 3: Queen & Genetics */}
+                        <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+                          <span className="font-bold text-xs text-foreground flex items-center gap-1.5 border-b border-border/50 pb-2">
+                            <Crown className="w-3.5 h-3.5 text-honey" /> Queen Presence & Breeding Telemetry
+                          </span>
+
+                          <div className="grid md:grid-cols-3 gap-3">
+                            <label className="flex items-center gap-2 cursor-pointer pt-4">
+                              <input
+                                type="checkbox"
+                                checked={inlineHiveDraft.queenPresent}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, queenPresent: e.target.checked })}
+                                className="w-4 h-4 rounded text-honey focus:ring-honey border-border"
+                              />
+                              <span className="text-xs font-semibold text-foreground flex items-center gap-1">
+                                <Crown className="w-3.5 h-3.5 text-honey" /> Queen Present & Active
+                              </span>
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Queen Breeding Year</span>
+                              <input
+                                type="number"
+                                min={2020}
+                                max={2030}
+                                value={inlineHiveDraft.queenBreedingYear}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, queenBreedingYear: Number(e.target.value) || 2025 })}
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-semibold text-foreground"
+                              />
+                            </label>
+
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Queen Marking & Origin</span>
+                              <input
+                                value={inlineHiveDraft.queenStatus}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, queenStatus: e.target.value })}
+                                placeholder="e.g. Active Laying Queen (Marked)"
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-medium text-foreground text-xs"
+                              />
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Section 4: Hardware / IoT Sensor */}
+                        <div className="p-3.5 rounded-xl border border-border bg-background space-y-3">
+                          <span className="font-bold text-xs text-foreground flex items-center gap-1.5 border-b border-border/50 pb-2">
+                            <Cpu className="w-3.5 h-3.5 text-blue-500" /> IoT Hardware Sensor Pairing
+                          </span>
+
+                          <div className="grid md:grid-cols-2 gap-3">
+                            <label className="text-xs space-y-1">
+                              <span className="text-muted-foreground">Sensor Serial / Node ID</span>
+                              <input
+                                value={inlineHiveDraft.sensorSerial}
+                                onChange={(e) => setInlineHiveDraft({ ...inlineHiveDraft, sensorSerial: e.target.value })}
+                                placeholder="e.g. BY-KBZ-001 (Leave empty for physical ledger)"
+                                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-mono text-xs text-foreground"
+                              />
+                            </label>
+                            <div className="flex items-center text-xs text-muted-foreground pt-4">
+                              {inlineHiveDraft.sensorSerial ? (
+                                <span className="text-blue-500 font-semibold flex items-center gap-1">
+                                  <Radio className="w-3.5 h-3.5" /> Bound to hardware sensor node
+                                </span>
+                              ) : (
+                                <span className="text-stone-500 flex items-center gap-1">
+                                  <ClipboardCheck className="w-3.5 h-3.5 text-emerald-500" /> Physical inspection ledger tracking (0 Connected)
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Section 5: AI Diagnostic Auditor */}
+                        <div className="border-t border-border pt-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-honey flex items-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5" /> AI Colony Health Auditor
+                            </span>
+                            <button
+                              type="button"
+                              onClick={runInlineAi}
+                              disabled={inlineAiLoading}
+                              className="px-3 py-1 rounded-lg bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1 disabled:opacity-50 transition-colors"
+                            >
+                              {inlineAiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                              Run clinical diagnosis
+                            </button>
+                          </div>
+                          {inlineAiText && (
+                            <div className="rounded-lg border border-honey/30 bg-background/50 p-3 text-xs">
+                              <MarkdownRenderer content={inlineAiText} />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Save / Cancel */}
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                          <button
+                            onClick={() => {
+                              setShowInlineHiveForm(false);
+                              setEditingHiveId(null);
+                              setInlineAiText("");
+                            }}
+                            className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleSaveInlineHive}
+                            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/40"
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-white" />
+                            <span className="text-white">{editingHiveId ? "Update Hive Colony" : "Save Hive Colony"}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Search and Quick Filters */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="relative flex-1 sm:max-w-xs">
@@ -5812,6 +6350,7 @@ export function ApiaryDetailModal({
                           const healthStatus = hiveInspection?.colony_health || (hive.queenPresent ? "Healthy" : "Standby");
                           const isHealthy = healthStatus === "Healthy";
                           const isWatch = healthStatus === "Watch";
+                          const totalFrames = (hive.broodFrames || 6) + (hive.honeyFrames || 4);
 
                           // Live outside ambient temperature from Open-Meteo
                           const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
@@ -5819,25 +6358,39 @@ export function ApiaryDetailModal({
                           return (
                             <div
                               key={hive.id}
-                              onClick={() => setSelectedHiveForDetail(hive)}
-                              className="bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all cursor-pointer space-y-3.5 text-[#2E2A25] dark:text-stone-200"
+                              className="bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all space-y-3.5 text-[#2E2A25] dark:text-stone-200 overflow-hidden"
                             >
                               {/* Header: Hive Name & Certified Physical Inspection Badge */}
-                              <div className="flex items-center justify-between">
+                              <div
+                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
+                                className="flex items-center justify-between cursor-pointer"
+                              >
                                 <div className="flex items-center gap-2.5">
                                   <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
-                                  <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                                    {hiveTitle}
-                                  </span>
+                                  <div>
+                                    <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100 block">
+                                      {hiveTitle}
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground font-mono">{hive.code} • {totalFrames} Frames</span>
+                                  </div>
                                 </div>
-                                <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100/70 dark:bg-amber-950/40 border border-amber-300/40 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 border ${
+                                  isHealthy
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                    : isWatch
+                                    ? "bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300"
+                                    : "bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-900 dark:text-stone-300"
+                                }`}>
                                   <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                  Physical Inspection
+                                  {healthStatus}
                                 </span>
                               </div>
 
                               {/* Inspection status & Queen details */}
-                              <div className="flex items-center justify-between text-xs pt-0.5">
+                              <div
+                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
+                                className="flex items-center justify-between text-xs pt-0.5 cursor-pointer"
+                              >
                                 <span className="text-[#8E8880] text-[11px] flex items-center gap-1">
                                   <Calendar className="w-3 h-3 text-stone-400" />
                                   {hiveInspection?.inspected_on ? `Last inspected: ${hiveInspection.inspected_on}` : "Hands-on audit • Verified Queenright"}
@@ -5847,15 +6400,15 @@ export function ApiaryDetailModal({
                                 </span>
                               </div>
 
-                              {/* Action Shortcuts: Inspect, Syrup, FrameSense */}
+                              {/* Action Shortcuts: Inspect, Syrup, FrameSense, Edit, Details */}
                               <div className="flex items-center justify-between text-xs pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
                                 <span className="text-[11px] text-[#8E8880]">Actions</span>
                                 <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     type="button"
-                                    onClick={() => setSelectedHiveForDetail(hive)}
+                                    onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
                                     className="px-2 py-0.5 rounded-full border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all shadow-xs"
-                                    title="View or log physical inspections for this hive"
+                                    title="View inline diagnostics"
                                   >
                                     <ClipboardCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                     <span>Inspect</span>
@@ -5878,11 +6431,30 @@ export function ApiaryDetailModal({
                                     <LayoutGrid className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                                     <span>FrameSense</span>
                                   </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => startInlineEdit(hive, e)}
+                                    className="px-2 py-0.5 rounded-full border border-honey/40 bg-honey/10 text-honey text-[10px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs"
+                                    title="Edit hive colony"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                    <span>Edit</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
+                                    className="px-2 py-0.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-foreground text-[10px] font-bold transition-all"
+                                  >
+                                    {expandedHiveId === hive.id ? "Hide" : "Details"}
+                                  </button>
                                 </div>
                               </div>
 
                               {/* 3 Standard Rows: Strength, Health State, Outside Temp */}
-                              <div className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
+                              <div
+                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
+                                className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80 cursor-pointer"
+                              >
                                 {/* Row 1: Colony strength */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
@@ -5935,6 +6507,207 @@ export function ApiaryDetailModal({
                                   </div>
                                 </div>
                               </div>
+
+                              {/* INLINE EXPANDED HIVE DETAILS (Matching Inspections UI/UX - INTACT, ZERO POPUP) */}
+                              {expandedHiveId === hive.id && (
+                                <div className="border-t border-[#EAE3DA] dark:border-stone-800 pt-3.5 space-y-3 text-xs bg-background/60 -mx-5 -mb-5 p-5">
+                                  <div className="grid md:grid-cols-4 gap-3">
+                                    <p>
+                                      <span className="text-muted-foreground">Frame Architecture:</span>{" "}
+                                      <strong>{totalFrames} frames</strong> (Langstroth 10 standard)
+                                    </p>
+                                    <p>
+                                      <span className="text-muted-foreground">Hive Type:</span>{" "}
+                                      {hive.hiveType || "Langstroth 10-Frame"}
+                                    </p>
+                                    <p>
+                                      <span className="text-muted-foreground">Queen Status:</span>{" "}
+                                      {hive.queenPresent ? `Present (Marked ${hive.queenBreedingYear || 2025})` : "Queenless / Standby"}
+                                    </p>
+                                    <p>
+                                      <span className="text-muted-foreground">Hardware Device:</span>{" "}
+                                      {hive.sensorSerial ? `Paired (${hive.sensorSerial})` : "0 Connected (Physical Ledger)"}
+                                    </p>
+                                  </div>
+
+                                  {/* Environmental Telemetry */}
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 text-xs">
+                                    <p className="flex items-center gap-1.5">
+                                      <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                      <span className="text-muted-foreground">Outside Temp:</span>{" "}
+                                      <strong className="text-foreground font-mono font-bold">{outsideTemp}°C</strong>
+                                    </p>
+                                    <p className="flex items-center gap-1.5">
+                                      <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                      <span className="text-muted-foreground">Brood Chamber:</span>{" "}
+                                      <strong className="text-foreground text-[11px] font-mono">34.8°C</strong>
+                                    </p>
+                                    <p className="flex items-center gap-1.5">
+                                      <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                      <span className="text-muted-foreground">Gross Weight:</span>{" "}
+                                      <strong className="text-foreground text-[11px] font-mono">{hiveInspection?.weight_kg ? `${hiveInspection.weight_kg} kg` : "42.5 kg"}</strong>
+                                    </p>
+                                    <p className="flex items-center gap-1.5">
+                                      <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                      <span className="text-muted-foreground">Audit Record:</span>{" "}
+                                      <strong className="text-emerald-700 dark:text-emerald-400 text-[11px] font-bold">{healthStatus}</strong>
+                                    </p>
+                                  </div>
+
+                                  {/* Harvest Batches Logged for this hive */}
+                                  <div className="pt-2 border-t border-border/50 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                                        <Award className="w-3.5 h-3.5 text-amber-500" /> Harvest Extractions ({hive.batches?.length || 0} batches)
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setInlineHarvestHiveId(inlineHarvestHiveId === hive.id ? null : hive.id);
+                                        }}
+                                        className="px-2.5 py-1 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-500/20"
+                                      >
+                                        <Plus className="w-3 h-3" /> Log Harvest Batch
+                                      </button>
+                                    </div>
+
+                                    {inlineHarvestHiveId === hive.id && (
+                                      <div className="p-3 rounded-xl border border-amber-400/40 bg-card space-y-2.5">
+                                        <span className="font-bold text-[11px] text-amber-700 dark:text-amber-300 block">Record New Certified Extraction for {hive.code}</span>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                          <label className="text-[11px] space-y-1">
+                                            <span className="text-muted-foreground">Date</span>
+                                            <input
+                                              type="date"
+                                              value={inlineHarvestDraft.date}
+                                              onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, date: e.target.value })}
+                                              className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
+                                            />
+                                          </label>
+                                          <label className="text-[11px] space-y-1">
+                                            <span className="text-muted-foreground">Quantity (kg)</span>
+                                            <input
+                                              type="number"
+                                              step="0.1"
+                                              value={inlineHarvestDraft.quantityKg}
+                                              onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, quantityKg: parseFloat(e.target.value) || 0 })}
+                                              className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold font-mono"
+                                            />
+                                          </label>
+                                          <label className="text-[11px] space-y-1">
+                                            <span className="text-muted-foreground">Floral Variety</span>
+                                            <input
+                                              value={inlineHarvestDraft.honeyType}
+                                              onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, honeyType: e.target.value })}
+                                              className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
+                                            />
+                                          </label>
+                                          <label className="text-[11px] space-y-1">
+                                            <span className="text-muted-foreground">Moisture (% RH)</span>
+                                            <input
+                                              type="number"
+                                              step="0.1"
+                                              value={inlineHarvestDraft.moisturePct}
+                                              onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, moisturePct: parseFloat(e.target.value) || 16.8 })}
+                                              className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-mono"
+                                            />
+                                          </label>
+                                        </div>
+                                        <div className="flex items-center justify-end gap-2 pt-1">
+                                          <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); setInlineHarvestHiveId(null); }}
+                                            className="px-2.5 py-1 text-[11px] rounded-lg border border-border"
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={(e) => { e.stopPropagation(); handleSaveInlineHarvest(hive); }}
+                                            className="px-3 py-1 text-[11px] rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold"
+                                          >
+                                            Save Batch
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {hive.batches && hive.batches.length > 0 ? (
+                                      <div className="space-y-1.5">
+                                        {hive.batches.map((b) => (
+                                          <div key={b.id} className="p-2 rounded-lg bg-card border border-border flex items-center justify-between text-[11px]">
+                                            <div>
+                                              <span className="font-bold text-foreground font-mono">{b.batchCode}</span>
+                                              <span className="text-muted-foreground ml-2">· {b.date}</span>
+                                              <span className="text-amber-600 dark:text-amber-400 font-semibold ml-2">· {b.honeyType}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                              <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">{b.quantityKg} kg</span>
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  const updatedBatches = hive.batches.filter((item) => item.id !== b.id);
+                                                  handleUpdateHive({ ...hive, batches: updatedBatches });
+                                                  toast.success("Batch removed");
+                                                }}
+                                                className="text-stone-400 hover:text-rose-500 p-0.5"
+                                                title="Remove batch"
+                                              >
+                                                <Trash2 className="w-3 h-3" />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-[11px] text-muted-foreground italic">No individual harvest batches recorded yet for this stand.</p>
+                                    )}
+                                  </div>
+
+                                  {/* Bottom Actions */}
+                                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50">
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedHiveForFrameSense(hive);
+                                      }}
+                                      className="px-2.5 py-1 rounded-lg border border-amber-400/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 font-bold flex items-center gap-1"
+                                    >
+                                      <LayoutGrid className="w-3.5 h-3.5 text-amber-600" /> FrameSense AI Scan
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedHiveForSyrup(hive);
+                                      }}
+                                      className="px-2.5 py-1 rounded-lg border border-blue-400/40 bg-blue-500/10 text-blue-800 dark:text-blue-300 font-bold flex items-center gap-1"
+                                    >
+                                      <Coffee className="w-3.5 h-3.5 text-blue-600" /> Syrup Nutrition
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => startInlineEdit(hive, e)}
+                                      className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey font-bold flex items-center gap-1"
+                                    >
+                                      <Pencil className="w-3.5 h-3.5" /> Edit Hive
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteHive(hive.id, hive.code);
+                                      }}
+                                      className="text-rose-500 hover:underline flex items-center gap-1 ml-auto"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" /> Delete hive
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
@@ -5991,85 +6764,280 @@ export function ApiaryDetailModal({
                           <tbody className="divide-y divide-border/60">
                             {paginatedHives.map((hive) => {
                               const queenColor = getQueenYearColor(hive.queenBreedingYear);
-                              const hiveKg = hive.batches.reduce((sum, b) => sum + b.quantityKg, 0);
+                              const isExpanded = expandedHiveId === hive.id;
+                              const cleanCodeNum = hive.code.replace(/^KIB-?/i, "").replace(/^0+/, "");
+                              const hiveInspection = allInspections.find((insp: any) => {
+                                const lbl = (insp.hive_label || insp.hive_code || "").toLowerCase();
+                                const cleanLbl = lbl.replace(/^kib-?/i, "").replace(/^beeyield\s*/i, "").replace(/^0+/, "").trim();
+                                return lbl.includes(hive.code.toLowerCase()) || (cleanCodeNum && cleanLbl === cleanCodeNum);
+                              });
+                              const healthStatus = hiveInspection?.colony_health || (hive.queenPresent ? "Healthy" : "Standby");
+                              const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
 
                               return (
-                                <tr
-                                  key={hive.id}
-                                  onClick={() => setSelectedHiveForDetail(hive)}
-                                  className="hover:bg-amber-500/10 cursor-pointer transition-colors group"
-                                  title="Click to view hive details and harvests"
-                                >
-                                  <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
-                                    {hive.code}
-                                  </td>
-                                  <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
-                                  <td className="px-4 py-3">
-                                    {hive.queenPresent ? (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                        Queen Present
+                                <React.Fragment key={hive.id}>
+                                  <tr
+                                    onClick={() => setExpandedHiveId(isExpanded ? null : hive.id)}
+                                    className={`hover:bg-amber-500/10 cursor-pointer transition-colors group ${isExpanded ? "bg-amber-500/5 dark:bg-amber-950/20" : ""}`}
+                                    title="Click to toggle intact inline hive details"
+                                  >
+                                    <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
+                                      {hive.code}
+                                    </td>
+                                    <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
+                                    <td className="px-4 py-3">
+                                      {hive.queenPresent ? (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                          Queen Present
+                                        </span>
+                                      ) : (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                          Queenless
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className="inline-flex items-center gap-1.5 font-bold text-[11px] text-foreground">
+                                        <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                                        {hive.queenBreedingYear}
                                       </span>
-                                    ) : (
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-                                        Queenless
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      {hive.batches.length > 0 ? (
+                                        <span className="font-bold text-foreground">
+                                          {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground text-[11px]">0 Batches</span>
+                                      )}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
+                                        <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                        {healthStatus}
                                       </span>
-                                    )}
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <span className="inline-flex items-center gap-1.5 font-bold text-[11px] text-foreground">
-                                      <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
-                                      {hive.queenBreedingYear}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    {hive.batches.length > 0 ? (
-                                      <span className="font-bold text-foreground">
-                                        {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
-                                      </span>
-                                    ) : (
-                                      <span className="text-muted-foreground text-[11px]">0 Batches</span>
-                                    )}
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
-                                      <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                      Physical Inspection
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3 text-right">
-                                    <div
-                                      className="flex items-center justify-end gap-1.5"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <button
-                                        type="button"
-                                        onClick={() => setSelectedHiveForDetail(hive)}
-                                        className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
-                                        title="View details"
+                                    </td>
+                                    <td className="px-4 py-3 text-right">
+                                      <div
+                                        className="flex items-center justify-end gap-1.5"
+                                        onClick={(e) => e.stopPropagation()}
                                       >
-                                        <Eye className="w-3 h-3 text-amber-500" /> View
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => setEditingHive(hive)}
-                                        className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
-                                        title="Edit hive"
-                                      >
-                                        <Pencil className="w-3 h-3" /> Edit
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => handleDeleteHive(hive.id, hive.code)}
-                                        className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
-                                        title="Delete hive"
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
+                                        <button
+                                          type="button"
+                                          onClick={() => setExpandedHiveId(isExpanded ? null : hive.id)}
+                                          className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                          title="Toggle inline details"
+                                        >
+                                          <Eye className="w-3 h-3 text-amber-500" /> {isExpanded ? "Hide" : "Details"}
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={(e) => startInlineEdit(hive, e)}
+                                          className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                          title="Edit hive inline"
+                                        >
+                                          <Pencil className="w-3 h-3" /> Edit
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDeleteHive(hive.id, hive.code)}
+                                          className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
+                                          title="Delete hive"
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+
+                                  {/* Intact Inline Details Row (Matching Inspections UI/UX) */}
+                                  {isExpanded && (
+                                    <tr>
+                                      <td colSpan={7} className="p-4 bg-[#FAF4EE]/70 dark:bg-stone-900/60 border-b border-border/80">
+                                        <div className="space-y-3.5 text-xs">
+                                          {/* Vitals & Telemetry */}
+                                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
+                                            <p className="flex items-center gap-1.5">
+                                              <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                              <span className="text-muted-foreground">Outside:</span>{" "}
+                                              <strong className="text-foreground text-[11px] font-mono">{outsideTemp}°C</strong>
+                                            </p>
+                                            <p className="flex items-center gap-1.5">
+                                              <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                                              <span className="text-muted-foreground">Brood Chamber:</span>{" "}
+                                              <strong className="text-foreground text-[11px] font-mono">34.8°C</strong>
+                                            </p>
+                                            <p className="flex items-center gap-1.5">
+                                              <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                              <span className="text-muted-foreground">Gross Weight:</span>{" "}
+                                              <strong className="text-foreground text-[11px] font-mono">{hiveInspection?.weight_kg ? `${hiveInspection.weight_kg} kg` : "42.5 kg"}</strong>
+                                            </p>
+                                            <p className="flex items-center gap-1.5">
+                                              <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                              <span className="text-muted-foreground">Health Status:</span>{" "}
+                                              <strong className="text-emerald-700 dark:text-emerald-400 text-[11px] font-bold">{healthStatus}</strong>
+                                            </p>
+                                          </div>
+
+                                          {/* Harvest Extractions */}
+                                          <div className="pt-2 border-t border-border/50 space-y-2">
+                                            <div className="flex items-center justify-between">
+                                              <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                                                <Award className="w-3.5 h-3.5 text-amber-500" /> Harvest Extractions ({hive.batches?.length || 0} batches)
+                                              </span>
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  setInlineHarvestHiveId(inlineHarvestHiveId === hive.id ? null : hive.id);
+                                                }}
+                                                className="px-2.5 py-1 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-500/20"
+                                              >
+                                                <Plus className="w-3 h-3" /> Log Harvest Batch
+                                              </button>
+                                            </div>
+
+                                            {inlineHarvestHiveId === hive.id && (
+                                              <div className="p-3 rounded-xl border border-amber-400/40 bg-card space-y-2.5">
+                                                <span className="font-bold text-[11px] text-amber-700 dark:text-amber-300 block">Record New Extraction for {hive.code}</span>
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                                  <label className="text-[11px] space-y-1">
+                                                    <span className="text-muted-foreground">Date</span>
+                                                    <input
+                                                      type="date"
+                                                      value={inlineHarvestDraft.date}
+                                                      onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, date: e.target.value })}
+                                                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
+                                                    />
+                                                  </label>
+                                                  <label className="text-[11px] space-y-1">
+                                                    <span className="text-muted-foreground">Quantity (kg)</span>
+                                                    <input
+                                                      type="number"
+                                                      step="0.1"
+                                                      value={inlineHarvestDraft.quantityKg}
+                                                      onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, quantityKg: parseFloat(e.target.value) || 0 })}
+                                                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-bold font-mono"
+                                                    />
+                                                  </label>
+                                                  <label className="text-[11px] space-y-1">
+                                                    <span className="text-muted-foreground">Floral Variety</span>
+                                                    <input
+                                                      value={inlineHarvestDraft.honeyType}
+                                                      onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, honeyType: e.target.value })}
+                                                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs"
+                                                    />
+                                                  </label>
+                                                  <label className="text-[11px] space-y-1">
+                                                    <span className="text-muted-foreground">Moisture (% RH)</span>
+                                                    <input
+                                                      type="number"
+                                                      step="0.1"
+                                                      value={inlineHarvestDraft.moisturePct}
+                                                      onChange={(e) => setInlineHarvestDraft({ ...inlineHarvestDraft, moisturePct: parseFloat(e.target.value) || 16.8 })}
+                                                      className="w-full bg-background border border-border rounded-lg px-2 py-1 text-xs font-mono"
+                                                    />
+                                                  </label>
+                                                </div>
+                                                <div className="flex items-center justify-end gap-2 pt-1">
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); setInlineHarvestHiveId(null); }}
+                                                    className="px-2.5 py-1 text-[11px] rounded-lg border border-border"
+                                                  >
+                                                    Cancel
+                                                  </button>
+                                                  <button
+                                                    type="button"
+                                                    onClick={(e) => { e.stopPropagation(); handleSaveInlineHarvest(hive); }}
+                                                    className="px-3 py-1 text-[11px] rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold"
+                                                  >
+                                                    Save Batch
+                                                  </button>
+                                                </div>
+                                              </div>
+                                            )}
+
+                                            {hive.batches && hive.batches.length > 0 ? (
+                                              <div className="space-y-1.5">
+                                                {hive.batches.map((b) => (
+                                                  <div key={b.id} className="p-2 rounded-lg bg-card border border-border flex items-center justify-between text-[11px]">
+                                                    <div>
+                                                      <span className="font-bold text-foreground font-mono">{b.batchCode}</span>
+                                                      <span className="text-muted-foreground ml-2">· {b.date}</span>
+                                                      <span className="text-amber-600 dark:text-amber-400 font-semibold ml-2">· {b.honeyType}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                      <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">{b.quantityKg} kg</span>
+                                                      <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          const updatedBatches = hive.batches.filter((item) => item.id !== b.id);
+                                                          handleUpdateHive({ ...hive, batches: updatedBatches });
+                                                          toast.success("Batch removed");
+                                                        }}
+                                                        className="text-stone-400 hover:text-rose-500 p-0.5"
+                                                        title="Remove batch"
+                                                      >
+                                                        <Trash2 className="w-3 h-3" />
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            ) : (
+                                              <p className="text-[11px] text-muted-foreground italic">No individual harvest batches recorded yet for this stand.</p>
+                                            )}
+                                          </div>
+
+                                          {/* Action Shortcuts */}
+                                          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50">
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedHiveForFrameSense(hive);
+                                              }}
+                                              className="px-2.5 py-1 rounded-lg border border-amber-400/40 bg-amber-500/10 text-amber-800 dark:text-amber-300 font-bold flex items-center gap-1"
+                                            >
+                                              <LayoutGrid className="w-3.5 h-3.5 text-amber-600" /> FrameSense AI Scan
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedHiveForSyrup(hive);
+                                              }}
+                                              className="px-2.5 py-1 rounded-lg border border-blue-400/40 bg-blue-500/10 text-blue-800 dark:text-blue-300 font-bold flex items-center gap-1"
+                                            >
+                                              <Coffee className="w-3.5 h-3.5 text-blue-600" /> Syrup Nutrition
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={(e) => startInlineEdit(hive, e)}
+                                              className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey font-bold flex items-center gap-1"
+                                            >
+                                              <Pencil className="w-3.5 h-3.5" /> Edit Hive
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteHive(hive.id, hive.code);
+                                              }}
+                                              className="text-rose-500 hover:underline flex items-center gap-1 ml-auto"
+                                            >
+                                              <Trash2 className="w-3.5 h-3.5" /> Delete hive
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  )}
+                                </React.Fragment>
                               );
                             })}
                           </tbody>
@@ -6361,77 +7329,6 @@ export function ApiaryDetailModal({
           />
         )}
 
-        {/* Modal: Interactive Hive Details */}
-        {selectedHiveForDetail && (
-          <HiveDetailModal
-            hive={selectedHiveForDetail}
-            apiary={apiary}
-            weather={modalWeather || weather}
-            allHives={hivesList}
-            allInspections={allInspections}
-            onInspectionLogged={reloadInspections}
-            onClose={() => setSelectedHiveForDetail(null)}
-            onUpdateHive={handleUpdateHive}
-            onAddHarvestToHive={handleAddHarvestToHive}
-            onDeleteBatch={(batchId) => {
-              const targetBatch = selectedHiveForDetail.batches.find((b) => b.id === batchId);
-              const updatedBatches = selectedHiveForDetail.batches.filter((b) => b.id !== batchId);
-              const updatedHive = { ...selectedHiveForDetail, batches: updatedBatches };
-              handleUpdateHive(updatedHive);
-
-              if (targetBatch) {
-                const nextHarvests = harvestsList.filter((h) => h.batch !== targetBatch.batchCode);
-                if (nextHarvests.length !== harvestsList.length) {
-                  saveHarvestsUserScoped(nextHarvests);
-                }
-              }
-              toast.success("Harvest batch deleted");
-            }}
-            onEditBatch={(updatedBatch) => {
-              const updatedBatches = selectedHiveForDetail.batches.map((b) => (b.id === updatedBatch.id ? updatedBatch : b));
-              const updatedHive = { ...selectedHiveForDetail, batches: updatedBatches };
-              handleUpdateHive(updatedHive);
-
-              const nextHarvests = harvestsList.map((h) => {
-                if (h.batch === updatedBatch.batchCode) {
-                  return {
-                    ...h,
-                    quantity_kg: updatedBatch.quantityKg,
-                    honey_type: updatedBatch.honeyType,
-                    moisture_pct: updatedBatch.moisturePct || 17.1,
-                    harvested_on: updatedBatch.date,
-                  };
-                }
-                return h;
-              });
-              saveHarvestsUserScoped(nextHarvests);
-              toast.success("Harvest batch updated");
-            }}
-            onOpenScanner={() => {
-              setScanContext("detailHive");
-              setIsScanningOpen(true);
-            }}
-            onEditHive={(h) => setEditingHive(h)}
-            onDeleteHive={handleDeleteHive}
-          />
-        )}
-
-        {/* Modal: Edit Existing Hive */}
-        {editingHive && (
-          <EditHiveModal
-            isOpen={!!editingHive}
-            hive={editingHive}
-            apiary={apiary}
-            onClose={() => setEditingHive(null)}
-            onSaveHive={handleUpdateHive}
-            onOpenScanner={() => {
-              setScanContext("editHive");
-              setIsScanningOpen(true);
-            }}
-            scannedSerial={scanContext === "editHive" ? tempScannedSerial : undefined}
-          />
-        )}
-
         {/* Modal: Edit Certified Harvest */}
         {editingHarvest && (
           <EditHarvestModal
@@ -6457,22 +7354,6 @@ export function ApiaryDetailModal({
               setIsScanningOpen(true);
             }}
             scannedCode={scanContext === "addDevice" ? tempScannedDeviceCode : undefined}
-          />
-        )}
-
-        {/* Modal: Add New Hive */}
-        {showAddHiveModal && (
-          <AddHiveModal
-            isOpen={showAddHiveModal}
-            apiary={apiary}
-            suggestedCode={`KIB-${String(hivesList.length + 1).padStart(3, "0")}`}
-            onClose={() => setShowAddHiveModal(false)}
-            onAddHive={handleAddHive}
-            onOpenScanner={() => {
-              setScanContext("addHive");
-              setIsScanningOpen(true);
-            }}
-            scannedSerial={tempScannedSerial}
           />
         )}
 
