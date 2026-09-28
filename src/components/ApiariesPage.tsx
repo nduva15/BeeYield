@@ -8412,10 +8412,40 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
     return { leftPct, widthPct };
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest("button, a, input, select, textarea")) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        startTransition(() => {
+          onOpenDetails(apiary);
+        });
+      }, 0);
+    });
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          startTransition(() => {
+            onOpenDetails(apiary);
+          });
+        }, 0);
+      });
+    }
+  };
+
   return (
     <div
-      onClick={() => onOpenDetails(apiary)}
-      className="group rounded-3xl border border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#1C1A17] text-stone-900 dark:text-stone-100 p-5 shadow-sm transition-all duration-200 hover:shadow-xl hover:border-amber-500/50 cursor-pointer space-y-4 relative overflow-hidden"
+      role="button"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      className="group rounded-3xl border border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#1C1A17] text-stone-900 dark:text-stone-100 p-5 shadow-sm transition-[border-color,box-shadow,transform] duration-150 hover:shadow-xl hover:border-amber-500/50 active:scale-[0.99] cursor-pointer space-y-4 relative overflow-hidden select-none touch-manipulation transform-gpu"
     >
       {/* Top Banner on Hover Cue */}
       <div className="flex flex-wrap items-center justify-between gap-2.5">
@@ -8496,7 +8526,10 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
         <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
           Hourly Microclimate Forecast
         </p>
-        <div className="overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x">
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x"
+        >
           <div className="flex items-center gap-2 min-w-full">
             {(weather?.hourly || []).map((slot, idx) => {
               const { Icon } = getWeatherMeta(slot.code);
