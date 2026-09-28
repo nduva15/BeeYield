@@ -869,6 +869,7 @@ export interface HiveCreateInput {
   hive_type?: string;
   bee_type?: string;
   frame_count?: number;
+  brood_frames?: number;
   material?: string;
   status?: string;
   installation_date?: string;
