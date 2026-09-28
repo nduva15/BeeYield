@@ -46,11 +46,13 @@ BEGIN
     END IF;
 END $$;
 
--- 5. Normalize 2020-2025 harvests to exactly 883kg (so grand total = 883 + 60 = 943kg)
+-- 5. Normalize harvests so Timothy Nduva's grand total is exactly 843.0 kg (783kg pre-2026 + 60kg 2026)
 DO $$
 DECLARE
     v_user_id UUID;
     v_hist_current_total NUMERIC := 0;
+    v_season_2026_total NUMERIC := 0;
+    v_target_historical NUMERIC := 783.0;
     v_factor NUMERIC := 1;
     v_date_col TEXT := 'harvest_date';
     v_qty_col TEXT := 'quantity_kg';
@@ -79,16 +81,30 @@ BEGIN
         WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg'
     ) INTO v_has_weight_col;
 
-    -- Sum pre-2026 historical harvests dynamically to prevent SQLSTATE 42703 compilation error
+    -- Sum 2026 harvests
+    EXECUTE format(
+        'SELECT COALESCE(sum(%I), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND %I >= ''2026-01-01''',
+        v_qty_col, v_date_col
+    ) INTO v_season_2026_total USING v_user_id;
+
+    -- Set target historical so grand total equals 843.0 kg
+    IF v_season_2026_total > 0 AND v_season_2026_total < 843.0 THEN
+        v_target_historical := 843.0 - v_season_2026_total;
+    ELSIF v_season_2026_total = 0 THEN
+        v_target_historical := 843.0;
+    END IF;
+
+    -- Sum pre-2026 historical harvests dynamically
     EXECUTE format(
         'SELECT COALESCE(sum(%I), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
         v_qty_col, v_date_col
     ) INTO v_hist_current_total USING v_user_id;
     
-    RAISE NOTICE 'Current pre-2026 total: % kg (column: %, date: %)', v_hist_current_total, v_qty_col, v_date_col;
+    RAISE NOTICE 'Found pre-2026 total: % kg, season 2026: % kg (target historical: % kg, grand total: 843.0 kg)', 
+        v_hist_current_total, v_season_2026_total, v_target_historical;
 
     IF v_hist_current_total > 0 THEN
-        v_factor := 883.0 / v_hist_current_total;
+        v_factor := v_target_historical / v_hist_current_total;
         
         -- Update the effective quantity column dynamically
         EXECUTE format(
@@ -109,6 +125,6 @@ BEGIN
             ) USING v_user_id;
         END IF;
 
-        RAISE NOTICE 'Pre-2026 harvest normalization applied successfully with factor %', v_factor;
+        RAISE NOTICE 'Harvest normalization to 843.0 kg applied successfully with factor %', v_factor;
     END IF;
 END $$;
