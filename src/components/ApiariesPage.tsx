@@ -71,6 +71,7 @@ import {
   Calculator,
   Clock,
   Loader2,
+  HeartPulse,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -275,6 +276,13 @@ export function getQueenYearColor(year: number) {
       dot: "bg-blue-500 shadow-sm",
     };
   }
+}
+
+export function healthTone(h: string) {
+  if (h === "Healthy") return "text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+  if (h === "Watch") return "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30";
+  if (h === "At risk") return "text-orange-500 dark:text-orange-400 bg-orange-500/10 border-orange-500/30";
+  return "text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/30";
 }
 
 // ----------------------------------------------------------------------
@@ -6587,71 +6595,63 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
     }
   };
 
-  if (typeof document === "undefined") return null;
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
-      onClick={onClose}
-    >
-      <div
-        className="relative w-full max-w-5xl max-h-[94vh] bg-card border border-border rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-border bg-card/95 backdrop-blur flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-sm">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg sm:text-xl font-bold font-display tracking-tight text-foreground">
-                  {normalizeApiaryName(apiary.name)}
-                </h2>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {apiary.status}
-                </span>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
-                  {hivesList.length} User Hives Logged
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {normalizeApiaryLocation(apiary.location_name)} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
-              </p>
-            </div>
+  return (
+    <div className="w-full space-y-5 animate-in fade-in duration-150">
+      {/* Top Header with Back Navigation matching InspectionsPage */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 sm:px-3 sm:py-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground transition-all flex items-center gap-2 text-xs font-bold shrink-0 shadow-xs group cursor-pointer"
+            title="Back to Apiary Stations"
+          >
+            <ArrowLeft className="w-4 h-4 text-honey group-hover:-translate-x-0.5 transition-transform" />
+            <span className="hidden sm:inline">Back to Apiaries</span>
+          </button>
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey shrink-0 shadow-xs">
+            <MapPin className="w-5 h-5 text-honey" />
           </div>
-
-          <div className="flex items-center gap-2 self-end sm:self-center">
-            <button
-              type="button"
-              onClick={() => onEdit(apiary)}
-              className="px-3.5 py-1.5 rounded-xl border border-border hover:border-amber-500 bg-background text-xs font-bold text-foreground flex items-center gap-1.5 shadow-sm transition-all"
-            >
-              <Pencil className="w-3.5 h-3.5 text-amber-500" />
-              Edit Apiary
-            </button>
-            {onDelete && (
-              <button
-                type="button"
-                onClick={() => onDelete(apiary.id, normalizeApiaryName(apiary.name))}
-                className="px-3.5 py-1.5 rounded-xl border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shadow-sm transition-all"
-                title="Delete this apiary station"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                Delete Apiary
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-9 h-9 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors shadow-sm"
-              aria-label="Close modal"
-            >
-              <X className="w-4 h-4" />
-            </button>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-foreground">
+                {normalizeApiaryName(apiary.name)}
+              </h2>
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                {apiary.status}
+              </span>
+              <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/30">
+                {hivesList.length} User Hives Logged
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {normalizeApiaryLocation(apiary.location_name)} · {apiary.latitude}°, {apiary.longitude}° · {apiary.size_acres} Acres · Lead Beekeeper: Timothy Nduva
+            </p>
           </div>
         </div>
+
+        <div className="flex items-center gap-2 self-end sm:self-center">
+          <button
+            type="button"
+            onClick={() => onEdit(apiary)}
+            className="px-3.5 py-2 rounded-xl border border-border hover:border-honey/40 bg-card text-xs font-bold text-foreground flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+          >
+            <Pencil className="w-3.5 h-3.5 text-honey" />
+            <span>Edit Apiary</span>
+          </button>
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(apiary.id, normalizeApiaryName(apiary.name))}
+              className="px-3.5 py-2 rounded-xl border border-rose-500/30 hover:bg-rose-500/10 text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+              title="Delete this apiary station"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Delete Apiary</span>
+            </button>
+          )}
+        </div>
+      </div>
 
         {/* Live Weather Microclimate Bar (Open-Meteo REST API) */}
         <div className="bg-gradient-to-r from-amber-500/10 via-emerald-500/5 to-amber-500/10 border-b border-border/70 px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-2.5 text-xs">
@@ -6748,150 +6748,104 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
         </div>
 
         {/* Tab Content Area */}
-        <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
-          {/* TAB 1: COLONY DIRECTORY & HIVES (Screenshot 1 Companion Cards & Table Toggle) */}
+        <div className="space-y-4 pt-1">
+          {/* TAB 1: COLONY DIRECTORY & HIVES */}
           {activeTab === "hives" && (
             <div className="space-y-4">
-              {/* Top Subheader with Back, Apiary Title, Share & More Menu (Screenshot 1 Header) */}
-              <div className="p-4 sm:p-5 rounded-3xl bg-[#FAF4EE] dark:bg-[#1C1917] border border-[#EFE8DE] dark:border-stone-800 shadow-sm space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                      title="Back to apiaries"
-                    >
-                      <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
-                    </button>
-                    <div>
-                      <span className="text-[11px] text-[#8E8880] font-semibold block leading-none">
-                        Apiary
-                      </span>
-                      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                        {apiary.name.toLowerCase() === "beeyield main apiary" ? "beeyield" : apiary.name}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-[#2E2A25] dark:text-stone-200">
-                    <button
-                      type="button"
-                      onClick={() => toast.info(`Sharing apiary link for ${apiary.name}`)}
-                      className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                      title="Share apiary"
-                    >
-                      <Share2 className="w-5 h-5" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onEdit(apiary)}
-                      className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                      title="Apiary settings"
-                    >
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Sub-tabs: List & Tasks (Screenshot 1) */}
-                <div className="flex items-center gap-6 border-b border-[#EAE3DA] dark:border-stone-800 text-sm font-semibold pt-1">
+              {/* Sub-toolbar: Subtabs (List / Tasks), Add Hive Colony Button, View Mode (Cards / Table) */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+                <div className="flex items-center gap-4 text-xs font-bold">
                   <button
                     type="button"
                     onClick={() => setHivesSubTab("list")}
-                    className={`pb-2.5 relative transition-colors ${
+                    className={`pb-1.5 relative transition-colors flex items-center gap-1.5 cursor-pointer ${
                       hivesSubTab === "list"
-                        ? "text-[#8C6D46] dark:text-amber-400 font-bold"
-                        : "text-[#8E8880] hover:text-foreground"
+                        ? "text-honey font-bold"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <div className="flex items-center gap-1.5">
-                      <LayoutGrid className="w-4 h-4" />
-                      <span>List</span>
-                    </div>
+                    <LayoutGrid className="w-4 h-4" />
+                    <span>Colony Directory ({filteredHives.length})</span>
                     {hivesSubTab === "list" && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8C6D46] dark:bg-amber-400 rounded-full" />
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-honey rounded-full" />
                     )}
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setHivesSubTab("tasks")}
-                    className={`pb-2.5 relative transition-colors ${
+                    className={`pb-1.5 relative transition-colors flex items-center gap-1.5 cursor-pointer ${
                       hivesSubTab === "tasks"
-                        ? "text-[#8C6D46] dark:text-amber-400 font-bold"
-                        : "text-[#8E8880] hover:text-foreground"
+                        ? "text-honey font-bold"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      <span>Tasks</span>
-                    </div>
+                    <Calendar className="w-4 h-4" />
+                    <span>Scheduled Tasks</span>
                     {hivesSubTab === "tasks" && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8C6D46] dark:bg-amber-400 rounded-full" />
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-honey rounded-full" />
                     )}
                   </button>
+                </div>
 
-                  {/* Action & View Controls */}
-                  <div className="ml-auto pb-2 flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenInlineAddHive}
+                    className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all border border-emerald-500/40 cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Add Hive Colony</span>
+                  </button>
+                  <div className="flex items-center gap-1 bg-muted p-1 rounded-xl text-xs font-bold">
                     <button
                       type="button"
-                      onClick={handleOpenInlineAddHive}
-                      className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-transform duration-150 active:scale-95 touch-manipulation transform-gpu will-change-transform cursor-pointer border border-emerald-500/40"
+                      onClick={() => setHiveViewMode("companion")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        hiveViewMode === "companion"
+                          ? "bg-card text-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
                     >
-                      <Plus className="w-3.5 h-3.5 stroke-[2.5] pointer-events-none" />
-                      <span className="pointer-events-none select-none">Add Hive</span>
+                      Cards
                     </button>
-                    <div className="flex items-center gap-1 bg-[#F2ECE4] dark:bg-stone-800 p-1 rounded-xl text-xs">
-                      <button
-                        type="button"
-                        onClick={() => setHiveViewMode("companion")}
-                        className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                          hiveViewMode === "companion"
-                            ? "bg-white dark:bg-stone-900 text-stone-950 dark:text-stone-100 shadow-sm"
-                            : "text-stone-500 hover:text-foreground"
-                        }`}
-                      >
-                        Cards
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHiveViewMode("table")}
-                        className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                          hiveViewMode === "table"
-                            ? "bg-white dark:bg-stone-900 text-stone-950 dark:text-stone-100 shadow-sm"
-                            : "text-stone-500 hover:text-foreground"
-                        }`}
-                      >
-                        Table
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setHiveViewMode("table")}
+                      className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                        hiveViewMode === "table"
+                          ? "bg-card text-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Table
+                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Tasks Sub-tab */}
               {hivesSubTab === "tasks" && (
-                <div className="p-5 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 space-y-3">
+                <div className="p-4 sm:p-5 rounded-xl border border-border bg-card space-y-3 shadow-xs">
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-amber-500" /> Scheduled Apiary Tasks & Inspections
+                    <Calendar className="w-4 h-4 text-honey" /> Scheduled Apiary Tasks & Inspections
                   </h3>
                   <div className="space-y-2 text-xs">
-                    <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-background border border-border flex items-center justify-between">
                       <div>
                         <span className="font-bold text-foreground block">Varroa Mite Treatment Check</span>
-                        <span className="text-[#8E8880]">beeyield 001 · Thymol screening</span>
+                        <span className="text-muted-foreground">beeyield 001 · Thymol screening</span>
                       </div>
-                      <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 font-bold border border-rose-200 text-[10px]">
+                      <span className="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/20 text-[10px]">
                         Due Today
                       </span>
                     </div>
-                    <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-background border border-border flex items-center justify-between">
                       <div>
                         <span className="font-bold text-foreground block">Super Honey Box Addition</span>
-                        <span className="text-[#8E8880]">beeyield 003 · Acacia blooming flow</span>
+                        <span className="text-muted-foreground">beeyield 003 · Acacia blooming flow</span>
                       </div>
-                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[10px]">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20 text-[10px]">
                         In 2 Days
                       </span>
                     </div>
@@ -7317,7 +7271,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                           return (
                             <div
                               key={hive.id}
-                              className="bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all space-y-3.5 text-[#2E2A25] dark:text-stone-200 overflow-hidden"
+                              className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-honey/40 transition-all space-y-3.5 text-foreground overflow-hidden"
                             >
                               {/* Header: Hive Name & Certified Physical Inspection Badge */}
                               <div
@@ -7325,22 +7279,25 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                 className="flex items-center justify-between cursor-pointer"
                               >
                                 <div className="flex items-center gap-2.5">
-                                  <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                                  <div className="w-9 h-9 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey shrink-0 shadow-xs">
+                                    <HiveLayersIcon className="w-5 h-5 text-honey" />
+                                  </div>
                                   <div>
-                                    <span className="text-base font-bold tracking-tight text-[#2E2A25] dark:text-stone-100 block">
-                                      {hiveTitle}
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-base font-bold tracking-tight text-foreground block">
+                                        {hiveTitle}
+                                      </span>
+                                      <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/20">
+                                        {totalFrames} Frames
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground font-mono">
+                                      Code: {hive.code} · {hive.hiveType || "Langstroth 10-Frame"}
                                     </span>
-                                    <span className="text-[11px] text-muted-foreground font-mono">{hive.code} • {totalFrames} Frames</span>
                                   </div>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 border ${
-                                  isHealthy
-                                    ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300"
-                                    : isWatch
-                                    ? "bg-amber-50 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300"
-                                    : "bg-stone-100 text-stone-700 border-stone-300 dark:bg-stone-900 dark:text-stone-300"
-                                }`}>
-                                  <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 border ${healthTone(healthStatus)}`}>
+                                  <ClipboardCheck className="w-3 h-3" />
                                   {healthStatus}
                                 </span>
                               </div>
@@ -7348,61 +7305,75 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               {/* Inspection status & Queen details */}
                               <div
                                 onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                className="flex items-center justify-between text-xs pt-0.5 cursor-pointer"
+                                className="flex items-center justify-between text-xs pt-0.5 cursor-pointer text-muted-foreground"
                               >
-                                <span className="text-[#8E8880] text-[11px] flex items-center gap-1">
-                                  <Calendar className="w-3 h-3 text-stone-400" />
-                                  {hiveInspection?.inspected_on ? `Last inspected: ${hiveInspection.inspected_on}` : "Hands-on audit • Verified Queenright"}
+                                <span className="text-[11px] flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-muted-foreground/70" />
+                                  {hiveInspection?.inspected_on ? `Last inspected: ${hiveInspection.inspected_on}` : "Hands-on audit · Verified Queenright"}
                                 </span>
-                                <span className="text-[10px] font-semibold text-[#8E8880]">
-                                  {hive.queenPresent ? `Queen marked · ${hive.queenBreedingYear || 2025}` : "Standby stand"}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                  {hive.queenPresent ? (
+                                    <span className="text-[10px] font-semibold flex items-center gap-1 text-foreground">
+                                      <span className={`w-2 h-2 rounded-full ${queenColor.dot}`} />
+                                      Queen marked · {hive.queenBreedingYear || 2025}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[10px] font-semibold text-muted-foreground">
+                                      Standby stand
+                                    </span>
+                                  )}
+                                  {hive.sensorSerial && (
+                                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                                      {hive.sensorSerial}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
 
                               {/* Action Shortcuts: Inspect, Syrup, FrameSense, Edit, Details */}
-                              <div className="flex items-center justify-between text-xs pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80">
-                                <span className="text-[11px] text-[#8E8880]">Actions</span>
+                              <div className="flex items-center justify-between text-xs pt-1 border-t border-border">
+                                <span className="text-[11px] text-muted-foreground font-medium">Actions</span>
                                 <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                                   <button
                                     type="button"
                                     onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                    className="px-2 py-0.5 rounded-full border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold flex items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all shadow-xs"
+                                    className="px-2.5 py-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all shadow-xs cursor-pointer"
                                     title="View inline diagnostics"
                                   >
-                                    <ClipboardCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                    <ClipboardCheck className="w-3 h-3" />
                                     <span>Inspect</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setSelectedHiveForSyrup(hive)}
-                                    className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
+                                    className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey text-[11px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs cursor-pointer"
                                     title="Syrup Calculator for this hive"
                                   >
-                                    <Coffee className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    <Coffee className="w-3 h-3" />
                                     <span>Syrup</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setSelectedHiveForFrameSense(hive)}
-                                    className="px-2 py-0.5 rounded-full border border-amber-400/40 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 text-[10px] font-bold flex items-center gap-1 hover:bg-amber-500 hover:text-stone-950 transition-all shadow-xs"
+                                    className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey text-[11px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs cursor-pointer"
                                     title="FrameSense AI comb analysis for this hive"
                                   >
-                                    <LayoutGrid className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    <LayoutGrid className="w-3 h-3" />
                                     <span>FrameSense</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={(e) => startInlineEdit(hive, e)}
-                                    className="px-2 py-0.5 rounded-full border border-honey/40 bg-honey/10 text-honey text-[10px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs"
+                                    className="px-2.5 py-1 rounded-lg border border-border hover:border-honey/40 bg-background text-foreground text-[11px] font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
                                     title="Edit hive colony"
                                   >
-                                    <Pencil className="w-3 h-3" />
+                                    <Pencil className="w-3 h-3 text-honey" />
                                     <span>Edit</span>
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                    className="px-2 py-0.5 rounded-full border border-stone-300 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 text-foreground text-[10px] font-bold transition-all"
+                                    className="px-2.5 py-1 rounded-lg border border-border bg-muted/60 hover:bg-muted text-foreground text-[11px] font-bold transition-all cursor-pointer"
                                   >
                                     {expandedHiveId === hive.id ? "Hide" : "Details"}
                                   </button>
@@ -7412,15 +7383,15 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               {/* 3 Standard Rows: Strength, Health State, Outside Temp */}
                               <div
                                 onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                className="space-y-2 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80 cursor-pointer"
+                                className="space-y-2 pt-1 border-t border-border cursor-pointer"
                               >
                                 {/* Row 1: Colony strength */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
-                                    <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                                    <span className="text-sm font-medium">Colony strength</span>
+                                    <ShieldCheck className="w-4 h-4 text-honey shrink-0" />
+                                    <span className="text-xs font-medium text-foreground">Colony strength</span>
                                   </div>
-                                  <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-mono font-bold">
+                                  <div className="px-2.5 py-1 rounded-lg border border-border bg-background/80 text-xs font-mono font-bold text-foreground">
                                     {hiveInspection?.brood_frames
                                       ? `${hiveInspection.brood_frames} Brood Frames`
                                       : hive.broodFrames !== undefined && hive.broodFrames > 0
@@ -7434,65 +7405,65 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                 {/* Row 2: Colony state */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
-                                    <BeeSilhouetteIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                                    <span className="text-sm font-medium">Colony state</span>
+                                    <HeartPulse className="w-4 h-4 text-emerald-500 shrink-0" />
+                                    <span className="text-xs font-medium text-foreground">Colony state</span>
                                   </div>
-                                  {isHealthy ? (
-                                    <div className="px-3 py-1 rounded-full border border-[#9DC384] bg-[#EAF5E1] dark:bg-emerald-950/40 text-[#36681E] dark:text-emerald-300 text-xs font-bold flex items-center gap-1.5">
-                                      <CheckCircle2 className="w-3.5 h-3.5 text-[#36681E] dark:text-emerald-400" />
-                                      <span>Healthy</span>
-                                    </div>
-                                  ) : isWatch ? (
-                                    <div className="px-3 py-1 rounded-full border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-xs font-bold flex items-center gap-1.5">
-                                      <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-                                      <span>Watch</span>
-                                    </div>
-                                  ) : (
-                                    <div className="px-3 py-1 rounded-full border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 text-xs font-bold flex items-center gap-1.5">
-                                      <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
-                                      <span>{hive.queenPresent ? healthStatus : "Queenless"}</span>
-                                    </div>
-                                  )}
+                                  <div className={`px-2.5 py-1 rounded-full border text-xs font-bold flex items-center gap-1.5 ${healthTone(healthStatus)}`}>
+                                    {isHealthy ? (
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                    ) : (
+                                      <AlertCircle className="w-3.5 h-3.5" />
+                                    )}
+                                    <span>{hive.queenPresent ? healthStatus : "Queenless"}</span>
+                                  </div>
                                 </div>
 
                                 {/* Row 3: Outside temperature - NO FAKE IN-HIVE DATA */}
                                 <div className="flex items-center justify-between py-1">
                                   <div className="flex items-center gap-2.5">
-                                    <Sun className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                                    <span className="text-sm font-medium">Outside temperature</span>
+                                    <Sun className="w-4 h-4 text-honey shrink-0" />
+                                    <span className="text-xs font-medium text-foreground">Outside temperature</span>
                                   </div>
-                                  <div className="px-3 py-1 rounded-xl border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-bold font-mono">
+                                  <div className="px-2.5 py-1 rounded-lg border border-border bg-background/80 text-xs font-bold font-mono text-foreground">
                                     {outsideTemp}°C
                                   </div>
                                 </div>
                               </div>
 
-                              {/* INLINE EXPANDED HIVE DETAILS (Matching Inspections UI/UX - INTACT, ZERO POPUP) */}
+                              {/* INLINE EXPANDED HIVE DETAILS (Matching Inspections UI/UX) */}
                               {expandedHiveId === hive.id && (
-                                <div className="border-t border-[#EAE3DA] dark:border-stone-800 pt-3.5 space-y-3 text-xs bg-background/60 -mx-5 -mb-5 p-5">
-                                  <div className="grid md:grid-cols-4 gap-3">
-                                    <p>
-                                      <span className="text-muted-foreground">Frame Architecture:</span>{" "}
-                                      <strong>{totalFrames} frames</strong> (Langstroth 10 standard)
-                                    </p>
-                                    <p>
-                                      <span className="text-muted-foreground">Hive Type:</span>{" "}
-                                      {hive.hiveType || "Langstroth 10-Frame"}
-                                    </p>
-                                    <p>
-                                      <span className="text-muted-foreground">Queen Status:</span>{" "}
-                                      {hive.queenPresent ? `Present (Marked ${hive.queenBreedingYear || 2025})` : "Queenless / Standby"}
-                                    </p>
-                                    <p>
-                                      <span className="text-muted-foreground">Hardware Device:</span>{" "}
-                                      {hive.sensorSerial ? `Paired (${hive.sensorSerial})` : "0 Connected (Physical Ledger)"}
-                                    </p>
+                                <div className="border-t border-border pt-3.5 space-y-3 text-xs bg-muted/20 -mx-4 -mb-4 sm:-mx-5 sm:-mb-5 p-4 sm:p-5">
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div className="p-2.5 rounded-lg border border-border bg-card">
+                                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Frame Architecture</span>
+                                      <strong className="text-foreground text-xs mt-0.5 block">{totalFrames} frames</strong>
+                                      <span className="text-[10px] text-muted-foreground">Langstroth standard</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-lg border border-border bg-card">
+                                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Hive Type</span>
+                                      <strong className="text-foreground text-xs mt-0.5 block">{hive.hiveType || "Langstroth 10-Frame"}</strong>
+                                      <span className="text-[10px] text-muted-foreground">Movable frames</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-lg border border-border bg-card">
+                                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Queen Status</span>
+                                      <strong className="text-foreground text-xs mt-0.5 block">
+                                        {hive.queenPresent ? `Present (Marked ${hive.queenBreedingYear || 2025})` : "Queenless / Standby"}
+                                      </strong>
+                                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Laying worker verified</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-lg border border-border bg-card">
+                                      <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Hardware Telemetry</span>
+                                      <strong className="text-foreground text-xs mt-0.5 block">
+                                        {hive.sensorSerial ? `Paired (${hive.sensorSerial})` : "Physical Ledger"}
+                                      </strong>
+                                      <span className="text-[10px] text-muted-foreground">{hive.sensorSerial ? "Active Link" : "0 Connected"}</span>
+                                    </div>
                                   </div>
 
                                   {/* Environmental Telemetry */}
-                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 text-xs">
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-honey/5 border border-honey/20 text-xs">
                                     <p className="flex items-center gap-1.5">
-                                      <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                      <Sun className="w-3.5 h-3.5 text-honey shrink-0" />
                                       <span className="text-muted-foreground">Outside Temp:</span>{" "}
                                       <strong className="text-foreground font-mono font-bold">{outsideTemp}°C</strong>
                                     </p>
@@ -7502,7 +7473,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                       <strong className="text-foreground text-[11px] font-mono">34.8°C</strong>
                                     </p>
                                     <p className="flex items-center gap-1.5">
-                                      <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                                      <Scale className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                                       <span className="text-muted-foreground">Gross Weight:</span>{" "}
                                       <strong className="text-foreground text-[11px] font-mono">{hiveInspection?.weight_kg ? `${hiveInspection.weight_kg} kg` : "42.5 kg"}</strong>
                                     </p>
@@ -7677,7 +7648,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                       {/* Pagination Controls */}
                       {totalPages > 1 && (
                         <div className="flex items-center justify-between pt-4 text-xs">
-                          <span className="text-[#8E8880]">
+                          <span className="text-muted-foreground font-medium">
                             Showing {paginatedHives.length} of {filteredHives.length} hives
                           </span>
                           <div className="flex items-center gap-2">
@@ -7685,7 +7656,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               type="button"
                               disabled={page === 1}
                               onClick={() => setPage((p) => Math.max(1, p - 1))}
-                              className="px-3 py-1.5 rounded-xl border border-[#EAE3DA] dark:border-stone-800 disabled:opacity-50 text-xs font-semibold"
+                              className="px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-50 text-xs font-semibold cursor-pointer"
                             >
                               Previous
                             </button>
@@ -7696,7 +7667,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               type="button"
                               disabled={page === totalPages}
                               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                              className="px-3 py-1.5 rounded-xl border border-[#EAE3DA] dark:border-stone-800 disabled:opacity-50 text-xs font-semibold"
+                              className="px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted text-foreground disabled:opacity-50 text-xs font-semibold cursor-pointer"
                             >
                               Next
                             </button>
@@ -7706,7 +7677,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                     </div>
                   ) : (
                     /* VIEW MODE 2: TABLE VIEW */
-                    <div className="border border-border rounded-2xl overflow-hidden bg-background shadow-sm">
+                    <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
                       <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs border-collapse">
                           <thead>
@@ -7738,21 +7709,21 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                 <React.Fragment key={hive.id}>
                                   <tr
                                     onClick={() => setExpandedHiveId(isExpanded ? null : hive.id)}
-                                    className={`hover:bg-amber-500/10 cursor-pointer transition-colors group ${isExpanded ? "bg-amber-500/5 dark:bg-amber-950/20" : ""}`}
-                                    title="Click to toggle intact inline hive details"
+                                    className={`hover:bg-honey/10 cursor-pointer transition-colors group ${isExpanded ? "bg-honey/5" : ""}`}
+                                    title="Click to toggle inline hive details"
                                   >
-                                    <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-amber-600 transition-colors">
+                                    <td className="px-4 py-3 font-mono font-bold text-foreground group-hover:text-honey transition-colors">
                                       {hive.code}
                                     </td>
                                     <td className="px-4 py-3 text-muted-foreground">{hive.hiveType}</td>
                                     <td className="px-4 py-3">
                                       {hive.queenPresent ? (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                           Queen Present
                                         </span>
                                       ) : (
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30">
                                           <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                                           Queenless
                                         </span>
@@ -7767,15 +7738,15 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                     <td className="px-4 py-3">
                                       {hive.batches.length > 0 ? (
                                         <span className="font-bold text-foreground">
-                                          {hive.batches.length} batch(es) · <strong className="text-amber-600">{hiveKg.toFixed(1)} kg</strong>
+                                          {hive.batches.length} batch(es) · <strong className="text-honey">{hiveKg.toFixed(1)} kg</strong>
                                         </span>
                                       ) : (
                                         <span className="text-muted-foreground text-[11px]">0 Batches</span>
                                       )}
                                     </td>
                                     <td className="px-4 py-3">
-                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
-                                        <ClipboardCheck className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${healthTone(healthStatus)}`}>
+                                        <ClipboardCheck className="w-3 h-3" />
                                         {healthStatus}
                                       </span>
                                     </td>
@@ -7787,23 +7758,23 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                         <button
                                           type="button"
                                           onClick={() => setExpandedHiveId(isExpanded ? null : hive.id)}
-                                          className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                          className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                                           title="Toggle inline details"
                                         >
-                                          <Eye className="w-3 h-3 text-amber-500" /> {isExpanded ? "Hide" : "Details"}
+                                          <Eye className="w-3 h-3 text-honey" /> {isExpanded ? "Hide" : "Details"}
                                         </button>
                                         <button
                                           type="button"
                                           onClick={(e) => startInlineEdit(hive, e)}
-                                          className="px-2 py-1 rounded-lg border border-amber-200 dark:border-amber-900/50 hover:bg-amber-50 dark:hover:bg-amber-950/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                          className="px-2 py-1 rounded-lg border border-border hover:border-honey/40 bg-card hover:bg-honey/10 text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                                           title="Edit hive inline"
                                         >
-                                          <Pencil className="w-3 h-3" /> Edit
+                                          <Pencil className="w-3 h-3 text-honey" /> Edit
                                         </button>
                                         <button
                                           type="button"
                                           onClick={() => handleDeleteHive(hive.id, hive.code)}
-                                          className="p-1 rounded-lg border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors"
+                                          className="p-1 rounded-lg border border-rose-500/30 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[11px] font-bold flex items-center transition-colors cursor-pointer"
                                           title="Delete hive"
                                         >
                                           <Trash2 className="w-3.5 h-3.5" />
@@ -7815,7 +7786,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                   {/* Intact Inline Details Row (Matching Inspections UI/UX) */}
                                   {isExpanded && (
                                     <tr>
-                                      <td colSpan={7} className="p-4 bg-[#FAF4EE]/70 dark:bg-stone-900/60 border-b border-border/80">
+                                      <td colSpan={7} className="p-4 bg-muted/30 border-b border-border/80">
                                         <div className="space-y-3.5 text-xs">
                                           {/* Vitals & Telemetry */}
                                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
@@ -8372,9 +8343,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
             title={scanContext === "detailHive" ? `Pair Sensor to ${selectedHiveForDetail?.code}` : "Scan Sensor Hardware QR"}
           />
         )}
-      </div>
-    </div>,
-    document.body
+    </div>
   );
 }
 
@@ -9135,193 +9104,167 @@ export default function ApiariesPage({
             : "relative w-full max-w-6xl max-h-[92vh] bg-card border border-border rounded-2xl shadow-2xl overflow-y-auto flex flex-col"
         }
       >
-        {/* Top Header */}
-        <div className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b border-border p-4 sm:p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-sm">
-              <Compass className="w-5 h-5 text-amber-500" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-lg sm:text-xl font-bold tracking-tight text-foreground">
-                  Apisense • Apiary Stations
-                </h1>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                  Open-Meteo Live API
-                </span>
+        {selectedDetailApiary ? (
+          <div className="p-4 sm:p-6 space-y-6 flex-1">
+            <ApiaryDetailModal
+              apiary={selectedDetailApiary}
+              weather={weatherMap[selectedDetailApiary.id]}
+              onClose={() => setSelectedDetailApiary(null)}
+              onEdit={handleEdit}
+              onDelete={handleDeleteApiary}
+              onHivesCountChanged={handleHivesCountChanged}
+            />
+          </div>
+        ) : (
+          <>
+            {/* Top Header */}
+            <div className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b border-border p-4 sm:p-5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0 shadow-sm">
+                  <Compass className="w-5 h-5 text-amber-500" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="font-display text-lg sm:text-xl font-bold tracking-tight text-foreground">
+                      Apisense • Apiary Stations
+                    </h1>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                      Open-Meteo Live API
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Click any apiary to view user-synced hives, botanical forage ecosystem, and verified honey harvests
+                  </p>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Click any apiary to view user-synced hives, botanical forage ecosystem, and verified honey harvests
-              </p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => refreshAllWeather(true)}
-              disabled={loadingWeather}
-              className="p-2 rounded-lg border border-border hover:border-amber-500/50 text-muted-foreground hover:text-foreground transition-colors"
-              title="Refresh Live Weather from API"
-            >
-              <RefreshCw className={`w-4 h-4 ${loadingWeather ? "animate-spin text-amber-500" : ""}`} />
-            </button>
-            <button
-              onClick={() => {
-                setEditingApiary(null);
-                setAddApiaryStep(1);
-                setAddApiaryMode("with_devices");
-                setAttachedDevices([]);
-                setScannedSensorCode("");
-                setFormData({
-                  name: "",
-                  location_name: "Kibwezi, Makueni, Kenya",
-                  county: "Makueni",
-                  region: "Kibwezi East",
-                  latitude: -2.409,
-                  longitude: 37.967,
-                  type: "Commercial Apiary",
-                  active_hives: 150,
-                  total_hives: 184,
-                  size_acres: 5,
-                  forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
-                  status: "Optimal",
-                  notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
-                });
-                setShowAddModal(true);
-              }}
-              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
-            >
-              <Plus className="w-4 h-4" /> Add Apiary
-            </button>
-            {!embedded && onClose && (
-              <button
-                onClick={onClose}
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ml-1"
-                aria-label="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="p-4 sm:p-6 space-y-6 flex-1">
-          {/* Stats Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
-              <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Managed Apiaries
-              </span>
-              <p className="text-2xl font-black text-foreground">{stats.totalSites}</p>
-              <p className="text-[10px] text-muted-foreground">Active foraging sites</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => refreshAllWeather(true)}
+                  disabled={loadingWeather}
+                  className="p-2 rounded-lg border border-border hover:border-amber-500/50 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  title="Refresh Live Weather from API"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loadingWeather ? "animate-spin text-amber-500" : ""}`} />
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingApiary(null);
+                    setAddApiaryStep(1);
+                    setAddApiaryMode("with_devices");
+                    setAttachedDevices([]);
+                    setScannedSensorCode("");
+                    setFormData({
+                      name: "",
+                      location_name: "Kibwezi, Makueni, Kenya",
+                      county: "Makueni",
+                      region: "Kibwezi East",
+                      latitude: -2.409,
+                      longitude: 37.967,
+                      type: "Commercial Apiary",
+                      active_hives: 150,
+                      total_hives: 184,
+                      size_acres: 5,
+                      forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
+                      status: "Optimal",
+                      notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
+                    });
+                    setShowAddModal(true);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" /> Add Apiary
+                </button>
+                {!embedded && onClose && (
+                  <button
+                    onClick={onClose}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors ml-1 cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
-              <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-amber-500" /> Active Hives
-              </span>
-              <p className="text-2xl font-black text-foreground">{stats.activeHives}</p>
-              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{stats.activeHives} Total Logged Capacity</p>
+            <div className="p-4 sm:p-6 space-y-6 flex-1">
+              {/* Stats Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Managed Apiaries
+                  </span>
+                  <p className="text-2xl font-black text-foreground">{stats.totalSites}</p>
+                  <p className="text-[10px] text-muted-foreground">Active foraging sites</p>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                    <Layers className="w-3.5 h-3.5 text-amber-500" /> Active Hives
+                  </span>
+                  <p className="text-2xl font-black text-foreground">{stats.activeHives}</p>
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{stats.activeHives} Total Logged Capacity</p>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                    <Compass className="w-3.5 h-3.5 text-blue-500" /> Total Coverage
+                  </span>
+                  <p className="text-2xl font-black text-foreground">{stats.totalAcres} Ac</p>
+                  <p className="text-[10px] text-muted-foreground">Pollination radius</p>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
+                  <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-amber-500" /> Current Weather
+                  </span>
+                  <p className="text-2xl font-black text-amber-600 dark:text-amber-400">
+                    {stats.primaryWeather?.currentTemp !== undefined ? `${stats.primaryWeather.currentTemp}°C` : "26°C"}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {stats.primaryWeather?.conditionText || "Open-Meteo Synced"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search apiary, location, forage flora..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                  />
+                </div>
+              </div>
+
+              {/* Apiary Cards Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {filteredApiaries.map((apiary) => (
+                  <ApisenseWeatherCard
+                    key={apiary.id}
+                    apiary={apiary}
+                    weather={weatherMap[apiary.id]}
+                    userKey={userKey}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteApiary}
+                    onOpenDetails={handleOpenDetails}
+                  />
+                ))}
+              </div>
+
+              {filteredApiaries.length === 0 && (
+                <div className="py-12 text-center text-muted-foreground space-y-2">
+                  <Compass className="w-8 h-8 mx-auto text-muted-foreground/40" />
+                  <p className="text-sm font-semibold">No apiaries found</p>
+                  <p className="text-xs">Try adjusting your search query or add a new apiary station.</p>
+                </div>
+              )}
             </div>
-
-            <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
-              <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-                <Compass className="w-3.5 h-3.5 text-blue-500" /> Total Coverage
-              </span>
-              <p className="text-2xl font-black text-foreground">{stats.totalAcres} Ac</p>
-              <p className="text-[10px] text-muted-foreground">Pollination radius</p>
-            </div>
-
-            <div className="p-3.5 rounded-xl border border-border bg-background shadow-sm space-y-1">
-              <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-                <Sun className="w-3.5 h-3.5 text-amber-500" /> Current Weather
-              </span>
-              <p className="text-2xl font-black text-amber-600 dark:text-amber-400">
-                {stats.primaryWeather?.currentTemp !== undefined ? `${stats.primaryWeather.currentTemp}°C` : "26°C"}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {stats.primaryWeather?.conditionText || "Open-Meteo Synced"}
-              </p>
-            </div>
-          </div>
-
-          {/* Search Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search apiary, location, forage flora..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-background border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-              />
-            </div>
-          </div>
-
-          {/* Apiary Cards Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {filteredApiaries.map((apiary) => (
-              <ApisenseWeatherCard
-                key={apiary.id}
-                apiary={apiary}
-                weather={weatherMap[apiary.id]}
-                userKey={userKey}
-                onEdit={handleEdit}
-                onDelete={handleDeleteApiary}
-                onOpenDetails={handleOpenDetails}
-              />
-            ))}
-          </div>
-
-          {filteredApiaries.length === 0 && (
-            <div className="py-12 text-center text-muted-foreground space-y-2">
-              <Compass className="w-8 h-8 mx-auto text-muted-foreground/40" />
-              <p className="text-sm font-semibold">No apiaries found</p>
-              <p className="text-xs">Try adjusting your search query or add a new apiary station.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Modal: Add or Edit Apiary */}
-        {showAddModal && (
-          <AddApiaryModal
-            isOpen={showAddModal}
-            onClose={() => {
-              setShowAddModal(false);
-              setEditingApiary(null);
-            }}
-            initialApiary={editingApiary}
-            initialMode={addApiaryMode}
-            onSuccess={(saved) => {
-              setApiaries((prev) => {
-                const exists = prev.some((a) => a.id === saved.id);
-                if (exists) {
-                  return prev.map((a) => (a.id === saved.id ? saved : a));
-                }
-                return [saved, ...prev];
-              });
-              setShowAddModal(false);
-              setEditingApiary(null);
-            }}
-            onSwitchToHive={() => {
-              setShowAddModal(false);
-              setEditingApiary(null);
-              window.dispatchEvent(new CustomEvent("beeyield-navigate-tab", { detail: "hives" }));
-            }}
-          />
-        )}
-
-        {/* Modal: Comprehensive Apiary Detail Drawer/Modal */}
-        {selectedDetailApiary && (
-          <ApiaryDetailModal
-            apiary={selectedDetailApiary}
-            weather={weatherMap[selectedDetailApiary.id]}
-            onClose={() => setSelectedDetailApiary(null)}
-            onEdit={handleEdit}
-            onDelete={handleDeleteApiary}
-            onHivesCountChanged={handleHivesCountChanged}
-          />
+          </>
         )}
       </div>
     </div>

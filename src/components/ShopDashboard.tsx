@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, startTransition } from "react";
 import {
   X, ShoppingBag, Plus, Search, Trash2, CreditCard, Package, Truck,
   Loader2, Save, MapPin, RefreshCw,
@@ -1077,45 +1077,6 @@ function ShopDashboardInner({
         </div>
       </div>
 
-      {/* Guest Notice Banner */}
-      {false && (
-        <div className="rounded-xl border border-honey/30 bg-honey/5 p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-honey/20 text-honey flex items-center justify-center shrink-0">
-              <UserCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">
-                Browsing as Guest · Sign in for synchronized shop orders, live tracking & addresses
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                Your shop account is authenticated separately from BeeYield Apiary management in an isolated database partition.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                setAuthModalTab("signin");
-                setIsAuthModalOpen(true);
-              }}
-              className="px-3 py-1.5 rounded-lg bg-honey hover:bg-honey/90 text-primary-foreground text-xs font-bold transition-all shadow-xs"
-            >
-              Sign In to Store
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                signInDemoCustomer("retail");
-              }}
-              className="px-3 py-1.5 rounded-lg border border-border hover:bg-card text-xs font-semibold text-foreground transition-all"
-            >
-              1-Click Demo
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 3. Stats Grid Matching InspectionsPage */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1225,16 +1186,22 @@ function ShopDashboardInner({
                       role="option"
                       aria-selected={isSelected}
                       onClick={() => {
-                        setActiveTab(t.id);
                         setIsViewDropdownOpen(false);
+                        requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            startTransition(() => {
+                              setActiveTab(t.id);
+                            });
+                          }, 0);
+                        });
                       }}
-                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer touch-manipulation active:scale-[0.99] ${
                         isSelected
                           ? "bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/40 shadow-xs"
                           : "hover:bg-muted/60 text-foreground hover:text-honey border border-transparent"
                       }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 pointer-events-none select-none">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isSelected
@@ -1262,7 +1229,7 @@ function ShopDashboardInner({
                           <p className="text-[11px] text-muted-foreground line-clamp-1">{t.description}</p>
                         </div>
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0 pointer-events-none select-none" />}
                     </button>
                   );
                 })}
@@ -1272,15 +1239,25 @@ function ShopDashboardInner({
                   {shopUser && (
                     <button
                       type="button"
-                      onClick={async () => {
+                      onClick={() => {
                         setIsViewDropdownOpen(false);
-                        await shopSignOut();
-                        void loadAllData();
-                        toast.success("Signed out of Shop account");
+                        requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            startTransition(async () => {
+                              try {
+                                await shopSignOut();
+                                void loadAllData();
+                                toast.success("Signed out of Shop account");
+                              } catch (err) {
+                                console.error("Sign out error:", err);
+                              }
+                            });
+                          }, 0);
+                        });
                       }}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer"
+                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.99]"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0 pointer-events-none select-none">
                         <div className="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-500 flex-shrink-0">
                           <LogOut className="w-4 h-4" />
                         </div>
@@ -1291,7 +1268,7 @@ function ShopDashboardInner({
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0 pointer-events-none select-none">
                         Sign Out
                       </span>
                     </button>

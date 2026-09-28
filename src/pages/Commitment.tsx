@@ -66,7 +66,7 @@ const CommitmentPage = () => {
       title: "Clean Water & Sanitation",
       description:
         "Restoring local biodiversity through tree planting creates resilient ecosystems that naturally filter water and combat climate change, protecting vital water sources.",
-      impact: "2,500+ trees restoring biodiversity & climate resilience",
+      impact: "Project Panda Miti: 2,500+ trees restoring Kibwezi groundwater aquifers",
       color: "from-cyan-500 to-cyan-600",
       icon: Droplets,
     },
@@ -75,7 +75,7 @@ const CommitmentPage = () => {
       title: "Affordable & Clean Energy",
       description:
         "We're exploring solar-powered hive monitoring systems, reducing reliance on fossil fuels while enabling precision beekeeping in off-grid areas.",
-      impact: "Solar-powered hive monitoring sensors in development",
+      impact: "Solar-powered hive monitoring sensors in active field deployment",
       color: "from-yellow-500 to-yellow-600",
       icon: Zap,
     },
@@ -84,7 +84,7 @@ const CommitmentPage = () => {
       title: "Decent Work & Economic Growth",
       description:
         "We create dignified work in rural areas: beekeepers get fair pay and a direct market for their honey.",
-      impact: "Creating sustainable livelihoods for rural youth",
+      impact: "Dignified fair-trade income for youth beekeepers & tree nursery stewards",
       color: "from-rose-600 to-rose-700",
       icon: Building,
     },
@@ -93,7 +93,7 @@ const CommitmentPage = () => {
       title: "Climate Action",
       description:
         "We've planted 2,500+ trees to restore habitats and capture carbon. Our sustainable practices promote biodiversity and build climate resilience.",
-      impact: "Estimated 30+ tons CO₂ captured annually",
+      impact: "Project Panda Miti: 2,500+ native trees capturing 3.0 tons CO₂ annually",
       color: "from-green-600 to-green-700",
       icon: Globe,
     },
@@ -102,7 +102,7 @@ const CommitmentPage = () => {
       title: "Life on Land",
       description:
         "Reducing bee mortality rates and protecting wild pollinators ensures healthy terrestrial ecosystems. We maintain less than 15% colony loss rate vs. 60% global average.",
-      impact: "184 healthy hives across 5-acre restored habitat",
+      impact: "Project Panda Miti: 45,000 indigenous tree sanctuary for 184 hives",
       color: "from-lime-500 to-lime-600",
       icon: TreePine,
     },
@@ -130,7 +130,7 @@ const CommitmentPage = () => {
             <span className="text-emerald-700">To The Future</span>
           </h1>
           <p className="max-w-2xl mx-auto text-base sm:text-lg text-neutral-600 font-medium leading-relaxed">
-            At BeeYield, our mission is intrinsically linked to global sustainability. Through data-driven apiculture, indigenous reforestation, and precision pollination, we actively advance 8 UN Sustainable Development Goals.
+            At BeeYield, our mission is intrinsically linked to global sustainability. Through data-driven apiculture, indigenous reforestation via <strong>Project Panda Miti</strong>, and precision pollination, we actively advance 8 UN Sustainable Development Goals.
           </p>
         </div>
       </section>
@@ -179,18 +179,18 @@ const CommitmentPage = () => {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          SDG 15 & PROJECT PANDA MITI: REFORESTATION & BEE POLLINATION
-          (DIRECTLY UNDER THE 8 UN SDGS)
+          PROJECT PANDA MITI UNDER 8 UN SDGS
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 bg-emerald-50/50 text-neutral-900 relative overflow-hidden border-y border-emerald-100">
+      <section className="py-20 bg-emerald-50/60 text-neutral-900 relative overflow-hidden border-y border-emerald-100">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
-          <div className="rounded-3xl p-8 sm:p-12 bg-white border border-emerald-200 shadow-xl">
+          <div className="rounded-[2.5rem] p-8 sm:p-12 bg-white border border-emerald-200 shadow-xl">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-              <Badge className="bg-emerald-500/20 text-emerald-800 border-emerald-500/30 px-4 py-1.5 font-bold text-xs uppercase tracking-widest">
-                Under SDG 15: Life on Land • Floral Sanctum &amp; Aquifer Recovery
-              </Badge>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+                <Trees className="w-4 h-4 text-emerald-600" />
+                <span>Under the 8 UN SDGs • Ecological Restoration Engine</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
                 <MapPinIcon className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Kibwezi Basin, Makueni County</span>
               </div>
@@ -198,6 +198,9 @@ const CommitmentPage = () => {
 
             <div className="grid lg:grid-cols-12 gap-8 items-center mb-8">
               <div className="lg:col-span-7 space-y-4">
+                <Badge variant="outline" className="border-emerald-500/40 text-emerald-800 bg-emerald-500/10 font-bold text-xs px-3 py-1">
+                  Advancing SDG 6, SDG 13 &amp; SDG 15
+                </Badge>
                 <h2 className="text-3xl sm:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
                   Project Panda Miti:{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600">
@@ -206,14 +209,14 @@ const CommitmentPage = () => {
                   for Kibwezi
                 </h2>
                 <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
-                  Our flagship ecological restoration initiative restores degraded semi-arid landscapes by propagating 45,000 drought-resilient indigenous trees—including Acacia, Mukau, Moringa, and Baobab. This active reforestation recharges groundwater aquifers, cools microclimates over hives, and eliminates seasonal forage famine for African honeybees.
+                  Directly fulfilling our commitment to the United Nations Sustainable Development Goals, <strong>Project Panda Miti</strong> (<em>"Plant Trees"</em>) is our on-the-ground reforestation engine. By propagating 45,000 drought-resilient indigenous trees—Acacia, Mukau, Moringa, and Baobab—we replenish vital groundwater aquifers (SDG 6), capture 3.0 tons of carbon annually (SDG 13), and eliminate seasonal forage famine for over 184 hives and millions of wild pollinators (SDG 15).
                 </p>
                 <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-xs sm:text-sm italic">
-                  “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
+                  “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival, aquifer replenishment, and perennial blossom.”
                 </div>
               </div>
 
-              <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-emerald-200 space-y-4 shadow-sm">
+              <div className="lg:col-span-5 bg-emerald-50/30 p-6 rounded-2xl border border-emerald-200 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
                     <Sprout className="w-4 h-4 text-emerald-600" /> Planting Telemetry
@@ -227,18 +230,18 @@ const CommitmentPage = () => {
                   <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-neutral-100">
-                  <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-emerald-100">
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100 shadow-2xs">
                     <Trees className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Tree Restoration</span>
                     <span className="text-neutral-500 text-[9px]">Aquifer recharge</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100 shadow-2xs">
                     <Heart className="w-4 h-4 text-amber-500 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Bees Saved</span>
                     <span className="text-neutral-500 text-[9px]">Zero dry famine</span>
                   </div>
-                  <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                  <div className="p-2 rounded-xl bg-white border border-emerald-100 shadow-2xs">
                     <Flower2 className="w-4 h-4 text-teal-600 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
                     <span className="text-neutral-500 text-[9px]">Cross-pollination</span>
@@ -254,6 +257,9 @@ const CommitmentPage = () => {
                 </span>
                 <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-800 font-semibold border border-teal-200">
                   🌸 1 Tree = ~5,000 Blossoms Pollinated
+                </span>
+                <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-semibold border border-amber-200">
+                  💧 Direct Aquifer &amp; Soil Retention
                 </span>
               </div>
               <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full px-8 shadow-xl shadow-emerald-900/10">

@@ -54,12 +54,10 @@ import {
   Tag,
   Camera,
 } from "lucide-react";
-import { NavItem } from "./DashboardSidebar";
 import { useAuth } from "@/hooks/use-auth";
-import { useLanguage } from "@/contexts/LanguageContext";
 import AvatarPickerDialog from "./AvatarPickerDialog";
 import { subscribeToAvatarSync, getCachedAvatar } from "@/services/avatarSyncService";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/hooks/use-theme";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,11 +68,16 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { beeyieldService, SensorAlert } from "@/services/beeyieldService";
 import { formatDistanceToNow } from "date-fns";
-import { motion, AnimatePresence } from "framer-motion";
-import { glass } from "./GlassTheme";
 import AddApiaryModal from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
 import NewRecordModal from "./NewRecordModal";
+
+export interface NavItem {
+  id: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  badge?: string | number;
+}
 
 interface DashboardHeaderProps {
   onTabChange: (tab: string) => void;
@@ -102,7 +105,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   isToolsDrawerOpen = false,
 }) => {
   const { user, beeyieldUser } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const t = (key: string) => key;
   const { theme, setTheme } = useTheme();
   const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
   const [dropdownQuery, setDropdownQuery] = React.useState("");
