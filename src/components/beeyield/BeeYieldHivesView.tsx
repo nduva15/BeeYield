@@ -44,6 +44,7 @@ import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
 import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
 import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
+import { useAuth } from "@/hooks/use-auth";
 import { AddHiveModal, AddHiveSubmitData } from "../AddHiveModal";
 import FrameSenseToolPage from "../FrameSenseToolPage";
 import SyrupFeedingToolPage from "../SyrupFeedingToolPage";
