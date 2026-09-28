@@ -1187,7 +1187,7 @@ export default function About() {
                   </p>
                   <p>
                     We manage <strong className="text-foreground">205+ additional hives</strong>{" "}
-                    from partner farmers, providing hive checkups, honey harvesting, and education
+                    from partner farmers across the Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas, providing hive checkups, honey harvesting, and education
                     on bee diseases and apiary management.
                   </p>
                   <p>
