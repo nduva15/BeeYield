@@ -50,36 +50,63 @@ END $$;
 DO $$
 DECLARE
     v_user_id UUID;
-    v_hist_current_total NUMERIC;
-    v_factor NUMERIC;
-    v_has_weight_col BOOLEAN;
+    v_hist_current_total NUMERIC := 0;
+    v_factor NUMERIC := 1;
+    v_date_col TEXT := 'harvest_date';
+    v_qty_col TEXT := 'quantity_kg';
+    v_has_weight_col BOOLEAN := FALSE;
 BEGIN
     SELECT id INTO v_user_id FROM auth.users WHERE email = 'timothynduva349@gmail.com' LIMIT 1;
     
+    -- Detect date column
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'harvest_date') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'date') THEN
+            v_date_col := 'date';
+        END IF;
+    END IF;
+
+    -- Detect quantity column
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'quantity_kg') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg') THEN
+            v_qty_col := 'weight_kg';
+        ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'yield_kg') THEN
+            v_qty_col := 'yield_kg';
+        END IF;
+    END IF;
+
     SELECT EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg'
     ) INTO v_has_weight_col;
 
-    -- Sum pre-2026 historical harvests
-    SELECT COALESCE(sum(quantity_kg), 0) INTO v_hist_current_total 
-    FROM public.harvests 
-    WHERE (v_user_id IS NULL OR user_id = v_user_id) 
-      AND harvest_date < '2026-01-01';
+    -- Sum pre-2026 historical harvests dynamically to prevent SQLSTATE 42703 compilation error
+    EXECUTE format(
+        'SELECT COALESCE(sum(%I), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
+        v_qty_col, v_date_col
+    ) INTO v_hist_current_total USING v_user_id;
     
-    RAISE NOTICE 'Current pre-2026 total: % kg', v_hist_current_total;
+    RAISE NOTICE 'Current pre-2026 total: % kg (column: %, date: %)', v_hist_current_total, v_qty_col, v_date_col;
 
     IF v_hist_current_total > 0 THEN
         v_factor := 883.0 / v_hist_current_total;
         
-        UPDATE public.harvests 
-        SET quantity_kg = round((quantity_kg * v_factor)::numeric, 2) 
-        WHERE (v_user_id IS NULL OR user_id = v_user_id) 
-          AND harvest_date < '2026-01-01';
+        -- Update the effective quantity column dynamically
+        EXECUTE format(
+            'UPDATE public.harvests SET %I = round((%I * $1)::numeric, 2) WHERE ($2 IS NULL OR user_id = $2) AND %I < ''2026-01-01''',
+            v_qty_col, v_qty_col, v_date_col
+        ) USING v_factor, v_user_id;
 
-        -- Keep weight_kg column in sync if it exists
-        IF v_has_weight_col THEN
-            EXECUTE 'UPDATE public.harvests SET weight_kg = quantity_kg WHERE (user_id = $1 OR user_id IS NULL) AND harvest_date < ''2026-01-01''' USING v_user_id;
+        -- Keep weight_kg column in sync if it exists and differs from v_qty_col
+        IF v_qty_col = 'quantity_kg' AND v_has_weight_col THEN
+            EXECUTE format(
+                'UPDATE public.harvests SET weight_kg = quantity_kg WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
+                v_date_col
+            ) USING v_user_id;
+        ELSIF v_qty_col = 'weight_kg' AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'quantity_kg') THEN
+            EXECUTE format(
+                'UPDATE public.harvests SET quantity_kg = weight_kg WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
+                v_date_col
+            ) USING v_user_id;
         END IF;
 
         RAISE NOTICE 'Pre-2026 harvest normalization applied successfully with factor %', v_factor;
