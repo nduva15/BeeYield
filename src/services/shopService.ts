@@ -353,7 +353,7 @@ const buildPaymentMethodPayload = (method: any) => {
         expiry: expiry || (method?.expiry_month && method?.expiry_year ? `${method.expiry_month}/${method.expiry_year}` : "12/28"),
         expiry_month: method?.expiry_month ? toNumber(method.expiry_month) : toNumber(expiryMonthRaw, 12),
         expiry_year: method?.expiry_year ? toNumber(method.expiry_year) : toNumber(expiryYearRaw, 2028),
-        card_holder_name: method?.card_holder_name ? toString(method.card_holder_name) : "Timothy Nduva",
+        card_holder_name: method?.card_holder_name ? toString(method.card_holder_name) : "",
         is_default: Boolean(method?.is_default ?? method?.isDefault),
         status: "active",
         created_at: method?.created_at || new Date().toISOString(),
@@ -917,54 +917,6 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
         } catch (_) {}
     } catch (_) {}
 
-    // 4. If user has 0 orders, provide initial sample pioneer order
-    if (map.size === 0) {
-        const sampleOrder: Order = {
-            id: "ord_kibwezi_pioneer_01",
-            order_number: "BY-KIBWEZI-101",
-            status: "delivered",
-            total_kes: 2550,
-            total_amount: 2550,
-            payment_method: "mpesa",
-            payment_status: "paid",
-            created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
-            shipping_address: {
-                name: "Timothy Nduva",
-                phone: "254712345678",
-                address: "Kibwezi Apiary Road Stand #42",
-                street: "Kibwezi Apiary Road Stand #42",
-                city: "Kibwezi",
-                county: "Makueni",
-                postal_code: "90137",
-            },
-            items: [
-                {
-                    id: "item_01",
-                    product_id: "prod_honey_acacia",
-                    variant_id: "var_honey_1kg",
-                    quantity: 2,
-                    unit_price: 1000,
-                    total_price: 2000,
-                    price_at_purchase: 1000,
-                    product_name: "Kibwezi Pure Wild Acacia Honey",
-                    variant_size: "1kg Premium Jar",
-                },
-                {
-                    id: "item_02",
-                    product_id: "prod_honey_acacia",
-                    variant_id: "var_honey_500g",
-                    quantity: 1,
-                    unit_price: 550,
-                    total_price: 550,
-                    price_at_purchase: 550,
-                    product_name: "Kibwezi Pure Wild Acacia Honey",
-                    variant_size: "500g Glass Jar",
-                },
-            ],
-        };
-        map.set(sampleOrder.id, sampleOrder);
-    }
-
     return sortOrders(Array.from(map.values()));
 };
 
@@ -1016,16 +968,16 @@ export const getShopDashboard = async (): Promise<ShopDashboardSummary> => {
 };
 
 const DEFAULT_SAMPLE_ADDRESS: Address = {
-    id: "addr_kibwezi_default",
-    name: "Timothy Nduva",
-    phone: "254712345678",
-    street: "Kibwezi Apiary Road Stand #42",
-    apartment: "Station House",
-    building: "BeeYield Center",
-    floor: "Ground",
-    city: "Kibwezi",
-    county: "Makueni",
-    postal_code: "90137",
+    id: "addr_default_empty",
+    name: "",
+    phone: "",
+    street: "",
+    apartment: "",
+    building: "",
+    floor: "",
+    city: "",
+    county: "",
+    postal_code: "",
     is_default: true,
 };
 
@@ -1739,23 +1691,23 @@ export const getCustomerProfile = async (): Promise<CustomerProfileData> => {
 
         const meta = user?.user_metadata || {};
         return {
-            full_name: profileTableData?.full_name || meta.full_name || user?.email?.split("@")[0] || "Timothy Nduva",
-            phone: profileTableData?.phone || meta.phone || "254712345678",
+            full_name: profileTableData?.full_name || meta.full_name || user?.email?.split("@")[0] || "",
+            phone: profileTableData?.phone || meta.phone || "",
             country: profileTableData?.country || meta.country || "Kenya",
-            delivery_town: meta.delivery_town || "Kibwezi",
-            county: meta.county || "Makueni",
-            apiary_affiliation: meta.apiary_affiliation || "Kibwezi Forest Apiary (150 Active Hives)",
-            bio: meta.bio || "Sustainable apiculture pioneer and commercial raw honey producer.",
+            delivery_town: meta.delivery_town || "",
+            county: meta.county || "",
+            apiary_affiliation: meta.apiary_affiliation || "",
+            bio: meta.bio || "",
         };
     } catch {
         return {
-            full_name: "Timothy Nduva",
-            phone: "254712345678",
+            full_name: "",
+            phone: "",
             country: "Kenya",
-            delivery_town: "Kibwezi",
-            county: "Makueni",
-            apiary_affiliation: "Kibwezi Forest Apiary (150 Active Hives)",
-            bio: "Sustainable apiculture pioneer and commercial raw honey producer.",
+            delivery_town: "",
+            county: "",
+            apiary_affiliation: "",
+            bio: "",
         };
     }
 };
@@ -1795,12 +1747,12 @@ export const updateCustomerProfile = async (profileData: Partial<CustomerProfile
     } catch (_) {}
 
     return {
-        full_name: updatedMeta.full_name || "Timothy Nduva",
-        phone: updatedMeta.phone || "254712345678",
+        full_name: updatedMeta.full_name || "",
+        phone: updatedMeta.phone || "",
         country: updatedMeta.country || "Kenya",
-        delivery_town: updatedMeta.delivery_town || "Kibwezi",
-        county: updatedMeta.county || "Makueni",
-        apiary_affiliation: updatedMeta.apiary_affiliation || "Kibwezi Forest Apiary",
+        delivery_town: updatedMeta.delivery_town || "",
+        county: updatedMeta.county || "",
+        apiary_affiliation: updatedMeta.apiary_affiliation || "",
         bio: updatedMeta.bio,
     };
 };

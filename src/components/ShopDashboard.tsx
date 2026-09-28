@@ -145,13 +145,13 @@ function ShopDashboardInner({
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileDraft, setProfileDraft] = useState<CustomerProfileData>({
-    full_name: shopUser?.full_name || beeyieldProfile?.full_name || "Grace Wanjiku",
-    phone: shopUser?.phone || beeyieldProfile?.phone || "+254 722 102 304",
+    full_name: shopUser?.full_name || beeyieldProfile?.full_name || "",
+    phone: shopUser?.phone || beeyieldProfile?.phone || "",
     country: "Kenya",
-    delivery_town: shopUser?.shipping_address?.city || "Nairobi",
-    county: shopUser?.shipping_address?.county || "Nairobi",
-    apiary_affiliation: shopUser?.company_name || "BeeYield Storefront Customer",
-    bio: "Verified customer and honey enthusiast.",
+    delivery_town: shopUser?.shipping_address?.city || "",
+    county: shopUser?.shipping_address?.county || "",
+    apiary_affiliation: shopUser?.company_name || "",
+    bio: "",
   });
 
   // Sync profile draft and address draft when shopUser changes
@@ -245,20 +245,20 @@ function ShopDashboardInner({
   const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [paymentMethodType, setPaymentMethodType] = useState<"mpesa" | "card">("mpesa");
-  const [mpesaPhone, setMpesaPhone] = useState(profile?.phone || "254712345678");
+  const [mpesaPhone, setMpesaPhone] = useState(profile?.phone || "");
 
   // Custom Address draft for checkout or Address tab
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [addressDraft, setAddressDraft] = useState({
-    name: profile?.full_name || "Timothy Nduva",
-    phone: profile?.phone || "254712345678",
-    street: "Kibwezi Apiary Road Stand #42",
-    apartment: "Station House",
-    building: "BeeYield Center",
-    floor: "Ground",
-    city: "Kibwezi",
-    county: "Makueni",
-    postal_code: "90137",
+    name: profile?.full_name || "",
+    phone: profile?.phone || "",
+    street: "",
+    apartment: "",
+    building: "",
+    floor: "",
+    city: "",
+    county: "",
+    postal_code: "",
     is_default: true,
   });
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -269,7 +269,7 @@ function ShopDashboardInner({
   const [paymentFormType, setPaymentFormType] = useState<"card" | "mpesa">("card");
   const [cardDraft, setCardDraft] = useState({
     cardNumber: "",
-    card_holder_name: profile?.full_name || "Timothy Nduva",
+    card_holder_name: profile?.full_name || "",
     expiry: "",
     cvv: "",
     brand: "Visa",
@@ -278,11 +278,11 @@ function ShopDashboardInner({
   const [isSavingCard, setIsSavingCard] = useState(false);
   const [paymentDraft, setPaymentDraft] = useState({
     type: "mpesa" as "mpesa" | "card",
-    phone: "254712345678",
+    phone: profile?.phone || "",
     brand: "M-Pesa",
-    last4: "5678",
-    card_holder_name: profile?.full_name || "Timothy Nduva",
-    expiry: "12/28",
+    last4: "",
+    card_holder_name: profile?.full_name || "",
+    expiry: "",
     is_default: true,
   });
 
@@ -356,7 +356,7 @@ function ShopDashboardInner({
       setShowPaymentForm(false);
       setCardDraft({
         cardNumber: "",
-        card_holder_name: profile?.full_name || "Timothy Nduva",
+        card_holder_name: profile?.full_name || "",
         expiry: "",
         cvv: "",
         brand: "Visa",
@@ -553,14 +553,14 @@ function ShopDashboardInner({
 
       const payload: CheckoutOrder = {
         shipping_address: {
-          first_name: chosenAddr.name ? chosenAddr.name.split(" ")[0] : "Timothy",
-          last_name: chosenAddr.name ? chosenAddr.name.split(" ").slice(1).join(" ") : "Nduva",
-          email: user?.email || "timothy@beeyield.com",
+          first_name: chosenAddr.name ? chosenAddr.name.split(" ")[0] : "",
+          last_name: chosenAddr.name ? chosenAddr.name.split(" ").slice(1).join(" ") : "",
+          email: user?.email || "",
           phone: chosenAddr.phone || mpesaPhone,
-          address: chosenAddr.street || "Kibwezi Apiary Stand #42",
-          city: chosenAddr.city || "Kibwezi",
-          county: chosenAddr.county || "Makueni",
-          postal_code: chosenAddr.postal_code || "90137",
+          address: chosenAddr.street || "",
+          city: chosenAddr.city || "",
+          county: chosenAddr.county || "",
+          postal_code: chosenAddr.postal_code || "",
         },
         payment_method: paymentMethodType,
         payment_method_id: paymentMethodType === "card" ? selectedPaymentMethodId : undefined,
@@ -611,7 +611,7 @@ function ShopDashboardInner({
     try {
       const itemsList = (order.items && order.items.length > 0)
         ? order.items.map((i) => `${i.quantity}x ${i.product_name} (${i.variant_size || "Standard"}) — KES ${(i.total_price || i.unit_price * i.quantity).toLocaleString()}`)
-        : ["1x Kibwezi Pure Acacia Honey (1kg) — KES 1,000"];
+        : ["No item details available"];
 
       downloadReportPdf({
         title: `BeeYield Invoice #${order.order_number || order.id.slice(-8).toUpperCase()}`,
@@ -621,7 +621,7 @@ function ShopDashboardInner({
         meta: [
           { label: "Order Number", value: order.order_number || order.id },
           { label: "Date Placed", value: order.created_at?.slice(0, 10) || new Date().toISOString().slice(0, 10) },
-          { label: "Customer", value: order.shipping_address?.name || user?.email || "Timothy Nduva" },
+          { label: "Customer", value: order.shipping_address?.name || user?.email || "Customer" },
           { label: "Payment Method", value: (order.payment_method || "M-Pesa").toUpperCase() },
           { label: "Total Amount", value: `KES ${(order.total_kes || order.total_amount).toLocaleString()}` },
           { label: "Apiary Origin", value: "Kibwezi Forest Apiary, Makueni County" },
@@ -1610,7 +1610,7 @@ function ShopDashboardInner({
                               ))
                             ) : (
                               <div className="p-2.5 flex items-center justify-between text-xs">
-                                <span className="font-medium text-foreground">1x Kibwezi Pure Acacia Honey (1kg Standard)</span>
+                                <span className="font-medium text-muted-foreground italic">No item details</span>
                                 <span className="font-bold text-foreground">KES {(o.total_kes || o.total_amount).toLocaleString()}</span>
                               </div>
                             )}
@@ -1623,10 +1623,10 @@ function ShopDashboardInner({
                             <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-rose-500" /> Delivery Address
                             </span>
-                            <p className="font-bold text-foreground">{o.shipping_address?.name || "Timothy Nduva"}</p>
-                            <p className="text-muted-foreground">{o.shipping_address?.address || "Kibwezi Stand #42"}</p>
-                            <p className="text-muted-foreground">{o.shipping_address?.city || "Kibwezi"}, {o.shipping_address?.county || "Makueni"}</p>
-                            <p className="text-muted-foreground font-mono text-[11px]">{o.shipping_address?.phone || "254712345678"}</p>
+                            <p className="font-bold text-foreground">{o.shipping_address?.name || "—"}</p>
+                            <p className="text-muted-foreground">{o.shipping_address?.address || "—"}</p>
+                            <p className="text-muted-foreground">{o.shipping_address?.city || "—"}{o.shipping_address?.county ? `, ${o.shipping_address.county}` : ""}</p>
+                            <p className="text-muted-foreground font-mono text-[11px]">{o.shipping_address?.phone || "—"}</p>
                           </div>
 
                           <div className="p-3 rounded-lg border border-border bg-card space-y-1">
@@ -2514,7 +2514,7 @@ function ShopDashboardInner({
                           <div>
                             <span className="block text-[9px] uppercase tracking-wider text-slate-400">Cardholder</span>
                             <span className="font-semibold tracking-wide uppercase truncate max-w-[180px] block">
-                              {cardDraft.card_holder_name || profile?.full_name || "TIMOTHY NDUVA"}
+                              {cardDraft.card_holder_name || profile?.full_name || "YOUR NAME"}
                             </span>
                           </div>
                           <div className="text-right">
@@ -2730,7 +2730,7 @@ function ShopDashboardInner({
                       )}
                     </div>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {p.card_holder_name || profile?.full_name || "Timothy Nduva"}
+                      {p.card_holder_name || profile?.full_name || "—"}
                       {p.expiry && ` · Exp ${p.expiry}`}
                     </p>
                   </div>
@@ -2899,23 +2899,23 @@ function ShopDashboardInner({
                   {profile?.avatar_url ? (
                     <img src={profile.avatar_url} alt="Profile" className="w-full h-full rounded-2xl object-cover" />
                   ) : (
-                    customerProfile?.full_name?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || "TN"
+                    customerProfile?.full_name?.slice(0, 2).toUpperCase() || user?.email?.slice(0, 2).toUpperCase() || "??"
                   )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-display text-lg font-bold text-foreground">
-                      {customerProfile?.full_name || profile?.full_name || "Timothy Nduva"}
+                      {customerProfile?.full_name || profile?.full_name || "Customer"}
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
                       Apiary Gold Member
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                    {user?.email || "timothy@beeyield.com"}
+                    {user?.email || "—"}
                   </p>
                   <p className="text-[11px] text-muted-foreground mt-1">
-                    {customerProfile?.bio || "Commercial raw honey producer and sustainable apiculture pioneer."}
+                    {customerProfile?.bio || ""}
                   </p>
                 </div>
               </div>
@@ -2928,13 +2928,13 @@ function ShopDashboardInner({
                 <button
                   onClick={() => {
                     setProfileDraft({
-                      full_name: customerProfile?.full_name || profile?.full_name || "Timothy Nduva",
-                      phone: customerProfile?.phone || profile?.phone || "254712345678",
+                      full_name: customerProfile?.full_name || profile?.full_name || "",
+                      phone: customerProfile?.phone || profile?.phone || "",
                       country: customerProfile?.country || "Kenya",
-                      delivery_town: customerProfile?.delivery_town || "Kibwezi",
-                      county: customerProfile?.county || "Makueni",
-                      apiary_affiliation: customerProfile?.apiary_affiliation || "Kibwezi Forest Apiary (150 Active Hives)",
-                      bio: customerProfile?.bio || "Commercial raw honey producer and sustainable apiculture pioneer.",
+                      delivery_town: customerProfile?.delivery_town || "",
+                      county: customerProfile?.county || "",
+                      apiary_affiliation: customerProfile?.apiary_affiliation || "",
+                      bio: customerProfile?.bio || "",
                     });
                     setShowProfileModal(true);
                   }}

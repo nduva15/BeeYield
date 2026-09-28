@@ -124,11 +124,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
       return;
     }
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        startTransition(() => {
-          onOpenDetails(apiary);
-        });
-      }, 0);
+      startTransition(() => {
+        onOpenDetails(apiary);
+      });
     });
   };
 
@@ -136,11 +134,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          startTransition(() => {
-            onOpenDetails(apiary);
-          });
-        }, 0);
+        startTransition(() => {
+          onOpenDetails(apiary);
+        });
       });
     }
   };
