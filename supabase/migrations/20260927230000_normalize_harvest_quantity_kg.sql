@@ -1,41 +1,35 @@
--- Migration: Ensure quantity_kg column exists on public.harvests and normalize historical yield
--- 1. Ensure quantity_kg column exists
+-- Migration: Ensure columns exist and normalize 2020 - Jan 2026 harvests to exactly 843.00 kg
+-- 1. Ensure quantity_kg and harvest_date columns exist
 ALTER TABLE public.harvests ADD COLUMN IF NOT EXISTS quantity_kg NUMERIC;
+ALTER TABLE public.harvests ADD COLUMN IF NOT EXISTS harvest_date DATE;
 
--- 2. Ensure harvest_date column exists (migrating from date/harvested_on if needed)
+-- 2. Backfill harvest_date from existing date/timestamp columns if needed
 DO $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'harvest_date'
-    ) THEN
-        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'date') THEN
-            ALTER TABLE public.harvests ADD COLUMN harvest_date DATE;
-            EXECUTE 'UPDATE public.harvests SET harvest_date = date::date WHERE harvest_date IS NULL';
-        ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'harvested_on') THEN
-            ALTER TABLE public.harvests ADD COLUMN harvest_date DATE;
-            EXECUTE 'UPDATE public.harvests SET harvest_date = harvested_on::date WHERE harvest_date IS NULL';
-        END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'date') THEN
+        EXECUTE 'UPDATE public.harvests SET harvest_date = date::date WHERE harvest_date IS NULL';
+    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'harvested_on') THEN
+        EXECUTE 'UPDATE public.harvests SET harvest_date = harvested_on::date WHERE harvest_date IS NULL';
+    ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'created_at') THEN
+        EXECUTE 'UPDATE public.harvests SET harvest_date = created_at::date WHERE harvest_date IS NULL';
     END IF;
 END $$;
 
--- 3. Backfill quantity_kg from existing weight/yield columns if currently null
+-- 3. Backfill quantity_kg from weight_kg / yield_kg / quantity columns
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg') THEN
         EXECUTE 'UPDATE public.harvests SET quantity_kg = weight_kg WHERE quantity_kg IS NULL AND weight_kg IS NOT NULL';
     END IF;
-
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'yield_kg') THEN
         EXECUTE 'UPDATE public.harvests SET quantity_kg = yield_kg WHERE quantity_kg IS NULL AND yield_kg IS NOT NULL';
     END IF;
-
     IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'quantity') THEN
         EXECUTE 'UPDATE public.harvests SET quantity_kg = quantity::numeric WHERE quantity_kg IS NULL AND quantity IS NOT NULL';
     END IF;
 END $$;
 
--- 4. Associate unowned records with Timothy Nduva
+-- 4. Associate any unowned harvest records with Timothy Nduva
 DO $$
 DECLARE
     v_user_id UUID;
@@ -46,85 +40,83 @@ BEGIN
     END IF;
 END $$;
 
--- 5. Normalize harvests so Timothy Nduva's grand total is exactly 843.0 kg (783kg pre-2026 + 60kg 2026)
+-- 5. Normalize 2020 - Jan 2026 harvests to exactly 843.00 kg
 DO $$
 DECLARE
     v_user_id UUID;
-    v_hist_current_total NUMERIC := 0;
-    v_season_2026_total NUMERIC := 0;
-    v_target_historical NUMERIC := 783.0;
+    v_current_total NUMERIC := 0;
+    v_target_total NUMERIC := 843.00;
     v_factor NUMERIC := 1;
-    v_date_col TEXT := 'harvest_date';
-    v_qty_col TEXT := 'quantity_kg';
-    v_has_weight_col BOOLEAN := FALSE;
+    v_has_weight BOOLEAN := FALSE;
 BEGIN
     SELECT id INTO v_user_id FROM auth.users WHERE email = 'timothynduva349@gmail.com' LIMIT 1;
-    
-    -- Detect date column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'harvest_date') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'date') THEN
-            v_date_col := 'date';
-        END IF;
-    END IF;
-
-    -- Detect quantity column
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'quantity_kg') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg') THEN
-            v_qty_col := 'weight_kg';
-        ELSIF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'yield_kg') THEN
-            v_qty_col := 'yield_kg';
-        END IF;
-    END IF;
 
     SELECT EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'weight_kg'
-    ) INTO v_has_weight_col;
+    ) INTO v_has_weight;
 
-    -- Sum 2026 harvests
-    EXECUTE format(
-        'SELECT COALESCE(sum(%I), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND %I >= ''2026-01-01''',
-        v_qty_col, v_date_col
-    ) INTO v_season_2026_total USING v_user_id;
+    -- Dynamic calculation to prevent compile-time column resolution errors
+    EXECUTE 'SELECT COALESCE(SUM(quantity_kg), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND (harvest_date IS NULL OR harvest_date < ''2026-02-01'')'
+    INTO v_current_total
+    USING v_user_id;
 
-    -- Set target historical so grand total equals 843.0 kg
-    IF v_season_2026_total > 0 AND v_season_2026_total < 843.0 THEN
-        v_target_historical := 843.0 - v_season_2026_total;
-    ELSIF v_season_2026_total = 0 THEN
-        v_target_historical := 843.0;
-    END IF;
+    IF v_current_total > 0 THEN
+        v_factor := v_target_total / v_current_total;
 
-    -- Sum pre-2026 historical harvests dynamically
-    EXECUTE format(
-        'SELECT COALESCE(sum(%I), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
-        v_qty_col, v_date_col
-    ) INTO v_hist_current_total USING v_user_id;
-    
-    RAISE NOTICE 'Found pre-2026 total: % kg, season 2026: % kg (target historical: % kg, grand total: 843.0 kg)', 
-        v_hist_current_total, v_season_2026_total, v_target_historical;
+        -- Scale quantity_kg proportionally
+        EXECUTE 'UPDATE public.harvests SET quantity_kg = round((quantity_kg * $1)::numeric, 2) WHERE ($2 IS NULL OR user_id = $2) AND (harvest_date IS NULL OR harvest_date < ''2026-02-01'')'
+        USING v_factor, v_user_id;
 
-    IF v_hist_current_total > 0 THEN
-        v_factor := v_target_historical / v_hist_current_total;
-        
-        -- Update the effective quantity column dynamically
-        EXECUTE format(
-            'UPDATE public.harvests SET %I = round((%I * $1)::numeric, 2) WHERE ($2 IS NULL OR user_id = $2) AND %I < ''2026-01-01''',
-            v_qty_col, v_qty_col, v_date_col
-        ) USING v_factor, v_user_id;
-
-        -- Keep weight_kg column in sync if it exists and differs from v_qty_col
-        IF v_qty_col = 'quantity_kg' AND v_has_weight_col THEN
-            EXECUTE format(
-                'UPDATE public.harvests SET weight_kg = quantity_kg WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
-                v_date_col
-            ) USING v_user_id;
-        ELSIF v_qty_col = 'weight_kg' AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'harvests' AND column_name = 'quantity_kg') THEN
-            EXECUTE format(
-                'UPDATE public.harvests SET quantity_kg = weight_kg WHERE ($1 IS NULL OR user_id = $1) AND %I < ''2026-01-01''',
-                v_date_col
-            ) USING v_user_id;
+        -- Sync weight_kg if present
+        IF v_has_weight THEN
+            EXECUTE 'UPDATE public.harvests SET weight_kg = quantity_kg WHERE ($1 IS NULL OR user_id = $1) AND (harvest_date IS NULL OR harvest_date < ''2026-02-01'')'
+            USING v_user_id;
         END IF;
 
-        RAISE NOTICE 'Harvest normalization to 843.0 kg applied successfully with factor %', v_factor;
+        -- Adjust rounding remainder on the latest record so sum is exactly 843.00 kg
+        DECLARE
+            v_recheck_total NUMERIC := 0;
+            v_diff NUMERIC := 0;
+            v_last_id TEXT;
+        BEGIN
+            EXECUTE 'SELECT COALESCE(SUM(quantity_kg), 0) FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND (harvest_date IS NULL OR harvest_date < ''2026-02-01'')'
+            INTO v_recheck_total
+            USING v_user_id;
+
+            v_diff := v_target_total - v_recheck_total;
+            IF v_diff <> 0 THEN
+                EXECUTE 'SELECT id::text FROM public.harvests WHERE ($1 IS NULL OR user_id = $1) AND (harvest_date IS NULL OR harvest_date < ''2026-02-01'') ORDER BY harvest_date DESC NULLS LAST LIMIT 1'
+                INTO v_last_id
+                USING v_user_id;
+
+                IF v_last_id IS NOT NULL THEN
+                    EXECUTE 'UPDATE public.harvests SET quantity_kg = quantity_kg + $1 WHERE id::text = $2'
+                    USING v_diff, v_last_id;
+
+                    IF v_has_weight THEN
+                        EXECUTE 'UPDATE public.harvests SET weight_kg = quantity_kg WHERE id::text = $1'
+                        USING v_last_id;
+                    END IF;
+                END IF;
+            END IF;
+        END;
+
+        RAISE NOTICE 'Normalized harvests up to Jan 2026 to exactly 843.00 kg successfully (scaling factor: %)', v_factor;
+    ELSE
+        RAISE NOTICE 'No harvests found for normalization';
     END IF;
 END $$;
+
+-- 6. Verify and output results directly in Supabase SQL Editor
+SELECT 
+    COALESCE(u.email, 'All Users / Default') AS user_email,
+    COUNT(h.id) AS total_records,
+    ROUND(COALESCE(SUM(CASE WHEN h.harvest_date < '2026-01-01' THEN h.quantity_kg ELSE 0 END), 0), 2) AS historical_2020_2025_kg,
+    ROUND(COALESCE(SUM(CASE WHEN h.harvest_date >= '2026-01-01' AND h.harvest_date < '2026-02-01' THEN h.quantity_kg ELSE 0 END), 0), 2) AS jan_2026_kg,
+    ROUND(COALESCE(SUM(CASE WHEN h.harvest_date < '2026-02-01' THEN h.quantity_kg ELSE 0 END), 0), 2) AS total_2020_to_jan_2026_kg,
+    ROUND(COALESCE(SUM(h.quantity_kg), 0), 2) AS grand_total_kg
+FROM public.harvests h
+LEFT JOIN auth.users u ON h.user_id = u.id
+WHERE u.email = 'timothynduva349@gmail.com' OR h.user_id IS NULL
+GROUP BY u.email;
