@@ -431,6 +431,16 @@ export const HIVE_PHOTOS: HivePhoto[] = [
     description: "Hives shaded beneath dense green thorn leaves to prevent heat exhaustion in the colony.",
     details: "Natural tree canopies lower ambient temperatures by 4–8°C compared to exposed ground, drastically reducing the water and energy worker bees need to expend on internal hive cooling.",
   },
+  {
+    id: "orchard-baobab-agroforestry",
+    image: "/images/pollination/orchard-panorama-mango-citrus-baobab.jpg",
+    title: "105+ Acre Agroforestry Pollination Corridor",
+    category: "Field Work",
+    badge: "Agroforestry Sanctuary",
+    location: "Makueni County Orchard Corridor",
+    description: "Flowering mangoes, citrus groves, and ancient baobab trees anchored by BeeYield precision apiaries.",
+    details: "Bee colonies positioned along hillside orchard contours pollinate synchronous mango and citrus bloom bursts while finding drought sanctuary in indigenous tree canopies across 105 acres and counting.",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
