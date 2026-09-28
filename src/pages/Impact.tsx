@@ -1,8 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2,
-  ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2
+  ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2,
+  Trees, Flower2
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { jsPDF } from "jspdf";
@@ -466,10 +468,10 @@ const Impact = () => {
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 105 and counting acres served. 3 tons of carbon offset. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
+              <Link to={"/contact" as any} className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
                 Contact the Hive <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
+              <Link to={"/global-hive-network" as any} className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
                 Join our Global Hive Network
               </Link>
             </div>

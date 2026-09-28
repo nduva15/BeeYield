@@ -639,7 +639,7 @@ export default function BeeYieldHivesView({
         setBeeYieldPendingOnboarding({
           step: "device",
           email: user?.email || undefined,
-          apiaryId: created.apiary_id,
+          apiaryId: created.apiary_id ?? undefined,
           hiveId: created.id,
         });
         onTabChange("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);
@@ -719,7 +719,7 @@ export default function BeeYieldHivesView({
           setBeeYieldPendingOnboarding({
             step: "device",
             email: user?.email || undefined,
-            apiaryId: created.apiary_id,
+            apiaryId: created.apiary_id ?? undefined,
             hiveId: created.id,
           });
           onTabChange("devices", undefined, `onboarding:add-device:${created.apiary_id || ""}:${created.id}`);

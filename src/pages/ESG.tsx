@@ -624,10 +624,10 @@ const ESG = () => {
               22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
+              <Link to={"/contact" as any} className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
                 Partner Engagement
               </Link>
-              <Link to="/media" className="px-10 py-5 bg-white text-neutral-900 border border-neutral-200 rounded-2xl font-bold shadow-sm hover:bg-neutral-50 transition-all text-sm backdrop-blur-sm">
+              <Link to={"/media" as any} className="px-10 py-5 bg-white text-neutral-900 border border-neutral-200 rounded-2xl font-bold shadow-sm hover:bg-neutral-50 transition-all text-sm backdrop-blur-sm">
                 Impact Media Room
               </Link>
             </div>
