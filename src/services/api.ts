@@ -255,7 +255,8 @@ export async function apiRequest<T>(
             }
             throw new Error(`Network error: Unable to connect to the server. Please check your connection.`, { cause: error });
         } else {
-            if (!isPublicApiEndpoint(endpoint)) {
+            const isOptionalShopEndpoint = endpoint.includes('/shop/');
+            if (!isPublicApiEndpoint(endpoint) && !isOptionalShopEndpoint) {
                 console.error(`API Error for ${endpoint}:`, error);
             }
             throw error;

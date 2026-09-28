@@ -1066,13 +1066,13 @@ export default function About() {
       {/* ============================================================ */}
       {/*  TECHNOLOGY & IoT SECTION                                     */}
       {/* ============================================================ */}
-      <section className="py-20 bg-card border-y border-border">
+      <section className="py-20 bg-gradient-to-b from-white via-amber-50/20 to-white border-y border-amber-200/60 text-stone-900">
         <div className="container mx-auto px-4 max-w-5xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               Our Technology Stack
             </h2>
-            <p className="text-center text-muted-foreground max-w-xl mx-auto mb-12">
+            <p className="text-center text-stone-600 font-medium max-w-xl mx-auto mb-12">
               From traditional beekeeping to precision agriculture powered by IoT, AI, and data
               science.
             </p>
@@ -1084,44 +1084,44 @@ export default function About() {
                 icon: Thermometer,
                 title: "Temperature Monitoring",
                 desc: "Real-time in-hive and outside temperature tracking for colony health assessment",
-                color: "text-red-400",
+                color: "text-red-500",
               },
               {
                 icon: Scale,
                 title: "Weight Telemetry",
                 desc: "Continuous under-hive weight sensors detect honey flow, swarming, and foraging patterns",
-                color: "text-blue-400",
+                color: "text-blue-600",
               },
               {
                 icon: Droplets,
                 title: "Humidity & Pressure",
                 desc: "Environmental monitoring for optimal brood development and honey curing conditions",
-                color: "text-cyan-400",
+                color: "text-cyan-600",
               },
               {
                 icon: Bug,
                 title: "Varroa Detection",
                 desc: "IoT-powered Varroa mite detection — our biggest win in colony protection",
-                color: "text-amber-400",
+                color: "text-amber-600",
               },
               {
                 icon: Volume2,
                 title: "Bee Sound Analysis",
                 desc: "Trained on 350K+ bee sounds via Kaggle — acoustic disease detection and colony mood",
-                color: "text-green-400",
+                color: "text-emerald-600",
               },
               {
                 icon: Globe,
                 title: "Asian Hornet Alerts",
                 desc: "In-hive detection of invasive Asian hornets — critical for African bee colony defense",
-                color: "text-purple-400",
+                color: "text-purple-600",
               },
             ].map((tech, i) => (
               <FadeIn key={tech.title} delay={i * 80}>
-                <div className="p-5 rounded-2xl border border-border bg-background hover:border-amber-500/20 transition-all duration-300">
+                <div className="p-5 rounded-2xl border border-amber-200/90 bg-white hover:border-amber-400 hover:shadow-md transition-all duration-300 shadow-xs">
                   <tech.icon className={`w-6 h-6 ${tech.color} mb-3`} />
-                  <h4 className="font-semibold text-foreground mb-1">{tech.title}</h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{tech.desc}</p>
+                  <h4 className="font-semibold text-stone-900 mb-1">{tech.title}</h4>
+                  <p className="text-xs text-stone-600 font-medium leading-relaxed">{tech.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -1129,23 +1129,23 @@ export default function About() {
 
           {/* Partnerships */}
           <FadeIn>
-            <div className="mt-12 p-6 rounded-2xl border border-purple-500/20 bg-purple-500/5">
-              <h3 className="font-display text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5" /> Global Partnerships — 2026
+            <div className="mt-12 p-6 rounded-2xl border border-purple-200 bg-purple-50/40 shadow-xs">
+              <h3 className="font-display text-lg font-bold text-purple-900 mb-4 flex items-center gap-2">
+                <Award className="w-5 h-5 text-purple-600" /> Global Partnerships — 2026
               </h3>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl border border-border bg-card">
-                  <div className="font-semibold text-foreground mb-1">🇵🇱 Apisense.io — Poland</div>
-                  <p className="text-xs text-muted-foreground">
+                <div className="p-4 rounded-xl border border-purple-200/80 bg-white shadow-xs">
+                  <div className="font-semibold text-stone-900 mb-1">🇵🇱 Apisense.io — Poland</div>
+                  <p className="text-xs text-stone-600 font-medium">
                     Global Field Partner Program for disease detection IoT. 20 in-hive devices, 1
                     in-land device, 2 weight sensors deployed. Partnership signed June 12th, 2026.
                   </p>
                 </div>
-                <div className="p-4 rounded-xl border border-border bg-card">
-                  <div className="font-semibold text-foreground mb-1">
+                <div className="p-4 rounded-xl border border-purple-200/80 bg-white shadow-xs">
+                  <div className="font-semibold text-stone-900 mb-1">
                     🇵🇱 Intelligent Hives — Poland
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-stone-600 font-medium">
                     Precision pollination in-land devices, weight scale, and in-hive device. First
                     operational prototype for precision pollination. Partnership signed June 23rd,
                     2026.
@@ -1160,56 +1160,56 @@ export default function About() {
       {/* ============================================================ */}
       {/*  POLLINATION JOURNEY                                          */}
       {/* ============================================================ */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-gradient-to-b from-amber-50/30 to-white text-stone-900">
         <div className="container mx-auto px-4 max-w-5xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               Our Pollination Journey
             </h2>
-            <p className="text-center text-muted-foreground max-w-xl mx-auto mb-12">
+            <p className="text-center text-stone-600 font-medium max-w-xl mx-auto mb-12">
               From traditional hive-moving to intelligent hive precision pollination.
             </p>
           </FadeIn>
 
           <div className="grid md:grid-cols-2 gap-8">
             <FadeIn>
-              <div className="p-6 rounded-2xl border border-border bg-card h-full">
-                <h3 className="font-display text-lg font-bold mb-4">Traditional → Precision</h3>
-                <div className="space-y-4 text-sm text-muted-foreground">
+              <div className="p-6 rounded-2xl border border-amber-200 bg-white shadow-xs h-full">
+                <h3 className="font-display text-lg font-bold mb-4 text-stone-900">Traditional → Precision</h3>
+                <div className="space-y-4 text-sm text-stone-700 leading-relaxed font-medium">
                   <p>
                     Our pollination journey started with traditional methods — physically moving
                     hives to client farms and letting nature do its work. We successfully pollinated{" "}
-                    <strong className="text-foreground">105 acres and counting</strong> of farmland, proving the
+                    <strong className="text-stone-950 font-bold">105 acres and counting</strong> of farmland, proving the
                     value of managed pollination services in Kenya.
                   </p>
                   <p>
                     Today, BeeYield uses continuous under-hive weight telemetry, acoustic
                     monitoring, and climate tracking to deliver transparent pollination results. Our{" "}
-                    <strong className="text-foreground">18% yield increase</strong> target is
+                    <strong className="text-stone-950 font-bold">18% yield increase</strong> target is
                     already being achieved, with ambitions to push past 25%.
                   </p>
                   <p>
                     It's mango bloom season in{" "}
-                    <strong className="text-foreground">Makueni, Kenya</strong> — we're aiming to
-                    hit <strong className="text-foreground">150 acres</strong> by year-end.
+                    <strong className="text-stone-950 font-bold">Makueni, Kenya</strong> — we're aiming to
+                    hit <strong className="text-stone-950 font-bold">150 acres</strong> by year-end.
                   </p>
                 </div>
               </div>
             </FadeIn>
             <FadeIn delay={100}>
-              <div className="p-6 rounded-2xl border border-green-500/20 bg-green-500/5 h-full">
-                <h3 className="font-display text-lg font-bold text-green-400 mb-4">
+              <div className="p-6 rounded-2xl border border-emerald-200 bg-emerald-50/40 shadow-xs h-full">
+                <h3 className="font-display text-lg font-bold text-emerald-900 mb-4">
                   Partner Farmer Impact
                 </h3>
-                <div className="space-y-4 text-sm text-muted-foreground">
+                <div className="space-y-4 text-sm text-stone-700 leading-relaxed font-medium">
                   <p>
                     Our partner farmers have seen significant increases in honey harvests after
                     adopting our
-                    <strong className="text-foreground"> no-pesticides, no-smoke</strong> approach
+                    <strong className="text-stone-950 font-bold"> no-pesticides, no-smoke</strong> approach
                     and modern harvesting techniques.
                   </p>
                   <p>
-                    We manage <strong className="text-foreground">205+ additional hives</strong>{" "}
+                    We manage <strong className="text-stone-950 font-bold">205+ additional hives</strong>{" "}
                     from partner farmers across the Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas, providing hive checkups, honey harvesting, and education
                     on bee diseases and apiary management.
                   </p>
@@ -1228,36 +1228,36 @@ export default function About() {
       {/* ============================================================ */}
       {/*  THE TEAM                                                      */}
       {/* ============================================================ */}
-      <section className="py-20 bg-card border-y border-border">
+      <section className="py-20 bg-gradient-to-b from-white via-amber-50/20 to-white border-y border-amber-200/60 text-stone-900">
         <div className="container mx-auto px-4 max-w-5xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               The Team Behind BeeYield
             </h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-10">
+            <p className="text-center text-stone-600 font-medium max-w-2xl mx-auto mb-10">
               Three siblings combining Strathmore University training in Finance, Marketing, IT, and Project Management with hands-on apiculture.
             </p>
 
             {/* Featured CEO & Founder Quote */}
-            <div className="mb-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/25 backdrop-blur-xs flex flex-col sm:flex-row items-center sm:items-start gap-6 shadow-sm">
+            <div className="mb-12 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-100/70 via-amber-50 to-white border border-amber-300 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6">
               <div className="relative shrink-0">
                 <img
                   src="/images/timothy-nduva.png"
                   alt="Timothy Nduva, Founder & CEO"
-                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-center border-2 border-amber-500/60 shadow-md"
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover object-center border-2 border-amber-500 shadow-md"
                 />
                 <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center shadow font-bold text-xs" title="Founder & Lead Beekeeper">
                   🐝
                 </div>
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <Quote className="w-7 h-7 text-amber-500/50 mb-2 mx-auto sm:mx-0" />
-                <blockquote className="text-base sm:text-lg font-medium text-foreground italic leading-relaxed mb-3">
+                <Quote className="w-7 h-7 text-amber-600/60 mb-2 mx-auto sm:mx-0" />
+                <blockquote className="text-base sm:text-lg font-medium text-stone-900 italic leading-relaxed mb-3">
                   “When we started losing bees to pesticides, I knew we had two choices: give up or innovate. We chose to protect them. Every hive we monitor with IoT telemetry is another step toward ensuring that Kenyan farmers and pollinators thrive together.”
                 </blockquote>
                 <div>
-                  <div className="font-bold text-base text-foreground">Timothy Nduva</div>
-                  <div className="text-xs text-amber-500 font-medium">Founder, CEO &amp; Lead Beekeeper • BeeYield</div>
+                  <div className="font-bold text-base text-stone-950">Timothy Nduva</div>
+                  <div className="text-xs text-amber-700 font-bold">Founder, CEO &amp; Lead Beekeeper • BeeYield</div>
                 </div>
               </div>
             </div>
@@ -1289,7 +1289,7 @@ export default function About() {
               },
             ].map((member, i) => (
               <FadeIn key={member.name} delay={i * 100}>
-                <div className="p-6 rounded-2xl border border-border bg-background text-center hover:border-amber-500/20 transition-all duration-300 h-full flex flex-col">
+                <div className="p-6 rounded-2xl border border-amber-200 bg-white text-center hover:border-amber-400 hover:shadow-md transition-all duration-300 h-full flex flex-col shadow-xs">
                   {member.image ? (
                     <div className="w-20 h-20 mx-auto mb-3 rounded-full overflow-hidden border-2 border-amber-500/40 shadow">
                       <img src={member.image} alt={member.name} className="w-full h-full object-cover object-center" />
@@ -1297,12 +1297,12 @@ export default function About() {
                   ) : (
                     <div className="text-4xl mb-3">{member.emoji}</div>
                   )}
-                  <h3 className="font-display text-xl font-bold">{member.name}</h3>
-                  <div className="text-xs text-amber-500 font-medium mb-2">{member.role}</div>
-                  <div className="text-[10px] text-muted-foreground italic mb-3">
+                  <h3 className="font-display text-xl font-bold text-stone-900">{member.name}</h3>
+                  <div className="text-xs text-amber-700 font-bold mb-2">{member.role}</div>
+                  <div className="text-[10px] text-stone-500 font-medium italic mb-3">
                     {member.education}
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed flex-1">
+                  <p className="text-sm text-stone-600 font-medium leading-relaxed flex-1">
                     {member.desc}
                   </p>
                 </div>
@@ -1312,20 +1312,20 @@ export default function About() {
 
           <FadeIn>
             <div className="grid sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl border border-border bg-card">
-                <h4 className="font-semibold text-sm mb-2">🤝 Field Team</h4>
-                <p className="text-xs text-muted-foreground">
-                  <strong className="text-foreground">Peter George</strong> and{" "}
-                  <strong className="text-foreground">Ngumbau</strong> — part-time employees since
+              <div className="p-4 rounded-xl border border-amber-200 bg-white shadow-xs">
+                <h4 className="font-bold text-sm mb-2 text-stone-900">🤝 Field Team</h4>
+                <p className="text-xs text-stone-600 font-medium">
+                  <strong className="text-stone-950 font-bold">Peter George</strong> and{" "}
+                  <strong className="text-stone-950 font-bold">Ngumbau</strong> — part-time employees since
                   July 28th, 2025. They handle field work, farmer partnerships, and harvesting
                   operations.
                 </p>
               </div>
-              <div className="p-4 rounded-xl border border-border bg-card">
-                <h4 className="font-semibold text-sm mb-2">🌍 What's Next</h4>
-                <p className="text-xs text-muted-foreground">
+              <div className="p-4 rounded-xl border border-amber-200 bg-white shadow-xs">
+                <h4 className="font-bold text-sm mb-2 text-stone-900">🌍 What's Next</h4>
+                <p className="text-xs text-stone-600 font-medium">
                   Marketing launch:{" "}
-                  <strong className="text-foreground">September 14th, 2026</strong>. Mobile app in
+                  <strong className="text-stone-950 font-bold">September 14th, 2026</strong>. Mobile app in
                   development since August 3rd. We want to give our audience the full experience —
                   not half-done things. The world is about to hear from BeeYield.
                 </p>
@@ -1338,41 +1338,41 @@ export default function About() {
       {/* ============================================================ */}
       {/*  BY THE NUMBERS — HONEY JOURNEY                               */}
       {/* ============================================================ */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-gradient-to-b from-white via-amber-50/20 to-white text-stone-900">
         <div className="container mx-auto px-4 max-w-4xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               The Honey Journey — By the Numbers
             </h2>
-            <p className="text-center text-muted-foreground max-w-lg mx-auto mb-12">
+            <p className="text-center text-stone-600 font-medium max-w-lg mx-auto mb-12">
               We only harvest 50% of our honey. If we harvested 100%, our total would exceed 1.3
               tonnes. All from a 3-person team. All word of mouth. Unbranded. Unpackaged.
             </p>
           </FadeIn>
 
           <FadeIn>
-            <div className="overflow-x-auto rounded-2xl border border-border">
+            <div className="overflow-x-auto rounded-2xl border border-amber-200 bg-white shadow-sm">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-amber-500/10">
-                    <th className="px-4 py-3 text-left font-display font-bold text-foreground">
+                  <tr className="bg-amber-100/70 border-b border-amber-200">
+                    <th className="px-4 py-3 text-left font-display font-bold text-stone-900">
                       Year
                     </th>
-                    <th className="px-4 py-3 text-right font-display font-bold text-foreground">
+                    <th className="px-4 py-3 text-right font-display font-bold text-stone-900">
                       Hives
                     </th>
-                    <th className="px-4 py-3 text-right font-display font-bold text-foreground">
+                    <th className="px-4 py-3 text-right font-display font-bold text-stone-900">
                       Honey (kg)
                     </th>
-                    <th className="px-4 py-3 text-right font-display font-bold text-foreground">
+                    <th className="px-4 py-3 text-right font-display font-bold text-stone-900">
                       Land
                     </th>
-                    <th className="px-4 py-3 text-right font-display font-bold text-foreground">
+                    <th className="px-4 py-3 text-right font-display font-bold text-stone-900">
                       Trees
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-amber-100">
                   {[
                     { year: "2020", hives: "4 → 20", honey: "40", land: "¼ acre", trees: "—" },
                     { year: "2021", hives: "35", honey: "70", land: "1.25 acres", trees: "76" },
@@ -1388,27 +1388,27 @@ export default function About() {
                       trees: "1,500+",
                     },
                   ].map((row) => (
-                    <tr key={row.year} className="hover:bg-amber-500/5 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-amber-400">{row.year}</td>
-                      <td className="px-4 py-3 text-right text-muted-foreground">{row.hives}</td>
-                      <td className="px-4 py-3 text-right font-medium text-foreground">
+                    <tr key={row.year} className="hover:bg-amber-50/60 transition-colors">
+                      <td className="px-4 py-3 font-bold text-amber-700">{row.year}</td>
+                      <td className="px-4 py-3 text-right text-stone-600 font-medium">{row.hives}</td>
+                      <td className="px-4 py-3 text-right font-bold text-stone-900">
                         {row.honey}
                       </td>
-                      <td className="px-4 py-3 text-right text-muted-foreground">{row.land}</td>
-                      <td className="px-4 py-3 text-right text-muted-foreground">{row.trees}</td>
+                      <td className="px-4 py-3 text-right text-stone-600 font-medium">{row.land}</td>
+                      <td className="px-4 py-3 text-right text-stone-600 font-medium">{row.trees}</td>
                     </tr>
                   ))}
-                  <tr className="bg-amber-500/10 font-bold">
-                    <td className="px-4 py-3 text-amber-400">TOTAL</td>
-                    <td className="px-4 py-3 text-right text-foreground">184 owned</td>
-                    <td className="px-4 py-3 text-right text-foreground">988 kg</td>
-                    <td className="px-4 py-3 text-right text-foreground">5 acres</td>
-                    <td className="px-4 py-3 text-right text-foreground">1,500+</td>
+                  <tr className="bg-amber-100/50 font-bold border-t border-amber-200">
+                    <td className="px-4 py-3 text-amber-800 font-black">TOTAL</td>
+                    <td className="px-4 py-3 text-right text-stone-900">184 owned</td>
+                    <td className="px-4 py-3 text-right text-stone-900">988 kg</td>
+                    <td className="px-4 py-3 text-right text-stone-900">5 acres</td>
+                    <td className="px-4 py-3 text-right text-stone-900">1,500+</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            <p className="text-center text-xs text-muted-foreground mt-3">
+            <p className="text-center text-xs text-stone-500 font-medium mt-3">
               * 2026 figures as of September 2026 — year still in progress. Honey harvested at 50%
               capacity.
             </p>
@@ -1419,13 +1419,13 @@ export default function About() {
       {/* ============================================================ */}
       {/*  CHALLENGES & WHAT'S STILL UNSOLVED                           */}
       {/* ============================================================ */}
-      <section className="py-20 bg-card border-y border-border">
+      <section className="py-20 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/60 border-y border-amber-200/70 text-stone-900">
         <div className="container mx-auto px-4 max-w-4xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               The Challenges We Still Face
             </h2>
-            <p className="text-center text-muted-foreground max-w-lg mx-auto mb-12">
+            <p className="text-center text-stone-600 font-medium max-w-lg mx-auto mb-12">
               We don't hide our struggles. This journey is real, raw, and unfinished.
             </p>
           </FadeIn>
@@ -1464,14 +1464,14 @@ export default function About() {
               },
             ].map((challenge, i) => (
               <FadeIn key={challenge.title} delay={i * 80}>
-                <div className="p-4 rounded-xl border border-border bg-background">
+                <div className="p-4 rounded-xl border border-amber-200 bg-white shadow-xs">
                   <div className="flex items-start gap-3">
                     <span className="text-xl flex-shrink-0">{challenge.emoji}</span>
                     <div>
-                      <h4 className="font-semibold text-sm text-foreground mb-1">
+                      <h4 className="font-bold text-sm text-stone-900 mb-1">
                         {challenge.title}
                       </h4>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
+                      <p className="text-xs text-stone-600 font-medium leading-relaxed">
                         {challenge.desc}
                       </p>
                     </div>
@@ -1486,18 +1486,18 @@ export default function About() {
       {/* ============================================================ */}
       {/*  CLOSING / CTA                                                */}
       {/* ============================================================ */}
-      <section className="py-24 bg-gradient-to-b from-background to-[hsl(24,12%,7%)]">
+      <section className="py-24 bg-gradient-to-b from-amber-50/60 via-amber-100/40 to-amber-200/50 text-stone-900">
         <div className="container mx-auto px-4 max-w-3xl text-center">
           <FadeIn>
             <img
               src={beeyieldLogo}
               alt="BeeYield"
-              className="w-16 h-16 mx-auto mb-6 drop-shadow-lg"
+              className="w-16 h-16 mx-auto mb-6 drop-shadow-md"
             />
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-6 text-stone-900">
               This Is Just The Beginning
             </h2>
-            <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
+            <p className="text-stone-700 font-medium leading-relaxed mb-8 max-w-2xl mx-auto">
               988 kg of honey. 105 and counting acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
               partner farmers. 22 IoT devices. 2 global partnerships. Zero external funding.
               <br />
@@ -1510,29 +1510,29 @@ export default function About() {
             <div className="flex flex-wrap justify-center gap-4">
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-semibold shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 font-bold shadow-lg hover:shadow-amber-500/30 transition-all duration-300 hover:scale-105"
               >
                 Try BeeGPT AI <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/blogs"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-amber-500/30 hover:bg-amber-500/10 text-amber-300 font-semibold transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-amber-500/50 bg-white/80 hover:bg-white text-stone-900 font-semibold transition-all duration-300 hover:scale-105 shadow-xs"
               >
                 Read Field Blogs <BookOpen className="w-4 h-4" />
               </Link>
             </div>
           </FadeIn>
           <FadeIn delay={300}>
-            <div className="mt-12 pt-6 border-t border-border/40 text-center space-y-2">
-              <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
-                <span className="text-amber-400 font-semibold uppercase tracking-wider text-[11px]">Global Partners:</span>
-                <span className="font-medium text-foreground">Farmers</span>
+            <div className="mt-12 pt-6 border-t border-amber-200 text-center space-y-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-stone-600 font-medium">
+                <span className="text-amber-800 font-bold uppercase tracking-wider text-[11px]">Global Partners:</span>
+                <span className="font-semibold text-stone-900">Farmers</span>
                 <span>•</span>
-                <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">ApiSense</a>
+                <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="text-stone-800 hover:text-amber-700 transition-colors font-semibold">ApiSense</a>
                 <span>•</span>
-                <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">Intelligent Hives</a>
+                <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="text-stone-800 hover:text-amber-700 transition-colors font-semibold">Intelligent Hives</a>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-stone-600 font-medium">
                 © {new Date().getFullYear()} BeeYield — Makueni, Kenya
                 <br />
                 Three siblings. One mission. Modernizing pollination for Africa and beyond.
@@ -1544,3 +1544,4 @@ export default function About() {
     </div>
   );
 }
+

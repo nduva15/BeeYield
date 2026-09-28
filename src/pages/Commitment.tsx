@@ -135,16 +135,60 @@ const CommitmentPage = () => {
         </div>
       </section>
 
+      {/* SDGs Grid */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center space-y-4 mb-14">
+            <h2 className="text-3xl font-black md:text-4xl text-foreground">
+              Advancing 8 UN Sustainable Development Goals
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
+              Every hive deployed and every tree planted supports systemic social and environmental progress.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {sdgs.map((sdg) => {
+              const Icon = sdg.icon;
+              return (
+                <Card key={sdg.number} className="overflow-hidden border border-border/60 hover:shadow-lg transition-all flex flex-col justify-between bg-card">
+                  <div className={`h-2 bg-gradient-to-r ${sdg.color}`} />
+                  <CardContent className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-black text-foreground">SDG {sdg.number}</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                      </div>
+                      <h3 className="font-bold text-lg text-foreground leading-snug">{sdg.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{sdg.description}</p>
+                    </div>
+                    <div className="pt-3 border-t border-border/50">
+                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">
+                        Impact Metric:
+                      </span>
+                      <p className="text-xs font-semibold text-foreground/90 mt-0.5">{sdg.impact}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ─────────────────────────────────────────────────────────────
           SDG 15 & PROJECT PANDA MITI: REFORESTATION & BEE POLLINATION
+          (DIRECTLY UNDER THE 8 UN SDGS)
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 bg-emerald-50/50 text-neutral-900 relative overflow-hidden border-b border-emerald-100">
+      <section className="py-20 bg-emerald-50/50 text-neutral-900 relative overflow-hidden border-y border-emerald-100">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 max-w-5xl relative z-10">
           <div className="rounded-3xl p-8 sm:p-12 bg-white border border-emerald-200 shadow-xl">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <Badge className="bg-emerald-500/20 text-emerald-800 border-emerald-500/30 px-4 py-1.5 font-bold text-xs uppercase tracking-widest">
-                SDG 15: Life on Land • Floral Sanctum & Aquifer Recovery
+                Under SDG 15: Life on Land • Floral Sanctum &amp; Aquifer Recovery
               </Badge>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 text-xs font-semibold">
                 <MapPinIcon className="w-3.5 h-3.5 text-emerald-600" />
@@ -218,49 +262,6 @@ const CommitmentPage = () => {
                 </Link>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SDGs Grid */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center space-y-4 mb-14">
-            <h2 className="text-3xl font-black md:text-4xl text-foreground">
-              Advancing 8 UN Sustainable Development Goals
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
-              Every hive deployed and every tree planted supports systemic social and environmental progress.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {sdgs.map((sdg) => {
-              const Icon = sdg.icon;
-              return (
-                <Card key={sdg.number} className="overflow-hidden border border-border/60 hover:shadow-lg transition-all flex flex-col justify-between bg-card">
-                  <div className={`h-2 bg-gradient-to-r ${sdg.color}`} />
-                  <CardContent className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-black text-foreground">SDG {sdg.number}</span>
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-                          <Icon className="w-5 h-5" />
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-lg text-foreground leading-snug">{sdg.title}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{sdg.description}</p>
-                    </div>
-                    <div className="pt-3 border-t border-border/50">
-                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">
-                        Impact Metric:
-                      </span>
-                      <p className="text-xs font-semibold text-foreground/90 mt-0.5">{sdg.impact}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
           </div>
         </div>
       </section>

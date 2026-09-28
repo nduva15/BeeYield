@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   X, ShoppingBag, Plus, Search, Trash2, CreditCard, Package, Truck,
   Loader2, Save, MapPin, RefreshCw,
@@ -19,7 +19,7 @@ import {
   LogIn, LogOut, Database, UserCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { useShopAuth } from "@/hooks/use-shop-auth";
+import { useShopAuth, ShopAuthProvider, ShopAuthContext, defaultShopAuthContext } from "@/hooks/use-shop-auth";
 import ShopAuthModal from "@/components/ShopAuthModal";
 import ShopCardWidget from "@/components/ShopCardWidget";
 import { Badge } from "@/components/ui/badge";
@@ -85,7 +85,7 @@ type TabType =
   | "profile"
   | "support";
 
-export default function ShopDashboard({
+function ShopDashboardInner({
   isOpen = true,
   onClose,
   embedded = false,
@@ -3645,4 +3645,16 @@ export default function ShopDashboard({
       </div>
     </div>
   );
+}
+
+export default function ShopDashboard(props: ShopDashboardProps) {
+  const ctx = useContext(ShopAuthContext);
+  if (!ctx || ctx === defaultShopAuthContext) {
+    return (
+      <ShopAuthProvider>
+        <ShopDashboardInner {...props} />
+      </ShopAuthProvider>
+    );
+  }
+  return <ShopDashboardInner {...props} />;
 }
