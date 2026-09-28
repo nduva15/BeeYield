@@ -258,11 +258,17 @@ export function SyrupFeedingToolPage({
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={onClose}
-              className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer"
+              onClick={() => {
+                requestAnimationFrame(() => {
+                  React.startTransition(() => {
+                    onClose();
+                  });
+                });
+              }}
+              className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer active:scale-95 touch-manipulation"
               aria-label="Back"
             >
-              <ChevronLeft className="w-6 h-6 stroke-[2.2]" />
+              <ChevronLeft className="w-6 h-6 stroke-[2.2] pointer-events-none select-none" />
             </button>
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-sans">
               Syrup Feeding

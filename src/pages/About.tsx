@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import {
   TreePine,
   Droplets,
@@ -29,13 +29,7 @@ import {
   Eye,
   ShieldCheck,
   Quote,
-  LogIn,
-  LogOut,
-  Trees,
-  ShoppingBag,
 } from "lucide-react";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 
 /* ------------------------------------------------------------------ */

@@ -732,29 +732,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        {/* Direct Sign Out / Sign In Button in Header */}
-        {user ? (
-          <button
-            type="button"
-            onClick={onLogout}
-            className="hidden sm:flex items-center gap-1.5 h-10 px-3 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 rounded-2xl transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
-            title="Sign out of BeeYield"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Sign Out</span>
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => handleTabSelect("auth")}
-            className="flex items-center gap-1.5 h-10 px-3.5 text-xs font-bold text-primary-foreground bg-honey hover:bg-honey/90 border border-honey/50 rounded-2xl transition-all shadow-xs shrink-0 cursor-pointer active:scale-95"
-            title="Sign in to BeeYield"
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            <span>Sign In</span>
-          </button>
-        )}
       </div>
 
       {/* Avatar Picker / Photo Upload Dialog */}
