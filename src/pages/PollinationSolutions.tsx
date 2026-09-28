@@ -465,6 +465,50 @@ const PollinationSolutions = () => {
         iframeClassName="opacity-100"
       />
 
+      {/* Continental Bee Emergency & Food Security Section - Non-Black Light Aesthetic */}
+      <section id="african-pollinator-crisis" className="py-24 bg-gradient-to-b from-[#F5FAF5] via-[#EDF6EC] to-[#E5F2E4] text-stone-900 border-y border-emerald-100/90 relative overflow-hidden" aria-label="African Bee Decline and Ecological Emergency">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            <div className="order-2 lg:order-1">
+              <Card className="bg-white/95 border-stone-200/90 shadow-sm overflow-hidden rounded-3xl">
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <AlertTriangle className="h-5 w-5 text-amber-600" />
+                    <span className="text-xs font-bold text-amber-900 uppercase tracking-wider bg-amber-100/90 px-3 py-1 rounded-full border border-amber-300">Ecological &amp; Agricultural Emergency</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black mb-4 text-stone-950">The African Bee Decline</h3>
+                  <p className="text-stone-600 leading-relaxed mb-6 text-sm sm:text-base font-medium">
+                    The decline of African bees has shifted from a quiet environmental concern into a severe ecological and agricultural emergency across the continent. Recent data indicates an average managed honey bee colony loss rate of <strong className="text-stone-950 font-bold">21.3%</strong> across Sub-Saharan Africa, with some regions like Kenya and Uganda experiencing devastating seasonal losses as high as <strong className="text-amber-700 font-bold">42% to 45%</strong>.
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-stone-50 p-4 rounded-2xl border border-stone-200">
+                      <p className="text-2xl sm:text-3xl font-black text-stone-950">21.3%</p>
+                      <p className="text-xs text-stone-600 leading-snug font-medium">Average Sub-Saharan managed colony loss</p>
+                    </div>
+                    <div className="bg-amber-50/80 p-4 rounded-2xl border border-amber-200">
+                      <p className="text-2xl sm:text-3xl font-black text-amber-700">42%–45%</p>
+                      <p className="text-xs text-stone-600 leading-snug font-medium">Peak seasonal loss in Kenya &amp; Uganda</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="order-1 lg:order-2">
+              <h2 className="text-3xl sm:text-4xl font-black mb-6 text-stone-950 tracking-tight leading-tight">The Pollinator Crisis: <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-emerald-700 to-teal-800">Continental Food Security at Risk</span></h2>
+              <p className="text-stone-700 leading-relaxed mb-4 text-sm sm:text-base font-medium">
+                Because approximately <strong className="text-emerald-800 font-bold">40% of insect pollinators in Africa are currently at risk</strong>, this decline directly threatens biodiversity, ecosystem stability, and the food security of millions of people who depend on insect-pollinated crops.
+              </p>
+              <p className="text-stone-700 leading-relaxed mb-8 text-sm sm:text-base font-medium">
+                With over 75% of leading food crops relying on insect pollination, protecting African bees is not just an environmental ideal—it is the bedrock of agricultural stability, commercial yields, and rural economic survival.
+              </p>
+              <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-xs" asChild>
+                <Link to="/ourstory">Learn More <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Initiative & Goals */}
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
