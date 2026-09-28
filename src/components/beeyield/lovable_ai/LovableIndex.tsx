@@ -654,7 +654,6 @@ export default function Index({ embedded = false, initialMessage, onInitialMessa
           icon: SettingsIcon,
           onClick: () => setSettingsOpen(true),
         },
-        { label: "About Beeyield AI", icon: Info, onClick: () => setAboutOpen(true) },
         user
           ? {
               label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`,

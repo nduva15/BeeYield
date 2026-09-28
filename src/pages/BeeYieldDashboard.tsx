@@ -447,7 +447,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'sound-audit':
             case 'sound-analysis': return renderEmbedded(<SoundAnalysis isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'about-beeyield-ai':
-            case 'about-ai': return renderEmbedded(<AboutModal open={true} onOpenChange={() => handleTabChange('home')} />);
+            case 'about-ai': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} initialTab="about" />);
             case 'about': navigate('/about'); return null;
             case 'blogs': navigate('/blogs'); return null;
             case 'auth': navigate('/beeyield-login'); return null;

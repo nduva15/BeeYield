@@ -128,7 +128,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 { id: 'measurement-tools', label: "My Devices, USB, Bluetooth & Online", icon: Cpu, onClick: () => onTabChange('measurement-tools') },
                 { id: 'support', label: "Support & Tickets", icon: LifeBuoy, onClick: () => onTabChange('support') },
                 { id: 'settings', label: "Settings — Control Center", icon: Settings, onClick: () => onTabChange('settings') },
-                { id: 'about-ai', label: "About Beeyield AI", icon: Info, onClick: () => onTabChange('about-ai') },
                 currentUser ? {
                     label: `Sign out (${currentUser.email || 'Logged in'})`,
                     icon: LogOut,
