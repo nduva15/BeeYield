@@ -2974,11 +2974,39 @@ export default function ShopDashboard({
                     });
                     setShowProfileModal(true);
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+                  className="px-3.5 py-2 rounded-xl bg-honey hover:bg-honey-dark text-black font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                   Edit Profile
                 </button>
+                {isShopAuthenticated ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await shopSignOut();
+                      void loadAllData();
+                      toast.success("Signed out of shop account");
+                    }}
+                    className="px-3.5 py-2 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer active:scale-95"
+                    title="Sign Out of Shop"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Sign Out
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthModalTab("signin");
+                      setIsAuthModalOpen(true);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-honey hover:bg-honey/90 text-primary-foreground font-bold text-xs flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer active:scale-95"
+                    title="Sign In to Shop"
+                  >
+                    <LogIn className="w-3.5 h-3.5" />
+                    Sign In
+                  </button>
+                )}
               </div>
             </div>
 
