@@ -838,7 +838,7 @@ Pollination Pages:
 - Pollination Services (beeyield.com/pollination-services): Service offerings for farmers and growers in Kibwezi, Makueni, and surrounding regions.
 - Pollination Request (beeyield.com/pollination-request): Form for farmers to request pollination services. Fields include GPS coordinates, crop species, acreage, and desired timeline.
 - Pollination Solutions (beeyield.com/pollination-solutions): Comprehensive solution packages combining hive deployment with monitoring.
-- Crops We Pollinate (beeyield.com/crops-we-pollinate): Maize, Sisal, Mangoes, Beans, Sunflower, Oranges, Vegetables, Tomatoes, Onions, Avocado, Coffee, Macadamia.
+- Crops We Pollinate (beeyield.com/crops-we-pollinate): Maize, Sisal, Mangoes, Beans, Sunflower, Oranges, Citrus, Vegetables, Tomatoes, Onions, Avocado.
 - InLand Pollination Platform (beeyield.com/inland-pollination): Platform for inland pollination management across Kenya.
 
 Other Pages:

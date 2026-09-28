@@ -8,7 +8,7 @@ export const Route = createFileRoute("/crops-we-pollinate")({
       {
         name: "description",
         content:
-          "Discover the 9+ high-value crops BeeYield pollinates across Kenya, including Avocado, Apple Mango, Macadamia, Coffee, Sisal, and Sunflower.",
+          "Discover the 9+ high-value crops BeeYield pollinates across Kenya, including Avocado, Apple Mango, Citrus, Oranges, Sisal, and Sunflower.",
       },
       {
         property: "og:title",

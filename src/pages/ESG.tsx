@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote,
   Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2,
-  Download, ShieldCheck, Zap, Scale, Radio, Activity
+  Download, ShieldCheck, Zap, Scale, Radio, Activity, Trees, Flower2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

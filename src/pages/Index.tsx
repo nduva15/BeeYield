@@ -1,5 +1,5 @@
 import { streamBeeGpt } from "@/lib/beegpt-stream";
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Send,
   Loader2,
@@ -40,6 +40,7 @@ import {
   ShoppingBag,
   ArrowRight,
   Droplets,
+  FileText,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -671,7 +672,7 @@ export default function Index() {
         },
         { label: "Florage Database", icon: Sprout, onClick: () => setFloragePageOpen(true) },
         { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => setForageZonesOpen(true) },
-          { label: "Project Panda Miti (45,000 Trees)", icon: Trees, onClick: () => navigate("/panda-miti") },
+        { label: "Project Panda Miti (45,000 Trees)", icon: Trees, onClick: () => navigate({ to: "/panda-miti" as any }) },
       ],
     },
     {
@@ -726,7 +727,7 @@ export default function Index() {
               icon: LogOut,
               onClick: () => void signOut(),
             }
-          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate("/auth?next=/") },
+          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate({ to: "/auth" as any }) },
       ],
     },
   ];
@@ -784,7 +785,7 @@ export default function Index() {
               onClick={() => {
                 requestAnimationFrame(() => {
                   React.startTransition(() => {
-                    navigate("/panda-miti");
+                    navigate({ to: "/panda-miti" as any });
                   });
                 });
               }}
@@ -884,7 +885,7 @@ export default function Index() {
                 onClick={() => {
                   requestAnimationFrame(() => {
                     React.startTransition(() => {
-                      navigate("/panda-miti");
+                      navigate({ to: "/panda-miti" as any });
                     });
                   });
                 }}

@@ -65,18 +65,31 @@ function getLocalSensorStorageKey(userId: string, apiaryId?: string | null): str
 
 export function isFakeSensorDevice(item: any): boolean {
   if (!item) return true;
-  const s = String(item.serial || "").toUpperCase();
-  const id = String(item.id || "").toLowerCase();
-  const lbl = String(item.label || item.deviceType || item.name || "").toLowerCase();
+  const s = String(item.serial || item.device_code || "").trim().toUpperCase();
+  const id = String(item.id || "").trim().toLowerCase();
+  const lbl = String(item.label || item.deviceType || item.name || item.device_type || "").trim().toLowerCase();
   return (
     id.startsWith("dev-vs-") ||
     id.startsWith("dev-hub-") ||
     id.startsWith("dev-dis-") ||
     id.startsWith("dev-scale-") ||
+    id.startsWith("dev-tag-") ||
+    id.startsWith("dev-land-") ||
     s.startsWith("SENS-INP-001") ||
     s.startsWith("SENS-MIC-002") ||
     s.startsWith("SENS-LAND-01") ||
     s.startsWith("SENS-DIS-001") ||
+    s.startsWith("SCALE-KBZ") ||
+    s.startsWith("VS-KBZ") ||
+    s.startsWith("HUB-KBZ") ||
+    s.startsWith("VARROA-KBZ") ||
+    s.startsWith("AFB-DIAG-KBZ") ||
+    s.startsWith("SHB-TRAP-KBZ") ||
+    s.startsWith("IH-BROOD") ||
+    s.startsWith("TAG-KBZ") ||
+    s.startsWith("SOIL-KBZ") ||
+    s.startsWith("PERIMETER-KBZ") ||
+    s.startsWith("RELAY-KBZ") ||
     lbl.includes("vitalsensor brood core") ||
     lbl.includes("bio-acoustic queen mic") ||
     lbl.includes("solar microclimate hub") ||

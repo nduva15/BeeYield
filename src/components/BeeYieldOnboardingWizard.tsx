@@ -29,12 +29,19 @@ import {
   Shield,
   FileText,
 } from 'lucide-react';
-import { Html5Qrcode } from 'html5-qrcode';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import beeyieldService, { Apiary, Hive } from '@/services/beeyieldService';
 import { useAuth } from '@/hooks/use-auth';
 import { BeeYieldOnboardingStep } from '@/lib/beeyieldOnboarding';
+import { DeviceQrCameraScanner } from '@/components/common/DeviceQrCameraScanner';
+import { RecentDeviceReadingsView } from '@/components/common/RecentDeviceReadingsView';
+import {
+  resolveDeviceReadings,
+  extractCleanSerial,
+  persistScannedDeviceTelemetry,
+  type ScannedDeviceReadings,
+} from '@/services/deviceReadingService';
 
 interface BeeYieldOnboardingWizardProps {
   step: BeeYieldOnboardingStep;
@@ -77,75 +84,12 @@ function OnboardingQrScannerModal({
   onScanSuccess: (rawCode: string) => void;
 }) {
   const [manualCode, setManualCode] = useState('');
-  const [scannerError, setScannerError] = useState<string | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
-  const containerId = 'onboarding-camera-qr-viewfinder';
-  const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    let isMounted = true;
-    setIsInitializing(true);
-    setScannerError(null);
-
-    const initScanner = async () => {
-      try {
-        const qrCode = new Html5Qrcode(containerId);
-        html5QrCodeRef.current = qrCode;
-
-        await qrCode.start(
-          { facingMode: 'environment' },
-          {
-            fps: 12,
-            qrbox: { width: 240, height: 240 },
-            aspectRatio: 1.0,
-          },
-          (decodedText) => {
-            if (isMounted) {
-              playScanBeep();
-              if (navigator.vibrate) {
-                try {
-                  navigator.vibrate([40, 30, 40]);
-                } catch {}
-              }
-              void qrCode.stop().catch(() => undefined);
-              onScanSuccess(decodedText.trim());
-              onClose();
-            }
-          },
-          () => undefined
-        );
-
-        if (isMounted) {
-          setIsInitializing(false);
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setIsInitializing(false);
-          setScannerError(
-            err?.message || 'Camera permission not granted. You can type the serial code below.'
-          );
-        }
-      }
-    };
-
-    const timer = setTimeout(initScanner, 180);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      if (html5QrCodeRef.current && html5QrCodeRef.current.isScanning) {
-        void html5QrCodeRef.current.stop().catch(() => undefined);
-      }
-    };
-  }, [isOpen, onScanSuccess, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-md bg-card border border-border rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4">
+      <div className="relative w-full max-w-lg bg-card border border-border rounded-3xl shadow-2xl p-4 sm:p-6 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2">
@@ -154,7 +98,7 @@ function OnboardingQrScannerModal({
             </div>
             <div>
               <h3 className="font-bold text-sm text-foreground">Scan Hardware QR / Barcode</h3>
-              <p className="text-[11px] text-muted-foreground">Align code inside the viewfinder</p>
+              <p className="text-[11px] text-muted-foreground">Mobile & desktop auto-focus camera scanner</p>
             </div>
           </div>
           <button
@@ -166,77 +110,50 @@ function OnboardingQrScannerModal({
           </button>
         </div>
 
-        {/* Viewfinder area */}
-        <div className="space-y-3">
-          <div className="relative w-full h-64 rounded-2xl overflow-hidden bg-black border-2 border-dashed border-amber-500/60 shadow-inner flex items-center justify-center">
-            <div id={containerId} className="w-full h-full" />
+        {/* Viewfinder area using DeviceQrCameraScanner */}
+        <DeviceQrCameraScanner
+          onScanSuccess={(code) => {
+            onScanSuccess(code);
+            onClose();
+          }}
+          onClose={onClose}
+          title="Hardware Tag Camera Viewfinder"
+        />
 
-            {isInitializing && !scannerError && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/70 text-white z-10">
-                <RefreshCw className="w-6 h-6 animate-spin text-amber-400" />
-                <span className="text-xs font-semibold">Starting camera...</span>
-              </div>
-            )}
-
-            {/* Target reticle */}
-            {!scannerError && (
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                <div className="w-44 h-44 border-2 border-amber-400/80 rounded-2xl relative shadow-[0_0_15px_rgba(245,158,11,0.25)]">
-                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-amber-400 rounded-tl-lg" />
-                  <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-amber-400 rounded-tr-lg" />
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-amber-400 rounded-bl-lg" />
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-amber-400 rounded-br-lg" />
-                  <div className="w-full h-0.5 bg-amber-400/70 absolute top-1/2 -translate-y-1/2 animate-pulse" />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {scannerError && (
-            <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-start gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Camera Access Notice</p>
-                <p className="text-[11px] opacity-90">{scannerError}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Manual input fallback */}
-          <div className="pt-2 border-t border-border space-y-2">
-            <label className="text-[11px] font-bold text-foreground">
-              Or Type Serial Number / Tag Manually:
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={manualCode}
-                onChange={(e) => setManualCode(e.target.value)}
-                placeholder="e.g. APISENSE-NODE-1243 or VS-KBZ-001"
-                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:ring-2 focus:ring-amber-500/20"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && manualCode.trim()) {
-                    e.preventDefault();
-                    onScanSuccess(manualCode.trim());
-                    onClose();
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (!manualCode.trim()) {
-                    toast.error('Please enter a serial code');
-                    return;
-                  }
+        {/* Manual input fallback */}
+        <div className="pt-2 border-t border-border space-y-2">
+          <label className="text-[11px] font-bold text-foreground">
+            Or Type Serial Number / Tag Manually:
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={manualCode}
+              onChange={(e) => setManualCode(e.target.value)}
+              placeholder="e.g. APISENSE-NODE-1243 or VS-KBZ-001"
+              className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-xs font-mono font-bold text-foreground focus:ring-2 focus:ring-amber-500/20"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && manualCode.trim()) {
+                  e.preventDefault();
                   onScanSuccess(manualCode.trim());
                   onClose();
-                }}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-black text-xs shadow-sm transition-all"
-              >
-                Apply
-              </button>
-            </div>
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (!manualCode.trim()) {
+                  toast.error('Please enter a serial code');
+                  return;
+                }
+                onScanSuccess(manualCode.trim());
+                onClose();
+              }}
+              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-black text-xs shadow-sm transition-all"
+            >
+              Apply
+            </button>
           </div>
         </div>
       </div>
@@ -332,35 +249,25 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   });
   const [savingDevice, setSavingDevice] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [deviceTelemetry, setDeviceTelemetry] = useState<ScannedDeviceReadings | null>(null);
+
+  // Auto-resolve device telemetry readings when deviceForm.serial changes
+  useEffect(() => {
+    if (deviceForm.serial.trim()) {
+      const clean = extractCleanSerial(deviceForm.serial);
+      const targetApiary =
+        createdApiaryName || apiaries[0]?.name || 'Timothy Nduva Commercial Yard';
+      const targetHive = createdHiveCode || hives[0]?.code || 'HIVE-01';
+      const readings = resolveDeviceReadings(clean, targetApiary, targetHive);
+      setDeviceTelemetry(readings);
+    } else {
+      setDeviceTelemetry(null);
+    }
+  }, [deviceForm.serial, createdApiaryName, createdHiveCode, apiaries, hives]);
 
   // Handle Scanned Code with Intelligent Parser
   const handleScannedCode = (raw: string) => {
-    let clean = raw.trim();
-
-    // If it's a URL like https://beeyield.com/device/VS-1234 or ...?serial=XYZ
-    if (clean.includes('http://') || clean.includes('https://')) {
-      try {
-        const url = new URL(clean);
-        const param = url.searchParams.get('serial') || url.searchParams.get('code');
-        if (param) {
-          clean = param;
-        } else {
-          const parts = url.pathname.split('/').filter(Boolean);
-          if (parts.length > 0) clean = parts[parts.length - 1];
-        }
-      } catch {}
-    }
-
-    // If it's JSON payload
-    if (clean.startsWith('{') && clean.endsWith('}')) {
-      try {
-        const parsed = JSON.parse(clean);
-        if (parsed.serial) clean = parsed.serial;
-        if (parsed.kind) {
-          setDeviceForm((prev) => ({ ...prev, device_kind: parsed.kind }));
-        }
-      } catch {}
-    }
+    const clean = extractCleanSerial(raw);
 
     // Auto-detect device kind from naming pattern
     const lower = clean.toLowerCase();
@@ -382,6 +289,12 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
       serial: clean.toUpperCase(),
       device_kind: detectedKind,
     }));
+
+    const targetApiary =
+      createdApiaryName || apiaries[0]?.name || 'Timothy Nduva Commercial Yard';
+    const targetHive = createdHiveCode || hives[0]?.code || 'HIVE-01';
+    const readings = resolveDeviceReadings(clean, targetApiary, targetHive);
+    setDeviceTelemetry(readings);
 
     toast.success(`Scanned hardware code: ${clean.toUpperCase()}`);
   };
@@ -528,6 +441,14 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
         apiary_id: targetApiaryId,
         hive_id: targetHiveId,
       });
+
+      // Persist immediate telemetry so the dashboard displays live readings right away
+      const clean = extractCleanSerial(deviceForm.serial);
+      const targetApiary =
+        createdApiaryName || apiaries[0]?.name || 'Timothy Nduva Commercial Yard';
+      const targetHive = createdHiveCode || hives[0]?.code || 'HIVE-01';
+      const telemetry = deviceTelemetry || resolveDeviceReadings(clean, targetApiary, targetHive);
+      await persistScannedDeviceTelemetry(telemetry, user?.id);
 
       finishOnboarding(`Device ${deviceForm.serial} linked and verified!`);
     } catch (err: any) {
@@ -1196,6 +1117,16 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
                         <span>Demo Tag</span>
                       </button>
                     </div>
+
+                    {/* Scanned / Detected Live Telemetry Preview */}
+                    {deviceTelemetry && (
+                      <div className="pt-2">
+                        <RecentDeviceReadingsView
+                          readings={deviceTelemetry}
+                          onRescan={() => setIsScannerOpen(true)}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

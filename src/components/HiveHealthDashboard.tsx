@@ -1974,11 +1974,13 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   <button
                     type="button"
                     onClick={() => {
-                      setPairingSerial("");
-                      setScannedReading(null);
-                      setPairScanMode("scan");
+                      startTransition(() => {
+                        setPairingSerial("");
+                        setScannedReading(null);
+                        setPairScanMode("scan");
+                      });
                     }}
-                    className="text-[11px] text-amber-700 font-semibold hover:underline"
+                    className="text-[11px] text-amber-700 font-semibold hover:underline cursor-pointer select-none touch-manipulation active:scale-95 transition-transform"
                   >
                     Rescan QR
                   </button>

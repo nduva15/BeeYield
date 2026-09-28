@@ -406,6 +406,7 @@ export const labelService = {
             // Prominent QR Code with Traceability Batch for Verification
             if (design.showQRCode !== false) {
                 try {
+                    // @ts-ignore
                     const QRCode = (await import('qrcode')).default;
                     const batch = (design.batchNumber || 'BEE-20260105-001').trim();
                     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://www.beeyield.com';

@@ -71,7 +71,6 @@ import {
   Calculator,
   Clock,
 } from "lucide-react";
-import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -95,6 +94,14 @@ import {
   subscribeToSensorSync,
   SyncedSensorDevice,
 } from "@/services/sensorSyncService";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  persistScannedDeviceTelemetry,
+  extractCleanSerial,
+  type DeviceTelemetryReading,
+} from "@/services/deviceReadingService";
 
 export interface ApiarySite {
   id: string;
@@ -1110,7 +1117,7 @@ function getFallbackWeather(lat: number, lon: number): LiveWeatherData {
 }
 
 // ----------------------------------------------------------------------
-// QR Code Scanner Modal using Html5Qrcode
+// QR Code Scanner Modal using DeviceQrCameraScanner
 // ----------------------------------------------------------------------
 export function QrScannerModal({
   isOpen,
@@ -1124,54 +1131,37 @@ export function QrScannerModal({
   title?: string;
 }) {
   const [manualSerial, setManualSerial] = useState("");
-  const [scannerError, setScannerError] = useState<string | null>(null);
-  const containerId = "beeyield-qr-scanner-viewfinder";
+  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    let html5QrCode: Html5Qrcode | null = null;
-    let isMounted = true;
+    if (!isOpen) {
+      setManualSerial("");
+      setScannedReading(null);
+    }
+  }, [isOpen]);
 
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(containerId);
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            if (isMounted) {
-              void html5QrCode?.stop().catch(() => undefined);
-              toast.success(`Scanned hardware code: ${decodedText.trim()}`);
-              onScanSuccess(decodedText.trim());
-              onClose();
-            }
-          },
-          () => undefined
-        );
-      } catch (err: any) {
-        if (isMounted) {
-          setScannerError(
-            err?.message || "Camera access not available. Please enter the serial number manually."
-          );
-        }
-      }
-    };
+  const handleApplySerial = async (serialToApply: string) => {
+    const clean = extractCleanSerial(serialToApply);
+    if (!clean) {
+      toast.error("Please enter a valid sensor serial");
+      return;
+    }
+    const reading = await resolveDeviceReadings(clean);
+    setScannedReading(reading);
+    onScanSuccess(clean);
+    toast.success(`Paired sensor: ${clean}`);
+    onClose();
+  };
 
-    const timer = setTimeout(() => {
-      startScanner();
-    }, 200);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      if (html5QrCode && html5QrCode.isScanning) {
-        void html5QrCode.stop().catch(() => undefined);
-      }
-    };
-  }, [isOpen, onScanSuccess, onClose]);
+  const handleScanDecoded = async (decodedText: string) => {
+    const clean = extractCleanSerial(decodedText);
+    setManualSerial(clean);
+    const reading = await resolveDeviceReadings(clean);
+    setScannedReading(reading);
+    toast.success(`Scanned hardware code: ${clean}`);
+  };
 
   if (!isOpen) return null;
-
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -1180,7 +1170,7 @@ export function QrScannerModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4"
+        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border pb-3">
@@ -1197,19 +1187,24 @@ export function QrScannerModal({
           </button>
         </div>
 
-        <div className="space-y-3 text-center">
-          <p className="text-xs text-muted-foreground">
-            Point camera at the QR code or barcode on the BeeYield VitalSensor hardware or device label.
-          </p>
-
-          <div
-            id={containerId}
-            className="w-full h-56 rounded-xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
-          />
-
-          {scannerError && (
-            <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-[11px] text-destructive">
-              {scannerError}
+        <div className="space-y-3">
+          {!scannedReading ? (
+            <DeviceQrCameraScanner
+              title="Point camera at sensor QR code"
+              helperText="Position hardware barcode or QR label steadily inside frame"
+              onScanSuccess={handleScanDecoded}
+              onCancel={onClose}
+            />
+          ) : (
+            <div className="space-y-3">
+              <RecentDeviceReadingsView
+                reading={scannedReading}
+                onConfirmApply={() => {
+                  onScanSuccess(scannedReading.serial);
+                  onClose();
+                }}
+                onRescan={() => setScannedReading(null)}
+              />
             </div>
           )}
 
@@ -1221,21 +1216,13 @@ export function QrScannerModal({
               <input
                 type="text"
                 value={manualSerial}
-                onChange={(e) => setManualSerial(e.target.value)}
-                placeholder="e.g. SENSOR-KIB-001 or VITAL-9824"
-                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
+                onChange={(e) => setManualSerial(e.target.value.toUpperCase())}
+                placeholder="e.g. VS-KBZ-042 or SENSOR-KIB-001"
+                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono uppercase"
               />
               <button
                 type="button"
-                onClick={() => {
-                  if (!manualSerial.trim()) {
-                    toast.error("Please enter a sensor serial");
-                    return;
-                  }
-                  onScanSuccess(manualSerial.trim());
-                  toast.success(`Paired sensor: ${manualSerial.trim()}`);
-                  onClose();
-                }}
+                onClick={() => handleApplySerial(manualSerial)}
                 className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm"
               >
                 Apply
@@ -1250,7 +1237,7 @@ export function QrScannerModal({
             onClick={onClose}
             className="px-4 py-1.5 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted"
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
@@ -1921,11 +1908,14 @@ function PairVitalSensorModal({
   const [deviceType, setDeviceType] = useState<string>("Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)");
   const [serial, setSerial] = useState(currentSerial || "");
   const [showCamera, setShowCamera] = useState(false);
-  const containerId = "pair-vitalsensor-qr-scanner-portal";
+  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
 
   useEffect(() => {
-    if (currentSerial) setSerial(currentSerial);
-  }, [currentSerial]);
+    if (currentSerial) {
+      setSerial(currentSerial);
+      void resolveDeviceReadings(currentSerial, hiveName).then(setScannedReading);
+    }
+  }, [currentSerial, hiveName]);
 
   // Escape key dismiss
   useEffect(() => {
@@ -1937,44 +1927,12 @@ function PairVitalSensorModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Live QR Camera Scanner logic
-  useEffect(() => {
-    if (!isOpen || !showCamera) return;
-    let html5QrCode: Html5Qrcode | null = null;
-    let isMounted = true;
-
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(containerId);
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            if (isMounted) {
-              const cleaned = decodedText.trim().toUpperCase();
-              setSerial(cleaned);
-              setShowCamera(false);
-              toast.success(`Scanned hardware code: ${cleaned}`);
-              void html5QrCode?.stop().catch(() => undefined);
-            }
-          },
-          () => {}
-        );
-      } catch (err) {
-        toast.error("Camera scanner unavailable. Please enter code manually.");
-        setShowCamera(false);
-      }
-    };
-
-    void startScanner();
-
-    return () => {
-      isMounted = false;
-      if (html5QrCode && html5QrCode.isScanning) {
-        void html5QrCode.stop().catch(() => undefined);
-      }
-    };
-  }, [isOpen, showCamera]);
+  const handleSelectSerial = async (selectedCode: string) => {
+    const clean = extractCleanSerial(selectedCode);
+    setSerial(clean);
+    const reading = await resolveDeviceReadings(clean, hiveName);
+    setScannedReading(reading);
+  };
 
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
@@ -1999,7 +1957,7 @@ function PairVitalSensorModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200"
+        className="relative w-full max-w-md bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[#EAE3DA] dark:border-stone-800 pb-3">
@@ -2027,23 +1985,37 @@ function PairVitalSensorModal({
 
         {showCamera ? (
           <div className="space-y-3">
-            <p className="text-xs text-muted-foreground text-center">
-              Align VitalSensor QR code within camera viewfinder:
-            </p>
-            <div
-              id={containerId}
-              className="w-full h-56 rounded-2xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
+            <DeviceQrCameraScanner
+              title="Align VitalSensor QR code"
+              helperText="Point camera at QR code on sensor waterproof casing"
+              onScanSuccess={async (decoded) => {
+                const cleaned = extractCleanSerial(decoded);
+                setSerial(cleaned);
+                setShowCamera(false);
+                const reading = await resolveDeviceReadings(cleaned, hiveName);
+                setScannedReading(reading);
+                toast.success(`Scanned hardware code: ${cleaned}`);
+              }}
+              onCancel={() => setShowCamera(false)}
             />
-            <button
-              type="button"
-              onClick={() => setShowCamera(false)}
-              className="w-full py-2 rounded-xl border border-border text-xs font-semibold hover:bg-muted transition-colors"
-            >
-              Cancel Camera Scan (Enter Manually)
-            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            {scannedReading && (
+              <RecentDeviceReadingsView
+                reading={scannedReading}
+                targetHiveName={hiveName}
+                onConfirmApply={() => {
+                  onPair(scannedReading.serial, deviceType);
+                  onClose();
+                }}
+                onRescan={() => {
+                  setScannedReading(null);
+                  setShowCamera(true);
+                }}
+                showApplyButton={false}
+              />
+            )}
             <div className="space-y-1.5">
               <label className="font-bold text-foreground block">
                 Hardware Device Model

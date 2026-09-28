@@ -1,4 +1,4 @@
-import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Target, Wheat, TreePine, Heart, Users, Droplets, Zap, Building, Globe, CheckCircle2, MapPin, Sprout, Trees, Flower2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -176,12 +176,12 @@ const CommitmentPage = () => {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4 relative z-10">
-              <Link to="/learn">
+              <Link to={"/blogs" as any}>
                 <Button size="lg" className="h-14 px-10 rounded-full font-bold text-base bg-primary hover:bg-primary/90">
                   Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Link to="/contact">
+              <Link to={"/about" as any}>
                 <Button variant="outline" size="lg" className="h-14 px-10 rounded-full font-bold text-base border-2 hover:bg-muted/50">
                   Partner With Us
                 </Button>
