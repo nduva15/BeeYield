@@ -477,6 +477,20 @@ export default function About() {
             <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
               Three siblings, one mission: modernizing pollination in Kenya and beyond.
             </p>
+          <div className="my-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 text-stone-900 border border-amber-200/90 shadow-sm relative overflow-hidden text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[11px] font-bold uppercase tracking-wider mb-4">
+              Why We Are Devoted to Saving Bees
+            </div>
+            <blockquote className="text-lg sm:text-xl md:text-2xl font-black tracking-tight leading-snug italic text-stone-950 max-w-3xl mx-auto mb-3">
+              “If the bee disappeared off the surface of the globe, then man would have only four years of life left. No more bees, no more pollination, no more plants, no more animals, no more man.”
+            </blockquote>
+            <p className="text-amber-800 font-bold text-xs tracking-widest uppercase mb-4">
+              — Albert Einstein <span className="text-stone-500 font-normal lowercase">(attributed)</span>
+            </p>
+            <p className="text-xs sm:text-sm text-stone-600 font-medium leading-relaxed max-w-2xl mx-auto">
+              Bees pollinate 1 in every 3 bites of food we eat. At BeeYield, we are devoted to reversing pollinator decline through non-invasive IoT telemetry, zero-chemical natural apiculture, and biodiverse tree corridors.
+            </p>
+          </div>
           </FadeIn>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">

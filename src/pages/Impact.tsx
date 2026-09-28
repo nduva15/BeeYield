@@ -413,7 +413,7 @@ const Impact = () => {
                     🌸 1 Tree = ~5,000 Blossoms Pollinated
                   </span>
                 </div>
-                <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
+                <Button size="lg" asChild className="bg-emerald-600 text-white font-bold hover:bg-emerald-700 rounded-full px-8 shrink-0 shadow-md">
                   <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
                 </Button>
               </div>
