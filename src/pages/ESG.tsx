@@ -506,9 +506,9 @@ const ESG = () => {
               </div>
 
               {/* Progress & 3 Pillars preview */}
-              <div className="lg:col-span-5 bg-neutral-950/60 p-6 rounded-2xl border border-emerald-500/20 space-y-4">
+              <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-emerald-200 shadow-sm space-y-4 text-neutral-900">
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-semibold text-emerald-200">
+                  <div className="flex justify-between text-xs font-semibold text-emerald-800">
                     <span>Reforestation Progress</span>
                     <span className="text-emerald-400 font-bold">2,500 of 45,000 Goal</span>
                   </div>
@@ -517,20 +517,20 @@ const ESG = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-2 border-t border-white/10">
+                <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-2 border-t border-emerald-100">
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Tree Restoration</span>
+                    <span className="font-bold text-neutral-900 block">Tree Restoration</span>
                     <span className="text-[10px] text-emerald-200/70">Aquifer recharge</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Bees Saved</span>
+                    <span className="font-bold text-neutral-900 block">Bees Saved</span>
                     <span className="text-[10px] text-amber-200/70">Zero dry famine</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Flowers Needing Bees</span>
+                    <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
                     <span className="text-[10px] text-teal-200/70">85%+ pollination</span>
                   </div>
                 </div>

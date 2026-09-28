@@ -348,10 +348,10 @@ const Impact = () => {
               {/* ─────────────────────────────────────────────────────────────
             DEDICATED REFORESTATION LINK: PROJECT PANDA MITI
         ───────────────────────────────────────────────────────────── */}
-        <section className="py-20 bg-neutral-950 text-white border-y border-neutral-800 relative overflow-hidden">
+        <section className="py-20 bg-emerald-50/60 border-y border-emerald-100 relative overflow-hidden text-neutral-900">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
           <div className="container mx-auto px-4 max-w-5xl relative z-10">
-            <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 border border-emerald-500/30 shadow-2xl">
+            <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-white via-emerald-50/60 to-white border border-emerald-200 shadow-xl text-neutral-900">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
                   <Trees className="w-4 h-4 text-emerald-400" />
@@ -364,19 +364,19 @@ const Impact = () => {
 
               <div className="grid lg:grid-cols-12 gap-8 items-center mb-8">
                 <div className="lg:col-span-7 space-y-4">
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight">
                     Project Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">45,000 Trees</span> for Kibwezi
                   </h3>
-                  <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
+                  <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
                     2,500+ indigenous trees already planted to restore groundwater aquifers, cool microclimates, and secure continuous nectar and pollen sanctuaries for bees. By planting native Acacia, Mukau, and Moringa, Panda Miti ends dry-season famine for over 184+ colonies and millions of wild pollinators.
                   </p>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-emerald-200 text-xs sm:text-sm italic">
+                  <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-xs sm:text-sm italic">
                     “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
                   </div>
                 </div>
 
-                <div className="lg:col-span-5 bg-black/40 p-6 rounded-2xl border border-emerald-500/20 space-y-4">
-                  <div className="flex justify-between text-xs font-semibold text-emerald-200">
+                <div className="lg:col-span-5 bg-white/95 p-6 rounded-2xl border border-emerald-200 space-y-4 shadow-sm">
+                  <div className="flex justify-between text-xs font-semibold text-emerald-800">
                     <span>Field Planting Progress</span>
                     <span className="text-emerald-400 font-bold">2,500 / 45,000 Goal</span>
                   </div>
@@ -384,32 +384,32 @@ const Impact = () => {
                     <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-white/10">
-                    <div className="p-2 rounded-xl bg-white/5">
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-emerald-100">
+                    <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
                       <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
-                      <span className="font-bold text-white block">Tree Restoration</span>
+                      <span className="font-bold text-neutral-900 block">Tree Restoration</span>
                       <span className="text-emerald-200/70 text-[9px]">Aquifer recovery</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-white/5">
+                    <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
                       <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                      <span className="font-bold text-white block">Bees Saved</span>
+                      <span className="font-bold text-neutral-900 block">Bees Saved</span>
                       <span className="text-amber-200/70 text-[9px]">Colony survival</span>
                     </div>
-                    <div className="p-2 rounded-xl bg-white/5">
+                    <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
                       <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
-                      <span className="font-bold text-white block">Flowers Needing Bees</span>
+                      <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
                       <span className="text-teal-200/70 text-[9px]">85%+ dependent</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-emerald-500/20">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-emerald-100">
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 font-semibold border border-emerald-500/20">
+                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200">
                     🌱 1 Tree = ~250 Bees Nourished
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-300 font-semibold border border-teal-500/20">
+                  <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-800 font-semibold border border-teal-200">
                     🌸 1 Tree = ~5,000 Blossoms Pollinated
                   </span>
                 </div>
