@@ -50,13 +50,13 @@ export default function ToolSidebar({
           <img
             src="/favicon.svg"
             alt="BeeYield Logo"
-            className="h-7 w-7 object-contain rounded-full shadow-xs shrink-0"
+            className="h-7 w-7 object-contain rounded-full shadow-xs shrink-0 block"
             onError={(e) => {
               (e.target as HTMLImageElement).src = "/favicon-192.png";
             }}
           />
-          <div className="flex items-center min-w-0 flex-1">
-            <span className="font-display text-sm font-bold text-[#f59e0b] leading-none truncate">
+          <div className="flex items-center h-7 min-w-0 flex-1">
+            <span className="font-display text-sm font-bold text-[#f59e0b] leading-none truncate translate-y-[2px]">
               BeeYield Dashboard
             </span>
           </div>
