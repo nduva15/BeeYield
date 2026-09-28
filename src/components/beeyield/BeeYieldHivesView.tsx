@@ -1766,7 +1766,7 @@ export default function BeeYieldHivesView({
       {/* Schedule Inspection Modal */}
       {isRequestingInspection && (
         <div
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 touch-manipulation select-none duration-150"
           onClick={() => setIsRequestingInspection(false)}
         >
           <div
@@ -1854,7 +1854,7 @@ export default function BeeYieldHivesView({
       {/* Notes Modal */}
       {isNotesModalOpen && activeHive && (
         <div
-          className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 touch-manipulation select-none duration-150"
           onClick={() => setIsNotesModalOpen(false)}
         >
           <div
