@@ -12,7 +12,7 @@ const QuickActionModal: React.FC<QuickActionModalProps> = ({
     isOpen, 
     onClose, 
     onSuccess, 
-    initialTab = 'apiary' 
+    initialTab = 'hive' 
 }) => {
     return (
         <NewRecordModal
