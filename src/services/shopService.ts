@@ -1618,14 +1618,6 @@ export const getWishlist = async (): Promise<WishlistItem[]> => {
         } catch (_) {}
     } catch (_) {}
 
-    // 2. Try API
-    try {
-        const data = await apiGet<any[]>("/shop/wishlist");
-        if (data && Array.isArray(data)) {
-            data.map(normalizeWishlistItem).forEach(w => map.set(w.id, w));
-        }
-    } catch (_) {}
-
     return Array.from(map.values());
 };
 
@@ -1704,11 +1696,6 @@ export const toggleWishlist = async (productId: string): Promise<{ status: strin
             }
         } catch (_) {}
     }
-
-    // 4. Fire API endpoint in background
-    try {
-        await apiPost<any>(`/shop/wishlist/${productId}`, {});
-    } catch (_) {}
 
     return { status: "success", action };
 };
