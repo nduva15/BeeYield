@@ -7,12 +7,12 @@ export const Route = createFileRoute("/")({
       { title: "Beeyield — AI Beekeeping Assistant & Apiary Tools" },
       {
         name: "description",
-        content: "BeeYield Precision Pollination & Colony Defense. Combatting African bee decline (21.3% Sub-Saharan colony loss, 45% Kenya/Uganda peaks) to secure food systems.",
+        content: "BeeYield — AI-powered beekeeping assistant, hive health monitoring, pollination planning, and apiary intelligence platform.",
       },
       { property: "og:title", content: "Beeyield — AI Beekeeping Assistant & Apiary Tools" },
       {
         property: "og:description",
-        content: "BeeYield Precision Pollination & Colony Defense. Combatting African bee decline (21.3% Sub-Saharan colony loss, 45% Kenya/Uganda peaks) to secure food systems.",
+        content: "BeeYield — AI-powered beekeeping assistant, hive health monitoring, pollination planning, and apiary intelligence platform.",
       },
     ],
   }),
