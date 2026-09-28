@@ -123,12 +123,12 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
     if (target?.closest("button, a, input, select, textarea")) {
       return;
     }
+    // Single rAF yields to the browser for visual feedback, then startTransition
+    // schedules the heavy render as non-urgent — no need for nested setTimeout
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        startTransition(() => {
-          onOpenDetails(apiary);
-        });
-      }, 0);
+      startTransition(() => {
+        onOpenDetails(apiary);
+      });
     });
   };
 
@@ -136,11 +136,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          startTransition(() => {
-            onOpenDetails(apiary);
-          });
-        }, 0);
+        startTransition(() => {
+          onOpenDetails(apiary);
+        });
       });
     }
   };
