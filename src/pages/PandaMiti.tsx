@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import {
   Trees,
   Sprout,
@@ -582,32 +581,6 @@ export default function PandaMitiPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 border-t border-border/40 bg-muted/10 text-center space-y-4">
-        <div className="container max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Trees className="w-4 h-4 text-emerald-500" />
-            <span>Panda Miti Initiative • Tree Restoration &amp; Bee Pollination Corridors</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground">
-            <Link to="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
-            <Link to="/about" className="hover:text-foreground transition-colors">
-              About &amp; Story
-            </Link>
-            <Link to="/blogs" className="hover:text-foreground transition-colors">
-              Blogs
-            </Link>
-            <Link to="/careers" className="hover:text-foreground transition-colors">
-              Careers
-            </Link>
-          </div>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} BeeYield. 45,000 Trees around Kibwezi, Makueni County, Kenya.
-        </p>
-      </footer>
     </div>
   );
 }
