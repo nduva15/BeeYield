@@ -1160,133 +1160,137 @@ export default function ShopDashboard({
         ))}
       </div>
 
-      {/* 4. Subpage View Selector (Dropdown) */}
-      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
-            <Layers className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground text-sm">Shop Views:</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Synced with Supabase & Shopify
-              </span>
+      {/* 4. Subpage View Selector (Intact Dropdown & Quick-Nav) */}
+      <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-4 space-y-3 text-xs shadow-sm">
+        {/* Top Header Row with Title & Status on Left, Intact Dropdown on Right */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-honey/15 border border-honey/25 flex items-center justify-center text-honey flex-shrink-0 shadow-xs">
+              <Layers className="w-4 h-4 text-honey" />
             </div>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
-              Select any store module or ledger section from the dropdown
-            </p>
-          </div>
-        </div>
-
-        {/* Dropdown Selector Component */}
-        <div className="relative w-full sm:w-auto" ref={viewDropdownRef}>
-          <button
-            type="button"
-            onClick={() => setIsViewDropdownOpen((prev) => !prev)}
-            aria-expanded={isViewDropdownOpen}
-            aria-haspopup="listbox"
-            className="w-full sm:w-72 flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-background border border-honey/40 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30"
-          >
-            <div className="flex items-center gap-2.5 truncate">
-              {(() => {
-                const current = TABS.find((t) => t.id === activeTab) || TABS[0];
-                const IconComponent = current.icon;
-                return (
-                  <>
-                    <div className="w-5 h-5 rounded-md bg-honey/10 flex items-center justify-center text-honey flex-shrink-0">
-                      <IconComponent className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-foreground font-bold truncate">{current.label}</span>
-                    {current.badge !== undefined && (
-                      <span className="px-1.5 py-0.2 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
-                        {current.badge}
-                      </span>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
-            <ChevronDown
-              className={`w-4 h-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
-                isViewDropdownOpen ? "rotate-180 text-honey" : ""
-              }`}
-            />
-          </button>
-
-          {/* Dropdown Menu Options */}
-          {isViewDropdownOpen && (
-            <div
-              role="listbox"
-              className="absolute right-0 top-full mt-2 w-full sm:w-80 z-50 rounded-2xl border border-border bg-card/95 backdrop-blur-md shadow-2xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 max-h-96 overflow-y-auto custom-scroll"
-            >
-              <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-                Select Shop Dashboard View
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-foreground text-sm">Shop Views:</span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Synced with Supabase & Shopify
+                </span>
               </div>
-              {TABS.map((t) => {
-                const TabIcon = t.icon;
-                const isSelected = activeTab === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    onClick={() => {
-                      setActiveTab(t.id);
-                      setIsViewDropdownOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition-all text-xs ${
-                      isSelected
-                        ? "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30"
-                        : "hover:bg-muted/40 text-foreground hover:text-honey"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          isSelected
-                            ? "bg-emerald-500/20 text-emerald-500"
-                            : "bg-muted/30 text-muted-foreground"
-                        }`}
-                      >
-                        <TabIcon className="w-4 h-4" />
-                      </div>
-                      <div className="truncate">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold truncate">{t.label}</span>
-                          {t.badge !== undefined && (
-                            <span
-                              className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                                isSelected
-                                  ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-                                  : "bg-muted text-muted-foreground"
-                              }`}
-                            >
-                              {t.badge}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-muted-foreground line-clamp-1">{t.description}</p>
-                      </div>
-                    </div>
-                    {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
-                  </button>
-                );
-              })}
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Select any store module or ledger section from the dropdown
+              </p>
             </div>
-          )}
+          </div>
+
+          {/* Intact Dropdown Selector Component */}
+          <div className="relative w-full sm:w-auto" ref={viewDropdownRef}>
+            <button
+              type="button"
+              id="shop-views-dropdown-btn"
+              onClick={() => setIsViewDropdownOpen((prev) => !prev)}
+              aria-expanded={isViewDropdownOpen}
+              aria-haspopup="listbox"
+              className="w-full sm:w-72 flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-background border-2 border-honey/60 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30 cursor-pointer"
+            >
+              <div className="flex items-center gap-2.5 truncate">
+                {(() => {
+                  const current = TABS.find((t) => t.id === activeTab) || TABS[0];
+                  const IconComponent = current.icon;
+                  return (
+                    <>
+                      <div className="w-5 h-5 rounded-md bg-honey/20 flex items-center justify-center text-honey flex-shrink-0">
+                        <IconComponent className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="text-foreground font-bold truncate">{current.label}</span>
+                      {current.badge !== undefined && (
+                        <span className="px-1.5 py-0.2 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
+                          {current.badge}
+                        </span>
+                      )}
+                    </>
+                  );
+                })()}
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-honey flex-shrink-0 transition-transform duration-200 ${
+                  isViewDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu Options */}
+            {isViewDropdownOpen && (
+              <div
+                role="listbox"
+                className="absolute right-0 top-full mt-2 w-full sm:w-80 z-50 rounded-2xl border border-border bg-card/95 backdrop-blur-md shadow-2xl p-1.5 space-y-1 animate-in fade-in zoom-in-95 max-h-96 overflow-y-auto custom-scroll"
+              >
+                <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                  Select Shop Dashboard View
+                </div>
+                {TABS.map((t) => {
+                  const TabIcon = t.icon;
+                  const isSelected = activeTab === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      role="option"
+                      aria-selected={isSelected}
+                      onClick={() => {
+                        setActiveTab(t.id);
+                        setIsViewDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left transition-all text-xs cursor-pointer ${
+                        isSelected
+                          ? "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30"
+                          : "hover:bg-muted/40 text-foreground hover:text-honey"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isSelected
+                              ? "bg-emerald-500/20 text-emerald-500"
+                              : "bg-muted/30 text-muted-foreground"
+                          }`}
+                        >
+                          <TabIcon className="w-4 h-4" />
+                        </div>
+                        <div className="truncate">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold truncate">{t.label}</span>
+                            {t.badge !== undefined && (
+                              <span
+                                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                                  isSelected
+                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                                    : "bg-muted text-muted-foreground"
+                                }`}
+                              >
+                                {t.badge}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground line-clamp-1">{t.description}</p>
+                        </div>
+                      </div>
+                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Intact Horizontal Quick-Bar (Stays intact and scrolls smoothly across mobile and desktop) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll pt-2 border-t border-border/40">
+        {/* Intact Horizontal Quick-Bar (Always cleanly rendered beneath the header) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll pt-2.5 border-t border-border/40">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setActiveTab(t.id)}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
                 activeTab === t.id
                   ? "bg-emerald-600 text-white border-emerald-600 shadow-xs font-bold"
                   : "border-border bg-card/60 hover:bg-muted text-muted-foreground hover:text-foreground"
