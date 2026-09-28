@@ -18,15 +18,12 @@ import {
   ChevronRight,
   Eye,
   ExternalLink,
-  LogIn,
-  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/use-auth";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogPosts";
@@ -35,8 +32,6 @@ export default function BlogsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("All");
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
 
   // Read initial slug from URL hash or query param if present, and listen to popstate/hashchange
   useEffect(() => {
@@ -127,7 +122,7 @@ export default function BlogsPage() {
             </div>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-3">
             <Link
               to="/about"
               className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg hover:bg-muted"
@@ -140,32 +135,6 @@ export default function BlogsPage() {
             >
               Launch AI Platform <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-
-            {/* Auth Buttons: Sign In / Sign Out */}
-            {user ? (
-              <button
-                type="button"
-                onClick={async () => {
-                  await signOut();
-                  toast.success("Signed out of BeeYield");
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
-                title="Sign out of your BeeYield account"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-                <span>Sign Out</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => navigate({ to: "/auth" as any })}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-sm cursor-pointer active:scale-95"
-                title="Sign in or register your account"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
-              </button>
-            )}
           </div>
         </div>
       </header>
