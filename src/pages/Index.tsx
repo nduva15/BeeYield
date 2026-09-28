@@ -54,7 +54,7 @@ import beeyieldLogo from "@/assets/beeyield-logo.png";
 import { useTheme } from "@/hooks/use-theme";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { useAuth } from "@/hooks/use-auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
@@ -720,7 +720,6 @@ export default function Index() {
           icon: SettingsIcon,
           onClick: () => setSettingsOpen(true),
         },
-        { label: "About Beeyield AI", icon: Info, onClick: () => setAboutOpen(true) },
         user
           ? {
               label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`,

@@ -242,7 +242,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           { id: "measurement-tools", label: "My Devices, USB, Bluetooth & Online", icon: Cpu },
           { id: "support", label: "Support & Tickets", icon: LifeBuoy },
           { id: "settings", label: "Settings — Control Center", icon: Settings },
-          { id: "about-ai", label: "About Beeyield AI", icon: Info },
           { id: "auth", label: "Sign in / Sign up", icon: LogIn },
         ],
       },
