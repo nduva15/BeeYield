@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
 import { beeyieldService, Hive, IoTDevice, Apiary, HiveCreateInput } from "@/services/beeyieldService";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
