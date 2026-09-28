@@ -26,6 +26,7 @@ import { Route as ShopDashboardRouteImport } from './routes/shop-dashboard'
 import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
+import { Route as ApiShopCardsRouteImport } from './routes/api/shop/cards'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +113,11 @@ const ApiPublicBeegptRoute = ApiPublicBeegptRouteImport.update({
   path: '/api/public/beegpt',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiShopCardsRoute = ApiShopCardsRouteImport.update({
+  id: '/api/shop/cards',
+  path: '/api/shop/cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/shared-run/$id': typeof SharedRunIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
+    | '/api/shop/cards'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
+    | '/api/shop/cards'
   id:
     | '__root__'
     | '/'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/shared-run/$id'
     | '/.lovable/oauth/consent'
     | '/api/public/beegpt'
+    | '/api/shop/cards'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   SharedRunIdRoute: typeof SharedRunIdRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
+  ApiShopCardsRoute: typeof ApiShopCardsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBeegptRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/shop/cards': {
+      id: '/api/shop/cards'
+      path: '/api/shop/cards'
+      fullPath: '/api/shop/cards'
+      preLoaderRoute: typeof ApiShopCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   SharedRunIdRoute: SharedRunIdRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicBeegptRoute: ApiPublicBeegptRoute,
+  ApiShopCardsRoute: ApiShopCardsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

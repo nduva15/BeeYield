@@ -21,6 +21,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useShopAuth } from "@/hooks/use-shop-auth";
 import ShopAuthModal from "@/components/ShopAuthModal";
+import ShopCardWidget from "@/components/ShopCardWidget";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -1334,95 +1335,12 @@ export default function ShopDashboard({
             </div>
           </div>
 
-          {/* Customer Cards & Wallet Database Card (Own Backend & Database) */}
-          <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-card to-card p-5 space-y-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
-                  <CreditCard className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-display text-base font-bold text-foreground">
-                      Customer Cards & Payment Wallet
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
-                      Database Synced
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Dedicated store card vault backed by Supabase PostgreSQL. Managed separately from Apiary finances.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPaymentFormType("card");
-                    setShowPaymentForm(true);
-                    setActiveTab("payments");
-                  }}
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Add New Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("payments")}
-                  className="px-3 py-1.5 rounded-xl border border-border hover:bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Manage ({paymentMethods.length})
-                </button>
-              </div>
-            </div>
-
-            {/* Cards Display */}
-            {paymentMethods.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border p-6 text-center bg-card/60">
-                <CreditCard className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-60" />
-                <p className="text-xs font-bold text-foreground">No payment cards vaulted yet</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Click "+ Add New Card" to vault a Visa or Mastercard directly into your store customer database.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {paymentMethods.map((pm) => (
-                  <div
-                    key={pm.id}
-                    className="relative overflow-hidden rounded-xl p-4 text-white shadow-md bg-gradient-to-tr from-slate-950 via-emerald-950 to-slate-900 border border-emerald-500/30 flex flex-col justify-between h-36"
-                  >
-                    <div className="flex items-start justify-between">
-                      <span className="text-[10px] font-mono tracking-widest uppercase opacity-75">
-                        {pm.brand || pm.type || "EMV Card"}
-                      </span>
-                      {pm.is_default ? (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500 text-white shadow-xs">
-                          DEFAULT
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-mono text-emerald-400">ACTIVE</span>
-                      )}
-                    </div>
-                    <div className="font-mono text-base font-bold tracking-wider my-auto">
-                      •••• •••• •••• {pm.last4 || "4242"}
-                    </div>
-                    <div className="flex items-end justify-between text-[10px] opacity-85">
-                      <div>
-                        <p className="uppercase tracking-wider text-[8px] text-slate-400">Cardholder</p>
-                        <p className="font-bold truncate max-w-[120px]">{pm.card_holder_name || shopUser?.full_name || "VALUED CUSTOMER"}</p>
-                      </div>
-                      <div>
-                        <p className="uppercase tracking-wider text-[8px] text-slate-400">Expires</p>
-                        <p className="font-mono">{pm.expiry || "12/28"}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Customer Digital Card & Wallet (Dedicated Backend & Database) */}
+          <ShopCardWidget
+            onCardSelect={(card) => {
+              setSelectedPaymentMethodId(card.id);
+            }}
+          />
 
           {/* Featured Honey Varieties */}
           <div className="space-y-3">
@@ -2506,13 +2424,16 @@ export default function ShopDashboard({
       {/* ========== TAB: PAYMENT METHODS ========== */}
       {activeTab === "payments" && (
         <div className="space-y-4">
+          {/* Hero Digital Card Widget with Dedicated Backend & Database */}
+          <ShopCardWidget className="mb-2" />
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="font-display text-base font-bold text-foreground flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-honey" /> Vaulted Payment Methods
+                <CreditCard className="w-4 h-4 text-honey" /> Vaulted Payment Methods & Cards
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Saved cards and payment credentials synced directly with your database account.
+                Saved cards and payment credentials synced directly with your dedicated shop database account.
               </p>
             </div>
             <div className="flex items-center gap-2">

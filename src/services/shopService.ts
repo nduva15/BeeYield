@@ -1218,7 +1218,7 @@ export const deleteAddress = async (addressId: string) => {
 export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
     const getLocalCards = (): PaymentMethod[] => {
         try {
-            const stored = JSON.parse(localStorage.getItem('beeyield_vaulted_cards') || '[]');
+            const stored = JSON.parse(localStorage.getItem('shop_vaulted_cards') || '[]');
             return toArray<any>(stored).map(normalizePaymentMethod);
         } catch {
             return [];
@@ -1336,13 +1336,13 @@ export const addPaymentMethod = async (paymentMethod: any): Promise<PaymentMetho
 
     // 5. Update LocalStorage cache for immediate instant rendering
     try {
-        const stored = JSON.parse(localStorage.getItem('beeyield_vaulted_cards') || '[]');
+        const stored = JSON.parse(localStorage.getItem('shop_vaulted_cards') || '[]');
         const existing = toArray<any>(stored);
         const adjusted = payload.is_default
             ? existing.map((c: any) => ({ ...c, is_default: false }))
             : existing;
         const nextList = [normalizedNew, ...adjusted.filter((c: any) => c.id !== normalizedNew.id)];
-        localStorage.setItem('beeyield_vaulted_cards', JSON.stringify(nextList));
+        localStorage.setItem('shop_vaulted_cards', JSON.stringify(nextList));
     } catch (_) {}
 
     return normalizedNew;
@@ -1351,9 +1351,9 @@ export const addPaymentMethod = async (paymentMethod: any): Promise<PaymentMetho
 export const deletePaymentMethod = async (paymentId: string) => {
     // 1. Remove from LocalStorage
     try {
-        const stored = JSON.parse(localStorage.getItem('beeyield_vaulted_cards') || '[]');
+        const stored = JSON.parse(localStorage.getItem('shop_vaulted_cards') || '[]');
         const updated = toArray<any>(stored).filter((c: any) => c.id !== paymentId);
-        localStorage.setItem('beeyield_vaulted_cards', JSON.stringify(updated));
+        localStorage.setItem('shop_vaulted_cards', JSON.stringify(updated));
     } catch (_) {}
 
     // 2. Remove from Supabase database user metadata
@@ -1417,13 +1417,13 @@ export const updatePaymentMethod = async (paymentId: string, paymentMethod: any)
 
     // 3. Cache locally
     try {
-        const stored = JSON.parse(localStorage.getItem('beeyield_vaulted_cards') || '[]');
+        const stored = JSON.parse(localStorage.getItem('shop_vaulted_cards') || '[]');
         const existing = toArray<any>(stored);
         const adjusted = payload.is_default
             ? existing.map((c: any) => ({ ...c, is_default: false }))
             : existing;
         const nextList = adjusted.map((c: any) => (c.id === paymentId ? { ...c, ...payload } : c));
-        localStorage.setItem('beeyield_vaulted_cards', JSON.stringify(nextList));
+        localStorage.setItem('shop_vaulted_cards', JSON.stringify(nextList));
     } catch (_) {}
 
     return normalizePaymentMethod(payload);
