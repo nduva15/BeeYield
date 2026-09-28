@@ -1269,16 +1269,13 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     }
 
-    // 1. Proactively purge ANY legacy fake/mock devices from Supabase database
+    // 1. Purge ALL fake/mock devices from Supabase database
     try {
-      const fakeFromDb = ((d.data as Device[]) ?? []).filter((item) => isFakeSensorDevice(item));
+      const allDbDevices = (d.data as Device[]) ?? [];
+      const fakeFromDb = allDbDevices.filter((item) => isFakeSensorDevice(item));
       if (fakeFromDb.length > 0) {
         const fakeIds = fakeFromDb.map((item) => item.id);
-        const fakeSerials = fakeFromDb.map((item) => item.serial).filter(Boolean);
         void (supabase as any).from("devices").delete().in("id", fakeIds);
-        if (fakeSerials.length > 0) {
-          void (supabase as any).from("devices").delete().in("serial", fakeSerials);
-        }
       }
       void (supabase as any)
         .from("devices")
@@ -1286,97 +1283,23 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
         .or("serial.ilike.SENS-INP-001%,serial.ilike.SENS-MIC-002%,serial.ilike.SENS-LAND-01%,serial.ilike.SENS-DIS-001%,serial.ilike.SCALE-KBZ%,serial.ilike.VS-KBZ%,serial.ilike.HUB-KBZ%,serial.ilike.VARROA-KBZ%");
     } catch {}
 
-    // 2. Clean out fake devices and fake bindings from localStorage across ALL keys
+    // 2. Nuke ALL localStorage sensor/device caches — clean slate every load
     try {
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
         if (!k) continue;
-        if (k.includes("devices") || k.includes("sensors") || k.includes("sensor")) {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) {
-                const cleaned = parsed.filter((item: any) => !isFakeSensorDevice(item));
-                if (cleaned.length > 0) {
-                  localStorage.setItem(k, JSON.stringify(cleaned));
-                } else {
-                  localStorage.removeItem(k);
-                }
-              }
-            }
-          } catch {}
-        }
-        if (k.includes("hives") || k.includes("apiaries")) {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) {
-                let modified = false;
-                const cleaned = parsed.map((item: any) => {
-                  if (item.sensorSerial && isFakeSensorDevice({ serial: item.sensorSerial })) {
-                    modified = true;
-                    return { ...item, sensorSerial: undefined, hasSensor: false, has_sensors: false, deviceCategory: undefined, deviceType: undefined };
-                  }
-                  return item;
-                });
-                if (modified) {
-                  localStorage.setItem(k, JSON.stringify(cleaned));
-                }
-              }
-            }
-          } catch {}
+        if (k.includes("synced_sensors") || k.includes("devices") || k.includes("sensor")) {
+          localStorage.removeItem(k);
         }
       }
     } catch {}
 
-    // 3. Fetch authoritative synced sensors via sensorSyncService
-    let syncedSensors: SyncedSensorDevice[] = [];
-    try {
-      syncedSensors = await fetchSyncedSensors(effectiveUserId, selApiary !== "all" ? selApiary : null);
-    } catch (e) {
-      console.warn("fetchSyncedSensors fallback:", e);
-    }
-
-    // 4. Combine real synced sensors with clean Supabase DB devices
-    const deviceMap = new Map<string, Device>();
-
-    // Supabase DB clean devices
+    // 3. Only use clean Supabase DB devices — no cached/synced sensor fallbacks
     const cleanDbDevices = ((d.data as Device[]) ?? []).filter((item) => !isFakeSensorDevice(item));
-    cleanDbDevices.forEach((item) => {
-      const serialKey = (item.serial || "").trim().toUpperCase();
-      if (serialKey) {
-        deviceMap.set(serialKey, {
-          ...item,
-          category: item.category || getDeviceCategory(item.device_kind),
-        });
-      }
-    });
-
-    // Authoritative Synced sensors
-    const cleanSynced = (syncedSensors || []).filter((s) => !isFakeSensorDevice(s));
-    cleanSynced.forEach((s) => {
-      const serialKey = (s.serial || "").trim().toUpperCase();
-      if (serialKey) {
-        const hive = hivesData.find((h) => h.id === s.hiveId || (s.hiveCode && h.name.includes(s.hiveCode)));
-        deviceMap.set(serialKey, {
-          id: s.id,
-          apiary_id: s.apiaryId || null,
-          hive_id: s.hiveId || (hive?.id ?? null),
-          device_kind: s.category === "in_land" ? "meteo_station" : s.category === "disease_devices" ? "spectral_scanner" : "vitalsensor_brood",
-          category: s.category === "disease_devices" ? "diseases" : (s.category as DeviceCategory),
-          link_type: s.linkType || "online",
-          serial: s.serial,
-          label: s.deviceType ? `${s.deviceType} (${s.serial})` : s.serial,
-          status: s.status || "active",
-          battery_pct: s.batteryPct ?? 98,
-          last_seen_at: s.lastSeenAt || null,
-        });
-      }
-    });
-
-    const finalDevices = Array.from(deviceMap.values()).filter((item) => !isFakeSensorDevice(item));
+    const finalDevices: Device[] = cleanDbDevices.map((item) => ({
+      ...item,
+      category: item.category || getDeviceCategory(item.device_kind),
+    }));
 
     const measurementsData = ((m.data as Measurement[]) ?? []).filter(
       (meas) =>
@@ -1716,11 +1639,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
           {/* TAB 1: MY DEVICES & REGISTERED HIVES */}
           {tab === "devices" && (
             <div className="space-y-6">
-              {loading && (
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Loading registry…
-                </p>
-              )}
+
 
               {/* THREE DIVERGENT DEVICE CATEGORIES OVERVIEW */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1778,17 +1697,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
                     <Radio className="w-4 h-4 text-emerald-500 animate-pulse" /> Connected Telemetry Devices
                   </h3>
                   <div className="flex items-center gap-2 flex-wrap">
-                    {visibleDevices.length > 0 && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handlePurgeAllDevices}
-                        className="text-xs h-7 gap-1 border-rose-500/30 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 font-semibold"
-                        title="Delete and purge all fake and mock devices across database and page"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> Delete all fake devices
-                      </Button>
-                    )}
+
                     <Button
                       size="sm"
                       variant="outline"
