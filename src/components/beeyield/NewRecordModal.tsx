@@ -1,11 +1,6 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
-
-const AddApiaryModal = lazy(() => import("@/components/AddApiaryModal"));
-const AddHiveModal = lazy(() =>
-  import("@/components/AddHiveModal").then((m) => ({
-    default: m.default || m.AddHiveModal,
-  }))
-);
+import React, { useState, useEffect } from "react";
+import AddApiaryModal from "@/components/AddApiaryModal";
+import AddHiveModal from "@/components/AddHiveModal";
 
 export interface NewRecordModalProps {
   isOpen: boolean;
@@ -21,7 +16,7 @@ export interface NewRecordModalProps {
 export function NewRecordModal({
   isOpen,
   onClose,
-  initialTab = "apiary",
+  initialTab = "hive",
   onSuccess,
   apiaries,
   apiary,
@@ -39,7 +34,7 @@ export function NewRecordModal({
   if (!isOpen) return null;
 
   return (
-    <Suspense fallback={null}>
+    <>
       {activeTab === "apiary" ? (
         <AddApiaryModal
           isOpen={isOpen}
@@ -63,7 +58,7 @@ export function NewRecordModal({
           scannedSerial={scannedSerial}
         />
       )}
-    </Suspense>
+    </>
   );
 }
 
