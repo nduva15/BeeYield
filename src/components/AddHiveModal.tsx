@@ -28,8 +28,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { beeyieldService } from "@/services/beeyieldService";
-import { CANONICAL_TIMOTHY_APIARY, CANONICAL_APIARY_NAME } from "@/lib/user-hives";
-import { normalizeApiaryName } from "@/lib/apiary-normalization";
+import { CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
+import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
 // International Queen Marking Color Codes
 export function getQueenYearColor(year: number) {

@@ -1,4 +1,5 @@
 import { CANONICAL_APIARY_NAME, CANONICAL_APIARY_LOCATION, normalizeApiaryName } from "./apiary-normalization";
+export { CANONICAL_APIARY_NAME, CANONICAL_APIARY_LOCATION, normalizeApiaryName };
 
 export interface UserLike {
   id?: string | null;
@@ -51,10 +52,24 @@ export interface UnifiedApiary {
  * Identifies whether the current user is Timothy (Apiary Owner / Founder)
  */
 export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | null): boolean {
-  if (!user && !profile) return false;
-  const uid = (user?.id || "").toLowerCase();
-  const email = (user?.email || profile?.email || "").toLowerCase();
-  const name = (profile?.full_name || user?.user_metadata?.full_name || "").toLowerCase();
+  let effectiveUser = user;
+  let effectiveProfile = profile;
+
+  if (!effectiveUser && !effectiveProfile && typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("beeyield_local_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        effectiveUser = parsed?.user;
+        effectiveProfile = parsed?.profile;
+      }
+    } catch {}
+  }
+
+  if (!effectiveUser && !effectiveProfile) return false;
+  const uid = (effectiveUser?.id || "").toLowerCase();
+  const email = (effectiveUser?.email || effectiveProfile?.email || "").toLowerCase();
+  const name = (effectiveProfile?.full_name || effectiveUser?.user_metadata?.full_name || effectiveUser?.user_metadata?.name || "").toLowerCase();
 
   return (
     uid === "usr_kibwezi_owner_01" ||
@@ -64,6 +79,64 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
     name.includes("timothy") ||
     name.includes("nduva")
   );
+}
+
+/**
+ * Returns formatted display name for logged in or signed up user.
+ * Returns null only if strictly unauthenticated with no profile/email.
+ */
+export function getAuthenticatedUserName(user?: UserLike | null, profile?: ProfileLike | null): string | null {
+  let effectiveUser = user;
+  let effectiveProfile = profile;
+
+  if (!effectiveUser && !effectiveProfile && typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("beeyield_local_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        effectiveUser = parsed?.user;
+        effectiveProfile = parsed?.profile;
+      }
+    } catch {}
+  }
+
+  // 1. Profile full name
+  if (effectiveProfile?.full_name?.trim()) {
+    return effectiveProfile.full_name.trim();
+  }
+
+  // 2. User metadata fields
+  const meta = effectiveUser?.user_metadata;
+  if (meta?.full_name?.trim()) return meta.full_name.trim();
+  if (meta?.name?.trim()) return meta.name.trim();
+  if (meta?.user_name?.trim()) return meta.user_name.trim();
+  if (meta?.first_name?.trim()) {
+    const last = meta.last_name?.trim() ? ` ${meta.last_name.trim()}` : "";
+    return `${meta.first_name.trim()}${last}`;
+  }
+
+  // 3. User email username formatted
+  const email = effectiveUser?.email || effectiveProfile?.email;
+  if (email && email.includes("@")) {
+    const raw = email.split("@")[0].replace(/[._-]/g, " ").trim();
+    if (raw) {
+      return raw
+        .split(" ")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+    }
+  }
+
+  // 4. Timothy Lead Beekeeper check
+  if (isTimothyUser(effectiveUser, effectiveProfile)) {
+    return "Timothy Nduva (Lead Beekeeper)";
+  }
+
+  if (effectiveUser?.id) {
+    return "Apiary Owner";
+  }
+
+  return null;
 }
 
 // Timothy Nduva operates 184 managed Langstroth hive stands in Kibwezi with zero hardware IoT sensors connected so far
@@ -169,6 +242,42 @@ export function resolveUserHives(
   }
 
   // Non-Timothy user: strictly their own hives only
+  if (remoteOrCustomHives.length > 0) {
+    return remoteOrCustomHives;
+  }
+
+  // Check localStorage for any user-specific hives saved across apiaries
+  if (typeof window !== "undefined" && user?.id) {
+    try {
+      const found: UnifiedHive[] = [];
+      const userKey = user.id;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith("beeyield_hives_") && k.includes(userKey)) {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((h: any) => {
+                found.push({
+                  id: String(h.id || h.code),
+                  code: h.code || h.hive_code,
+                  name: h.name || h.code || `Hive ${h.id}`,
+                  apiary: normalizeApiaryName(h.apiary || h.apiary_name),
+                  hasSensor: Boolean(h.hasSensor || h.sensorSerial),
+                  sensorSerial: h.sensorSerial,
+                  colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : "Strong (8–10 Frames Brood & Bees)"),
+                  colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+                });
+              });
+            }
+          }
+        }
+      }
+      if (found.length > 0) return found;
+    } catch {}
+  }
+
   return remoteOrCustomHives;
 }
 
