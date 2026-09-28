@@ -19,6 +19,7 @@ import { Route as CommitmentRouteImport } from './routes/commitment'
 import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
 import { Route as EsgRouteImport } from './routes/esg'
 import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as MediaRouteImport } from './routes/media'
 import { Route as OurStoryRouteImport } from './routes/our-story'
 import { Route as PandaMitiRouteImport } from './routes/panda-miti'
 import { Route as ShopRouteImport } from './routes/shop'
@@ -78,6 +79,11 @@ const ImpactRoute = ImpactRouteImport.update({
   path: '/impact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MediaRoute = MediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OurStoryRoute = OurStoryRouteImport.update({
   id: '/our-story',
   path: '/our-story',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/esg': typeof EsgRoute
   '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/esg': typeof EsgRoute
   '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/crops-we-pollinate': typeof CropsWePollinateRoute
   '/esg': typeof EsgRoute
   '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
   '/our-story': typeof OurStoryRoute
   '/panda-miti': typeof PandaMitiRoute
   '/shop': typeof ShopRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/esg'
     | '/impact'
+    | '/media'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/esg'
     | '/impact'
+    | '/media'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/crops-we-pollinate'
     | '/esg'
     | '/impact'
+    | '/media'
     | '/our-story'
     | '/panda-miti'
     | '/shop'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   CropsWePollinateRoute: typeof CropsWePollinateRoute
   EsgRoute: typeof EsgRoute
   ImpactRoute: typeof ImpactRoute
+  MediaRoute: typeof MediaRoute
   OurStoryRoute: typeof OurStoryRoute
   PandaMitiRoute: typeof PandaMitiRoute
   ShopRoute: typeof ShopRoute
@@ -336,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ImpactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/media': {
+      id: '/media'
+      path: '/media'
+      fullPath: '/media'
+      preLoaderRoute: typeof MediaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/our-story': {
       id: '/our-story'
       path: '/our-story'
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   CropsWePollinateRoute: CropsWePollinateRoute,
   EsgRoute: EsgRoute,
   ImpactRoute: ImpactRoute,
+  MediaRoute: MediaRoute,
   OurStoryRoute: OurStoryRoute,
   PandaMitiRoute: PandaMitiRoute,
   ShopRoute: ShopRoute,
