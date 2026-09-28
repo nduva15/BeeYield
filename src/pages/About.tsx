@@ -328,14 +328,14 @@ function ImpactStatCard({ stat }: { stat: (typeof IMPACT_STATS)[number] }) {
   return (
     <div
       ref={ref}
-      className="text-center p-4 rounded-2xl border border-border bg-card hover:border-amber-500/30 hover:shadow-[0_0_20px_hsl(38_95%_52%/0.1)] transition-all duration-300"
+      className="text-center p-4 rounded-2xl border border-amber-200/90 bg-white/95 text-stone-900 shadow-xs hover:border-amber-400 hover:shadow-md transition-all duration-300"
     >
-      <stat.icon className="w-5 h-5 text-amber-500 mx-auto mb-2" />
-      <div className="font-display text-xl font-bold text-foreground">
+      <stat.icon className="w-5 h-5 text-amber-600 mx-auto mb-2" />
+      <div className="font-display text-xl font-bold text-stone-900">
         {count}
         {stat.suffix}
       </div>
-      <div className="text-[11px] text-muted-foreground leading-tight mt-1">{stat.label}</div>
+      <div className="text-[11px] text-stone-600 font-semibold leading-tight mt-1">{stat.label}</div>
     </div>
   );
 }
@@ -574,13 +574,13 @@ export default function About() {
       {/* ============================================================ */}
       {/*  IMPACT STATS BAR                                             */}
       {/* ============================================================ */}
-      <section className="relative py-16 bg-gradient-to-r from-amber-600/10 via-amber-500/5 to-amber-600/10 border-y border-amber-500/10">
+      <section className="relative py-16 bg-gradient-to-r from-amber-100/60 via-amber-50 to-amber-100/60 border-y border-amber-200/80">
         <div className="container mx-auto px-4">
           <FadeIn>
-            <h2 className="font-display text-2xl font-bold text-center mb-2 text-foreground">
+            <h2 className="font-display text-2xl font-bold text-center mb-2 text-stone-900">
               Where We Stand Today
             </h2>
-            <p className="text-center text-muted-foreground text-sm mb-10">
+            <p className="text-center text-stone-600 font-medium text-sm mb-10">
               September 2026 — every number funded by honey sales and savings alone
             </p>
           </FadeIn>
@@ -597,13 +597,13 @@ export default function About() {
       {/* ============================================================ */}
       {/*  WHO WE ARE                                                    */}
       {/* ============================================================ */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/40 text-stone-900">
         <div className="container mx-auto px-4 max-w-5xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-4 text-stone-900">
               Who We Are &amp; What We Stand For
             </h2>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
+            <p className="text-center text-stone-600 font-medium max-w-2xl mx-auto mb-12">
               Three siblings, one mission: modernizing pollination in Kenya and beyond.
             </p>
           <div className="my-8 p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-amber-50/90 via-white to-amber-50/50 text-stone-900 border border-amber-200/90 shadow-sm relative overflow-hidden text-center">
@@ -628,26 +628,32 @@ export default function About() {
                 icon: Heart,
                 title: "Family-Driven Innovation",
                 desc: "Founded by siblings Timothy (Finance, Marketing & IT — Strathmore University), Agatha (IT — Strathmore), and Carole (Project Management & Sales/Finance — Strathmore). Combining agricultural passion with world-class education and relentless work ethic.",
-                color: "text-rose-400",
+                color: "text-rose-600",
+                border: "border-rose-200/80",
+                bg: "from-rose-50/70 via-white to-amber-50/40",
               },
               {
                 icon: Sprout,
                 title: "Guardians of Biodiversity",
                 desc: "With 1,500+ indigenous trees planted, our own nursery, and 3 tons of carbon offset, we're ecosystem builders committed to long-term ecological restoration. We only harvest 50% of our honey — the bees always eat first.",
-                color: "text-green-400",
+                color: "text-emerald-700",
+                border: "border-emerald-200/80",
+                bg: "from-emerald-50/70 via-white to-amber-50/40",
               },
               {
                 icon: Wifi,
                 title: "Precision Pollination",
                 desc: "22 IoT devices deployed, over 2,000 data points daily and growing, real-time temperature, weight, humidity, pressure, colony state, Varroa detection, and Asian hornet alerts. We use data to protect bees and maximize yields for Kenyan smallholders.",
-                color: "text-blue-400",
+                color: "text-sky-700",
+                border: "border-sky-200/80",
+                bg: "from-sky-50/70 via-white to-amber-50/40",
               },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 100}>
-                <div className="p-6 rounded-2xl border border-border bg-card hover:border-amber-500/20 transition-all duration-300 h-full">
+                <div className={`p-6 rounded-2xl border ${item.border} bg-gradient-to-br ${item.bg} hover:shadow-md hover:border-amber-300 transition-all duration-300 h-full shadow-xs`}>
                   <item.icon className={`w-8 h-8 ${item.color} mb-4`} />
-                  <h3 className="font-display text-lg font-bold mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                  <h3 className="font-display text-lg font-bold mb-2 text-stone-900">{item.title}</h3>
+                  <p className="text-sm text-stone-600 font-medium leading-relaxed">{item.desc}</p>
                 </div>
               </FadeIn>
             ))}
@@ -655,23 +661,23 @@ export default function About() {
 
           {/* Revenue & Reinvestment */}
           <FadeIn>
-            <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5">
-              <h3 className="font-display text-lg font-bold text-amber-400 mb-3 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" /> Revenue — 100% Reinvested
+            <div className="p-6 rounded-2xl border border-amber-200/90 bg-gradient-to-br from-amber-50/90 via-white to-amber-100/40 text-stone-900 shadow-sm">
+              <h3 className="font-display text-lg font-bold text-amber-950 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-amber-600" /> Revenue — 100% Reinvested
               </h3>
-              <div className="grid sm:grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div className="grid sm:grid-cols-2 gap-4 text-sm text-stone-700 font-medium">
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
                   <div>
-                    <span className="font-semibold text-foreground">Honey Sales: $3,000+ USD</span>{" "}
+                    <span className="font-bold text-stone-950">Honey Sales: $3,000+ USD</span>{" "}
                     — 988 kg sold through word of mouth alone. Never branded, never packaged, never
                     advertised. All profits reinvested in land, hives, trees, and research.
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mt-1.5 flex-shrink-0" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-600 mt-1.5 flex-shrink-0" />
                   <div>
-                    <span className="font-semibold text-foreground">
+                    <span className="font-bold text-stone-950">
                       Pollination Revenue: $550 USD
                     </span>{" "}
                     — 105 acres and counting pollinated since July 2025. 18% average yield increase. Mango bloom
@@ -689,35 +695,35 @@ export default function About() {
       {/* ============================================================ */}
       <section
         id="our-hives"
-        className="py-20 bg-gradient-to-b from-background via-amber-950/10 to-background border-t border-border"
+        className="py-20 bg-gradient-to-b from-amber-50/60 via-amber-100/30 to-amber-50/60 border-t border-amber-200/80 text-stone-900"
       >
         <div className="container mx-auto px-4 max-w-6xl">
           <FadeIn>
             <div className="text-center max-w-3xl mx-auto mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs sm:text-sm font-semibold mb-4">
-                <Camera className="w-4 h-4" />
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-300 bg-amber-100/90 text-amber-900 text-xs sm:text-sm font-bold mb-4 shadow-xs">
+                <Camera className="w-4 h-4 text-amber-700" />
                 <span>Real Field Photography • Kibwezi &amp; Makueni, Kenya</span>
               </div>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-stone-900 mb-4">
                 Our Living Apiary &amp; Hives in Photos
               </h2>
-              <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+              <p className="text-stone-700 font-medium text-sm sm:text-base leading-relaxed">
                 Step inside our actual apiary grounds across 105+ acres in southeastern Kenya. Witness our indigenous suspended acacia log hives (<em>Mwatu</em>), modern elevated box hives, and sustainable twilight inspection protocols.
               </p>
 
               {/* Quick stats pills */}
               <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
-                  <Hexagon className="w-3.5 h-3.5 text-amber-500" /> 184 Hives in Semi-Arid Kenya
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-amber-200 text-xs text-stone-800 font-semibold shadow-xs">
+                  <Hexagon className="w-3.5 h-3.5 text-amber-600" /> 184 Hives in Semi-Arid Kenya
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
-                  <TreePine className="w-3.5 h-3.5 text-emerald-500" /> Acacia Canopy Placement
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-amber-200 text-xs text-stone-800 font-semibold shadow-xs">
+                  <TreePine className="w-3.5 h-3.5 text-emerald-700" /> Acacia Canopy Placement
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> 100% Smoke &amp; Chemical-Free
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-amber-200 text-xs text-stone-800 font-semibold shadow-xs">
+                  <ShieldCheck className="w-3.5 h-3.5 text-sky-700" /> 100% Smoke &amp; Chemical-Free
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-border text-xs text-foreground font-medium">
-                  <Thermometer className="w-3.5 h-3.5 text-orange-500" /> ~35°C Natural Thermoregulation
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/95 border border-amber-200 text-xs text-stone-800 font-semibold shadow-xs">
+                  <Thermometer className="w-3.5 h-3.5 text-orange-600" /> ~35°C Natural Thermoregulation
                 </span>
               </div>
             </div>
@@ -732,8 +738,8 @@ export default function About() {
                   onClick={() => setPhotoFilter(cat)}
                   className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border cursor-pointer ${
                     photoFilter === cat
-                      ? "bg-amber-500 text-stone-950 border-amber-500 shadow-md font-bold"
-                      : "bg-card border-border text-muted-foreground hover:border-amber-500/40 hover:text-foreground"
+                      ? "bg-amber-600 text-white border-amber-600 shadow-md font-bold"
+                      : "bg-white/90 border-amber-200 text-stone-700 hover:border-amber-400 hover:text-stone-900 shadow-xs"
                   }`}
                 >
                   {cat === "All" ? `All Field Photos (${HIVE_PHOTOS.length})` : cat}
@@ -748,7 +754,7 @@ export default function About() {
               <FadeIn key={photo.id} delay={i * 70}>
                 <div
                   onClick={() => setSelectedPhoto(photo)}
-                  className="group relative rounded-2xl overflow-hidden border border-border bg-card shadow-lg hover:border-amber-500/50 hover:shadow-2xl transition-all duration-500 cursor-pointer flex flex-col h-full"
+                  className="group relative rounded-2xl overflow-hidden border border-amber-200/90 bg-white shadow-md hover:border-amber-400 hover:shadow-xl transition-all duration-500 cursor-pointer flex flex-col h-full"
                 >
                   {/* Photo Container */}
                   <div className="relative aspect-[4/3] sm:aspect-[3/2] overflow-hidden bg-stone-900">
@@ -765,7 +771,7 @@ export default function About() {
                       <span className="px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-amber-500 text-stone-950 shadow-sm">
                         {photo.badge}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/50 backdrop-blur-md text-white/90 border border-white/20 flex items-center gap-1">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 backdrop-blur-md text-white/95 border border-white/20 flex items-center gap-1">
                         <MapPin className="w-2.5 h-2.5 text-amber-400" />
                         {photo.location.split(",")[0]}
                       </span>
@@ -773,27 +779,27 @@ export default function About() {
 
                     {/* Hover Prompt */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                      <span className="px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-stone-900 text-xs font-bold flex items-center gap-1.5 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                      <span className="px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-md text-stone-900 text-xs font-bold flex items-center gap-1.5 shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                         <Maximize2 className="w-3.5 h-3.5 text-amber-600" /> View Full Photo
                       </span>
                     </div>
                   </div>
 
                   {/* Caption */}
-                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+                  <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between bg-white text-stone-900">
                     <div>
-                      <h3 className="font-display text-base sm:text-lg font-bold text-foreground group-hover:text-amber-500 transition-colors mb-1.5">
+                      <h3 className="font-display text-base sm:text-lg font-bold text-stone-900 group-hover:text-amber-700 transition-colors mb-1.5">
                         {photo.title}
                       </h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      <p className="text-xs text-stone-600 leading-relaxed font-medium line-clamp-2">
                         {photo.description}
                       </p>
                     </div>
 
-                    <div className="pt-3 mt-3 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground font-medium">
-                      <span className="text-amber-500/90 font-semibold">{photo.category}</span>
-                      <span className="flex items-center gap-1 group-hover:text-foreground transition-colors">
-                        <Eye className="w-3 h-3 text-amber-500" /> Click to enlarge
+                    <div className="pt-3 mt-3 border-t border-amber-100 flex items-center justify-between text-[11px] text-stone-500 font-medium">
+                      <span className="text-amber-700 font-bold">{photo.category}</span>
+                      <span className="flex items-center gap-1 group-hover:text-stone-900 transition-colors">
+                        <Eye className="w-3 h-3 text-amber-600" /> Click to enlarge
                       </span>
                     </div>
                   </div>
@@ -804,33 +810,33 @@ export default function About() {
 
           {/* Educational Callout: Dual-Hive Philosophy */}
           <FadeIn delay={200}>
-            <div className="mt-14 p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-card to-emerald-500/5 shadow-xl">
+            <div className="mt-14 p-6 sm:p-8 rounded-3xl border border-amber-200/90 bg-gradient-to-br from-amber-50 via-white to-emerald-50/40 shadow-lg text-stone-900">
               <div className="grid md:grid-cols-2 gap-6 items-center">
                 <div className="space-y-3">
-                  <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
                     Our Apiculture Doctrine
                   </span>
-                  <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-stone-900">
                     Bridging Indigenous Wisdom with Modern Precision
                   </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  <p className="text-xs sm:text-sm text-stone-600 font-medium leading-relaxed">
                     Rather than abandoning traditional African beekeeping, BeeYield honors centuries-old Kamba and Maasai tree-hanging methods while augmenting them with IoT telemetry and modern raised hive architecture.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3.5 rounded-2xl bg-background/80 border border-border space-y-1">
-                    <p className="font-bold text-amber-500 flex items-center gap-1.5">
-                      <TreePine className="w-3.5 h-3.5" /> Suspended Tree Hives
+                  <div className="p-3.5 rounded-2xl bg-white border border-amber-200 shadow-xs space-y-1">
+                    <p className="font-bold text-amber-800 flex items-center gap-1.5">
+                      <TreePine className="w-3.5 h-3.5 text-amber-600" /> Suspended Tree Hives
                     </p>
-                    <p className="text-muted-foreground text-[11px] leading-relaxed">
+                    <p className="text-stone-600 text-[11px] leading-relaxed font-medium">
                       Superior thermal insulation during 38°C dry spells. Natural pest barriers against honey badgers. Preferred nesting choice of wild African bees.
                     </p>
                   </div>
-                  <div className="p-3.5 rounded-2xl bg-background/80 border border-border space-y-1">
-                    <p className="font-bold text-emerald-500 flex items-center gap-1.5">
-                      <Wifi className="w-3.5 h-3.5" /> Elevated Box Hives
+                  <div className="p-3.5 rounded-2xl bg-white border border-emerald-200 shadow-xs space-y-1">
+                    <p className="font-bold text-emerald-800 flex items-center gap-1.5">
+                      <Wifi className="w-3.5 h-3.5 text-emerald-600" /> Elevated Box Hives
                     </p>
-                    <p className="text-muted-foreground text-[11px] leading-relaxed">
+                    <p className="text-stone-600 text-[11px] leading-relaxed font-medium">
                       Seamless integration with load cells, acoustic varroa sensors, and frame inspection. Clean separation of 50% harvest without damaging comb.
                     </p>
                   </div>
@@ -929,14 +935,14 @@ export default function About() {
       {/* ============================================================ */}
       <section
         id="timeline"
-        className="py-20 bg-gradient-to-b from-background via-card to-background scroll-mt-20"
+        className="py-20 bg-gradient-to-b from-amber-50/30 via-white to-amber-50/30 border-t border-amber-200/60 scroll-mt-20 text-stone-900"
       >
         <div className="container mx-auto px-4 max-w-6xl">
           <FadeIn>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-2">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-2 text-stone-900">
               Our Journey — Year by Year
             </h2>
-            <p className="text-center text-muted-foreground max-w-xl mx-auto mb-16">
+            <p className="text-center text-stone-600 font-medium max-w-xl mx-auto mb-16">
               From 4 hives on a quarter acre to 184 hives, 22 IoT devices, and global partnerships —
               in less than 6 years.
             </p>
@@ -952,8 +958,8 @@ export default function About() {
                   onClick={() => setActiveYear(yr.year)}
                   className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-300 ${
                     activeYear === yr.year
-                      ? "bg-amber-500 text-black border-amber-500"
-                      : "border-border text-muted-foreground hover:border-amber-500/50 hover:text-foreground"
+                      ? "bg-amber-600 text-white border-amber-600 shadow-md font-bold"
+                      : "bg-white/90 border-amber-200 text-stone-700 hover:border-amber-400 hover:text-stone-900 shadow-xs"
                   }`}
                 >
                   {yr.year}
@@ -971,13 +977,13 @@ export default function About() {
                   <FadeIn>
                     {/* Year badge */}
                     <div className="flex items-center justify-center mb-8">
-                      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+                      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-amber-200" />
                       <div
                         className={`mx-4 px-6 py-2 rounded-full bg-gradient-to-r ${yr.color} text-white font-display text-2xl font-bold shadow-lg`}
                       >
                         {yr.year}
                       </div>
-                      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
+                      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-amber-200" />
                     </div>
                   </FadeIn>
 
@@ -986,7 +992,7 @@ export default function About() {
                   >
                     {/* Image */}
                     <FadeIn delay={100} className={isEven ? "" : "lg:order-2"}>
-                      <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-border">
+                      <div className="relative group rounded-2xl overflow-hidden shadow-2xl border border-amber-200/80 bg-white">
                         <img
                           src={yr.image}
                           alt={yr.imageAlt}
@@ -996,7 +1002,7 @@ export default function About() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         <div className="absolute bottom-4 left-4 right-4">
                           <h3 className="font-display text-xl font-bold text-white">{yr.title}</h3>
-                          <p className="text-white/70 text-sm">{yr.subtitle}</p>
+                          <p className="text-white/80 text-sm">{yr.subtitle}</p>
                         </div>
                       </div>
                     </FadeIn>
@@ -1009,12 +1015,12 @@ export default function About() {
                           {yr.stats.map((stat) => (
                             <div
                               key={stat.label}
-                              className="p-3 rounded-xl border border-border bg-card text-center"
+                              className="p-3 rounded-xl border border-amber-200 bg-white text-center shadow-xs"
                             >
-                              <div className="font-display text-lg font-bold text-amber-400">
+                              <div className="font-display text-lg font-bold text-amber-700">
                                 {stat.value}
                               </div>
-                              <div className="text-[11px] text-muted-foreground">{stat.label}</div>
+                              <div className="text-[11px] text-stone-600 font-semibold">{stat.label}</div>
                             </div>
                           ))}
                         </div>
@@ -1024,9 +1030,9 @@ export default function About() {
                           {yr.highlights.map((h, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-2 text-sm text-muted-foreground"
+                              className="flex items-start gap-2 text-sm text-stone-700 font-medium"
                             >
-                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-600 mt-2 flex-shrink-0" />
                               <span>{h}</span>
                             </li>
                           ))}
@@ -1034,16 +1040,16 @@ export default function About() {
 
                         {/* Quote */}
                         {yr.quote && (
-                          <blockquote className="border-l-2 border-amber-500/70 pl-4 italic text-sm text-muted-foreground my-2">
+                          <blockquote className="border-l-2 border-amber-500 pl-4 italic text-sm text-stone-700 my-2 font-medium">
                             "{yr.quote}"
-                            <footer className="mt-2 text-xs text-amber-500/90 not-italic flex items-center gap-2">
+                            <footer className="mt-2 text-xs text-amber-700 not-italic flex items-center gap-2">
                               <img
                                 src="/images/timothy-nduva.png"
                                 alt="Timothy Nduva"
-                                className="w-6 h-6 rounded-full object-cover object-center border border-amber-500/60 shadow-xs shrink-0"
+                                className="w-6 h-6 rounded-full object-cover object-center border border-amber-500 shadow-xs shrink-0"
                               />
-                              <span className="font-semibold text-foreground">Timothy Nduva</span>
-                              <span className="text-muted-foreground">• Founder &amp; CEO</span>
+                              <span className="font-bold text-stone-900">Timothy Nduva</span>
+                              <span className="text-stone-500 font-normal">• Founder &amp; CEO</span>
                             </footer>
                           </blockquote>
                         )}
