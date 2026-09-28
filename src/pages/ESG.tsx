@@ -33,6 +33,43 @@ const ESG_IMAGES = {
   combProbe3: '/images/pollination/hive-comb-inspection-8.png',
 };
 
+// Resilient icon components to guarantee zero ReferenceError under any bundle condition
+const TreesIcon = ({ className = "w-4 h-4" }: { className?: string }) => {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M10 10v.2A3 3 0 0 1 8.9 16v0H5v0h0a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z" />
+      <path d="M7 16v6" />
+      <path d="M13 19v3" />
+      <path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5" />
+    </svg>
+  );
+};
+
+const Flower2Icon = ({ className = "w-4 h-4" }: { className?: string }) => {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M12 5a3 3 0 1 1 5.9 1.5A3 3 0 1 1 19.5 12a3 3 0 1 1-1.5 5.9A3 3 0 1 1 12 19.5a3 3 0 1 1-5.9-1.5A3 3 0 1 1 4.5 12a3 3 0 1 1 1.5-5.9A3 3 0 1 1 12 5Z" />
+      <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
+    </svg>
+  );
+};
+
 const ESG = () => {
   const [downloading, setDownloading] = useState(false);
   const [liveStats, setLiveStats] = useState<any>(null);
@@ -484,7 +521,7 @@ const ESG = () => {
           <div className="rounded-[2.5rem] bg-gradient-to-br from-emerald-900/60 via-neutral-900/90 to-emerald-950/80 border border-emerald-500/30 p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
-                <Trees className="w-4 h-4 text-emerald-400" />
+                <TreesIcon className="w-4 h-4 text-emerald-400" />
                 <span>Environmental Pillar • Panda Miti Ecological Corridors</span>
               </div>
               <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-bold text-xs px-3 py-1">
@@ -529,7 +566,7 @@ const ESG = () => {
                     <span className="text-[10px] text-amber-200/70">Zero dry famine</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white/5">
-                    <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
+                    <Flower2Icon className="w-4 h-4 text-teal-400 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
                     <span className="text-[10px] text-teal-200/70">85%+ pollination</span>
                   </div>

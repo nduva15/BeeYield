@@ -80,6 +80,10 @@ export const beePollinationData: Record<string, PollinationCropDetail> = {
     estimatedMarketValueUsdBn: 4.6,
     image: "/images/pollination/mango-panicles-close-bloom.png",
     galleryImages: [
+      "/images/pollination/mango-tree-dense-pink-blossoms.jpg",
+      "/images/pollination/orchard-panorama-mango-citrus-baobab.jpg",
+      "/images/pollination/mango-bloom-panicles-groundcover.jpg",
+      "/images/pollination/mango-orchard-flowering-canopy.jpg",
       "/images/pollination/mango-panicles-close-bloom.png",
       "/images/pollination/mango-orchard-pink-panicles.png",
       "/images/pollination/mango-tree-full-blossom.png",
@@ -160,6 +164,8 @@ export const beePollinationData: Record<string, PollinationCropDetail> = {
     estimatedMarketValueUsdBn: 2.8,
     image: "/images/pollination/citrus-bloom-buds-closeup.jpg",
     galleryImages: [
+      "/images/pollination/citrus-mango-orchard-slope.jpg",
+      "/images/pollination/orchard-panorama-mango-citrus-baobab.jpg",
       "/images/pollination/citrus-bloom-buds-closeup.jpg",
       "/images/pollination/citrus-bloom-branch-detail.jpg",
       "/images/pollination/citrus-tree-canopy-closeup.jpg",
