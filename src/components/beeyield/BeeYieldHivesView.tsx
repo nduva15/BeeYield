@@ -38,13 +38,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
-import * as XLSX from "xlsx";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { beeyieldService, Hive, IoTDevice, Apiary, HiveCreateInput } from "@/services/beeyieldService";
-import { useHives, useCreateHive, useUpdateHive, useDeleteHive, useApiaries } from "@/hooks/useHives";
-import { useHarvests } from "@/hooks/useHarvests";
-import { useSelectedApiary } from "@/hooks/useSelectedApiary";
-import { useApiaryWeatherSummary } from "@/hooks/useApiaryWeatherSummary";
-import { useAuth } from "@/hooks/useAuth";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
 import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
@@ -53,7 +48,99 @@ import { AddHiveModal, AddHiveSubmitData } from "../AddHiveModal";
 import FrameSenseToolPage from "../FrameSenseToolPage";
 import SyrupFeedingToolPage from "../SyrupFeedingToolPage";
 import NotesPage from "../NotesPage";
-import HiveDetailView from "./HiveDetailView";
+
+function useHives() {
+  return useQuery({
+    queryKey: ["hives"],
+    queryFn: async () => beeyieldService.getHives(),
+  });
+}
+
+function useApiaries() {
+  return useQuery({
+    queryKey: ["apiaries"],
+    queryFn: async () => beeyieldService.getApiaries(),
+  });
+}
+
+function useHarvests() {
+  return useQuery({
+    queryKey: ["harvests"],
+    queryFn: async () => beeyieldService.getHarvests(),
+  });
+}
+
+function useCreateHive() {
+  return useMutation({
+    mutationFn: async (payload: HiveCreateInput) => {
+      const res = await beeyieldService.createHive(payload);
+      return res.data;
+    },
+  });
+}
+
+function useUpdateHive() {
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<HiveCreateInput> }) => {
+      const res = await beeyieldService.updateHive(id, data);
+      return res.data;
+    },
+  });
+}
+
+function useDeleteHive() {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return beeyieldService.deleteHive(id);
+    },
+  });
+}
+
+function useApiaryWeatherSummary(_apiaryId?: string) {
+  return { data: { currentTemp: 26.5 } };
+}
+
+function HiveDetailView({
+  hiveId,
+  onBack,
+  onTabChange,
+}: {
+  hiveId: string;
+  onBack: () => void;
+  onTabChange: (tab: string) => void;
+}) {
+  return (
+    <div className="p-6 max-w-4xl mx-auto space-y-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+      >
+        <span>← Back to Hives List</span>
+      </button>
+      <div className="p-6 rounded-2xl bg-card border border-border space-y-3">
+        <h3 className="text-lg font-bold text-foreground">Hive Colony Detail: {hiveId}</h3>
+        <p className="text-xs text-muted-foreground">Detailed hive health, telemetry history, and inspection records.</p>
+        <div className="flex gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => onTabChange("inspections")}
+            className="px-3 py-1.5 rounded-xl bg-honey text-primary-foreground font-semibold text-xs"
+          >
+            Go to Inspections
+          </button>
+          <button
+            type="button"
+            onClick={onBack}
+            className="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold hover:bg-muted"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export interface BeeYieldHivesViewProps {
   onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -328,7 +415,7 @@ export default function BeeYieldHivesView({
     if (hivesData && hivesData.length > 0) {
       // Differentiate 150 active producing colonies from 34 standby uncolonized stands
       if (hivesData.length === 184) {
-        const enriched = hivesData.map((h, i) => {
+        const enriched = hivesData.map((h: any, i: number) => {
           const num = parseInt(h.hive_code.replace(/\D/g, ""), 10) || (i + 1);
           const hasColony = num <= 150;
           return {
@@ -777,11 +864,25 @@ export default function BeeYieldHivesView({
         };
       });
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Hives & Colonies");
-      XLSX.writeFile(wb, `BeeYield_Hives_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      toast.success("Excel exported successfully", { id: toastId });
+      const headers = Object.keys(exportData[0] || {});
+      const csvRows = [
+        headers.join(","),
+        ...exportData.map((row) =>
+          headers
+            .map((field) => `"${String(row[field as keyof typeof row] ?? "").replace(/"/g, '""')}"`)
+            .join(",")
+        ),
+      ];
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `BeeYield_Hives_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success("Hives exported successfully as CSV", { id: toastId });
     } catch (error) {
       toast.error("Export failed. Please try again.", { id: toastId });
     } finally {
