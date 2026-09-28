@@ -665,7 +665,7 @@ const Media = () => {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
             Photographic proof and verified dispatches across <strong>105 acres and counting</strong> in Makueni County.
-            Featuring our partner farmers across Kibarani, Kiunduani, Kavita, and Mbuinzau.
+            Featuring our partner farmers across Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
           </p>
 
           {/* Quick Filter Navigation Buttons */}
@@ -749,7 +749,7 @@ const Media = () => {
               Meet Our Partner Farmers in Makueni County
             </h2>
             <p className="text-sm md:text-base text-muted-foreground mt-2">
-              Exact distribution across our 105 acres and counting in Kibarani, Kiunduani, Kavita, and Mbuinzau.
+              Exact distribution across our 105 acres and counting in Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
             </p>
           </div>
 
@@ -816,7 +816,7 @@ const Media = () => {
               <span className="text-[#1B9157]">Mangoes, Citrus & Oranges, Vegetables, and Maize</span>
             </h2>
             <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
-              Photographic proof from our partner farms in Kibarani, Kiunduani, Kavita, and Mbuinzau.
+              Photographic proof from our partner farms in Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
               Every image captures our precision apiary deployments and anthesis synchronization.
             </p>
           </div>
