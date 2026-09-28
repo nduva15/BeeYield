@@ -15,6 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
+import {
+  fetchSyncedSensors,
+  saveAndSyncNewSensor,
+  deleteAndSyncSensor,
+  removeAllSensorsFully,
+  subscribeToSensorSync,
+  generateSensorUuid,
+} from "@/services/sensorSyncService";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
 type Hive = {
@@ -1346,36 +1354,34 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   };
 
   const pairBluetooth = async (name: string, id: string) => {
-    const { error } = await supabase.from("devices").insert({
-      user_id: effectiveUserId,
-      apiary_id: selApiary !== "all" ? selApiary : null,
-      hive_id: selHive || null,
-      device_kind: "vitalsensor_brood",
-      link_type: "bluetooth",
-      serial: id.slice(0, 40),
-      label: name,
-      status: "active",
-      last_seen_at: new Date().toISOString(),
-    });
-    if (error) toast.error(error.message); else void load();
+    try {
+      await saveAndSyncNewSensor(
+        {
+          id: generateSensorUuid(),
+          serial: id.slice(0, 40),
+          category: "in_hive",
+          deviceType: name || "VitalSensor Brood Core",
+          linkType: "bluetooth",
+          status: "optimal",
+          batteryPct: 98,
+          apiaryId: selApiary !== "all" ? selApiary : null,
+          hiveId: selHive || null,
+        },
+        effectiveUserId,
+      );
+      toast.success(`Bluetooth device "${name}" paired and synced across phone, laptop, and tablet! 📱💻`);
+      void load();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to pair device");
+    }
   };
 
   const removeDevice = async (id: string, serial?: string) => {
     const confirmed = await confirmAsync(`Are you sure you want to unpair and remove device "${serial || id}"?`);
     if (!confirmed) return;
 
-    try {
-      await supabase.from("devices").delete().eq("id", id);
-    } catch {}
-
-    try {
-      const storageKey = `beeyield_measurement_devices_${effectiveUserId}`;
-      const existing = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const filtered = existing.filter((d: any) => d.id !== id);
-      localStorage.setItem(storageKey, JSON.stringify(filtered));
-    } catch {}
-
-    toast.success("Device removed");
+    await deleteAndSyncSensor(id, serial || id, effectiveUserId);
+    toast.success("Device removed across all screens");
     void load();
   };
 

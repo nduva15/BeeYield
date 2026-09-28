@@ -49,6 +49,13 @@ import MarkdownRenderer from "@/components/MarkdownRenderer";
 import FrameSenseToolPage from "../FrameSenseToolPage";
 import SyrupFeedingToolPage from "../SyrupFeedingToolPage";
 import NotesPage from "../NotesPage";
+import {
+  fetchSyncedSensors,
+  saveAndSyncNewSensor,
+  deleteAndSyncSensor,
+  removeAllSensorsFully,
+  subscribeToSensorSync,
+} from "@/services/sensorSyncService";
 
 function useHives() {
   return useQuery({
@@ -448,15 +455,47 @@ export default function BeeYieldHivesView({
   }, [apiariesData]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchDevices = async () => {
       try {
-        const devs = await beeyieldService.getDevices();
-        setDevices(devs || []);
+        const devs = await fetchSyncedSensors();
+        if (!isMounted) return;
+        setDevices(
+          (devs || []).map((d) => ({
+            id: d.id,
+            device_code: d.serial,
+            device_type: d.deviceType,
+            status: d.status,
+            battery_level: d.batteryPct,
+            last_heartbeat: d.lastSeenAt,
+            hive_id: d.hiveId || undefined,
+          })) as any,
+        );
       } catch (err) {
         console.error("Failed to load devices", err);
       }
     };
-    fetchDevices();
+    void fetchDevices();
+
+    const unsubscribe = subscribeToSensorSync(null, null, (synced) => {
+      if (!isMounted) return;
+      setDevices(
+        (synced || []).map((d) => ({
+          id: d.id,
+          device_code: d.serial,
+          device_type: d.deviceType,
+          status: d.status,
+          battery_level: d.batteryPct,
+          last_heartbeat: d.lastSeenAt,
+          hive_id: d.hiveId || undefined,
+        })) as any,
+      );
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // Real-time synchronization when hives or apiaries are updated anywhere across the app
@@ -1764,18 +1803,42 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
       ) : (
         /* IoT Devices Hardware View */
         <div className="rounded-xl border border-border bg-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-honey/10 flex items-center justify-center border border-honey/20 text-honey">
                 <Cpu className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-foreground">IoT Telemetry Hardware Registry</h3>
-                <p className="text-xs text-muted-foreground">
-                  Monitored telemetry sensor nodes, battery levels, and telemetry heartbeat
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-sm font-bold text-foreground">IoT Telemetry Hardware Registry</h3>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Cross-Device Real-time Sync Active (Phone · Laptop · Tablet)
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {devices.length === 0
+                    ? "0 sensors connected · Cloud database and all screens synchronized"
+                    : `${devices.length} hardware nodes streaming live telemetry · Synced on phone, laptop, and tablet`}
                 </p>
               </div>
             </div>
+            {devices.length > 0 && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const confirmed = window.confirm("Are you sure you want to remove ALL connected sensors fully across your account?");
+                  if (!confirmed) return;
+                  await removeAllSensorsFully();
+                  setDevices([]);
+                  toast.success("All connected sensors have been completely removed across phone, laptop, and tablet.");
+                }}
+                className="px-3.5 py-1.5 rounded-xl border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Remove All Sensors</span>
+              </button>
+            )}
           </div>
 
           <div className="overflow-x-auto">
