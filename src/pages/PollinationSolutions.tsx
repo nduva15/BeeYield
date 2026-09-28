@@ -115,18 +115,18 @@ const COMB_COLONY_SLIDES: SlideItem[] = [
 
 const InHiveHardwareSlideshow = () => {
   return (
-    <section className="py-24 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
+    <section className="py-24 bg-[#FAFAF8] text-neutral-900 relative overflow-hidden border-y border-neutral-200/80">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-14">
           <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider rounded-full">
             In-Hive Telemetry & Field Hardware
           </Badge>
-          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4 text-neutral-900">
             Deployed Devices <span className="text-beeyield-green">&amp; Active Colonies</span>
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-5 rounded-full" />
-          <p className="text-neutral-400 text-sm md:text-base leading-relaxed">
+          <p className="text-neutral-600 text-sm md:text-base leading-relaxed">
             4 specialized 3-photo slideshows showing solar LTE gateways, continuous load-cell scales, in-hive ApiSense sensors, and comb disease detection.
           </p>
         </div>
@@ -138,28 +138,28 @@ const InHiveHardwareSlideshow = () => {
             badge="Hardware Grid"
             title="Solar Gateways & Stands"
             subtitle="Autonomous transmission hubs"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={SCALES_TELEMETRY_SLIDES}
             badge="Scale Telemetry"
             title="Continuous Hive Scales"
             subtitle="Sub-milligram load cells"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={APISENSE_BEE_SLIDES}
             badge="In-Hive Probes"
             title="ApiSense Bio-Sensors"
             subtitle="Live bee interaction on PCB"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={COMB_COLONY_SLIDES}
             badge="Disease Screening"
             title="Comb Disease Detection"
             subtitle="Brood pathology & bee health"
-            dark={true}
+            dark={false}
           />
         </div>
       </div>

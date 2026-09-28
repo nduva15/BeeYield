@@ -264,42 +264,6 @@ const CropsWePollinate = () => {
 
 
 
-      
-      {/* ───────────────────────────────────────────────────────────────
-          EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT ON CROP POLLINATION
-      ─────────────────────────────────────────────────────────────── */}
-      <section className="py-20 lg:py-24 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1B9157]/20 via-transparent to-transparent pointer-events-none" />
-          <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#1B9157]/15 border border-[#1B9157]/30 text-emerald-400 text-xs font-bold uppercase tracking-widest mb-8">
-                  <Quote className="w-3.5 h-3.5 fill-[#1B9157]/20" />
-                  Founder's Philosophy on Crop Pollination
-              </div>
-              <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto italic">
-                  “Many plants are dependent on pollination from a pollinator.”
-              </blockquote>
-              <div className="flex items-center justify-center gap-4">
-                  <img
-                      src={TIMOTHY_PHOTO}
-                      alt="Timothy Nduva"
-                      className="w-14 h-14 rounded-full object-cover border-2 border-[#1B9157] shadow-xl"
-                  />
-                  <div className="text-left">
-                      <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
-                          Timothy Nduva
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
-                          </span>
-                      </div>
-                      <div className="text-xs sm:text-sm text-neutral-400 font-medium">
-                          BeeYield • Commercial Crop Pollination & Floral Anthesis
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
-
-
       {/* Crops Grid */}
       <section id="crops" className="py-20 bg-secondary/10">
         <div className="container mx-auto px-4">

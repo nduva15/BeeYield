@@ -278,14 +278,14 @@ const Team = () => {
              {/* ═══════════════════════════════════════════════════════════════
                  ACHIEVEMENTS — Data Points (Matching Diseases Efficiency Section)
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+            <section className="py-24 bg-[#FAFAF8] text-neutral-900 relative overflow-hidden border-y border-neutral-200/60">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5" />
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto mb-16">
-                        <Badge className="bg-white/10 text-white border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                        <Badge className="bg-beeyield-green/15 text-emerald-800 border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
                             Our Impact
                         </Badge>
-                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight">Achievements So Far</h2>
+                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-neutral-900">Achievements So Far</h2>
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
@@ -301,11 +301,11 @@ const Team = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm"
+                                className="p-8 rounded-3xl bg-white border border-neutral-200/80 shadow-sm"
                             >
                                 <h3 className="text-4xl font-black text-beeyield-green mb-2">{stat.number}</h3>
-                                <p className="text-lg font-bold mb-1">{stat.label}</p>
-                                <p className="text-xs text-white/50 uppercase tracking-widest font-bold">{stat.desc}</p>
+                                <p className="text-lg font-bold mb-1 text-neutral-900">{stat.label}</p>
+                                <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">{stat.desc}</p>
                             </motion.div>
                         ))}
                     </div>

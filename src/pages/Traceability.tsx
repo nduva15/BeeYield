@@ -1507,15 +1507,15 @@ const Traceability = () => {
       </section>
 
       {/* ─── CTA ─── */}
-      <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-[#f0f7f0] to-[#e8f4e8] text-neutral-900 relative overflow-hidden border-t border-emerald-100">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6 text-neutral-900">
               Get Started with <br />
               <span className="text-beeyield-green">Verified</span> Honey Traceability
             </h2>
-            <p className="text-lg text-white/70 leading-relaxed mb-12 max-w-2xl mx-auto">
+            <p className="text-lg text-neutral-600 leading-relaxed mb-12 max-w-2xl mx-auto">
               Deploy BeeYield's hive-to-jar traceability, GPS-verified harvest records, and field logging system for compliance and operational confidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -1526,7 +1526,7 @@ const Traceability = () => {
                   traceSection?.scrollIntoView({ behavior: "smooth" });
                   traceSection?.focus();
                 }}
-                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20 border border-white/10"
+                className="h-14 px-10 bg-beeyield-green text-neutral-950 font-bold text-xs rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/20"
               >
                 <Search className="mr-2 h-4 w-4" />
                 Trace a Batch Now

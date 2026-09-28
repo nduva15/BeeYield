@@ -132,18 +132,18 @@ const COLONY_VITALITY_SLIDES: SlideItem[] = [
 /* ── Multiple 3-Photo Telemetry Slideshows Section ──────────────────── */
 const InHiveTelemetrySlideshowSection = () => {
   return (
-    <section className="py-24 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800">
+    <section className="py-24 bg-[#FAFAF8] text-neutral-900 relative overflow-hidden border-y border-neutral-200/80">
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
             Real In-Hive Hardware & Field Deployments
           </Badge>
-          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4 text-neutral-900">
             Live Telemetry <span className="text-beeyield-green">In Action</span>
           </h2>
           <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-          <p className="text-neutral-400 text-base leading-relaxed">
+          <p className="text-neutral-600 text-base leading-relaxed">
             4 curated 3-photo slideshows showcasing solar LTE gateways, continuous under-hive load-cell scales, in-hive brood sensors, and comb disease detection.
           </p>
         </div>
@@ -155,28 +155,28 @@ const InHiveTelemetrySlideshowSection = () => {
             badge="Hardware Network"
             title="Solar Gateways & Stands"
             subtitle="Autonomous transmission hubs"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={SCALES_SLIDES}
             badge="Scale Telemetry"
             title="Continuous Load Cells"
             subtitle="Sub-milligram weighing bars"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={COMB_DIAGNOSTICS_SLIDES}
             badge="In-Hive Probes"
             title="ApiSense Bio-Sensors"
             subtitle="Live bee interaction on PCB"
-            dark={true}
+            dark={false}
           />
           <ThreePhotoSlideshow
             slides={COLONY_VITALITY_SLIDES}
             badge="Disease Screening"
             title="Comb Disease Screening"
             subtitle="Early brood pathology detection"
-            dark={true}
+            dark={false}
           />
         </div>
       </div>
@@ -463,7 +463,7 @@ const PrecisionPollination = () => {
 {/* ═══════════════════════════════════════════════════════════════
           THE BEEYIELD DIFFERENCE
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-[#fbf8ef] to-[#f4f7f4] text-neutral-900 relative overflow-hidden border-y border-neutral-200/60">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
               <motion.div
@@ -479,8 +479,8 @@ const PrecisionPollination = () => {
                       Knowledge is power. <br />
                       <span className="text-beeyield-green">Data is even better.</span>
                   </h2>
-                  <p className="text-xl text-neutral-400 font-medium max-w-2xl mx-auto leading-relaxed">
-                      Knowing the exact strength of every hive in your field means pollination can be calculated using a <strong className="text-white font-bold">frames-per-acre model</strong> for a far more precise outcome. It’s accurate, efficient, and financially prudent.
+                  <p className="text-xl text-neutral-600 font-medium max-w-2xl mx-auto leading-relaxed">
+                      Knowing the exact strength of every hive in your field means pollination can be calculated using a <strong className="text-neutral-900 font-bold">frames-per-acre model</strong> for a far more precise outcome. It’s accurate, efficient, and financially prudent.
                   </p>
               </motion.div>
 
@@ -490,7 +490,7 @@ const PrecisionPollination = () => {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.1 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                      className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] border border-neutral-200 shadow-sm p-12 text-center group hover:shadow-md transition-all"
                   >
                       <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter flex items-center justify-center">
                           <Calculator className="h-20 w-20 text-beeyield-green" />
@@ -507,7 +507,7 @@ const PrecisionPollination = () => {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 }}
-                      className="bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-white/10 p-12 text-center group hover:bg-white/10 transition-all"
+                      className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] border border-neutral-200 shadow-sm p-12 text-center group hover:shadow-md transition-all"
                   >
                       <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter flex items-center justify-center">
                           <Shield className="h-20 w-20 text-amber-400" />
@@ -654,23 +654,23 @@ const PrecisionPollination = () => {
       {/* ═══════════════════════════════════════════════════════════════
           ADVANTAGE TABLE
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
+      <section className="py-24 bg-[#FAFAF8] text-neutral-900 relative overflow-hidden border-y border-neutral-200/60">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
               <div className="text-center mb-16 max-w-3xl mx-auto">
                   <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
                       Dashboard Features
                   </Badge>
-                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4">
+                  <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-neutral-900">
                       The BeeYield <span className="text-beeyield-green">Advantage</span>
                   </h2>
               </div>
 
               <div className="max-w-6xl mx-auto space-y-4">
-                  <div className="hidden md:grid md:grid-cols-3 gap-4 px-8 pb-4 border-b border-white/10">
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Metric</span>
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Technology Tracking</span>
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Pollination Benefit</span>
+                  <div className="hidden md:grid md:grid-cols-3 gap-4 px-8 pb-4 border-b border-neutral-200">
+                      <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Metric</span>
+                      <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Technology Tracking</span>
+                      <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Pollination Benefit</span>
                   </div>
 
                   {ADVANTAGE_TABLE.map((row, index) => (
@@ -804,7 +804,7 @@ const PrecisionPollination = () => {
               <p className="text-muted-foreground mb-8">
                 Download our free guide to understand bees and how to get the most from them during pollination.
               </p>
-              <Button className="h-14 px-8 bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs rounded-2xl shadow-xl transition-all" asChild>
+              <Button className="h-14 px-8 bg-neutral-900 hover:bg-neutral-800 text-neutral-900 font-bold text-xs rounded-2xl shadow-xl transition-all" asChild>
                 <Link to="/learn">Download the Free Guide <ArrowRight className="h-4 w-4 ml-2" /></Link>
               </Button>
             </div>
@@ -850,17 +850,17 @@ const PrecisionPollination = () => {
       {/* ═══════════════════════════════════════════════════════════════
           FINAL CTA
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 lg:py-32 bg-neutral-900 text-center relative overflow-hidden">
+      <section className="py-24 lg:py-32 bg-gradient-to-b from-[#f0f7f0] to-[#e8f4e8] text-center relative overflow-hidden border-t border-emerald-100">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
         <div className="container mx-auto px-4 max-w-3xl relative z-10">
           <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-8 px-5 py-2 font-semibold text-[10px] rounded-full">
              Ready to Transform Your Pollination?
           </Badge>
-          <h2 className="text-4xl lg:text-5xl font-bold mb-8 text-white tracking-tight">Ready to work with us?</h2>
-          <p className="text-xl text-neutral-400 mb-12 font-medium max-w-xl mx-auto leading-relaxed">
+          <h2 className="text-4xl lg:text-5xl font-bold mb-8 text-neutral-900 tracking-tight">Ready to work with us?</h2>
+          <p className="text-xl text-neutral-600 mb-12 font-medium max-w-xl mx-auto leading-relaxed">
             Fill in some basic information — just your name and the best way to contact you and we'll be in touch shortly.
           </p>
-          <Button size="lg" className="h-16 px-12 bg-beeyield-green text-neutral-900 font-bold text-sm rounded-2xl hover:bg-white shadow-[0_0_40px_rgba(45,168,79,0.3)] transition-all hover:scale-[1.02] active:scale-95" asChild>
+          <Button size="lg" className="h-16 px-12 bg-beeyield-green text-neutral-900 font-bold text-sm rounded-2xl hover:bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-95" asChild>
             <Link to="/contact">Contact Us Today <ArrowRight className="ml-2 h-5 w-5" /></Link>
           </Button>
         </div>
