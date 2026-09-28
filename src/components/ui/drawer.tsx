@@ -21,7 +21,7 @@ const DrawerOverlay = React.forwardRef<
   <DrawerPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 transform-gpu will-change-[opacity] select-none data-[state=closed]:pointer-events-none",
+      "fixed inset-0 z-50 bg-black/70 select-none touch-manipulation data-[state=closed]:pointer-events-none duration-150",
       className,
     )}
     {...props}
