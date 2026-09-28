@@ -119,6 +119,32 @@ export function ShopAuthProvider({ children }: { children: ReactNode }) {
   });
   const [loading, setLoading] = useState(true);
 
+  const buildCustomerProfileFromUser = useCallback((user: User) => {
+    const meta = user.user_metadata || {};
+    const profile: ShopCustomerProfile = {
+      id: user.id,
+      email: user.email || null,
+      full_name: meta.full_name || meta.name || user.email?.split("@")[0] || "Shop Customer",
+      phone: meta.phone || "",
+      role: meta.role || "customer",
+      avatar_url: meta.avatar_url || null,
+      shipping_address: meta.shipping_address || (meta.city ? {
+        street: meta.street || "",
+        apartment: meta.apartment || "",
+        city: meta.city || "Nairobi",
+        county: meta.county || "Nairobi",
+        postal_code: meta.postal_code || "",
+      } : undefined),
+      company_name: meta.company_name,
+      created_at: user.created_at,
+    };
+
+    setShopUser(profile);
+    try {
+      localStorage.setItem(STORAGE_KEY_SHOP_USER, JSON.stringify(profile));
+    } catch {}
+  }, []);
+
   // Sync Supabase Shop session on mount and auth changes
   useEffect(() => {
     if (!supabaseShop) {
@@ -166,33 +192,7 @@ export function ShopAuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
-
-  const buildCustomerProfileFromUser = (user: User) => {
-    const meta = user.user_metadata || {};
-    const profile: ShopCustomerProfile = {
-      id: user.id,
-      email: user.email || null,
-      full_name: meta.full_name || meta.name || user.email?.split("@")[0] || "Shop Customer",
-      phone: meta.phone || "",
-      role: meta.role || "customer",
-      avatar_url: meta.avatar_url || null,
-      shipping_address: meta.shipping_address || (meta.city ? {
-        street: meta.street || "",
-        apartment: meta.apartment || "",
-        city: meta.city || "Nairobi",
-        county: meta.county || "Nairobi",
-        postal_code: meta.postal_code || "",
-      } : undefined),
-      company_name: meta.company_name,
-      created_at: user.created_at,
-    };
-
-    setShopUser(profile);
-    try {
-      localStorage.setItem(STORAGE_KEY_SHOP_USER, JSON.stringify(profile));
-    } catch {}
-  };
+  }, [buildCustomerProfileFromUser]);
 
   const signIn = async ({ email, password }: { email: string; password: string }): Promise<{ success: boolean; error?: string }> => {
     setLoading(true);

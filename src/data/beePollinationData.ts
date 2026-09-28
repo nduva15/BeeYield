@@ -80,7 +80,8 @@ export const beePollinationData: Record<string, PollinationCropDetail> = {
     estimatedMarketValueUsdBn: 4.6,
     image: "/images/pollination/mango-panicles-close-bloom.png",
     galleryImages: [
-      "/images/pollination/mango-tree-dense-pink-blossoms.jpg",
+      "/images/pollination/mango-pollination-fruitlet-set.jpg",
+      "/images/pollination/mango-tree-dense-pink-blossoms.png",
       "/images/pollination/orchard-panorama-mango-citrus-baobab.jpg",
       "/images/pollination/mango-bloom-panicles-groundcover.jpg",
       "/images/pollination/mango-orchard-flowering-canopy.jpg",
