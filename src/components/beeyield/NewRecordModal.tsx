@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
-import AddApiaryModal from "@/components/AddApiaryModal";
-import { AddHiveModal } from "@/components/AddHiveModal";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+
+const AddApiaryModal = lazy(() => import("@/components/AddApiaryModal"));
+const AddHiveModal = lazy(() =>
+  import("@/components/AddHiveModal").then((m) => ({
+    default: m.default || m.AddHiveModal,
+  }))
+);
 
 export interface NewRecordModalProps {
   isOpen: boolean;
@@ -33,32 +38,32 @@ export function NewRecordModal({
 
   if (!isOpen) return null;
 
-  if (activeTab === "apiary") {
-    return (
-      <AddApiaryModal
-        isOpen={isOpen}
-        onClose={onClose}
-        onSwitchToHive={() => setActiveTab("hive")}
-        onSuccess={(newApiary) => {
-          onSuccess?.(newApiary);
-        }}
-      />
-    );
-  }
-
   return (
-    <AddHiveModal
-      isOpen={isOpen}
-      onClose={onClose}
-      onSwitchToApiary={() => setActiveTab("apiary")}
-      onSuccess={(newHive) => {
-        onSuccess?.(newHive);
-      }}
-      apiaries={apiaries}
-      apiary={apiary}
-      suggestedCode={suggestedCode}
-      scannedSerial={scannedSerial}
-    />
+    <Suspense fallback={null}>
+      {activeTab === "apiary" ? (
+        <AddApiaryModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onSwitchToHive={() => setActiveTab("hive")}
+          onSuccess={(newApiary) => {
+            onSuccess?.(newApiary);
+          }}
+        />
+      ) : (
+        <AddHiveModal
+          isOpen={isOpen}
+          onClose={onClose}
+          onSwitchToApiary={() => setActiveTab("apiary")}
+          onSuccess={(newHive) => {
+            onSuccess?.(newHive);
+          }}
+          apiaries={apiaries}
+          apiary={apiary}
+          suggestedCode={suggestedCode}
+          scannedSerial={scannedSerial}
+        />
+      )}
+    </Suspense>
   );
 }
 

@@ -426,11 +426,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {/* Quick Action: New Record Button (Pops out Apiary & Hive forms matching Inspections UI/UX) */}
         <button
           type="button"
-          onClick={() => {
-            onQuickAction?.();
-            React.startTransition(() => {
-              setNewRecordInitialTab("apiary");
-              setIsNewRecordModalOpen(true);
+          onClick={(e) => {
+            e.preventDefault();
+            // Defer heavy modal mount to keep INP well below 16ms
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                React.startTransition(() => {
+                  if (onQuickAction) {
+                    onQuickAction();
+                  } else {
+                    setNewRecordInitialTab("apiary");
+                    setIsNewRecordModalOpen(true);
+                  }
+                });
+              }, 0);
             });
           }}
           className="inline-flex items-center gap-1.5 h-10 px-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-xs hover:shadow-md transition-transform duration-150 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/30 touch-manipulation transform-gpu will-change-transform shrink-0"
@@ -731,11 +740,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       />
 
       {/* Pop-out New Record Modal (Apiaries and Hives matching Inspections UI/UX) */}
-      <NewRecordModal
-        isOpen={isNewRecordModalOpen}
-        initialTab={newRecordInitialTab}
-        onClose={() => setIsNewRecordModalOpen(false)}
-      />
+      {isNewRecordModalOpen && (
+        <NewRecordModal
+          isOpen={isNewRecordModalOpen}
+          initialTab={newRecordInitialTab}
+          onClose={() => setIsNewRecordModalOpen(false)}
+        />
+      )}
 
       {/* Pop-out Add Apiary Modal */}
       {isAddApiaryOpen && (
