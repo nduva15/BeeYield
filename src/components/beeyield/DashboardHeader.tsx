@@ -2,7 +2,6 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import {
   Home,
-  LogIn,
   Calendar,
   Calculator,
   Sprout,
@@ -242,7 +241,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           { id: "measurement-tools", label: "My Devices, USB, Bluetooth & Online", icon: Cpu },
           { id: "support", label: "Support & Tickets", icon: LifeBuoy },
           { id: "settings", label: "Settings — Control Center", icon: Settings },
-          { id: "auth", label: "Sign in / Sign up", icon: LogIn },
         ],
       },
     ],

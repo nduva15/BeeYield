@@ -1017,34 +1017,7 @@ function ShopDashboardInner({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthModalTab("signin");
-                  setIsAuthModalOpen(true);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-honey hover:bg-honey/90 text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95"
-                title="Sign in to your BeeYield Shop customer account"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthModalTab("demo");
-                  setIsAuthModalOpen(true);
-                }}
-                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold items-center gap-1 transition-all cursor-pointer active:scale-95"
-                title="Instant 1-Click Demo Buyer"
-              >
-                <Sparkles className="w-3 h-3 text-emerald-400" />
-                <span>Demo Buyer</span>
-              </button>
-            </div>
-          )}
+          ) : null}
 
           <button
             type="button"
@@ -1105,7 +1078,7 @@ function ShopDashboardInner({
       </div>
 
       {/* Guest Notice Banner */}
-      {!isShopAuthenticated && (
+      {false && (
         <div className="rounded-xl border border-honey/30 bg-honey/5 p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-honey/20 text-honey flex items-center justify-center shrink-0">
@@ -1296,7 +1269,7 @@ function ShopDashboardInner({
 
                 {/* Auth Controls in Shop Views Dropdown */}
                 <div className="pt-2 mt-1 border-t border-border/60">
-                  {shopUser ? (
+                  {shopUser && (
                     <button
                       type="button"
                       onClick={async () => {
@@ -1312,7 +1285,7 @@ function ShopDashboardInner({
                           <LogOut className="w-4 h-4" />
                         </div>
                         <div className="truncate">
-                          <p className="font-bold text-xs text-rose-500 truncate">Sign Out (Shop Account)</p>
+                          <p className="font-bold text-xs text-rose-500 truncate">Sign Out &middot; Shop Account</p>
                           <p className="text-[10px] text-muted-foreground font-normal truncate">
                             Logged in as {shopUser.full_name || shopUser.email}
                           </p>
@@ -1320,31 +1293,6 @@ function ShopDashboardInner({
                       </div>
                       <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0">
                         Sign Out
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsViewDropdownOpen(false);
-                        setAuthModalTab("signin");
-                        setIsAuthModalOpen(true);
-                      }}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-primary-foreground bg-honey hover:bg-honey/90 transition-all cursor-pointer shadow-sm"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-black/15 flex items-center justify-center text-primary-foreground flex-shrink-0">
-                          <LogIn className="w-4 h-4" />
-                        </div>
-                        <div className="truncate">
-                          <p className="font-bold text-xs truncate">Sign In to Shop</p>
-                          <p className="text-[10px] text-primary-foreground/80 font-normal truncate">
-                            Access orders, addresses & tracking
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] uppercase font-bold text-primary-foreground px-2 py-0.5 rounded-full bg-black/20 flex-shrink-0">
-                        Sign In
                       </span>
                     </button>
                   )}

@@ -65,9 +65,11 @@ function getLocalSensorStorageKey(userId: string, apiaryId?: string | null): str
 
 export function isFakeSensorDevice(item: any): boolean {
   if (!item) return true;
-  const s = String(item.serial || item.device_code || "").trim().toUpperCase();
-  const id = String(item.id || "").trim().toLowerCase();
+  const s = String(item.serial || item.device_code || item.deviceSerial || "").trim().toUpperCase();
+  const id = String(item.id || item.deviceId || "").trim().toLowerCase();
   const lbl = String(item.label || item.deviceType || item.name || item.device_type || "").trim().toLowerCase();
+  const model = String(item.model || "").trim().toLowerCase();
+
   return (
     id.startsWith("dev-vs-") ||
     id.startsWith("dev-hub-") ||
@@ -75,10 +77,18 @@ export function isFakeSensorDevice(item: any): boolean {
     id.startsWith("dev-scale-") ||
     id.startsWith("dev-tag-") ||
     id.startsWith("dev-land-") ||
-    s.startsWith("SENS-INP-001") ||
-    s.startsWith("SENS-MIC-002") ||
-    s.startsWith("SENS-LAND-01") ||
-    s.startsWith("SENS-DIS-001") ||
+    id.includes("sens-inp") ||
+    id.includes("sens-mic") ||
+    id.includes("sens-land") ||
+    id.includes("sens-dis") ||
+    s.startsWith("SENS-INP") ||
+    s.startsWith("SENS-MIC") ||
+    s.startsWith("SENS-LAND") ||
+    s.startsWith("SENS-DIS") ||
+    s.includes("SENS-INP-001") ||
+    s.includes("SENS-MIC-002") ||
+    s.includes("SENS-LAND-01") ||
+    s.includes("SENS-DIS-001") ||
     s.startsWith("SCALE-KBZ") ||
     s.startsWith("VS-KBZ") ||
     s.startsWith("HUB-KBZ") ||
@@ -93,7 +103,16 @@ export function isFakeSensorDevice(item: any): boolean {
     lbl.includes("vitalsensor brood core") ||
     lbl.includes("bio-acoustic queen mic") ||
     lbl.includes("solar microclimate hub") ||
-    lbl.includes("spectral varroa scanner")
+    lbl.includes("spectral varroa scanner") ||
+    lbl.includes("kib-001 vitalsensor") ||
+    lbl.includes("kib-002 bio-acoustic") ||
+    lbl.includes("kib-003 spectral") ||
+    lbl.includes("kibwezi solar microclimate") ||
+    model.includes("apisense vitalsensor") ||
+    model.includes("intelligent hives") ||
+    (item.temperature_c === 35.2 && item.humidity_pct === 58 && item.weight_kg === 42.6) ||
+    (item.temperature_c === 34.9 && item.humidity_pct === 55 && item.weight_kg === 39.8) ||
+    (item.temperature_c === 35.0 && item.humidity_pct === 56 && item.weight_kg === 41.2)
   );
 }
 
@@ -108,7 +127,7 @@ export async function fetchSyncedSensors(
   const uid = getEffectiveUserId(userId);
   const cacheKey = getLocalSensorStorageKey(uid, apiaryId);
 
-  // 1. Check local cache for immediate UI rendering
+  // 1. Check local cache for immediate UI rendering and purge any fake items from local storage
   let cached: SyncedSensorDevice[] = [];
   if (typeof window !== "undefined") {
     try {
@@ -116,7 +135,12 @@ export async function fetchSyncedSensors(
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
+          const hadFakes = parsed.some((d) => isFakeSensorDevice(d));
           cached = parsed.filter((d) => !isFakeSensorDevice(d));
+          if (hadFakes) {
+            localStorage.setItem(cacheKey, JSON.stringify(cached));
+            localStorage.setItem(`beeyield_synced_sensors_${uid}_all`, JSON.stringify(cached));
+          }
         }
       }
     } catch {}
@@ -182,9 +206,17 @@ export async function fetchSyncedSensors(
       const { data: authData } = await supabase.auth.getUser();
       const metaSensors = authData?.user?.user_metadata?.connected_sensors;
       if (Array.isArray(metaSensors)) {
+        const hadFakes = metaSensors.some((s: any) => isFakeSensorDevice(s));
         const filtered = (apiaryId && apiaryId !== "all"
           ? metaSensors.filter((s: any) => s.apiaryId === apiaryId)
           : metaSensors).filter((s: any) => !isFakeSensorDevice(s));
+
+        if (hadFakes) {
+          const allClean = metaSensors.filter((s: any) => !isFakeSensorDevice(s));
+          try {
+            void supabase.auth.updateUser({ data: { connected_sensors: allClean } });
+          } catch {}
+        }
 
         if (typeof window !== "undefined") {
           try {

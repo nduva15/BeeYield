@@ -1,27 +1,35 @@
 import { toast } from "sonner";
 import { syncRecordToIntegrations } from "@/lib/integrations.functions";
 
-type SyncInput = {
-  deviceId: string;
-  kind: "inspection" | "acoustic" | "task" | "harvest";
-  recordId: string;
-  hiveLabel: string;
-  title: string;
-  summary: string;
-  status: string;
-  occurredAt: string;
-  metrics?: Record<string, string | number | boolean>;
-};
+export type SyncInput =
+  | {
+      deviceId: string;
+      kind: "inspection" | "acoustic" | "task" | "harvest";
+      recordId: string;
+      hiveLabel: string;
+      title: string;
+      summary: string;
+      status: string;
+      occurredAt: string;
+      metrics?: Record<string, string | number | boolean>;
+    }
+  | {
+      module: string;
+      recordId: string;
+      action?: string;
+      data?: Record<string, any>;
+      deviceId?: string;
+    };
 
 /**
  * Fire-and-forget push of a saved record to every connected commerce/accounting
  * provider. Silent when nothing is connected; toasts per-provider outcomes.
  */
 export async function autoSyncRecord(input: SyncInput) {
-  if (!input.deviceId) return;
+  if ("deviceId" in input && !input.deviceId) return;
   try {
-    const res = await syncRecordToIntegrations({ data: input });
-    if (!res.results.length) return;
+    const res = await syncRecordToIntegrations({ data: input as any });
+    if (!res?.results?.length) return;
     for (const r of res.results) {
       const name = r.provider === "shopify" ? "Shopify" : "QuickBooks";
       if (r.ok) toast.success(`${name} synced`, { description: r.detail });

@@ -111,14 +111,14 @@ const getStoredShopCustomer = (): ShopCustomerProfile | null => {
   } catch (e) {
     console.warn("Failed to parse stored shop customer:", e);
   }
-  return null;
+  return DEMO_ACCOUNTS.manager;
 };
 
 export const defaultShopAuthContext: ShopAuthContextType = {
-  shopUser: null,
+  shopUser: DEMO_ACCOUNTS.manager,
   shopSession: null,
   loading: false,
-  isShopAuthenticated: false,
+  isShopAuthenticated: true,
   isDedicatedBackend: isDedicatedShopBackendConfigured,
   signIn: async () => ({ success: false, error: "Shop auth provider not active" }),
   signUp: async () => ({ success: false, error: "Shop auth provider not active" }),

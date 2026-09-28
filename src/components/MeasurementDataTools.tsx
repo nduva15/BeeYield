@@ -324,7 +324,7 @@ function ScanField({ label, hint, value, onChange }: { label: string; hint: stri
       <div className="flex items-end gap-2">
         <div className="flex-1">
           <Label className="text-xs font-semibold">{label}</Label>
-          <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Scan or type device serial (e.g. SENS-INP-001)" className="mt-1 font-mono uppercase" />
+          <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Scan or type device serial (e.g. SN-8842-X)" className="mt-1 font-mono uppercase" />
         </div>
         <button
           type="button"
@@ -1193,7 +1193,6 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
   const [selApiary, setSelApiary] = useState<string>("all");
   const [selHive, setSelHive] = useState<string>("");
-  const [loading, setLoading] = useState(false);
 
   // Hive filtering & search states
   const [hiveSearch, setHiveSearch] = useState<string>("");
@@ -1212,7 +1211,6 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   } | null>(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
     let a: any = { data: [] };
     let h: any = { data: [] };
     let d: any = { data: [] };
@@ -1269,7 +1267,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     }
 
-    // 1. Proactively purge ANY legacy fake/mock devices from Supabase database
+    // 1. Proactively purge ANY legacy fake/mock devices and fake measurements from Supabase database
     try {
       const fakeFromDb = ((d.data as Device[]) ?? []).filter((item) => isFakeSensorDevice(item));
       if (fakeFromDb.length > 0) {
@@ -1283,50 +1281,80 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       void (supabase as any)
         .from("devices")
         .delete()
-        .or("serial.ilike.SENS-INP-001%,serial.ilike.SENS-MIC-002%,serial.ilike.SENS-LAND-01%,serial.ilike.SENS-DIS-001%,serial.ilike.SCALE-KBZ%,serial.ilike.VS-KBZ%,serial.ilike.HUB-KBZ%,serial.ilike.VARROA-KBZ%");
+        .or("serial.ilike.SENS-INP%,serial.ilike.SENS-MIC%,serial.ilike.SENS-LAND%,serial.ilike.SENS-DIS%,serial.ilike.SCALE-KBZ%,serial.ilike.VS-KBZ%,serial.ilike.HUB-KBZ%,serial.ilike.VARROA-KBZ%");
+
+      void (supabase as any)
+        .from("device_measurements")
+        .delete()
+        .or("device_id.ilike.dev-vs-%,device_id.ilike.dev-hub-%,device_id.ilike.dev-dis-%,device_id.ilike.dev-scale-%,device_id.ilike.SENS-INP%,device_id.ilike.SENS-MIC%,device_id.ilike.SENS-LAND%,device_id.ilike.SENS-DIS%");
     } catch {}
 
     // 2. Clean out fake devices and fake bindings from localStorage across ALL keys
     try {
-      for (let i = localStorage.length - 1; i >= 0; i--) {
-        const k = localStorage.key(i);
-        if (!k) continue;
-        if (k.includes("devices") || k.includes("sensors") || k.includes("sensor")) {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) {
-                const cleaned = parsed.filter((item: any) => !isFakeSensorDevice(item));
-                if (cleaned.length > 0) {
-                  localStorage.setItem(k, JSON.stringify(cleaned));
-                } else {
-                  localStorage.removeItem(k);
-                }
-              }
-            }
-          } catch {}
-        }
-        if (k.includes("hives") || k.includes("apiaries")) {
-          try {
-            const raw = localStorage.getItem(k);
-            if (raw) {
-              const parsed = JSON.parse(raw);
-              if (Array.isArray(parsed)) {
-                let modified = false;
-                const cleaned = parsed.map((item: any) => {
-                  if (item.sensorSerial && isFakeSensorDevice({ serial: item.sensorSerial })) {
-                    modified = true;
-                    return { ...item, sensorSerial: undefined, hasSensor: false, has_sensors: false, deviceCategory: undefined, deviceType: undefined };
+      if (typeof window !== "undefined") {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (!k) continue;
+          if (
+            k.includes("devices") ||
+            k.includes("sensors") ||
+            k.includes("sensor") ||
+            k.includes("measurements") ||
+            k.includes("telemetry") ||
+            k.includes("hives") ||
+            k.includes("apiaries")
+          ) {
+            try {
+              const raw = localStorage.getItem(k);
+              if (raw) {
+                if (
+                  raw.includes("SENS-INP") ||
+                  raw.includes("SENS-MIC") ||
+                  raw.includes("SENS-LAND") ||
+                  raw.includes("SENS-DIS") ||
+                  raw.includes("VS-KBZ") ||
+                  raw.includes("VitalSensor Brood Core") ||
+                  raw.includes("Bio-Acoustic Queen Mic") ||
+                  raw.includes("Solar Microclimate Hub") ||
+                  raw.includes("Spectral Varroa Scanner") ||
+                  raw.includes("dev-vs-") ||
+                  raw.includes("dev-hub-") ||
+                  raw.includes("dev-dis-") ||
+                  raw.includes("dev-scale-") ||
+                  raw.includes("35.2") ||
+                  raw.includes("34.9")
+                ) {
+                  const parsed = JSON.parse(raw);
+                  if (Array.isArray(parsed)) {
+                    const cleaned = parsed
+                      .filter((item: any) => !isFakeSensorDevice(item))
+                      .map((item: any) => {
+                        if (item && item.sensorSerial && isFakeSensorDevice({ serial: item.sensorSerial })) {
+                          return {
+                            ...item,
+                            sensorSerial: undefined,
+                            hasSensor: false,
+                            has_sensors: false,
+                            deviceCategory: undefined,
+                            deviceType: undefined,
+                          };
+                        }
+                        return item;
+                      });
+                    if (cleaned.length > 0) {
+                      localStorage.setItem(k, JSON.stringify(cleaned));
+                    } else {
+                      localStorage.removeItem(k);
+                    }
+                  } else if (parsed && typeof parsed === "object") {
+                    if (isFakeSensorDevice(parsed)) {
+                      localStorage.removeItem(k);
+                    }
                   }
-                  return item;
-                });
-                if (modified) {
-                  localStorage.setItem(k, JSON.stringify(cleaned));
                 }
               }
-            }
-          } catch {}
+            } catch {}
+          }
         }
       }
     } catch {}
@@ -1383,14 +1411,20 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
         !meas.device_id?.startsWith("dev-vs-") &&
         !meas.device_id?.startsWith("dev-hub-") &&
         !meas.device_id?.startsWith("dev-dis-") &&
-        !meas.device_id?.startsWith("dev-scale-")
+        !meas.device_id?.startsWith("dev-scale-") &&
+        !meas.device_id?.startsWith("SENS-INP") &&
+        !meas.device_id?.startsWith("SENS-MIC") &&
+        !meas.device_id?.startsWith("SENS-LAND") &&
+        !meas.device_id?.startsWith("SENS-DIS") &&
+        !(meas.temperature_c === 35.2 && meas.humidity_pct === 58) &&
+        !(meas.temperature_c === 34.9 && meas.humidity_pct === 55) &&
+        !(meas.temperature_c === 35.0 && meas.humidity_pct === 56)
     );
 
     setApiaries(apiariesData);
     setHives(hivesData);
     setDevices(finalDevices);
     setMeasurements(measurementsData);
-    setLoading(false);
   }, [effectiveUser, profile, effectiveUserId, selApiary]);
 
   useEffect(() => {
@@ -1716,12 +1750,6 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
           {/* TAB 1: MY DEVICES & REGISTERED HIVES */}
           {tab === "devices" && (
             <div className="space-y-6">
-              {loading && (
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Loading registry…
-                </p>
-              )}
-
               {/* THREE DIVERGENT DEVICE CATEGORIES OVERVIEW */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
