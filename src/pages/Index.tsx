@@ -25,7 +25,6 @@ import {
   Menu,
   Layers,
   Cpu,
-  LogIn,
   LogOut,
   ClipboardList,
   AudioLines,
@@ -748,13 +747,15 @@ export default function Index() {
           icon: SettingsIcon,
           onClick: () => setSettingsOpen(true),
         },
-        user
-          ? {
-              label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`,
-              icon: LogOut,
-              onClick: () => void signOut(),
-            }
-          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate({ to: "/auth" as any }) },
+        ...(user
+          ? [
+              {
+                label: `Sign out${profile?.full_name ? ` (${profile.full_name})` : ""}`,
+                icon: LogOut,
+                onClick: () => void signOut(),
+              },
+            ]
+          : []),
       ],
     },
   ];

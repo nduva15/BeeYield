@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState, startTransition } from "react";
 import {
   X, ShoppingBag, Plus, Search, Trash2, CreditCard, Package, Truck,
   Loader2, Save, MapPin, RefreshCw,
@@ -19,7 +19,7 @@ import {
   LogIn, LogOut, Database, UserCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { useShopAuth } from "@/hooks/use-shop-auth";
+import { useShopAuth, ShopAuthProvider, ShopAuthContext, defaultShopAuthContext } from "@/hooks/use-shop-auth";
 import ShopAuthModal from "@/components/ShopAuthModal";
 import ShopCardWidget from "@/components/ShopCardWidget";
 import { Badge } from "@/components/ui/badge";
@@ -85,7 +85,7 @@ type TabType =
   | "profile"
   | "support";
 
-export default function ShopDashboard({
+function ShopDashboardInner({
   isOpen = true,
   onClose,
   embedded = false,
@@ -1017,34 +1017,7 @@ export default function ShopDashboard({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthModalTab("signin");
-                  setIsAuthModalOpen(true);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-honey hover:bg-honey/90 text-primary-foreground text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95"
-                title="Sign in to your BeeYield Shop customer account"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>Sign In</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthModalTab("demo");
-                  setIsAuthModalOpen(true);
-                }}
-                className="hidden sm:flex px-2.5 py-1.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold items-center gap-1 transition-all cursor-pointer active:scale-95"
-                title="Instant 1-Click Demo Buyer"
-              >
-                <Sparkles className="w-3 h-3 text-emerald-400" />
-                <span>Demo Buyer</span>
-              </button>
-            </div>
-          )}
+          ) : null}
 
           <button
             type="button"
@@ -1104,45 +1077,6 @@ export default function ShopDashboard({
         </div>
       </div>
 
-      {/* Guest Notice Banner */}
-      {!isShopAuthenticated && (
-        <div className="rounded-xl border border-honey/30 bg-honey/5 p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-honey/20 text-honey flex items-center justify-center shrink-0">
-              <UserCheck className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">
-                Browsing as Guest · Sign in for synchronized shop orders, live tracking & addresses
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                Your shop account is authenticated separately from BeeYield Apiary management in an isolated database partition.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-            <button
-              type="button"
-              onClick={() => {
-                setAuthModalTab("signin");
-                setIsAuthModalOpen(true);
-              }}
-              className="px-3 py-1.5 rounded-lg bg-honey hover:bg-honey/90 text-primary-foreground text-xs font-bold transition-all shadow-xs"
-            >
-              Sign In to Store
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                signInDemoCustomer("retail");
-              }}
-              className="px-3 py-1.5 rounded-lg border border-border hover:bg-card text-xs font-semibold text-foreground transition-all"
-            >
-              1-Click Demo
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 3. Stats Grid Matching InspectionsPage */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1252,16 +1186,22 @@ export default function ShopDashboard({
                       role="option"
                       aria-selected={isSelected}
                       onClick={() => {
-                        setActiveTab(t.id);
                         setIsViewDropdownOpen(false);
+                        requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            startTransition(() => {
+                              setActiveTab(t.id);
+                            });
+                          }, 0);
+                        });
                       }}
-                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer ${
+                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer touch-manipulation active:scale-[0.99] ${
                         isSelected
                           ? "bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/40 shadow-xs"
                           : "hover:bg-muted/60 text-foreground hover:text-honey border border-transparent"
                       }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 pointer-events-none select-none">
                         <div
                           className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isSelected
@@ -1289,62 +1229,47 @@ export default function ShopDashboard({
                           <p className="text-[11px] text-muted-foreground line-clamp-1">{t.description}</p>
                         </div>
                       </div>
-                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0 pointer-events-none select-none" />}
                     </button>
                   );
                 })}
 
                 {/* Auth Controls in Shop Views Dropdown */}
                 <div className="pt-2 mt-1 border-t border-border/60">
-                  {shopUser ? (
+                  {shopUser && (
                     <button
                       type="button"
-                      onClick={async () => {
+                      onClick={() => {
                         setIsViewDropdownOpen(false);
-                        await shopSignOut();
-                        void loadAllData();
-                        toast.success("Signed out of Shop account");
+                        requestAnimationFrame(() => {
+                          setTimeout(() => {
+                            startTransition(async () => {
+                              try {
+                                await shopSignOut();
+                                void loadAllData();
+                                toast.success("Signed out of Shop account");
+                              } catch (err) {
+                                console.error("Sign out error:", err);
+                              }
+                            });
+                          }, 0);
+                        });
                       }}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer"
+                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.99]"
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0 pointer-events-none select-none">
                         <div className="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-500 flex-shrink-0">
                           <LogOut className="w-4 h-4" />
                         </div>
                         <div className="truncate">
-                          <p className="font-bold text-xs text-rose-500 truncate">Sign Out (Shop Account)</p>
+                          <p className="font-bold text-xs text-rose-500 truncate">Sign Out &middot; Shop Account</p>
                           <p className="text-[10px] text-muted-foreground font-normal truncate">
                             Logged in as {shopUser.full_name || shopUser.email}
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0 pointer-events-none select-none">
                         Sign Out
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsViewDropdownOpen(false);
-                        setAuthModalTab("signin");
-                        setIsAuthModalOpen(true);
-                      }}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-primary-foreground bg-honey hover:bg-honey/90 transition-all cursor-pointer shadow-sm"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-8 h-8 rounded-lg bg-black/15 flex items-center justify-center text-primary-foreground flex-shrink-0">
-                          <LogIn className="w-4 h-4" />
-                        </div>
-                        <div className="truncate">
-                          <p className="font-bold text-xs truncate">Sign In to Shop</p>
-                          <p className="text-[10px] text-primary-foreground/80 font-normal truncate">
-                            Access orders, addresses & tracking
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] uppercase font-bold text-primary-foreground px-2 py-0.5 rounded-full bg-black/20 flex-shrink-0">
-                        Sign In
                       </span>
                     </button>
                   )}
@@ -3645,4 +3570,16 @@ export default function ShopDashboard({
       </div>
     </div>
   );
+}
+
+export default function ShopDashboard(props: ShopDashboardProps) {
+  const ctx = useContext(ShopAuthContext);
+  if (!ctx || ctx === defaultShopAuthContext) {
+    return (
+      <ShopAuthProvider>
+        <ShopDashboardInner {...props} />
+      </ShopAuthProvider>
+    );
+  }
+  return <ShopDashboardInner {...props} />;
 }

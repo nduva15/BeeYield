@@ -102,21 +102,64 @@ const DEMO_ACCOUNTS: Record<string, ShopCustomerProfile> = {
   },
 };
 
-const ShopAuthContext = createContext<ShopAuthContextType | null>(null);
+const getStoredShopCustomer = (): ShopCustomerProfile | null => {
+  try {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY_SHOP_USER);
+      if (stored) return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn("Failed to parse stored shop customer:", e);
+  }
+  return DEMO_ACCOUNTS.manager;
+};
 
-export function ShopAuthProvider({ children }: { children: ReactNode }) {
-  const [shopSession, setShopSession] = useState<Session | null>(null);
-  const [shopUser, setShopUser] = useState<ShopCustomerProfile | null>(() => {
+export const defaultShopAuthContext: ShopAuthContextType = {
+  shopUser: DEMO_ACCOUNTS.manager,
+  shopSession: null,
+  loading: false,
+  isShopAuthenticated: true,
+  isDedicatedBackend: isDedicatedShopBackendConfigured,
+  signIn: async () => ({ success: false, error: "Shop auth provider not active" }),
+  signUp: async () => ({ success: false, error: "Shop auth provider not active" }),
+  signOut: async () => {
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(STORAGE_KEY_SHOP_USER);
+      }
+      if (supabaseShop) {
+        await supabaseShop.auth.signOut();
+      }
+    } catch {}
+  },
+  signInDemoCustomer: (type = "retail") => {
+    const acc = DEMO_ACCOUNTS[type] || DEMO_ACCOUNTS.retail;
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_SHOP_USER, JSON.stringify(acc));
+    }
+  },
+  updateProfile: async (data: Partial<ShopCustomerProfile>) => {
     try {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_SHOP_USER);
-        if (stored) return JSON.parse(stored);
+        if (stored) {
+          const current = JSON.parse(stored);
+          const updated = { ...current, ...data };
+          localStorage.setItem(STORAGE_KEY_SHOP_USER, JSON.stringify(updated));
+          return true;
+        }
       }
-    } catch (e) {
-      console.warn("Failed to parse stored shop customer:", e);
-    }
-    return null;
-  });
+    } catch {}
+    return false;
+  },
+  refreshShopUser: async () => {},
+};
+
+export const ShopAuthContext = createContext<ShopAuthContextType>(defaultShopAuthContext);
+
+export function ShopAuthProvider({ children }: { children: ReactNode }) {
+  const [shopSession, setShopSession] = useState<Session | null>(null);
+  const [shopUser, setShopUser] = useState<ShopCustomerProfile | null>(() => getStoredShopCustomer());
   const [loading, setLoading] = useState(true);
 
   const buildCustomerProfileFromUser = useCallback((user: User) => {
@@ -453,10 +496,15 @@ export function ShopAuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useShopAuth() {
+export function useShopAuth(): ShopAuthContextType {
   const ctx = useContext(ShopAuthContext);
-  if (!ctx) {
-    throw new Error("useShopAuth must be used within a ShopAuthProvider");
+  if (!ctx || ctx === defaultShopAuthContext) {
+    const stored = getStoredShopCustomer();
+    return {
+      ...(ctx || defaultShopAuthContext),
+      shopUser: ctx?.shopUser ?? stored,
+      isShopAuthenticated: Boolean(ctx?.shopUser ?? stored),
+    };
   }
   return ctx;
 }
