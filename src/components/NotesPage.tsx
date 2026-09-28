@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
+  ChevronLeft,
+  ChevronDown,
   Layers,
   FileText,
   ClipboardList,
@@ -20,16 +22,15 @@ import {
   CheckCircle2,
   AlertCircle,
   X,
-  ChevronDown,
-  ChevronUp,
   RefreshCw,
-  Check,
-  Thermometer,
+  Droplets,
   Mic,
   MicOff,
   CloudCheck,
   Database as DatabaseIcon,
   ImagePlus,
+  Clock,
+  ChevronUp,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -146,6 +147,9 @@ export function NotesPage({
   const [isInspectionsOpen, setIsInspectionsOpen] = useState(false);
   const [isTasksOpen, setIsTasksOpen] = useState(false);
 
+  // View Mode: "notes_list" or "add_note"
+  const [currentView, setCurrentView] = useState<"notes_list" | "add_note">("notes_list");
+
   // Apiaries & Hives State
   const [userHives, setUserHives] = useState<Array<{ id: string; name: string; hive_code?: string; apiary_name?: string; apiary_id?: string; notes?: string }>>([]);
   const [userApiaries, setUserApiaries] = useState<Array<{ id: string; name: string }>>([]);
@@ -157,10 +161,8 @@ export function NotesPage({
   const [dbSyncing, setDbSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [hiveFilter, setHiveFilter] = useState<string>("all");
 
   // Form State
-  const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formApiaryId, setFormApiaryId] = useState("");
   const [formHiveId, setFormHiveId] = useState("");
@@ -262,7 +264,7 @@ export function NotesPage({
 
   const hiveDisplayName = selectedHive.hive_code || selectedHive.name || "beeyield 001";
 
-  // FULL DATABASE SYNC: Load from Supabase (inspections, hive_notes, hives) + Backend API + LocalStorage
+  // Full Database Sync: Load notes from Supabase & Backend & LocalStorage
   const loadNotes = useCallback(async () => {
     setLoading(true);
     setDbSyncing(true);
@@ -281,7 +283,7 @@ export function NotesPage({
         } catch {}
       }
 
-      // 2. Fetch from Supabase `inspections` table (where notes are logged)
+      // 2. Fetch from Supabase `inspections` table
       try {
         let inspQuery = (supabase as any)
           .from("inspections")
@@ -321,7 +323,7 @@ export function NotesPage({
         console.warn("Supabase inspections table notes fetch non-fatal:", err);
       }
 
-      // 3. Fetch from Supabase `hive_notes` table (dedicated notes table)
+      // 3. Fetch from Supabase `hive_notes` table
       try {
         const { data: remoteData, error } = await (supabase as any)
           .from("hive_notes")
@@ -354,7 +356,7 @@ export function NotesPage({
         }
       } catch {}
 
-      // 4. Fetch from Backend API `/api/v1/inspections`
+      // 4. Fetch from Backend API
       try {
         const apiRes = await fetch("/api/v1/inspections");
         if (apiRes.ok) {
@@ -390,7 +392,6 @@ export function NotesPage({
 
       setNotes(mergedList);
 
-      // Refresh local cache
       try {
         localStorage.setItem(storageKey, JSON.stringify(mergedList));
       } catch {}
@@ -408,20 +409,12 @@ export function NotesPage({
   useEffect(() => {
     const channel = (supabase as any)
       .channel("hive_notes_realtime_sync")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "hive_notes" },
-        () => {
-          loadNotes();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "inspections" },
-        () => {
-          loadNotes();
-        }
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "hive_notes" }, () => {
+        loadNotes();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "inspections" }, () => {
+        loadNotes();
+      })
       .subscribe();
 
     return () => {
@@ -560,7 +553,7 @@ export function NotesPage({
     setFormAttachments([]);
     setAiText("");
     fetchHiveTelemetry(activeId);
-    setShowForm(true);
+    setCurrentView("add_note");
   };
 
   const handleEditNote = (note: HiveNote) => {
@@ -577,7 +570,7 @@ export function NotesPage({
     setFormTemp(note.temperature_c ?? null);
     setFormHumidity(note.humidity_pct ?? null);
     setAiText(note.ai_insights || "");
-    setShowForm(true);
+    setCurrentView("add_note");
   };
 
   const toggleTag = (tag: string) => {
@@ -690,7 +683,7 @@ Provide:
         console.warn("Supabase hive_notes table upsert notice:", err);
       }
 
-      // 2. Also record in Supabase `inspections` table for unified ledger
+      // 2. Record in Supabase `inspections` table for unified ledger
       try {
         await (supabase as any).from("inspections").upsert({
           id: notePayload.id,
@@ -737,7 +730,6 @@ Provide:
         const updated = [notePayload, ...filtered].sort(
           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
-        // Persist local cache
         const storageKey = `beeyield_notes_${user?.id || deviceId || "global"}`;
         try {
           localStorage.setItem(storageKey, JSON.stringify(updated));
@@ -746,7 +738,7 @@ Provide:
       });
 
       toast.success(editingId ? "Observation note updated" : "Observation note saved to hive history");
-      setShowForm(false);
+      setCurrentView("notes_list");
       setEditingId(null);
     } catch (err: any) {
       console.error("Save note error:", err);
@@ -832,12 +824,11 @@ Provide:
   // Filtered notes
   const filteredNotes = useMemo(() => {
     return notes.filter((n) => {
-      if (hiveFilter !== "all") {
-        const matchesHive =
-          n.hive_id === hiveFilter ||
-          n.hive_code?.toLowerCase() === hiveFilter.toLowerCase();
-        if (!matchesHive) return false;
-      }
+      const matchesHive =
+        !selectedHive.id ||
+        n.hive_id === selectedHive.id ||
+        n.hive_code?.toLowerCase() === (selectedHive.hive_code || selectedHive.name).toLowerCase();
+      if (!matchesHive) return false;
 
       if (categoryFilter !== "all" && n.category !== categoryFilter) return false;
 
@@ -853,7 +844,7 @@ Provide:
       }
       return true;
     });
-  }, [notes, hiveFilter, categoryFilter, searchQuery]);
+  }, [notes, selectedHive, categoryFilter, searchQuery]);
 
   // Stats calculation
   const stats = useMemo(() => {
@@ -864,675 +855,755 @@ Provide:
     return { total, categories, hivesCount, withAi };
   }, [notes]);
 
-  if (!isOpen && !embedded) return null;
+  if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
 
   // =========================================================================
-  // INSPECTIONS-STYLE DASHBOARD UI/UX
+  // FRAMESENSE-MATCHING FULL PAGE LAYOUT WITH INSPECTIONS BACKGROUND COLORS
   // =========================================================================
-  const mainContent = (
-    <div className="space-y-6">
-      {/* Hidden File Input for Attachments */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleAttachmentUpload}
-        multiple
-        accept="image/*"
-        className="hidden"
-      />
+  const content = (
+    <div
+      className={
+        embedded
+          ? "w-full max-w-2xl mx-auto py-2"
+          : "fixed inset-0 z-[100] bg-background text-foreground overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
+      }
+    >
+      <div
+        className={`w-full max-w-xl mx-auto flex-1 flex flex-col p-4 sm:p-6 text-foreground min-h-screen ${
+          embedded ? "h-auto min-h-0" : ""
+        }`}
+      >
+        {/* Hidden File Input for Attachments */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleAttachmentUpload}
+          multiple
+          accept="image/*"
+          className="hidden"
+        />
 
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
-            <FileText className="w-5 h-5" />
+        {/* TOP APP BAR: Matching FrameSense Screen Design */}
+        <div className="flex items-center justify-between pb-3.5 border-b border-border shrink-0">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                if (currentView === "add_note") {
+                  setCurrentView("notes_list");
+                } else {
+                  if (onClose) onClose();
+                }
+              }}
+              className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer"
+              aria-label="Back"
+            >
+              <ChevronLeft className="w-6 h-6 stroke-[2.2]" />
+            </button>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-sans">
+              Notes
+            </h2>
           </div>
-          <div>
-            <h1 className="font-display text-2xl font-bold text-foreground">
-              Observation <span className="text-honey">Notes</span>
-            </h1>
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-              <span>Personal account observation notes ledger</span>
-              {user?.email && (
-                <span className="font-mono text-honey">· {user.email}</span>
+
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                loadNotes();
+                toast.success("Synchronized with BeeYield Database");
+              }}
+              disabled={loading || dbSyncing}
+              className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+              title="Refresh Notes"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading || dbSyncing ? "animate-spin text-honey" : ""}`} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (currentView === "add_note") {
+                  setCurrentView("notes_list");
+                } else {
+                  handleOpenAddForm();
+                }
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                currentView === "add_note"
+                  ? "bg-card border border-border text-foreground hover:bg-muted"
+                  : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white shadow-md border border-emerald-500/40"
+              }`}
+            >
+              {currentView === "add_note" ? (
+                <>
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Ledger</span>
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Add Note</span>
+                </>
               )}
-            </p>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* HIVE TITLE & SELECTOR: Matching FrameSense & SyrupFeeding */}
+        <div className="flex items-center justify-between pt-3 pb-2 shrink-0">
+          <div className="relative group">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
+              {hiveDisplayName}
+              <select
+                value={selectedHive.id}
+                onChange={(e) => setSelectedHiveId(e.target.value)}
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                title="Switch Hive"
+              >
+                {userHives.map((h) => {
+                  const num = h.hive_code?.replace(/\D+/g, "") || "";
+                  const label = num ? `beeyield ${num.padStart(3, "0")}` : (h.name || h.hive_code);
+                  return (
+                    <option key={h.id} value={h.id} className="text-foreground bg-card">
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+              <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-honey transition-colors pointer-events-none" />
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-xl bg-card border border-border text-xs font-bold text-muted-foreground">
+              <strong className="text-honey">{filteredNotes.length}</strong> {filteredNotes.length === 1 ? "Note" : "Notes"}
+            </span>
+          </div>
+        </div>
+
+        {/* SUB-NAV TOOL BAR: Hive state | Syrup | FrameSense | Notes | Inspection */}
+        <div className="flex items-center justify-between border-b border-border pb-2 mb-4 shrink-0 overflow-x-auto no-scrollbar gap-2 text-center">
+          {/* 1. Hive state */}
           <button
             type="button"
             onClick={() => {
-              loadNotes();
-              toast.success("Synchronized with BeeYield Database");
+              toast.info(`${hiveDisplayName} Colony: Active & Healthy (${selectedHive.notes || "10 Frames"})`);
             }}
-            disabled={loading || dbSyncing}
-            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
-            title="Refresh Notes"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
-            <RefreshCw className={`w-4 h-4 ${loading || dbSyncing ? "animate-spin text-honey" : ""}`} />
+            <Activity className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Hive state</span>
           </button>
 
+          {/* 2. Syrup */}
           <button
+            type="button"
             onClick={() => {
-              if (showForm) {
-                setShowForm(false);
-                setEditingId(null);
+              if (onOpenSyrup) {
+                onOpenSyrup(selectedHive.id);
               } else {
-                handleOpenAddForm();
+                setIsSyrupOpen(true);
               }
             }}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
-            title="Add Observation Note"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-            <span className="text-white">Add Note</span>
+            <Droplets className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-blue-500" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Syrup</span>
           </button>
 
-          {!embedded && onClose && (
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Prominent Add Note Banner */}
-      {!showForm && (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
-              <Plus className="w-5 h-5 text-white stroke-[2.5]" />
-            </div>
-            <div>
-              <h3 className="font-display text-sm sm:text-base font-bold text-white">
-                Add Observation & Field Note Record
-              </h3>
-              <p className="text-xs text-emerald-200/90 mt-0.5">
-                Record colony behavior, queen presence, brood pattern, supers added, and BeeGPT AI analysis.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => handleOpenAddForm()}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
-          >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-            <span className="text-white">Add Observation Note</span>
-          </button>
-        </div>
-      )}
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: "Total notes", value: stats.total, icon: FileText, tone: "text-honey" },
-          { label: "Distinct categories", value: stats.categories, icon: Tag, tone: "text-emerald-400" },
-          { label: "Active hives noted", value: stats.hivesCount, icon: Layers, tone: "text-blue-400" },
-          { label: "With AI insights", value: stats.withAi, icon: Sparkles, tone: "text-amber-400" },
-        ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</span>
-              <s.icon className={`w-4 h-4 ${s.tone}`} />
-            </div>
-            <p className={`mt-2 font-display text-3xl font-bold ${s.tone}`}>{s.value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Quick Filters */}
-      <div className="rounded-xl border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <Tag className="w-4 h-4 text-honey" />
-          <span className="font-bold text-foreground">Categories:</span>
-          <span className="text-muted-foreground text-[11px]">Filter observation stream</span>
-        </div>
-        <div className="flex items-center gap-1.5 overflow-x-auto">
+          {/* 3. FrameSense */}
           <button
             type="button"
-            onClick={() => setCategoryFilter("all")}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
-              categoryFilter === "all"
-                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border-emerald-500/40 shadow-sm"
-                : "bg-background border-border text-muted-foreground hover:border-honey/40"
-            }`}
+            onClick={() => {
+              if (onOpenFrameSense) {
+                onOpenFrameSense(selectedHive.id);
+              } else {
+                setIsFrameSenseOpen(true);
+              }
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
-            All Categories ({notes.length})
+            <Layers className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-amber-500" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">FrameSense</span>
           </button>
-          {NOTE_CATEGORIES.map((cat) => {
-            const count = notes.filter((n) => n.category === cat).length;
-            return (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategoryFilter(cat)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
-                  categoryFilter === cat
-                    ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border-emerald-500/40 shadow-sm"
-                    : "bg-background border-border text-muted-foreground hover:border-honey/40"
-                }`}
-              >
-                {cat} ({count})
-              </button>
-            );
-          })}
+
+          {/* 4. Notes (Active) */}
+          <button
+            type="button"
+            onClick={() => {
+              setCurrentView("notes_list");
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-honey relative cursor-pointer group font-bold"
+          >
+            <FileText className="w-5 h-5 mb-1 text-honey group-hover:scale-105 transition-transform" />
+            <span className="text-[11px] leading-none whitespace-nowrap">Notes</span>
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-honey" />
+          </button>
+
+          {/* 5. Inspection */}
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenInspections) {
+                onOpenInspections(selectedHive.id);
+              } else {
+                setIsInspectionsOpen(true);
+              }
+            }}
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
+          >
+            <ClipboardList className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-emerald-500" />
+            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Inspection</span>
+          </button>
         </div>
-      </div>
 
-      {/* Form (Create or Edit Note) */}
-      {showForm && (
-        <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
-          <div className="bg-emerald-600 px-5 py-3.5 flex items-center justify-between text-white">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                {editingId ? <Pencil className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white stroke-[2.5]" />}
-              </div>
-              <div>
-                <h2 className="font-display text-sm sm:text-base font-bold text-white tracking-wide">
-                  {editingId ? "Edit Observation Note" : "Add Observation Note"}
-                </h2>
-                <p className="text-[11px] text-emerald-100">
-                  {editingId ? `Editing note for ${userHives.find((h) => h.id === formHiveId)?.hive_code || "selected hive"}` : "Record new colony observation, field inspection notes & AI analysis"}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                setShowForm(false);
-                setEditingId(null);
-                setAiText("");
-              }}
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
-              aria-label="Close form"
-            >
-              <X className="w-4 h-4 text-white" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSaveNote} className="p-5 space-y-4">
-            {/* Apiary & Hive Target Selectors */}
-            <div className="p-4 rounded-xl border border-border bg-background space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
-                <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Target Hive & Apiary
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  Active target: <strong className="text-emerald-600 dark:text-emerald-400">{userApiaries.find((a) => a.id === formApiaryId)?.name || CANONICAL_APIARY_NAME}</strong> • <strong className="text-honey">{userHives.find((h) => h.id === formHiveId)?.hive_code || "Hive"}</strong>
-                </span>
+        {/* MAIN BODY: Add Note Form OR Notes Ledger */}
+        {currentView === "add_note" ? (
+          /* ========================================================================= */
+          /* VIEW 1: ADD / EDIT NOTE FORM (INSPECTIONS-STYLE FORM)                      */
+          /* ========================================================================= */
+          <div className="flex-1 flex flex-col space-y-4">
+            <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
+              <div className="bg-emerald-600 px-4 py-3 flex items-center justify-between text-white">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                    {editingId ? <Pencil className="w-3.5 h-3.5 text-white" /> : <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />}
+                  </div>
+                  <div>
+                    <h2 className="font-display text-sm font-bold text-white tracking-wide">
+                      {editingId ? "Edit Observation Note" : "New Observation Note"}
+                    </h2>
+                    <p className="text-[10px] text-emerald-100">
+                      {editingId ? `Editing note for ${formHiveId ? (userHives.find((h) => h.id === formHiveId)?.hive_code || "Hive") : "selected hive"}` : "Log colony observation with voice dictation & AI"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCurrentView("notes_list")}
+                  className="p-1 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
+                  aria-label="Back to Notes"
+                >
+                  <X className="w-4 h-4 text-white" />
+                </button>
               </div>
 
-              <div className="grid md:grid-cols-4 gap-3">
-                <label className="text-xs space-y-1">
-                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
-                    <CalendarDays className="w-3 h-3 text-honey" /> Observation Date
-                  </span>
+              <form onSubmit={handleSaveNote} className="p-4 space-y-3.5">
+                {/* Target Hive Context */}
+                <div className="p-3 rounded-xl border border-border bg-background space-y-2.5">
+                  <div className="flex items-center justify-between border-b border-border/50 pb-1.5">
+                    <span className="font-bold text-[11px] text-foreground flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-emerald-500" /> Target Hive & Apiary
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      <strong className="text-honey">{userHives.find((h) => h.id === formHiveId)?.hive_code || hiveDisplayName}</strong>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <label className="space-y-0.5">
+                      <span className="text-muted-foreground text-[10px] font-semibold flex items-center gap-1">
+                        <CalendarDays className="w-3 h-3 text-honey" /> Date
+                      </span>
+                      <input
+                        type="date"
+                        value={formDate}
+                        onChange={(e) => setFormDate(e.target.value)}
+                        className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground"
+                      />
+                    </label>
+
+                    <label className="space-y-0.5">
+                      <span className="text-muted-foreground text-[10px] font-semibold flex items-center gap-1">
+                        <Tag className="w-3 h-3 text-blue-500" /> Category
+                      </span>
+                      <select
+                        value={formCategory}
+                        onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
+                        className="w-full bg-card border border-border rounded-lg px-2 py-1.5 text-xs font-semibold text-foreground truncate"
+                      >
+                        {NOTE_CATEGORIES.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Title (Optional) */}
+                <label className="text-xs space-y-0.5 block">
+                  <span className="text-muted-foreground text-[11px] font-semibold">Note Title (Optional)</span>
                   <input
-                    type="date"
-                    value={formDate}
-                    onChange={(e) => setFormDate(e.target.value)}
-                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-medium text-foreground"
+                    type="text"
+                    value={formTitle}
+                    onChange={(e) => setFormTitle(e.target.value)}
+                    placeholder="e.g. Colony temperament, brood expansion, super inspection"
+                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium text-foreground"
                   />
                 </label>
 
-                <label className="text-xs space-y-1">
-                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
-                    <MapPin className="w-3 h-3 text-emerald-500" /> Apiary Record
-                  </span>
-                  <select
-                    value={formApiaryId}
-                    onChange={(e) => setFormApiaryId(e.target.value)}
-                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
-                  >
-                    {userApiaries.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="text-xs space-y-1">
-                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
-                    <Layers className="w-3 h-3 text-honey" /> Hive Record
-                  </span>
-                  <select
-                    value={formHiveId}
-                    onChange={(e) => {
-                      setFormHiveId(e.target.value);
-                      fetchHiveTelemetry(e.target.value);
-                    }}
-                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
-                  >
-                    {userHives.map((h) => (
-                      <option key={h.id} value={h.id}>
-                        {h.hive_code || h.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="text-xs space-y-1">
-                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
-                    <Tag className="w-3 h-3 text-blue-500" /> Category
-                  </span>
-                  <select
-                    value={formCategory}
-                    onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
-                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
-                  >
-                    {NOTE_CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </div>
-
-            {/* Title (Optional) */}
-            <label className="text-xs space-y-1 block">
-              <span className="text-muted-foreground font-semibold">Note Title (Optional)</span>
-              <input
-                type="text"
-                value={formTitle}
-                onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="e.g. Colony temperament, brood expansion, super inspection"
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium text-foreground"
-              />
-            </label>
-
-            {/* Note Content with Voice Dictation */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground font-semibold">
-                  Observation Content & Field Notes
-                </span>
-                <button
-                  type="button"
-                  onClick={toggleVoiceRecording}
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
-                    isRecordingVoice
-                      ? "bg-rose-500 text-white animate-pulse"
-                      : "bg-honey/10 text-honey hover:bg-honey/20"
-                  }`}
-                  title={isRecordingVoice ? "Stop voice dictation" : "Click to speak voice note"}
-                >
-                  {isRecordingVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-                  <span>{isRecordingVoice ? "Stop Recording" : "Voice Dictation"}</span>
-                </button>
-              </div>
-
-              <textarea
-                value={formContent}
-                onChange={(e) => setFormContent(e.target.value)}
-                rows={4}
-                placeholder="Record brood pattern, queen behavior, syrup uptake, pollen stores, swarm cells, or colony health..."
-                className="w-full bg-background border border-border rounded-lg p-3 text-xs text-foreground leading-relaxed resize-y"
-              />
-            </div>
-
-            {/* Quick Observation Badges */}
-            <div className="space-y-1.5">
-              <span className="text-xs text-muted-foreground font-semibold block">
-                Quick Observation Tags
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {SUGGESTED_TAGS.map((tag) => {
-                  const active = formTags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => toggleTag(tag)}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border ${
-                        active
-                          ? "bg-emerald-600 text-white font-bold border-emerald-500/40 shadow-xs"
-                          : "bg-background border-border text-muted-foreground hover:border-honey/40"
-                      }`}
-                    >
-                      {active ? `✓ ${tag}` : `+ ${tag}`}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Photo Attachments */}
-            <div className="space-y-2 border-t border-border pt-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                  <ImagePlus className="w-3.5 h-3.5 text-honey" /> Attached Photos ({formAttachments.length})
-                </span>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-2.5 py-1 rounded-lg border border-border hover:bg-background text-xs font-semibold flex items-center gap-1.5"
-                >
-                  <Plus className="w-3.5 h-3.5" /> Attach Photo
-                </button>
-              </div>
-
-              {formAttachments.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {formAttachments.map((img, idx) => (
-                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-border group">
-                      <img src={img} alt="Attachment" className="w-full h-full object-cover" />
-                      <button
-                        type="button"
-                        onClick={() => removeAttachment(idx)}
-                        className="absolute top-1 right-1 p-1 rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors"
-                        title="Remove photo"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* BeeGPT Clinical Analysis */}
-            <div className="border-t border-border pt-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-honey flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5" /> BeeGPT Clinical Analysis
-                </span>
-                <button
-                  type="button"
-                  onClick={runAiInsights}
-                  disabled={aiLoading}
-                  className="px-3 py-1 rounded-lg bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1 disabled:opacity-50"
-                >
-                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                  <span>Run Analysis</span>
-                </button>
-              </div>
-              {aiText && (
-                <div className="rounded-lg border border-honey/30 bg-background/50 p-3 text-xs leading-relaxed">
-                  <MarkdownRenderer content={aiText} />
-                </div>
-              )}
-            </div>
-
-            {/* Save / Cancel */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingId(null);
-                  setAiText("");
-                }}
-                className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 shadow-md hover:shadow-lg transition-all border border-emerald-400/40"
-              >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4 text-white" />}
-                <span className="text-white">{editingId ? "Update Observation Note" : "Save Observation Note"}</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* Search Input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search observation notes by hive, apiary, category, tag, or content…"
-          className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm"
-        />
-      </div>
-
-      {/* Notes List / Empty State */}
-      {loading ? (
-        <div className="py-16 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
-          <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading observation notes…
-        </div>
-      ) : filteredNotes.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-8">
-          <div className="w-12 h-12 rounded-2xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-3">
-            <FileText className="w-6 h-6" />
-          </div>
-          <h3 className="font-display text-base font-bold text-foreground">
-            {notes.length === 0 ? "No Observation Notes Logged Yet" : "No Notes Match Your Filter"}
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground max-w-md mx-auto">
-            {notes.length === 0
-              ? "There are no observation notes logged for this hive yet. Record colony behavior, queen status, feeding, forage notes, and BeeGPT AI analysis."
-              : "Try clearing your search query or selecting 'All Categories' above."}
-          </p>
-          <button
-            onClick={() => handleOpenAddForm()}
-            className="mt-4 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-            <span className="text-white">Add First Observation Note</span>
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filteredNotes.map((note) => (
-            <div
-              key={note.id}
-              className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-honey/30 p-4 sm:p-5 space-y-3 shadow-xs"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                {/* Note Content with Voice Dictation */}
                 <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
-                      {note.category}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground font-semibold">
+                      Observation Content & Field Notes
                     </span>
-                    <span className="font-bold text-sm text-foreground">
-                      {note.hive_code}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-emerald-500" />
-                      {note.apiary_name}
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <CalendarDays className="w-3 h-3 text-muted-foreground" />
-                      {note.date}
-                    </span>
-                    {note.synced_to_db && (
-                      <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Live DB
-                      </span>
-                    )}
+                    <button
+                      type="button"
+                      onClick={toggleVoiceRecording}
+                      className={`text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
+                        isRecordingVoice
+                          ? "bg-rose-500 text-white animate-pulse"
+                          : "bg-honey/10 text-honey hover:bg-honey/20"
+                      }`}
+                      title={isRecordingVoice ? "Stop voice dictation" : "Click to speak voice note"}
+                    >
+                      {isRecordingVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                      <span>{isRecordingVoice ? "Stop Recording" : "Voice Dictation"}</span>
+                    </button>
                   </div>
 
-                  {note.title && (
-                    <h3 className="font-bold text-sm sm:text-base text-foreground pt-1">
-                      {note.title}
-                    </h3>
-                  )}
+                  <textarea
+                    value={formContent}
+                    onChange={(e) => setFormContent(e.target.value)}
+                    rows={4}
+                    placeholder="Record brood pattern, queen behavior, syrup uptake, pollen stores, swarm cells, or colony health..."
+                    className="w-full bg-background border border-border rounded-lg p-3 text-xs text-foreground leading-relaxed resize-y"
+                  />
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => exportNotePdf(note)}
-                    className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
-                    title="Export PDF Certificate"
-                  >
-                    <FileDown className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleEditNote(note)}
-                    className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
-                    title="Edit Note"
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDeleteConfirmId(note.id)}
-                    className="p-1.5 rounded-lg border border-border hover:border-rose-500/50 hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-colors text-xs flex items-center gap-1"
-                    title="Delete Note"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                {/* Quick Observation Badges */}
+                <div className="space-y-1">
+                  <span className="text-[11px] text-muted-foreground font-semibold block">
+                    Quick Observation Tags
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {SUGGESTED_TAGS.map((tag) => {
+                      const active = formTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-medium transition-all cursor-pointer border ${
+                            active
+                              ? "bg-emerald-600 text-white font-bold border-emerald-500/40 shadow-xs"
+                              : "bg-card border-border text-muted-foreground hover:border-honey/40"
+                          }`}
+                        >
+                          {active ? `✓ ${tag}` : `+ ${tag}`}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              {/* Note Content */}
-              <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-line bg-background/50 p-3 rounded-lg border border-border/50">
-                {note.content}
-              </p>
-
-              {/* Tags */}
-              {note.tags && note.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {note.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-secondary-foreground border border-border/40"
-                    >
-                      {tag}
+                {/* Photo Attachments */}
+                <div className="space-y-1.5 border-t border-border pt-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                      <ImagePlus className="w-3.5 h-3.5 text-honey" /> Attached Photos ({formAttachments.length})
                     </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Photos */}
-              {note.attachments && note.attachments.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {note.attachments.map((img, i) => (
-                    <a
-                      key={i}
-                      href={img}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-16 h-16 rounded-lg overflow-hidden border border-border hover:border-honey transition-colors"
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-2 py-0.5 rounded-lg border border-border hover:bg-background text-[11px] font-semibold flex items-center gap-1"
                     >
-                      <img src={img} alt="Attachment" className="w-full h-full object-cover" />
-                    </a>
-                  ))}
-                </div>
-              )}
+                      <Plus className="w-3 h-3" /> Attach Photo
+                    </button>
+                  </div>
 
-              {/* BeeGPT Clinical Insights */}
-              {note.ai_insights && (
-                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-1.5">
-                  <button
-                    type="button"
-                    onClick={() => setExpandedAiNoteId(expandedAiNoteId === note.id ? null : note.id)}
-                    className="w-full flex items-center justify-between text-xs font-bold text-amber-500 hover:text-amber-400"
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                      BeeGPT Clinical Analysis
-                    </span>
-                    {expandedAiNoteId === note.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                  </button>
-
-                  {expandedAiNoteId === note.id && (
-                    <div className="text-xs leading-relaxed text-foreground/90 pt-1 border-t border-amber-500/20">
-                      <MarkdownRenderer content={note.ai_insights} />
+                  {formAttachments.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {formAttachments.map((img, idx) => (
+                        <div key={idx} className="relative w-16 h-16 rounded-lg overflow-hidden border border-border group">
+                          <img src={img} alt="Attachment" className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeAttachment(idx)}
+                            className="absolute top-0.5 right-0.5 p-0.5 rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors"
+                            title="Remove photo"
+                          >
+                            <X className="w-2.5 h-2.5" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
-              )}
+
+                {/* BeeGPT Clinical Analysis */}
+                <div className="border-t border-border pt-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-honey flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" /> BeeGPT Clinical Analysis
+                    </span>
+                    <button
+                      type="button"
+                      onClick={runAiInsights}
+                      disabled={aiLoading}
+                      className="px-2.5 py-0.5 rounded-lg bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1 disabled:opacity-50"
+                    >
+                      {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                      <span>Run Analysis</span>
+                    </button>
+                  </div>
+                  {aiText && (
+                    <div className="rounded-lg border border-honey/30 bg-background/50 p-2.5 text-xs leading-relaxed">
+                      <MarkdownRenderer content={aiText} />
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrentView("notes_list");
+                      setEditingId(null);
+                      setAiText("");
+                    }}
+                    className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 disabled:opacity-50 shadow-md hover:shadow-lg transition-all border border-emerald-400/40"
+                  >
+                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin text-white" /> : <Save className="w-3.5 h-3.5 text-white" />}
+                    <span>{editingId ? "Update Note" : "Save Note"}</span>
+                  </button>
+                </div>
+              </form>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ) : (
+          /* ========================================================================= */
+          /* VIEW 2: NOTES LEDGER STREAM (INSPECTIONS-STYLE UI)                         */
+          /* ========================================================================= */
+          <div className="flex-1 flex flex-col space-y-3.5">
+            {/* Prominent Add Note Banner */}
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                  <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+                </div>
+                <div>
+                  <h3 className="font-display text-sm font-bold text-white">
+                    Add Observation Record
+                  </h3>
+                  <p className="text-[11px] text-emerald-200/90">
+                    Record colony behavior, queen status, and BeeGPT analysis.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleOpenAddForm()}
+                className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                <span>Add Note</span>
+              </button>
+            </div>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete observation note?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. The note will be permanently removed from this hive history.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteConfirmId && handleDeleteNote(deleteConfirmId)}
-              className="bg-rose-600 hover:bg-rose-500 text-white"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            {/* Metric Stats Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: "Total Notes", value: stats.total, icon: FileText, tone: "text-honey" },
+                { label: "Categories", value: stats.categories, icon: Tag, tone: "text-emerald-400" },
+                { label: "Hives Logged", value: stats.hivesCount, icon: Layers, tone: "text-blue-400" },
+                { label: "With AI", value: stats.withAi, icon: Sparkles, tone: "text-amber-400" },
+              ].map((s) => (
+                <div key={s.label} className="rounded-xl border border-border bg-card p-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{s.label}</span>
+                    <s.icon className={`w-3.5 h-3.5 ${s.tone}`} />
+                  </div>
+                  <p className={`mt-1 font-display text-xl font-bold ${s.tone}`}>{s.value}</p>
+                </div>
+              ))}
+            </div>
 
-      {/* Sub-nav tool modals */}
-      {isSyrupOpen && (
-        <SyrupFeedingToolPage
-          isOpen={isSyrupOpen}
-          onClose={() => setIsSyrupOpen(false)}
-          initialHiveId={selectedHive.id}
-          onOpenNotes={() => setIsSyrupOpen(false)}
-          onOpenFrameSense={() => {
-            setIsSyrupOpen(false);
-            setIsFrameSenseOpen(true);
-          }}
-        />
-      )}
+            {/* Quick Category Filters */}
+            <div className="rounded-xl border border-border bg-card p-2 flex items-center gap-1 overflow-x-auto no-scrollbar text-xs">
+              <button
+                type="button"
+                onClick={() => setCategoryFilter("all")}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
+                  categoryFilter === "all"
+                    ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs border-emerald-500/40"
+                    : "bg-background border-border text-muted-foreground hover:border-honey/40"
+                }`}
+              >
+                All ({notes.length})
+              </button>
+              {NOTE_CATEGORIES.map((cat) => {
+                const count = notes.filter((n) => n.category === cat).length;
+                if (count === 0 && notes.length > 0) return null;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`px-2 py-1 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
+                      categoryFilter === cat
+                        ? "bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-xs border-emerald-500/40"
+                        : "bg-background border-border text-muted-foreground hover:border-honey/40"
+                    }`}
+                  >
+                    {cat} ({count})
+                  </button>
+                );
+              })}
+            </div>
 
-      {isFrameSenseOpen && (
-        <FrameSenseToolPage
-          isOpen={isFrameSenseOpen}
-          onClose={() => setIsFrameSenseOpen(false)}
-          initialHiveId={selectedHive.id}
-          onOpenNotes={() => setIsFrameSenseOpen(false)}
-          onOpenSyrup={() => {
-            setIsFrameSenseOpen(false);
-            setIsSyrupOpen(true);
-          }}
-        />
-      )}
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search observation notes by category, tag, or content…"
+                className="w-full bg-card border border-border rounded-lg pl-8 pr-3 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-honey"
+              />
+            </div>
 
-      {isInspectionsOpen && (
-        <InspectionsPage
-          isOpen={isInspectionsOpen}
-          onClose={() => setIsInspectionsOpen(false)}
-        />
-      )}
+            {/* Notes List */}
+            {loading ? (
+              <div className="py-12 text-center text-muted-foreground text-xs flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading observation notes…
+              </div>
+            ) : filteredNotes.length === 0 ? (
+              <div className="py-12 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-6">
+                <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-2.5">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-sm font-bold text-foreground">
+                  {notes.length === 0 ? "No Observation Notes Logged Yet" : "No Notes Match Your Filter"}
+                </h3>
+                <p className="mt-1 text-[11px] text-muted-foreground max-w-sm mx-auto">
+                  {notes.length === 0
+                    ? `Record colony observations, brood health, and field notes for ${hiveDisplayName}.`
+                    : "Try clearing your search query or selecting 'All' above."}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => handleOpenAddForm()}
+                  className="mt-3 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                  <span>Add First Note</span>
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {filteredNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="rounded-xl border border-border bg-card p-3.5 space-y-2 hover:border-honey/30 transition-all shadow-xs"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
+                            {note.category}
+                          </span>
+                          <span className="font-bold text-xs text-foreground">
+                            {note.hive_code}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground">
+                            {note.date}
+                          </span>
+                          {note.synced_to_db && (
+                            <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
+                              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                              Live DB
+                            </span>
+                          )}
+                        </div>
 
-      {isTasksOpen && (
-        <TasksPage
-          isOpen={isTasksOpen}
-          onClose={() => setIsTasksOpen(false)}
-        />
-      )}
+                        {note.title && (
+                          <h4 className="font-bold text-xs sm:text-sm text-foreground pt-0.5">
+                            {note.title}
+                          </h4>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => exportNotePdf(note)}
+                          className="p-1 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs"
+                          title="Export PDF Certificate"
+                        >
+                          <FileDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleEditNote(note)}
+                          className="p-1 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs"
+                          title="Edit Note"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteConfirmId(note.id)}
+                          className="p-1 rounded-lg border border-border hover:border-rose-500/50 hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-colors text-xs"
+                          title="Delete Note"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Note Content */}
+                    <p className="text-xs text-foreground/90 leading-relaxed whitespace-pre-line bg-background/50 p-2.5 rounded-lg border border-border/50">
+                      {note.content}
+                    </p>
+
+                    {/* Tags */}
+                    {note.tags && note.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {note.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-muted text-muted-foreground border border-border/40"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Attached Photos */}
+                    {note.attachments && note.attachments.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-0.5">
+                        {note.attachments.map((img, i) => (
+                          <a
+                            key={i}
+                            href={img}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-14 h-14 rounded-lg overflow-hidden border border-border hover:border-honey transition-colors"
+                          >
+                            <img src={img} alt="Attachment" className="w-full h-full object-cover" />
+                          </a>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* BeeGPT Analysis */}
+                    {note.ai_insights && (
+                      <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-2.5 space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => setExpandedAiNoteId(expandedAiNoteId === note.id ? null : note.id)}
+                          className="w-full flex items-center justify-between text-[11px] font-bold text-amber-500 hover:text-amber-400"
+                        >
+                          <span className="flex items-center gap-1">
+                            <Sparkles className="w-3 h-3 text-amber-500" />
+                            BeeGPT Clinical Analysis
+                          </span>
+                          {expandedAiNoteId === note.id ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                        </button>
+
+                        {expandedAiNoteId === note.id && (
+                          <div className="text-xs leading-relaxed text-foreground/90 pt-1 border-t border-amber-500/20">
+                            <MarkdownRenderer content={note.ai_insights} />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete observation note?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. The note will be permanently removed from this hive history.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteConfirmId && handleDeleteNote(deleteConfirmId)}
+                className="bg-rose-600 hover:bg-rose-500 text-white"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Seamless Sub-nav switching */}
+        {isSyrupOpen && (
+          <SyrupFeedingToolPage
+            isOpen={isSyrupOpen}
+            onClose={() => setIsSyrupOpen(false)}
+            initialHiveId={selectedHive.id}
+            onOpenNotes={() => setIsSyrupOpen(false)}
+            onOpenFrameSense={() => {
+              setIsSyrupOpen(false);
+              setIsFrameSenseOpen(true);
+            }}
+            onOpenInspections={() => {
+              setIsSyrupOpen(false);
+              setIsInspectionsOpen(true);
+            }}
+          />
+        )}
+
+        {isFrameSenseOpen && (
+          <FrameSenseToolPage
+            isOpen={isFrameSenseOpen}
+            onClose={() => setIsFrameSenseOpen(false)}
+            initialHiveId={selectedHive.id}
+            onOpenNotes={() => setIsFrameSenseOpen(false)}
+            onOpenSyrup={() => {
+              setIsFrameSenseOpen(false);
+              setIsSyrupOpen(true);
+            }}
+            onOpenInspections={() => {
+              setIsFrameSenseOpen(false);
+              setIsInspectionsOpen(true);
+            }}
+          />
+        )}
+
+        {isInspectionsOpen && (
+          <InspectionsPage
+            isOpen={isInspectionsOpen}
+            onClose={() => setIsInspectionsOpen(false)}
+          />
+        )}
+
+        {isTasksOpen && (
+          <TasksPage
+            isOpen={isTasksOpen}
+            onClose={() => setIsTasksOpen(false)}
+          />
+        )}
+      </div>
     </div>
   );
 
-  if (embedded) {
-    return (
-      <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8">
-        <div className="max-w-6xl mx-auto">
-          {mainContent}
-        </div>
-      </div>
-    );
-  }
-
-  return createPortal(
-    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {mainContent}
-      </div>
-    </div>,
-    document.body
-  );
+  return embedded ? content : createPortal(content, document.body);
 }
 
 export default NotesPage;

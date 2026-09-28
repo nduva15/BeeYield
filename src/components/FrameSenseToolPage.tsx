@@ -337,16 +337,16 @@ export function FrameSenseToolPage({
       className={
         embedded
           ? "w-full max-w-2xl mx-auto py-2"
-          : "fixed inset-0 z-[100] bg-[#FAF5EF] dark:bg-stone-950 overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
+          : "fixed inset-0 z-[100] bg-background overflow-y-auto flex flex-col animate-in fade-in duration-150 select-text"
       }
     >
       <div
-        className={`w-full max-w-xl mx-auto flex-1 flex flex-col p-4 sm:p-6 text-[#2E2A25] dark:text-stone-100 min-h-screen ${
+        className={`w-full max-w-xl mx-auto flex-1 flex flex-col p-4 sm:p-6 text-foreground min-h-screen ${
           embedded ? "h-auto min-h-0" : ""
         }`}
       >
         {/* TOP APP BAR: Matching Screen Design */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-stone-200/80 dark:border-stone-800 shrink-0">
+        <div className="flex items-center justify-between pb-3.5 border-b border-border shrink-0">
           <div className="flex items-center gap-2.5">
             <button
               type="button"
@@ -359,12 +359,12 @@ export function FrameSenseToolPage({
                   onClose();
                 }
               }}
-              className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white rounded-xl hover:bg-stone-200/60 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+              className="p-1.5 -ml-1 text-foreground hover:text-foreground/80 rounded-xl hover:bg-card border border-border transition-colors cursor-pointer"
               aria-label="Back"
             >
               <ChevronLeft className="w-6 h-6 stroke-[2.2]" />
             </button>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-stone-900 dark:text-white font-sans">
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight text-foreground font-sans">
               FrameSense
             </h2>
           </div>
@@ -377,7 +377,7 @@ export function FrameSenseToolPage({
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 currentView === "list"
                   ? "bg-amber-500 text-stone-950 shadow-xs"
-                  : "bg-stone-200/70 dark:bg-stone-800 hover:bg-stone-200 text-stone-700 dark:text-stone-300"
+                  : "bg-card border border-border hover:bg-muted text-foreground"
               }`}
               title="View Scan History"
             >
@@ -393,7 +393,7 @@ export function FrameSenseToolPage({
         {/* HIVE TITLE & SUB-NAV BAR: Unified Hive Experience */}
         <div className="flex items-center justify-between pt-3 pb-2 shrink-0">
           <div className="relative group">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-stone-900 dark:text-white flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
               {hiveDisplayName}
               <select
                 value={selectedHive.id}
@@ -417,14 +417,14 @@ export function FrameSenseToolPage({
         </div>
 
         {/* SUB-NAV TOOL BAR: Hive state | Syrup | FrameSense | Notes | Inspection */}
-        <div className="flex items-center justify-between border-b border-stone-200/90 dark:border-stone-800 pb-2 mb-4 shrink-0 overflow-x-auto no-scrollbar gap-2 text-center">
+        <div className="flex items-center justify-between border-b border-border pb-2 mb-4 shrink-0 overflow-x-auto no-scrollbar gap-2 text-center">
           {/* 1. Hive state */}
           <button
             type="button"
             onClick={() => {
               toast.info(`${hiveDisplayName} Colony: Active & Healthy (${selectedHive.frame_count || 10} Frames)`);
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer group"
           >
             <Activity className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Hive state</span>
@@ -440,7 +440,7 @@ export function FrameSenseToolPage({
                 setIsSyrupOpen(true);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
           >
             <Droplets className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform text-blue-600 dark:text-blue-400" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Syrup</span>
@@ -452,12 +452,12 @@ export function FrameSenseToolPage({
             onClick={() => {
               setCurrentView("add_photos");
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-amber-700 dark:text-amber-400 relative cursor-pointer group font-bold"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-honey relative cursor-pointer group font-bold"
           >
-            <Layers className="w-5 h-5 mb-1 text-amber-600 dark:text-amber-400 group-hover:scale-105 transition-transform" />
+            <Layers className="w-5 h-5 mb-1 text-honey group-hover:scale-105 transition-transform" />
             <span className="text-[11px] leading-none whitespace-nowrap">FrameSense</span>
             {/* Active Amber Underline */}
-            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-honey" />
           </button>
 
           {/* 4. Notes */}
@@ -470,7 +470,7 @@ export function FrameSenseToolPage({
                 setIsNotesOpen(true);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
           >
             <FileText className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Notes</span>
@@ -486,7 +486,7 @@ export function FrameSenseToolPage({
                 toast.info(`Opening Inspections for ${hiveDisplayName}...`);
               }
             }}
-            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 transition-colors cursor-pointer group"
+            className="flex flex-col items-center flex-1 min-w-[62px] py-1 text-muted-foreground hover:text-foreground dark:hover:text-stone-200 transition-colors cursor-pointer group"
           >
             <ClipboardList className="w-5 h-5 mb-1 group-hover:scale-105 transition-transform" />
             <span className="text-[11px] font-medium leading-none whitespace-nowrap">Inspection</span>
@@ -499,16 +499,16 @@ export function FrameSenseToolPage({
         {currentView === "add_photos" && (
           <div className="flex-1 flex flex-col space-y-4">
             {/* Top Introductory Explanation */}
-            <p className="text-xs sm:text-[13px] text-stone-600 dark:text-stone-300 leading-relaxed font-normal">
+            <p className="text-xs sm:text-[13px] text-muted-foreground leading-relaxed font-normal">
               AI-based analysis of frame photos — classifies comb cells, detects queen cells, determines coverage and estimates the number of bees, and provides recommendations.
             </p>
 
             {/* Instruction Callout */}
             <div className="space-y-1">
-              <h3 className="font-bold text-sm sm:text-base text-stone-900 dark:text-white">
+              <h3 className="font-bold text-sm sm:text-base text-foreground">
                 Add frame photos for analysis
               </h3>
-              <p className="text-xs sm:text-[12.5px] text-stone-500 dark:text-stone-400 leading-relaxed">
+              <p className="text-xs sm:text-[12.5px] text-muted-foreground leading-relaxed">
                 The frame should be fully visible in the photo (no cropped corners or edges) and fill almost the entire frame, leaving only a small margin. When possible, take the photo against a uniform background to ensure the highest quality AI analysis.
               </p>
             </div>
@@ -535,7 +535,7 @@ export function FrameSenseToolPage({
                   className={`w-full rounded-2xl sm:rounded-3xl border-2 border-dashed transition-all relative overflow-hidden flex flex-col items-center justify-center ${
                     middlePhoto
                       ? "border-amber-400/90 bg-stone-900 aspect-[16/10]"
-                      : "border-[#DFD2C0] dark:border-stone-800 bg-[#EFE8DC]/80 dark:bg-stone-900/60 hover:bg-[#EAE0D2] dark:hover:bg-stone-900 hover:border-amber-400 cursor-pointer min-h-[190px] sm:min-h-[220px]"
+                      : "border-border bg-card hover:bg-card/80 hover:border-honey/60 cursor-pointer min-h-[190px] sm:min-h-[220px]"
                   }`}
                 >
                   <input
@@ -607,7 +607,7 @@ export function FrameSenseToolPage({
                           <line x1="19" y1="28" x2="29" y2="28" />
                         </svg>
                       </div>
-                      <span className="text-xs font-bold text-stone-500 dark:text-stone-400">
+                      <span className="text-xs font-bold text-muted-foreground">
                         Tap to capture or upload central brood comb
                       </span>
                     </div>
@@ -663,7 +663,7 @@ export function FrameSenseToolPage({
                   className={`w-full rounded-2xl border transition-all flex items-center justify-between px-4 cursor-pointer ${
                     firstPhoto
                       ? "border-amber-400/80 bg-stone-900 p-2 text-white"
-                      : "h-12 sm:h-14 border-[#DFD2C0] dark:border-stone-800 bg-[#EFE8DC]/60 dark:bg-stone-900/40 hover:bg-[#EAE0D2] dark:hover:bg-stone-900 text-stone-600 dark:text-stone-400"
+                      : "h-12 sm:h-14 border-border bg-card/60 hover:bg-card text-muted-foreground hover:border-honey/60"
                   }`}
                 >
                   {firstPhoto ? (
@@ -725,7 +725,7 @@ export function FrameSenseToolPage({
           <div className="flex-1 flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-black text-base sm:text-lg text-stone-900 dark:text-white">
+                <h3 className="font-black text-base sm:text-lg text-foreground">
                   Comb Analysis Report
                 </h3>
                 <p className="text-xs text-stone-500 font-mono">
@@ -743,28 +743,28 @@ export function FrameSenseToolPage({
 
             {/* Diagnostic Metrics 4-Box Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
+              <div className="p-3 bg-card rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
                 <span className="text-[11px] font-bold text-stone-500 block">Worker Brood</span>
                 <span className="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400">
                   {selectedReport.broodPct}%
                 </span>
                 <span className="text-[10px] text-stone-400 block">Concentric layout</span>
               </div>
-              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
+              <div className="p-3 bg-card rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
                 <span className="text-[11px] font-bold text-stone-500 block">Honey Stores</span>
                 <span className="text-xl sm:text-2xl font-black text-blue-600 dark:text-blue-400">
                   {selectedReport.storesPct}%
                 </span>
                 <span className="text-[10px] text-stone-400 block">Capped nectar ring</span>
               </div>
-              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
+              <div className="p-3 bg-card rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
                 <span className="text-[11px] font-bold text-stone-500 block">Comb Drawn</span>
                 <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                   {selectedReport.combSurfacePct}%
                 </span>
                 <span className="text-[10px] text-stone-400 block">Foundation coverage</span>
               </div>
-              <div className="p-3 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
+              <div className="p-3 bg-card rounded-2xl border border-stone-200 dark:border-stone-800 space-y-0.5">
                 <span className="text-[11px] font-bold text-stone-500 block">Queen Cells</span>
                 <span className="text-xl sm:text-2xl font-black text-stone-900 dark:text-stone-100">
                   {selectedReport.queenCells}
@@ -777,8 +777,8 @@ export function FrameSenseToolPage({
 
             {/* Comb Cell Breakdown */}
             {selectedReport.combTypeDistribution && (
-              <div className="p-3.5 sm:p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
-                <h4 className="font-bold text-xs text-stone-900 dark:text-white uppercase tracking-wider">
+              <div className="p-3.5 sm:p-4 bg-card rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
+                <h4 className="font-bold text-xs text-foreground uppercase tracking-wider">
                   Comb Surface Cell Classification
                 </h4>
                 <div className="space-y-1.5 text-xs">
@@ -855,7 +855,7 @@ export function FrameSenseToolPage({
           <div className="flex-1 flex flex-col space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-sm text-stone-900 dark:text-white">
+                <h3 className="font-bold text-sm text-foreground">
                   Recorded Frame Analyses
                 </h3>
                 <p className="text-xs text-stone-500">
@@ -894,7 +894,7 @@ export function FrameSenseToolPage({
                 {analyses.map((item) => (
                   <div
                     key={item.id}
-                    className="p-3.5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xs space-y-2"
+                    className="p-3.5 rounded-2xl bg-card border border-stone-200 dark:border-stone-800 shadow-xs space-y-2"
                   >
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-mono font-bold text-stone-900 dark:text-stone-100">
