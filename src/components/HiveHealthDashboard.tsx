@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { useState, useEffect, useCallback, useRef, useId, useMemo } from "react";
+import { useState, useEffect, useCallback, useRef, useId, useMemo, startTransition } from "react";
 import {
   X,
   HeartPulse,
@@ -38,8 +38,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
-import { Html5Qrcode } from "html5-qrcode";
 import { cn } from "@/lib/utils";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  persistScannedDeviceTelemetry,
+  extractCleanSerial,
+  type DeviceTelemetryReading,
+} from "@/services/deviceReadingService";
 import {
   resolveUserHives,
   isTimothyUser,
@@ -103,158 +110,7 @@ export const COLONY_AVAILABILITY_OPTIONS = [
 export const BEE_KNOWLEDGE_HIVES: HiveItemInfo[] = [];
 
 
-/* ------------------------------------------------------------------ VitalSensor QR & Scanner */
-
-function extractSensorSerial(raw: string): string {
-  const text = raw.trim();
-  if (text.startsWith("{") && text.endsWith("}")) {
-    try {
-      const parsed = JSON.parse(text);
-      if (parsed.serial) return String(parsed.serial).toUpperCase();
-      if (parsed.id) return String(parsed.id).toUpperCase();
-    } catch {}
-  }
-  if (text.includes("http://") || text.includes("https://")) {
-    try {
-      const url = new URL(text);
-      const serialParam = url.searchParams.get("serial") || url.searchParams.get("code") || url.searchParams.get("id");
-      if (serialParam) return serialParam.toUpperCase();
-      const parts = url.pathname.split("/").filter(Boolean);
-      if (parts.length > 0) return parts[parts.length - 1].toUpperCase();
-    } catch {}
-  }
-  return text.toUpperCase();
-}
-
-function VitalSensorScannerView({
-  onScanSuccess,
-  onCancel,
-}: {
-  onScanSuccess: (decoded: string) => void;
-  onCancel: () => void;
-}) {
-  const reactId = useId();
-  const containerId = `vitalsensor-qr-${reactId.replace(/[^a-zA-Z0-9]/g, "")}`;
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    let html5QrCode: Html5Qrcode | null = null;
-
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(containerId);
-        scannerRef.current = html5QrCode;
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
-          (decodedText) => {
-            if (mounted) {
-              if (typeof navigator !== "undefined" && navigator.vibrate) {
-                try { navigator.vibrate([50, 50, 100]); } catch {}
-              }
-              void html5QrCode?.stop().catch(() => undefined);
-              onScanSuccess(decodedText.trim());
-            }
-          },
-          () => undefined
-        );
-        if (mounted) setIsReady(true);
-      } catch (err: any) {
-        if (mounted) {
-          setErrorMsg(err?.message || "Camera access not available. Please allow camera permissions or enter serial code manually.");
-        }
-      }
-    };
-
-    const timer = setTimeout(startScanner, 200);
-
-    return () => {
-      mounted = false;
-      clearTimeout(timer);
-      if (html5QrCode && html5QrCode.isScanning) {
-        void html5QrCode.stop().catch(() => undefined);
-      }
-    };
-  }, [containerId, onScanSuccess]);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      let scanner = scannerRef.current;
-      if (!scanner) {
-        scanner = new Html5Qrcode(containerId);
-        scannerRef.current = scanner;
-      }
-      const result = await scanner.scanFile(file, true);
-      onScanSuccess(result.trim());
-    } catch {
-      toast.error("No valid QR code or barcode found in selected image");
-    }
-  };
-
-  return (
-    <div className="space-y-3">
-      <div className="relative rounded-2xl overflow-hidden bg-stone-950 border-2 border-amber-500/60 shadow-inner w-full min-h-[240px] max-h-[260px] flex items-center justify-center">
-        <div id={containerId} className="w-full h-full" />
-        
-        {/* Viewfinder Target Reticle Overlay */}
-        <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center p-4">
-          <div className="relative w-44 h-44 sm:w-48 sm:h-48 border border-white/20 rounded-2xl flex items-center justify-center">
-            {/* 4 Corner Markers */}
-            <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-amber-400 rounded-tl" />
-            <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-amber-400 rounded-tr" />
-            <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-amber-400 rounded-bl" />
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-amber-400 rounded-br" />
-            
-            {/* Animated Laser Scanning Line */}
-            <div className="absolute inset-x-2 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent animate-pulse shadow-[0_0_12px_#f59e0b]" />
-          </div>
-          <span className="text-[10px] font-semibold text-white/90 bg-black/70 px-2.5 py-0.5 rounded-full mt-2 tracking-wide">
-            {isReady ? "Align VitalSensor QR code within frame" : "Initializing camera..."}
-          </span>
-        </div>
-      </div>
-
-      {errorMsg && (
-        <div className="p-2.5 rounded-xl bg-destructive/10 border border-destructive/20 text-[11px] text-destructive space-y-1">
-          <p className="font-semibold">Camera Notice</p>
-          <p>{errorMsg}</p>
-        </div>
-      )}
-
-      {/* Upload image / Photo fallback */}
-      <div className="flex items-center justify-between gap-2 pt-1">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileUpload}
-        />
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          className="px-3 py-1.5 rounded-xl border border-border bg-stone-50 hover:bg-stone-100 text-stone-700 text-[11px] font-semibold flex items-center gap-1.5 transition-colors"
-        >
-          <Upload className="w-3.5 h-3.5 text-amber-600" />
-          Upload QR photo / image
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-[11px] text-muted-foreground hover:text-foreground underline decoration-dotted"
-        >
-          Switch to manual code
-        </button>
-      </div>
-    </div>
-  );
-}
+// Serial extraction is now handled by extractCleanSerial from deviceReadingService
 
 export default function HiveHealthDashboard({ isOpen, onClose, embedded = false }: HiveHealthDashboardProps) {
   const { user, profile } = useAuth();
@@ -471,6 +327,27 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   const [pairScanMode, setPairScanMode] = useState<"scan" | "manual">("scan");
   const [pairingHive, setPairingHive] = useState<string>("");
   const [pairingSerial, setPairingSerial] = useState<string>("");
+  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
+  const [isResolvingReading, setIsResolvingReading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!pairingSerial.trim()) {
+      setScannedReading(null);
+      return;
+    }
+    let isMounted = true;
+    setIsResolvingReading(true);
+    const targetHive = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
+    void resolveDeviceReadings(pairingSerial, targetHive).then((reading) => {
+      if (isMounted) {
+        setScannedReading(reading);
+        setIsResolvingReading(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [pairingSerial, pairingHive, hivesList]);
 
   // Fetch live Open-Meteo ambient apiary weather + 14-day history and 7-day forecast
   const fetchAmbientWeather = useCallback(async (lat: number, lon: number) => {
@@ -912,11 +789,12 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
     setPairSensorModalOpen(false);
   };
 
-  // Confirm VitalSensor Quick Pairing
-  const handleConfirmPairSensor = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pairingSerial.trim()) {
-      toast.error("Please enter a valid sensor serial code");
+  // Confirm VitalSensor Quick Pairing & Telemetry Sync
+  const handleConfirmPairSensor = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanSerial = pairingSerial.trim().toUpperCase();
+    if (!cleanSerial) {
+      toast.error("Please enter or scan a valid sensor serial code");
       return;
     }
     const targetHiveName = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
@@ -926,7 +804,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         return {
           ...h,
           hasSensor: true,
-          sensorSerial: pairingSerial.trim().toUpperCase(),
+          sensorSerial: cleanSerial,
         };
       }
       return h;
@@ -937,9 +815,34 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(updatedHives));
     } catch {}
 
-    toast.success(`VitalSensor ${pairingSerial.trim().toUpperCase()} paired to ${targetHiveName}`);
+    // Persist and apply telemetry immediately
+    void (async () => {
+      const reading = scannedReading || (await resolveDeviceReadings(cleanSerial, targetHiveName));
+      await persistScannedDeviceTelemetry(reading, targetHiveName, userKey);
+
+      const newRec: HiveRecord = {
+        id: `rec-sensor-${Date.now()}`,
+        hive_name: targetHiveName,
+        record_type: "sensor",
+        recorded_at: new Date().toISOString(),
+        health_index: reading.healthScore,
+        varroa_count: reading.varroa_count,
+        asian_hornet_count: reading.asian_hornet_count,
+        temperature_c: reading.temperature_c,
+        humidity_pct: reading.humidity_pct,
+        weight_kg: reading.weight_kg,
+        notes: `VitalSensor ${reading.serial} paired. Brood Core: ${reading.temperature_c}°C, Saturation: ${reading.humidity_pct}%, Scale: ${reading.weight_kg}kg, Battery: ${reading.battery_pct}%.`,
+        inspector: "BeeYield Live Telemetry Core",
+        sensor_serial: reading.serial,
+      };
+
+      setRecords((prev) => [newRec, ...prev]);
+    })();
+
+    toast.success(`VitalSensor ${cleanSerial} paired & live telemetry synced to ${targetHiveName}!`);
     setPairSensorModalOpen(false);
     setPairingSerial("");
+    setScannedReading(null);
   };
 
   // Selected hive object to inspect real hardware connection status
@@ -1104,7 +1007,22 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-center">
+              <div className="flex items-center gap-2 self-start sm:self-center flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPairingHive(selectedHive === "all" ? (hivesList[0]?.name || "") : selectedHive);
+                    setPairScanMode("scan");
+                    setScannedReading(null);
+                    setPairSensorModalOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95"
+                  title="Scan hardware camera and view recent readings"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Scan Sensor Camera</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -1112,10 +1030,10 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                     setPairScanMode("manual");
                     setPairSensorModalOpen(true);
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-[11px] font-semibold flex items-center gap-1 transition-all"
+                  className="px-2.5 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-semibold flex items-center gap-1 transition-all"
                 >
-                  <QrCode className="w-3 h-3 text-amber-600" />
-                  {isHardwareSensorConnected ? "Change Sensor" : "+ Pair VitalSensor"}
+                  <QrCode className="w-3.5 h-3.5 text-amber-600" />
+                  {isHardwareSensorConnected ? "Configure Sensor" : "+ Pair Serial"}
                 </button>
               </div>
             </div>
@@ -2005,19 +1923,39 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
 
             {/* Live Camera Viewfinder */}
             {pairScanMode === "scan" && (
-              <VitalSensorScannerView
-                onScanSuccess={(decoded) => {
-                  const serial = extractSensorSerial(decoded);
+              <DeviceQrCameraScanner
+                title="Scan VitalSensor Hardware QR / Barcode"
+                helperText="Point camera at the QR code on the sensor waterproof casing"
+                onScanSuccess={async (decoded) => {
+                  const serial = extractCleanSerial(decoded);
                   setPairingSerial(serial);
-                  toast.success(`Scanned VitalSensor code: ${serial}`);
+                  toast.success(`Scanned VitalSensor: ${serial}`);
                   setPairScanMode("manual");
+                  const targetHive = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
+                  const reading = await resolveDeviceReadings(serial, targetHive);
+                  setScannedReading(reading);
                 }}
                 onCancel={() => setPairScanMode("manual")}
               />
             )}
 
-            {/* Scanned Hardware Confirmation Badge */}
-            {pairingSerial && (
+            {/* Scanned Hardware Recent Device Readings */}
+            {scannedReading && (
+              <RecentDeviceReadingsView
+                reading={scannedReading}
+                targetHiveName={pairingHive || (hivesList[0]?.name ?? "Primary Hive")}
+                onConfirmApply={() => handleConfirmPairSensor()}
+                onRescan={() => {
+                  setScannedReading(null);
+                  setPairingSerial("");
+                  setPairScanMode("scan");
+                }}
+                showApplyButton={false}
+              />
+            )}
+
+            {/* Scanned Hardware Confirmation Badge (when in scan mode or before readings load) */}
+            {pairingSerial && !scannedReading && (
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between gap-2 animate-in fade-in">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-700 flex items-center justify-center shrink-0">
@@ -2037,6 +1975,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                     type="button"
                     onClick={() => {
                       setPairingSerial("");
+                      setScannedReading(null);
                       setPairScanMode("scan");
                     }}
                     className="text-[11px] text-amber-700 font-semibold hover:underline"

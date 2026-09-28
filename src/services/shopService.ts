@@ -2,23 +2,24 @@ import { supabaseBeeYield, supabaseCEBA, supabaseShop as _supabaseShop } from "@
 import { supabase as supabaseMain } from "@/integrations/supabase/client";
 import { API_BASE_URL, apiDelete, apiGet, apiPost, apiPut, getAuthHeaders } from "./api";
 
-const supabaseShop = _supabaseShop!;
-
-const getPaymentsClient = () => {
+export const getShopClient = () => {
     if (typeof window !== "undefined") {
         const path = window.location.pathname.toLowerCase();
 
         if ((path.includes("/ceba") || path.startsWith("/admin")) && supabaseCEBA) {
-            return supabaseCEBA!;
+            return supabaseCEBA as any;
         }
 
         if (path.includes("/beeyield") && supabaseBeeYield) {
-            return supabaseBeeYield!;
+            return supabaseBeeYield as any;
         }
     }
 
-    return supabaseShop;
+    return (_supabaseShop || supabaseMain) as any;
 };
+
+const supabaseShop = (_supabaseShop || supabaseMain) as any;
+const getPaymentsClient = getShopClient;
 
 const FALLBACK_ORDER_STATUSES = ["pending", "processing", "shipped", "completed"] as const;
 
@@ -635,7 +636,7 @@ export const getProducts = async (category_name?: string): Promise<Product[]> =>
     // 2. Try Supabase
     if (results.length === 0) {
         try {
-            let query = (supabaseMain || supabaseShop)
+            let query = getShopClient()
                 .from("products")
                 .select("*, variants:product_variants(*)")
                 .eq("is_active", true);
@@ -668,7 +669,7 @@ export const getProduct = async (productId: string): Promise<Product | null> => 
     } catch (_) {}
 
     try {
-        const { data, error: sbError } = await (supabaseMain || supabaseShop)
+        const { data, error: sbError } = await getShopClient()
             .from("products")
             .select("*, variants:product_variants(*)")
             .eq("id", productId)
@@ -735,7 +736,7 @@ export const initializeCheckout = async (orderData: CheckoutOrder, _accessToken?
         delivery_method: orderData.delivery_method || "delivery",
     };
 
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     let authUser: any = null;
     try {
         const { data: authData } = await client.auth.getUser();
@@ -887,7 +888,7 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
     } catch (_) {}
 
     // 3. Read from Supabase PostgreSQL database (auth metadata + orders table)
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1050,7 +1051,7 @@ export const getAddresses = async (): Promise<Address[]> => {
     } catch (_) {}
 
     // 2. Try Supabase Auth user_metadata & database table
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1095,7 +1096,7 @@ export const addAddress = async (address: any): Promise<Address> => {
     } catch (_) {}
 
     // 2. Sync to Supabase PostgreSQL Database (table & user_metadata)
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1142,7 +1143,7 @@ export const updateAddress = async (addressId: string, address: any): Promise<Ad
     } catch (_) {}
 
     // 2. Sync to Supabase PostgreSQL Database
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1188,7 +1189,7 @@ export const deleteAddress = async (addressId: string) => {
     } catch (_) {}
 
     // 2. Remove from Supabase database
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1238,7 +1239,7 @@ export const getPaymentMethods = async (): Promise<PaymentMethod[]> => {
     } catch (_) {}
 
     // 3. Query Supabase database (authenticated user metadata + database table)
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1286,7 +1287,7 @@ export const addPaymentMethod = async (paymentMethod: any): Promise<PaymentMetho
     }
 
     // 2. Get active user from Supabase client
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     let user = null;
     try {
         const { data: authData } = await client.auth.getUser();
@@ -1356,7 +1357,7 @@ export const deletePaymentMethod = async (paymentId: string) => {
     } catch (_) {}
 
     // 2. Remove from Supabase database user metadata
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1393,7 +1394,7 @@ export const updatePaymentMethod = async (paymentId: string, paymentMethod: any)
     } catch (_) {}
 
     // 2. Sync to Supabase auth user_metadata & database table
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1544,7 +1545,7 @@ export const cancelOrder = async (orderId: string): Promise<Order> => {
     } catch (_) {}
 
     // 2. Update Supabase orders table
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         await (client as any)
             .from("orders")
@@ -1595,7 +1596,7 @@ export const getWishlist = async (): Promise<WishlistItem[]> => {
     getLocalWishlist().forEach(w => map.set(w.id, w));
 
     // 1. Try Supabase authenticated user_metadata & database table
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1629,7 +1630,7 @@ export const getWishlist = async (): Promise<WishlistItem[]> => {
 };
 
 export const toggleWishlist = async (productId: string): Promise<{ status: string; action: "added" | "removed" }> => {
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     let user: any = null;
     try {
         const { data: authData } = await client.auth.getUser();
@@ -1723,7 +1724,7 @@ export interface CustomerProfileData {
 }
 
 export const getCustomerProfile = async (): Promise<CustomerProfileData> => {
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1760,7 +1761,7 @@ export const getCustomerProfile = async (): Promise<CustomerProfileData> => {
 };
 
 export const updateCustomerProfile = async (profileData: Partial<CustomerProfileData>): Promise<CustomerProfileData> => {
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     const { data: authData } = await client.auth.getUser();
     const user = authData?.user;
     if (!user) throw new Error("User not authenticated");
@@ -1828,7 +1829,7 @@ export const getSupportTickets = async (): Promise<SupportTicket[]> => {
     const map = new Map<string, SupportTicket>();
     getLocal().forEach(t => map.set(t.id, t));
 
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     try {
         const { data: authData } = await client.auth.getUser();
         const user = authData?.user;
@@ -1869,7 +1870,7 @@ export const submitSupportTicket = async (ticketData: {
     order_id?: string;
     message: string;
 }): Promise<SupportTicket> => {
-    const client = supabaseMain || getPaymentsClient();
+    const client = getShopClient();
     const id = `tkt_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
     const ticketNumber = `BY-SUP-${id.slice(-6).toUpperCase()}`;
 

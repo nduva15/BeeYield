@@ -17,6 +17,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
+import { ShopAuthProvider } from "@/hooks/use-shop-auth";
 import { initNativeApp } from "@/lib/native";
 
 function NotFoundComponent() {
@@ -133,10 +134,12 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
+          <ShopAuthProvider>
+            <Toaster />
+            <Sonner />
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </ShopAuthProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>

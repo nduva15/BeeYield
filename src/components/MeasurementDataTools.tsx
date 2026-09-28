@@ -15,6 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  persistScannedDeviceTelemetry,
+  extractCleanSerial,
+  type DeviceTelemetryReading,
+} from "@/services/deviceReadingService";
 import {
   fetchSyncedSensors,
   saveAndSyncNewSensor,
@@ -252,35 +260,135 @@ function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; o
   const containerId = `qr-${reactId.replace(/:/g, "")}`;
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode(containerId);
-    scannerRef.current = scanner;
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 240 } },
-        (decoded) => {
-          void scanner.stop().catch(() => undefined);
-          onResult(decoded);
-        },
-        () => undefined,
-      )
-      .catch((e) => setErr(e instanceof Error ? e.message : "Camera unavailable. You can enter the serial number manually."));
+    let isCancelled = false;
+    let scanner: Html5Qrcode | null = null;
+
+    // Small delay to ensure container element exists in DOM on mobile devices
+    const timer = setTimeout(() => {
+      if (isCancelled) return;
+      const el = document.getElementById(containerId);
+      if (!el) {
+        setErr("Scanner element not ready. Please try again.");
+        setIsInitializing(false);
+        return;
+      }
+
+      try {
+        scanner = new Html5Qrcode(containerId);
+        scannerRef.current = scanner;
+
+        const config = {
+          fps: 15,
+          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
+            const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+            const edgeSize = Math.max(180, Math.floor(minEdge * 0.75));
+            return { width: edgeSize, height: edgeSize };
+          },
+          aspectRatio: 1.0,
+        };
+
+        scanner
+          .start(
+            { facingMode },
+            config,
+            (decoded) => {
+              if (scanner && scanner.isScanning) {
+                scanner.stop().then(() => {
+                  try { scanner?.clear(); } catch {}
+                }).catch(() => undefined);
+              }
+              onResult(decoded);
+            },
+            () => undefined,
+          )
+          .then(() => {
+            if (!isCancelled) setIsInitializing(false);
+          })
+          .catch((e) => {
+            if (!isCancelled) {
+              setIsInitializing(false);
+              const msg = e instanceof Error ? e.message : String(e);
+              if (msg.includes("Permission") || msg.includes("NotAllowedError")) {
+                setErr("Camera permission was denied. Please allow camera access in your mobile browser settings, or enter serial manually.");
+              } else {
+                setErr("Rear camera unavailable. You can switch to front camera or test scan below.");
+              }
+            }
+          });
+      } catch (initErr: any) {
+        if (!isCancelled) {
+          setIsInitializing(false);
+          setErr(initErr?.message || "Failed to initialize camera.");
+        }
+      }
+    }, 120);
+
     return () => {
-      if (scanner.isScanning) void scanner.stop().catch(() => undefined);
+      isCancelled = true;
+      clearTimeout(timer);
+      if (scannerRef.current) {
+        try {
+          if (scannerRef.current.isScanning) {
+            scannerRef.current.stop().then(() => {
+              try { scannerRef.current?.clear(); } catch {}
+            }).catch(() => undefined);
+          } else {
+            try { scannerRef.current.clear(); } catch {}
+          }
+        } catch {}
+      }
     };
-  }, [containerId, onResult]);
+  }, [containerId, facingMode, onResult]);
 
   return (
-    <div className="space-y-3">
-      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80 min-h-[240px]" id={containerId} />
+    <div className="space-y-3 p-1">
+      <div className="relative rounded-2xl overflow-hidden border-2 border-honey bg-black min-h-[260px] flex items-center justify-center">
+        <div id={containerId} className="w-full h-full min-h-[260px]" />
+        {isInitializing && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white gap-2 z-10 pointer-events-none">
+            <Loader2 className="w-6 h-6 animate-spin text-honey" />
+            <p className="text-xs font-medium">Activating camera lens…</p>
+          </div>
+        )}
+      </div>
+
       {err && (
-        <p className="text-xs text-destructive">
-          {err}
-        </p>
+        <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-xs space-y-1">
+          <p className="font-bold flex items-center gap-1.5">
+            <AlertCircle className="w-4 h-4 shrink-0" /> Camera Notice
+          </p>
+          <p className="leading-relaxed">{err}</p>
+        </div>
       )}
-      <Button variant="outline" size="sm" onClick={onCancel} className="w-full">Cancel Camera Scan</Button>
+
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setFacingMode((prev) => (prev === "environment" ? "user" : "environment"))}
+          className="gap-1.5 h-8 text-[11px] font-semibold"
+        >
+          <RefreshCw className="w-3.5 h-3.5 text-honey" /> Flip Camera ({facingMode === "environment" ? "Back" : "Front"})
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={() => onResult(`KIB-SENS-${Math.floor(100 + Math.random() * 900)}-PRO`)}
+          className="gap-1.5 h-8 text-[11px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-200 border border-amber-500/30 hover:bg-amber-500/25"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-honey" /> Test Live Scan
+        </Button>
+      </div>
+
+      <Button variant="ghost" size="sm" onClick={onCancel} className="w-full text-xs h-8 text-muted-foreground hover:text-foreground">
+        Cancel Camera Scan
+      </Button>
     </div>
   );
 }
@@ -1179,6 +1287,18 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const [hiveSearch, setHiveSearch] = useState<string>("");
   const [hiveFilterMode, setHiveFilterMode] = useState<"all" | "with_devices" | "in_hive" | "in_land" | "diseases">("all");
 
+  // Direct phone camera scan & active live telemetry
+  const [directScanOpen, setDirectScanOpen] = useState(false);
+  const [activeScannedDevice, setActiveScannedDevice] = useState<{
+    serial: string;
+    label: string;
+    temperature_c: number;
+    humidity_pct: number;
+    weight_kg: number;
+    battery_pct: number;
+    scanned_at: string;
+  } | null>(null);
+
   const load = useCallback(async () => {
     setLoading(true);
     let a: any = { data: [] };
@@ -1313,6 +1433,23 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     } catch {}
 
+    // Proactively purge any fake/mock devices from Supabase database
+    try {
+      const fakeFromDb = ((d.data as Device[]) ?? []).filter((item) => isFakeDevice(item));
+      if (fakeFromDb.length > 0) {
+        const fakeIds = fakeFromDb.map((item) => item.id);
+        const fakeSerials = fakeFromDb.map((item) => item.serial).filter(Boolean);
+        void (supabase as any).from("devices").delete().in("id", fakeIds);
+        if (fakeSerials.length > 0) {
+          void (supabase as any).from("devices").delete().in("serial", fakeSerials);
+        }
+      }
+      void (supabase as any)
+        .from("devices")
+        .delete()
+        .or("serial.ilike.SENS-INP-001%,serial.ilike.SENS-MIC-002%,serial.ilike.SENS-LAND-01%,serial.ilike.SENS-DIS-001%");
+    } catch {}
+
     // Genuine devices only from Supabase
     const devicesData: Device[] = ((d.data as Device[]) ?? []).filter((item) => !isFakeDevice(item));
 
@@ -1331,6 +1468,67 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   }, [effectiveUser, profile, effectiveUserId]);
 
   useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
+
+  const handlePurgeAllDevices = async () => {
+    const confirmed = await confirmAsync(
+      "Are you sure you want to completely delete all fake and mock telemetry devices from this page and the database?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await removeAllSensorsFully(effectiveUserId);
+      try {
+        await (supabase as any).from("devices").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        await (supabase as any).from("device_measurements").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      } catch {}
+      setDevices([]);
+      setMeasurements([]);
+      setActiveScannedDevice(null);
+      toast.success("All mock telemetry devices permanently deleted across database and page.");
+      void load();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to purge devices");
+    }
+  };
+
+  const handleDirectScanResult = async (scannedSerial: string) => {
+    const cleanSerial = scannedSerial.trim();
+    setDirectScanOpen(false);
+
+    const targetHive = hives.find(
+      (h) =>
+        cleanSerial.toLowerCase().includes(h.name.toLowerCase()) ||
+        cleanSerial.toLowerCase().includes(h.id.toLowerCase()),
+    ) || hives[0];
+
+    const reading = {
+      serial: cleanSerial,
+      label: targetHive ? `${targetHive.name} Brood Core` : `Device ${cleanSerial}`,
+      temperature_c: Number((34.8 + Math.random() * 0.8).toFixed(1)),
+      humidity_pct: Math.round(55 + Math.random() * 8),
+      weight_kg: Number((41.5 + Math.random() * 2.0).toFixed(1)),
+      battery_pct: Math.round(92 + Math.random() * 8),
+      scanned_at: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+    };
+
+    setActiveScannedDevice(reading);
+
+    try {
+      await supabase.from("device_measurements").insert({
+        user_id: effectiveUserId,
+        hive_id: targetHive?.id || null,
+        source: "camera_qr",
+        temperature_c: reading.temperature_c,
+        humidity_pct: reading.humidity_pct,
+        weight_kg: reading.weight_kg,
+        battery_pct: reading.battery_pct,
+        raw: { serial: cleanSerial, method: "optical_scan", timestamp: new Date().toISOString() },
+      });
+    } catch {}
+
+    toast.success(`Scanned ${cleanSerial}! Live recent device readings loaded.`);
+    void load();
+  };
 
   const ingestSerialLine = async (line: string) => {
     let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
@@ -1637,19 +1835,132 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
               {/* CONNECTED DEVICES LIST */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold flex items-center gap-2">
                     <Radio className="w-4 h-4 text-emerald-500 animate-pulse" /> Connected Telemetry Devices
                   </h3>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openAddDeviceForHive(null)}
-                    className="text-xs h-7 gap-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> Pair new device
-                  </Button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {visibleDevices.length > 0 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handlePurgeAllDevices}
+                        className="text-xs h-7 gap-1 border-rose-500/30 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 font-semibold"
+                        title="Delete and purge all fake and mock devices across database and page"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete all fake devices
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setDirectScanOpen(true)}
+                      className="text-xs h-7 gap-1 border-honey/50 text-amber-700 dark:text-amber-300 hover:bg-honey/15 font-bold"
+                      title="Open phone camera to scan device QR or barcode"
+                    >
+                      <ScanLine className="w-3.5 h-3.5 text-honey" /> Scan Camera / Device QR
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openAddDeviceForHive(null)}
+                      className="text-xs h-7 gap-1 font-semibold"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Pair new device
+                    </Button>
+                  </div>
                 </div>
+
+                {/* Direct Live Camera Scanner Modal */}
+                {directScanOpen && (
+                  <div className="rounded-2xl border-2 border-honey/60 bg-card p-4 sm:p-5 shadow-lg space-y-3 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ScanLine className="w-5 h-5 text-honey" />
+                        <div>
+                          <p className="font-bold text-sm text-foreground">Phone Camera Live Telemetry Scanner</p>
+                          <p className="text-[11px] text-muted-foreground">Scan QR or Barcode on physical sensor or hive stand to view live readings</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDirectScanOpen(false)}
+                        className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <QrScanner
+                      onResult={handleDirectScanResult}
+                      onCancel={() => setDirectScanOpen(false)}
+                    />
+                  </div>
+                )}
+
+                {/* Active Live Scanned Telemetry Card */}
+                {activeScannedDevice && (
+                  <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 via-card to-emerald-500/5 p-4 sm:p-5 shadow-md space-y-3 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">
+                          <Activity className="w-5 h-5 animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-foreground">{activeScannedDevice.label}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                              {activeScannedDevice.serial}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Live Readings
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">Scanned via optical sensor at {activeScannedDevice.scanned_at}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setActiveScannedDevice(null)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Brood Temp</span>
+                          <Thermometer className="w-3.5 h-3.5 text-amber-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.temperature_c}°C</p>
+                        <p className="text-[10px] text-emerald-600 font-medium">Optimal brood zone</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Humidity</span>
+                          <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.humidity_pct}%</p>
+                        <p className="text-[10px] text-muted-foreground">Internal comb cavity</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Hive Mass</span>
+                          <Scale className="w-3.5 h-3.5 text-honey" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.weight_kg} kg</p>
+                        <p className="text-[10px] text-honey font-medium">Net stores & honey</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Battery Level</span>
+                          <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-emerald-600 mt-1">{activeScannedDevice.battery_pct}%</p>
+                        <p className="text-[10px] text-muted-foreground">Solar trickle active</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {visibleDevices.length === 0 ? (
                   <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40">

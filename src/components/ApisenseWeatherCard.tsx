@@ -1,4 +1,4 @@
-import React from "react";
+import React, { startTransition, memo } from "react";
 import {
   MapPin,
   ArrowRight,
@@ -29,14 +29,27 @@ function normalizeApiaryLocation(loc?: string): string {
   return loc.trim();
 }
 
+const hivesCountCache = new Map<string, { count: number; timestamp: number }>();
+const HIVE_COUNT_TTL_MS = 5000;
+
 function getUserHivesCount(userKey: string, apiaryId: string, fallbackCount: number): number {
+  const cacheKey = `${userKey}::${apiaryId}`;
+  const now = Date.now();
+  const cached = hivesCountCache.get(cacheKey);
+  if (cached && now - cached.timestamp < HIVE_COUNT_TTL_MS) {
+    return cached.count;
+  }
   try {
     const raw = localStorage.getItem(`beeyield_user_hives_${userKey}_${apiaryId}`);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed.length;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        hivesCountCache.set(cacheKey, { count: parsed.length, timestamp: now });
+        return parsed.length;
+      }
     }
   } catch {}
+  hivesCountCache.set(cacheKey, { count: fallbackCount, timestamp: now });
   return fallbackCount;
 }
 
@@ -74,7 +87,7 @@ function getWeatherMeta(code: number) {
   }
 }
 
-export function ApisenseWeatherCard({
+export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
   apiary,
   weather,
   userKey,
@@ -257,9 +270,11 @@ export function ApisenseWeatherCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(apiary);
+              startTransition(() => {
+                onEdit(apiary);
+              });
             }}
-            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform"
+            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
           >
             <Edit className="w-3 h-3 pointer-events-none select-none" /> Edit
           </button>
@@ -268,21 +283,23 @@ export function ApisenseWeatherCard({
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(apiary.id, displayName);
+                startTransition(() => {
+                  onDelete(apiary.id, displayName);
+                });
               }}
-              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform"
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
               title="Delete apiary"
             >
               <Trash2 className="w-3 h-3 pointer-events-none select-none" /> Delete
             </button>
           )}
-          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40">
+          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 pointer-events-none select-none">
             View Details <ChevronRight className="w-3 h-3 pointer-events-none select-none" />
           </span>
         </div>
       </div>
     </div>
   );
-}
+});
 
 export default ApisenseWeatherCard;

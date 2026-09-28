@@ -63,6 +63,27 @@ function getLocalSensorStorageKey(userId: string, apiaryId?: string | null): str
   return `beeyield_synced_sensors_${userId}_${safeApiary}`;
 }
 
+export function isFakeSensorDevice(item: any): boolean {
+  if (!item) return true;
+  const s = String(item.serial || "").toUpperCase();
+  const id = String(item.id || "").toLowerCase();
+  const lbl = String(item.label || item.deviceType || item.name || "").toLowerCase();
+  return (
+    id.startsWith("dev-vs-") ||
+    id.startsWith("dev-hub-") ||
+    id.startsWith("dev-dis-") ||
+    id.startsWith("dev-scale-") ||
+    s.startsWith("SENS-INP-001") ||
+    s.startsWith("SENS-MIC-002") ||
+    s.startsWith("SENS-LAND-01") ||
+    s.startsWith("SENS-DIS-001") ||
+    lbl.includes("vitalsensor brood core") ||
+    lbl.includes("bio-acoustic queen mic") ||
+    lbl.includes("solar microclimate hub") ||
+    lbl.includes("spectral varroa scanner")
+  );
+}
+
 /**
  * Fetch all synced sensors from Supabase Database and cross-device cloud vault.
  * Falls back to local cache if offline, but always reconciles with Supabase.
@@ -82,7 +103,7 @@ export async function fetchSyncedSensors(
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          cached = parsed;
+          cached = parsed.filter((d) => !isFakeSensorDevice(d));
         }
       }
     } catch {}
@@ -102,7 +123,16 @@ export async function fetchSyncedSensors(
 
       const { data, error } = await query;
       if (!error && Array.isArray(data)) {
-        const mapped: SyncedSensorDevice[] = data.map((d: any) => ({
+        // Proactively purge any fake/mock devices from Supabase database
+        const fakeIds = data.filter((d: any) => isFakeSensorDevice(d)).map((d: any) => d.id);
+        if (fakeIds.length > 0) {
+          try {
+            void (supabase as any).from("devices").delete().in("id", fakeIds);
+          } catch {}
+        }
+
+        const validRows = data.filter((d: any) => !isFakeSensorDevice(d));
+        const mapped: SyncedSensorDevice[] = validRows.map((d: any) => ({
           id: d.id,
           serial: d.serial,
           category: (d.device_kind === "hub" ? "in_land" : d.device_kind?.includes("disease") ? "disease_devices" : "in_hive") as DeviceCategory,
@@ -139,9 +169,9 @@ export async function fetchSyncedSensors(
       const { data: authData } = await supabase.auth.getUser();
       const metaSensors = authData?.user?.user_metadata?.connected_sensors;
       if (Array.isArray(metaSensors)) {
-        const filtered = apiaryId && apiaryId !== "all"
+        const filtered = (apiaryId && apiaryId !== "all"
           ? metaSensors.filter((s: any) => s.apiaryId === apiaryId)
-          : metaSensors;
+          : metaSensors).filter((s: any) => !isFakeSensorDevice(s));
 
         if (typeof window !== "undefined") {
           try {

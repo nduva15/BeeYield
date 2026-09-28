@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, startTransition, memo } from "react";
 import { createPortal } from "react-dom";
 import {
   X,
@@ -330,19 +330,38 @@ export function deduplicateApiaries<T extends ApiarySite>(apiariesList: T[]): T[
   return deduplicated.length > 0 ? deduplicated : (DEFAULT_APIARIES.map(normalizeApiarySite) as T[]);
 }
 
+const hivesCountCache = new Map<string, { count: number; timestamp: number }>();
+const HIVE_COUNT_TTL_MS = 5000;
+
 export function getUserHivesCount(userKey: string, apiaryId: string, fallbackCount: number): number {
+  const cacheKey = `${userKey}::${apiaryId}`;
+  const now = Date.now();
+  const cached = hivesCountCache.get(cacheKey);
+  if (cached && now - cached.timestamp < HIVE_COUNT_TTL_MS) {
+    return cached.count;
+  }
   try {
     const stored = localStorage.getItem(getStorageKey(userKey, apiaryId, "hives"));
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed)) {
+        hivesCountCache.set(cacheKey, { count: parsed.length, timestamp: now });
         return parsed.length;
       }
     }
   } catch {
     // fallback
   }
+  hivesCountCache.set(cacheKey, { count: fallbackCount, timestamp: now });
   return fallbackCount;
+}
+
+export function invalidateHivesCountCache(userKey?: string, apiaryId?: string) {
+  if (userKey && apiaryId) {
+    hivesCountCache.delete(`${userKey}::${apiaryId}`);
+  } else {
+    hivesCountCache.clear();
+  }
 }
 
 // Botanical Flora Ecosystem Species for BeeYield Apiary in Kibwezi Kenya
@@ -2053,10 +2072,14 @@ function PairVitalSensorModal({
                 </label>
                 <button
                   type="button"
-                  onClick={() => setShowCamera(true)}
-                  className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1 hover:underline"
+                  onClick={() => {
+                    startTransition(() => {
+                      setShowCamera(true);
+                    });
+                  }}
+                  className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1 hover:underline cursor-pointer select-none touch-manipulation active:scale-95 transition-transform"
                 >
-                  <Camera className="w-3.5 h-3.5" />
+                  <Camera className="w-3.5 h-3.5 pointer-events-none select-none" />
                   <span>Scan with Camera</span>
                 </button>
               </div>
@@ -2072,11 +2095,15 @@ function PairVitalSensorModal({
                 />
                 <button
                   type="button"
-                  onClick={() => setShowCamera(true)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors"
+                  onClick={() => {
+                    startTransition(() => {
+                      setShowCamera(true);
+                    });
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors cursor-pointer select-none touch-manipulation"
                   title="Scan with Camera"
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-4 h-4 pointer-events-none select-none" />
                 </button>
               </div>
               <p className="text-[10px] text-muted-foreground">
@@ -8358,7 +8385,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
 // ----------------------------------------------------------------------
 // Interactive Apisense Weather Card (Top Page Level)
 // ----------------------------------------------------------------------
-export function ApisenseWeatherCard({
+export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
   apiary,
   weather,
   userKey,
@@ -8541,33 +8568,37 @@ export function ApisenseWeatherCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(apiary);
+              startTransition(() => {
+                onEdit(apiary);
+              });
             }}
-            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline"
+            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
           >
-            <Edit className="w-3 h-3" /> Edit
+            <Edit className="w-3 h-3 pointer-events-none select-none" /> Edit
           </button>
           {onDelete && (
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(apiary.id, displayName);
+                startTransition(() => {
+                  onDelete(apiary.id, displayName);
+                });
               }}
-              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline"
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
               title="Delete apiary"
             >
-              <Trash2 className="w-3 h-3" /> Delete
+              <Trash2 className="w-3 h-3 pointer-events-none select-none" /> Delete
             </button>
           )}
-          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40">
-            View Details <ChevronRight className="w-3 h-3" />
+          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 pointer-events-none select-none">
+            View Details <ChevronRight className="w-3 h-3 pointer-events-none select-none" />
           </span>
         </div>
       </div>
     </div>
   );
-}
+});
 
 // ----------------------------------------------------------------------
 // Main Apiaries Modal & Standalone Page
@@ -8947,34 +8978,38 @@ export default function ApiariesPage({
     setAttachedDevices([]);
   };
 
-  const handleEdit = (site: ApiarySite) => {
-    setEditingApiary(site);
-    setAddApiaryStep(1);
-    setFormData({
-      name: site.name,
-      location_name: site.location_name,
-      county: site.county || "Makueni",
-      region: site.region || "",
-      latitude: site.latitude,
-      longitude: site.longitude,
-      type: site.type,
-      active_hives: site.active_hives,
-      total_hives: site.total_hives,
-      size_acres: site.size_acres,
-      forage_type: site.forage_type,
-      status: site.status,
-      notes: site.notes || "",
+  const handleEdit = useCallback((site: ApiarySite) => {
+    startTransition(() => {
+      setEditingApiary(site);
+      setAddApiaryStep(1);
+      setFormData({
+        name: site.name,
+        location_name: site.location_name,
+        county: site.county || "Makueni",
+        region: site.region || "",
+        latitude: site.latitude,
+        longitude: site.longitude,
+        type: site.type,
+        active_hives: site.active_hives,
+        total_hives: site.total_hives,
+        size_acres: site.size_acres,
+        forage_type: site.forage_type,
+        status: site.status,
+        notes: site.notes || "",
+      });
+      setShowAddModal(true);
     });
-    setShowAddModal(true);
-  };
+  }, []);
 
-  const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
+  const handleDeleteApiary = useCallback(async (apiaryId: string, apiaryName: string) => {
     const confirmed = await confirmAsync(`Are you sure you want to remove apiary "${apiaryName}"?`);
     if (!confirmed) {
       return;
     }
     const nextApiaries = apiaries.filter((a) => a.id !== apiaryId);
-    setApiaries(nextApiaries);
+    startTransition(() => {
+      setApiaries(nextApiaries);
+    });
     try {
       localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(nextApiaries));
     } catch {
@@ -8991,14 +9026,16 @@ export default function ApiariesPage({
       setSelectedDetailApiary(null);
     }
     toast.success(`Removed apiary ${apiaryName}`);
-  };
+  }, [apiaries, userKey, user?.id, selectedDetailApiary]);
 
-  const handleOpenDetails = (site: ApiarySite) => {
-    setSelectedDetailApiary(site);
-    if (onSelectApiary) {
-      onSelectApiary(site);
-    }
-  };
+  const handleOpenDetails = useCallback((site: ApiarySite) => {
+    startTransition(() => {
+      setSelectedDetailApiary(site);
+      if (onSelectApiary) {
+        onSelectApiary(site);
+      }
+    });
+  }, [onSelectApiary]);
 
   // Filtered apiaries
   const filteredApiaries = useMemo(() => {
@@ -9014,6 +9051,7 @@ export default function ApiariesPage({
 
   const handleHivesCountChanged = useCallback(
     (apiaryId: string, count: number) => {
+      invalidateHivesCountCache(userKey, apiaryId);
       setApiaries((prev) => {
         const next = prev.map((a) =>
           a.id === apiaryId

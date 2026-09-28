@@ -16,8 +16,20 @@ import {
   ExternalLink, User, Heart, HelpCircle, Tag,
   Eye, ArrowRight, Lock, ShieldCheck, MessageSquare, Send, Edit3,
   SlidersHorizontal, Sparkles, Check, AlertCircle,
+  LogIn, LogOut, Database, UserCheck,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useShopAuth } from "@/hooks/use-shop-auth";
+import ShopAuthModal from "@/components/ShopAuthModal";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { downloadReportPdf } from "@/lib/report-pdf";
 import { autoSyncRecord } from "@/lib/integration-sync";
@@ -78,7 +90,17 @@ export default function ShopDashboard({
   embedded = false,
   initialTab = "overview",
 }: ShopDashboardProps) {
-  const { user, profile } = useAuth();
+  const { user: beeyieldUser, profile: beeyieldProfile } = useAuth();
+  const {
+    shopUser,
+    isShopAuthenticated,
+    signOut: shopSignOut,
+    signInDemoCustomer,
+    isDedicatedBackend,
+  } = useShopAuth();
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup" | "demo">("signin");
 
   // Tab State & Shop Views Dropdown
   const [activeTab, setActiveTab] = useState<TabType>(initialTab as TabType);
@@ -109,14 +131,42 @@ export default function ShopDashboard({
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileDraft, setProfileDraft] = useState<CustomerProfileData>({
-    full_name: profile?.full_name || "Timothy Nduva",
-    phone: profile?.phone || "254712345678",
+    full_name: shopUser?.full_name || beeyieldProfile?.full_name || "Grace Wanjiku",
+    phone: shopUser?.phone || beeyieldProfile?.phone || "+254 722 102 304",
     country: "Kenya",
-    delivery_town: "Kibwezi",
-    county: "Makueni",
-    apiary_affiliation: "Kibwezi Forest Apiary (150 Active Hives)",
-    bio: "Sustainable apiculture pioneer and commercial raw honey producer.",
+    delivery_town: shopUser?.shipping_address?.city || "Nairobi",
+    county: shopUser?.shipping_address?.county || "Nairobi",
+    apiary_affiliation: shopUser?.company_name || "BeeYield Storefront Customer",
+    bio: "Verified customer and honey enthusiast.",
   });
+
+  // Sync profile draft and address draft when shopUser changes
+  useEffect(() => {
+    if (shopUser) {
+      setProfileDraft((prev) => ({
+        ...prev,
+        full_name: shopUser.full_name || prev.full_name,
+        phone: shopUser.phone || prev.phone,
+        delivery_town: shopUser.shipping_address?.city || prev.delivery_town,
+        county: shopUser.shipping_address?.county || prev.county,
+        apiary_affiliation: shopUser.company_name || prev.apiary_affiliation,
+      }));
+      setAddressDraft((prev) => ({
+        ...prev,
+        name: shopUser.full_name || prev.name,
+        phone: shopUser.phone || prev.phone,
+        street: shopUser.shipping_address?.street || prev.street,
+        city: shopUser.shipping_address?.city || prev.city,
+        county: shopUser.shipping_address?.county || prev.county,
+      }));
+      if (shopUser.phone) setMpesaPhone(shopUser.phone);
+    }
+  }, [shopUser]);
+
+  // Reload all shop data whenever active shopUser ID changes
+  useEffect(() => {
+    void loadAllData();
+  }, [shopUser?.id]);
 
   // Support Desk Backend State
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
@@ -868,7 +918,46 @@ export default function ShopDashboard({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Shop Customer Account Bar (Separate from BeeYield Beekeeper Session) */}
+          {shopCustomer ? (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card border border-border shadow-xs">
+              <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-600 font-bold flex items-center justify-center text-xs">
+                {shopCustomer.full_name?.charAt(0) || "C"}
+              </div>
+              <div className="hidden md:block text-left">
+                <p className="text-xs font-bold text-foreground leading-tight truncate max-w-[130px]">{shopCustomer.full_name}</p>
+                <p className="text-[10px] text-muted-foreground truncate max-w-[130px]">{shopCustomer.email}</p>
+              </div>
+              <div className="flex items-center gap-1 border-l border-border/60 pl-2">
+                <button
+                  type="button"
+                  onClick={() => setShowShopAuthModal(true)}
+                  className="text-[11px] font-semibold text-emerald-600 hover:text-emerald-500 hover:underline px-1 py-0.5"
+                  title="Switch store customer profile"
+                >
+                  Switch
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShopCustomerSignOut}
+                  className="text-[11px] font-bold text-rose-600 hover:text-rose-500 hover:underline px-1 py-0.5"
+                  title="Sign out from store customer account (BeeYield remains active)"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => { setShopAuthTab("signin"); setShowShopAuthModal(true); }}
+              className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+            >
+              <User className="w-3.5 h-3.5" /> Customer Sign In
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => void loadAllData()}
@@ -1063,6 +1152,25 @@ export default function ShopDashboard({
             </div>
           )}
         </div>
+
+        {/* Intact Horizontal Quick-Bar (Stays intact and scrolls smoothly across mobile and desktop) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll pt-2 border-t border-border/40">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTab(t.id)}
+              className={`px-3 py-1.5 rounded-xl border text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
+                activeTab === t.id
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-xs font-bold"
+                  : "border-border bg-card/60 hover:bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <t.icon className="w-3.5 h-3.5" />
+              <span>{t.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 6. TAB CONTENT RENDERING */}
@@ -1091,6 +1199,100 @@ export default function ShopDashboard({
                 onClick={handleQuickTrack}
                 className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors"
               >
+                Track Now
+              </button>
+            </div>
+          </div>
+
+          {/* Customer Cards & Wallet Database Card (Own Backend & Database) */}
+          <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 via-card to-card p-5 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 shrink-0">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-base font-bold text-foreground">
+                      Customer Cards & Payment Wallet
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
+                      Database Synced
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Dedicated store card vault backed by Supabase PostgreSQL. Managed separately from Apiary finances.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPaymentFormType("card");
+                    setShowPaymentForm(true);
+                    setActiveTab("payments");
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add New Card
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("payments")}
+                  className="px-3 py-1.5 rounded-xl border border-border hover:bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Manage ({paymentMethods.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Cards Display */}
+            {paymentMethods.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border p-6 text-center bg-card/60">
+                <CreditCard className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-60" />
+                <p className="text-xs font-bold text-foreground">No payment cards vaulted yet</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Click "+ Add New Card" to vault a Visa or Mastercard directly into your store customer database.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {paymentMethods.map((pm) => (
+                  <div
+                    key={pm.id}
+                    className="relative overflow-hidden rounded-xl p-4 text-white shadow-md bg-gradient-to-tr from-slate-950 via-emerald-950 to-slate-900 border border-emerald-500/30 flex flex-col justify-between h-36"
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="text-[10px] font-mono tracking-widest uppercase opacity-75">
+                        {pm.brand || pm.type || "EMV Card"}
+                      </span>
+                      {pm.is_default ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500 text-white shadow-xs">
+                          DEFAULT
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-mono text-emerald-400">ACTIVE</span>
+                      )}
+                    </div>
+                    <div className="font-mono text-base font-bold tracking-wider my-auto">
+                      •••• •••• •••• {pm.last4 || "4242"}
+                    </div>
+                    <div className="flex items-end justify-between text-[10px] opacity-85">
+                      <div>
+                        <p className="uppercase tracking-wider text-[8px] text-slate-400">Cardholder</p>
+                        <p className="font-bold truncate max-w-[120px]">{pm.card_holder_name || shopCustomer?.full_name || "VALUED CUSTOMER"}</p>
+                      </div>
+                      <div>
+                        <p className="uppercase tracking-wider text-[8px] text-slate-400">Expires</p>
+                        <p className="font-mono">{pm.expiry || "12/28"}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
                 Track Now
               </button>
             </div>
