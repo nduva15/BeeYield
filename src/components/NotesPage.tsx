@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  ArrowLeft,
-  Droplets,
   Layers,
   FileText,
   ClipboardList,
@@ -25,7 +23,6 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
-  LayoutGrid,
   Check,
   Thermometer,
   Mic,
