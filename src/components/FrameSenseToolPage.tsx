@@ -138,7 +138,7 @@ export function FrameSenseToolPage({
   // Stored analyses per hive
   const [analyses, setAnalyses] = useState<FrameSenseAnalysis[]>([]);
 
-  // Load analyses when selected hive changes
+  // Load analyses when selected hive changes (real analyses only)
   useEffect(() => {
     if (!selectedHive?.id) return;
     try {
@@ -146,69 +146,26 @@ export function FrameSenseToolPage({
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setAnalyses(parsed);
+          // Filter out legacy hardcoded mock records
+          const realOnly = parsed.filter(
+            (item: any) =>
+              !item.id?.endsWith("-1") &&
+              !item.id?.endsWith("-2") &&
+              !item.timestamp?.includes("24.09.2026, 11:20") &&
+              !item.timestamp?.includes("10.09.2026, 14:05")
+          );
+          setAnalyses(realOnly);
+          if (realOnly.length !== parsed.length) {
+            localStorage.setItem(`framesense_${selectedHive.id}`, JSON.stringify(realOnly));
+          }
           return;
         }
       }
     } catch {}
 
-    // Default canonical analysis records for the hive
-    const isStandby = (selectedHive.status || "").toLowerCase() === "standby" || !selectedHive.hasColony;
-    if (isStandby) {
-      setAnalyses([]);
-    } else {
-      const defaults: FrameSenseAnalysis[] = [
-        {
-          id: `fs-${selectedHive.id}-1`,
-          hiveId: selectedHive.id,
-          hiveCode: hiveDisplayName,
-          timestamp: "24.09.2026, 11:20",
-          status: "Analysis completed",
-          broodPct: 68,
-          storesPct: 24,
-          combSurfacePct: 92,
-          queenCells: 0,
-          estimatedBees: 1850,
-          aiRecommendations:
-            "High-density concentric worker brood pattern in central comb. Honey arch intact. Zero queen swarm cups detected. Colony is thriving.",
-          combTypeDistribution: {
-            workerCapped: 52,
-            eggsLarvae: 16,
-            honeyNectar: 24,
-            pollenStores: 5,
-            emptyDrawn: 3,
-            droneComb: 0,
-          },
-        },
-        {
-          id: `fs-${selectedHive.id}-2`,
-          hiveId: selectedHive.id,
-          hiveCode: hiveDisplayName,
-          timestamp: "10.09.2026, 14:05",
-          status: "Analysis completed",
-          broodPct: 54,
-          storesPct: 30,
-          combSurfacePct: 84,
-          queenCells: 0,
-          estimatedBees: 1520,
-          aiRecommendations:
-            "Solid brood laying. Ample nectar stores in upper corners. Queen is active with continuous egg ring.",
-          combTypeDistribution: {
-            workerCapped: 40,
-            eggsLarvae: 14,
-            honeyNectar: 30,
-            pollenStores: 8,
-            emptyDrawn: 8,
-            droneComb: 0,
-          },
-        },
-      ];
-      setAnalyses(defaults);
-      try {
-        localStorage.setItem(`framesense_${selectedHive.id}`, JSON.stringify(defaults));
-      } catch {}
-    }
-  }, [selectedHive?.id, hiveDisplayName, selectedHive.status, selectedHive.hasColony]);
+    // Strictly real scans only - zero fake data
+    setAnalyses([]);
+  }, [selectedHive?.id]);
 
   const saveAnalyses = (newList: FrameSenseAnalysis[]) => {
     setAnalyses(newList);

@@ -16,29 +16,19 @@ const KIND_OPTS: { key: Action["kind"]; label: string; color: string }[] = [
   { key: "winter_check", label: "Winter store check", color: "hsl(var(--destructive))" },
 ];
 
-function defaultPlan(): Action[] {
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  return [
-    { date: `${yyyy}-03-10`, kind: "syrup_1_1", kg: 4, note: "Brood build-up stim" },
-    { date: `${yyyy}-04-05`, kind: "syrup_1_1", kg: 4, note: "Pre-flow boost" },
-    { date: `${yyyy}-08-25`, kind: "syrup_2_1", kg: 8, note: "Autumn store top-up" },
-    { date: `${yyyy}-09-20`, kind: "syrup_2_1", kg: 6, note: "Final liquid feed" },
-    { date: `${yyyy}-10-15`, kind: "winter_check", kg: 0, note: "Heft test — target ≥20 kg" },
-    { date: `${yyyy}-12-15`, kind: "fondant", kg: 2.5, note: "Place above cluster" },
-    { date: `${yyyy + 1}-01-20`, kind: "candy", kg: 1.5, note: "Top-up emergency feed" },
-  ];
-}
-
 export default function FeedingSchedule({ isOpen, onClose, embedded = false }: { isOpen: boolean; onClose: () => void; embedded?: boolean }) {
   const deviceId = useDeviceId();
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [active, setActive] = useState<Plan>({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() });
+  const [active, setActive] = useState<Plan>({ hive_label: "Hive 1", plan_label: "Season plan", plan: [] });
 
   const load = useCallback(async () => {
     if (!deviceId) return;
     const { data } = await supabase.from("feeding_schedules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false });
-    setPlans(((data ?? []) as unknown) as Plan[]);
+    const list = ((data ?? []) as unknown) as Plan[];
+    setPlans(list);
+    if (list.length > 0) {
+      setActive(list[0]);
+    }
   }, [deviceId]);
   useEffect(() => { if (isOpen && deviceId) void load(); }, [isOpen, deviceId, load]);
 
@@ -90,24 +80,30 @@ export default function FeedingSchedule({ isOpen, onClose, embedded = false }: {
               <button onClick={() => setActive({ ...active, plan: [...active.plan, { date: new Date().toISOString().slice(0, 10), kind: "syrup_2_1", kg: 4, note: "" }] })} className="text-xs text-honey flex items-center gap-1"><Plus className="w-3 h-3" />Add</button>
             </div>
             <div className="space-y-2 max-h-96 overflow-y-auto custom-scroll">
-              {sorted.map((a, idx) => {
-                const i = active.plan.indexOf(a);
-                return (
-                  <div key={idx} className="grid grid-cols-12 gap-1 items-center text-xs">
-                    <input type="date" value={a.date} onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, date: e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5" />
-                    <select value={a.kind} onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, kind: e.target.value as Action["kind"] }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5">
-                      {KIND_OPTS.map((k) => <option key={k.key} value={k.key}>{k.label}</option>)}
-                    </select>
-                    <input type="number" value={a.kg} step="0.1" onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, kg: +e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-2 bg-background border border-border rounded px-2 py-1.5" />
-                    <input value={a.note} placeholder="note" onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, note: e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5" />
-                    <button onClick={() => setActive({ ...active, plan: active.plan.filter((_, j) => j !== i) })} className="col-span-1 text-destructive"><Trash2 className="w-3 h-3" /></button>
-                  </div>
-                );
-              })}
+              {active.plan.length === 0 ? (
+                <div className="text-center py-8 text-xs text-muted-foreground border border-dashed border-border rounded-xl">
+                  No feeding actions added yet. Click &quot;+ Add&quot; to schedule syrup, fondant, or winter checks.
+                </div>
+              ) : (
+                sorted.map((a, idx) => {
+                  const i = active.plan.indexOf(a);
+                  return (
+                    <div key={idx} className="grid grid-cols-12 gap-1 items-center text-xs">
+                      <input type="date" value={a.date} onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, date: e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5" />
+                      <select value={a.kind} onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, kind: e.target.value as Action["kind"] }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5">
+                        {KIND_OPTS.map((k) => <option key={k.key} value={k.key}>{k.label}</option>)}
+                      </select>
+                      <input type="number" value={a.kg} step="0.1" onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, kg: +e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-2 bg-background border border-border rounded px-2 py-1.5" />
+                      <input value={a.note} placeholder="note" onChange={(e) => { const p = [...active.plan]; p[i] = { ...a, note: e.target.value }; setActive({ ...active, plan: p }); }} className="col-span-3 bg-background border border-border rounded px-2 py-1.5" />
+                      <button onClick={() => setActive({ ...active, plan: active.plan.filter((_, j) => j !== i) })} className="col-span-1 text-destructive"><Trash2 className="w-3 h-3" /></button>
+                    </div>
+                  );
+                })
+              )}
             </div>
             <div className="flex gap-2 mt-3">
               <button onClick={save} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border border-emerald-500/40 text-xs font-medium flex items-center gap-1"><Save className="w-3 h-3" />Save plan</button>
-              <button onClick={() => setActive({ hive_label: "Hive 1", plan_label: "Season plan", plan: defaultPlan() })} className="px-3 py-2 rounded-lg border border-border text-xs">Reset to default</button>
+              <button onClick={() => setActive({ hive_label: active.hive_label || "Hive 1", plan_label: active.plan_label || "Season plan", plan: [] })} className="px-3 py-2 rounded-lg border border-border text-xs">Clear actions</button>
             </div>
           </div>
 
