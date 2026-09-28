@@ -1,16 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2,
-  ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2
+  ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2,
+  Trees, Flower2
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
 import beeyieldService from "@/services/beeyieldService";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
@@ -413,7 +415,7 @@ const Impact = () => {
                     🌸 1 Tree = ~5,000 Blossoms Pollinated
                   </span>
                 </div>
-                <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
+                <Button size="lg" asChild className="bg-emerald-600 text-white font-bold hover:bg-emerald-700 rounded-full px-8 shrink-0 shadow-md">
                   <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
                 </Button>
               </div>
@@ -440,17 +442,11 @@ const Impact = () => {
               { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar IoT micro-grids.", icon: Zap },
               { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe },
             ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-[2.5rem] bg-[#F9F7F2] border border-[#F4D03F]/20 backdrop-blur-md"
-              >
+              <div className="rounded-3xl border border-neutral-200/80 p-8 shadow-sm bg-white">
                 <item.icon className="h-8 w-8 text-beeyield-gold mb-6" />
                 <h4 className="text-xl font-bold mb-4">{item.title}</h4>
                 <p className="text-sm text-gray-700 leading-relaxed font-medium">{item.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -472,10 +468,10 @@ const Impact = () => {
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 105 and counting acres served. 3 tons of carbon offset. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
+              <Link to={"/contact" as any} className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
                 Contact the Hive <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
+              <Link to={"/global-hive-network" as any} className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
                 Join our Global Hive Network
               </Link>
             </div>

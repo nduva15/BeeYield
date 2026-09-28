@@ -7,9 +7,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import { jsPDF } from "jspdf";
-import { motion } from "framer-motion";
+
 
 import { toast } from "sonner";
 import BEEYIELD_LOGO from "@/assets/Logo.png";
@@ -175,11 +175,7 @@ const ESG = () => {
         </div>
 
         <div className="container relative z-10 mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto text-center"
-          >
+          <div>
             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
               <Globe className="w-3 h-3 mr-2" />
               Verified ESG Framework
@@ -201,7 +197,7 @@ const ESG = () => {
                 <Link to="/commitment">Vision & Purpose</Link>
               </Button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-beeyield-green/5 rounded-full blur-[140px] -translate-y-1/2 translate-x-1/2" />
@@ -214,20 +210,14 @@ const ESG = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {impactStats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="text-center p-6 rounded-[2rem] bg-white border border-neutral-200/60 shadow-[0_4px_24px_rgba(0,0,0,0.02)] hover:shadow-xl hover:border-beeyield-green/20 group hover:-translate-y-1 transition-all duration-300"
-              >
+              <div>
                 <div className="w-14 h-14 mx-auto mb-6 rounded-2xl bg-beeyield-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <stat.icon className="w-7 h-7 text-beeyield-green" />
                 </div>
                 <div className="text-2xl font-black text-[#1A1A1A] mb-1 tracking-tighter">{stat.value}</div>
                 <div className="text-sm font-semibold text-slate-700 mb-1">{stat.label}</div>
                 <p className="text-xs text-muted-foreground">{stat.description}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -516,9 +506,9 @@ const ESG = () => {
               </div>
 
               {/* Progress & 3 Pillars preview */}
-              <div className="lg:col-span-5 bg-neutral-950/60 p-6 rounded-2xl border border-emerald-500/20 space-y-4">
+              <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-emerald-200 shadow-sm space-y-4 text-neutral-900">
                 <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-semibold text-emerald-200">
+                  <div className="flex justify-between text-xs font-semibold text-emerald-800">
                     <span>Reforestation Progress</span>
                     <span className="text-emerald-400 font-bold">2,500 of 45,000 Goal</span>
                   </div>
@@ -527,20 +517,20 @@ const ESG = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-2 border-t border-white/10">
+                <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-2 border-t border-emerald-100">
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Tree Restoration</span>
+                    <span className="font-bold text-neutral-900 block">Tree Restoration</span>
                     <span className="text-[10px] text-emerald-200/70">Aquifer recharge</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Bees Saved</span>
+                    <span className="font-bold text-neutral-900 block">Bees Saved</span>
                     <span className="text-[10px] text-amber-200/70">Zero dry famine</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white/5">
                     <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
-                    <span className="font-bold text-white block">Flowers Needing Bees</span>
+                    <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
                     <span className="text-[10px] text-teal-200/70">85%+ pollination</span>
                   </div>
                 </div>
@@ -634,10 +624,10 @@ const ESG = () => {
               22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every jar traceable to its source apiary.
             </p>
             <div className="flex flex-wrap justify-center gap-6 pt-4">
-              <Link to="/contact" className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
+              <Link to={"/contact" as any} className="px-10 py-5 bg-neutral-900 text-white rounded-2xl font-bold shadow-xl shadow-neutral-900/20 hover:bg-neutral-800 transition-all text-sm">
                 Partner Engagement
               </Link>
-              <Link to="/media" className="px-10 py-5 bg-white text-neutral-900 border border-neutral-200 rounded-2xl font-bold shadow-sm hover:bg-neutral-50 transition-all text-sm backdrop-blur-sm">
+              <Link to={"/media" as any} className="px-10 py-5 bg-white text-neutral-900 border border-neutral-200 rounded-2xl font-bold shadow-sm hover:bg-neutral-50 transition-all text-sm backdrop-blur-sm">
                 Impact Media Room
               </Link>
             </div>
