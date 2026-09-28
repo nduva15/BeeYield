@@ -22,12 +22,19 @@ import {
   Activity,
   CalendarDays,
 } from "lucide-react";
-import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { beeyieldService } from "@/services/beeyieldService";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  extractCleanSerial,
+  persistScannedDeviceTelemetry,
+  type ScannedDeviceReadings,
+} from "@/services/deviceReadingService";
 import { CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
@@ -168,8 +175,7 @@ export function AddHiveModal({
   );
   const [sensorSerial, setSensorSerial] = useState(scannedSerial || "");
   const [showScanner, setShowScanner] = useState(false);
-  const [scannerError, setScannerError] = useState<string | null>(null);
-  const scannerContainerId = "add-hive-qr-camera-scanner-inspections";
+  const [scannedTelemetry, setScannedTelemetry] = useState<ScannedDeviceReadings | null>(null);
 
   // Load backend apiaries
   useEffect(() => {
@@ -278,52 +284,21 @@ export function AddHiveModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, showScanner, onClose]);
 
-  // QR Camera Scanner initialization
+  // Auto-resolve device readings when sensorSerial changes
   useEffect(() => {
-    if (!showScanner) return;
-    let html5QrCode: Html5Qrcode | null = null;
-    let isMounted = true;
-
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(scannerContainerId);
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            if (isMounted) {
-              void html5QrCode?.stop().catch(() => undefined);
-              toast.success(`Scanned hardware code: ${decodedText.trim()}`);
-              setSensorSerial(decodedText.trim());
-              setShowScanner(false);
-            }
-          },
-          () => undefined,
-        );
-      } catch (err: any) {
-        if (isMounted) {
-          setScannerError(err?.message || "Failed to access device camera.");
-          toast.error("Camera access error. You can still type the serial code manually.");
-        }
-      }
-    };
-
-    const timer = setTimeout(() => {
-      void startScanner();
-    }, 150);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      if (html5QrCode) {
-        try {
-          html5QrCode.stop().catch(() => undefined);
-        } catch {
-          // ignore
-        }
-      }
-    };
-  }, [showScanner]);
+    if (!isOpen) return;
+    const clean = extractCleanSerial(sensorSerial || "");
+    if (clean) {
+      const readings = resolveDeviceReadings(
+        clean,
+        apiary?.name || CANONICAL_APIARY_NAME,
+        code.trim() || "HIVE-NEW",
+      );
+      setScannedTelemetry(readings);
+    } else {
+      setScannedTelemetry(null);
+    }
+  }, [sensorSerial, isOpen, apiary?.name, code]);
 
   if (!isOpen) return null;
 
@@ -453,6 +428,11 @@ export function AddHiveModal({
               status: "online",
             })
             .catch(() => undefined);
+
+          const telemetryToSave =
+            scannedTelemetry ||
+            resolveDeviceReadings(sensorSerial.trim(), targetApiaryName, formattedHiveCode);
+          await persistScannedDeviceTelemetry(telemetryToSave, user.id);
         }
       }
     } catch (e) {
@@ -1135,27 +1115,33 @@ export function AddHiveModal({
 
                     {/* QR Camera Scanner Viewfinder */}
                     {showScanner && (
-                      <div className="p-4 rounded-xl bg-card border border-emerald-500/50 shadow-inner space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold flex items-center gap-1.5 text-foreground">
-                            <Camera className="w-4 h-4 text-emerald-500 animate-pulse" /> Point
-                            camera at device QR or Barcode
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setShowScanner(false)}
-                            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                        <div
-                          id={scannerContainerId}
-                          className="w-full h-56 bg-black rounded-lg overflow-hidden flex items-center justify-center relative border border-emerald-500/40"
+                      <div className="pt-2">
+                        <DeviceQrCameraScanner
+                          onScanSuccess={(rawCode) => {
+                            const clean = extractCleanSerial(rawCode);
+                            setSensorSerial(clean);
+                            const readings = resolveDeviceReadings(
+                              clean,
+                              targetApiaryName,
+                              formattedHiveCode,
+                            );
+                            setScannedTelemetry(readings);
+                            setShowScanner(false);
+                            toast.success(`Scanned hardware code: ${clean}`);
+                          }}
+                          onClose={() => setShowScanner(false)}
+                          title="Scan Hive Sensor QR / Barcode"
                         />
-                        {scannerError && (
-                          <p className="text-[11px] text-red-500 font-medium">{scannerError}</p>
-                        )}
+                      </div>
+                    )}
+
+                    {/* Detected Live Device Readings View */}
+                    {scannedTelemetry && (
+                      <div className="pt-2">
+                        <RecentDeviceReadingsView
+                          readings={scannedTelemetry}
+                          onRescan={() => setShowScanner(true)}
+                        />
                       </div>
                     )}
                   </div>

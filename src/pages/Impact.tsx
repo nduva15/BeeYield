@@ -103,7 +103,7 @@ const Impact = () => {
         '• IoT Telemetry Nodes: 22 Live Nodes (Apisense & Intelligent Hives)',
         '• Land Under Pollination: 105 acres and counting (Verified • Lead Farmer: Timothy Nduva)',
         '• Counties Served: 1 County (Makueni & Counting)',
-        '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Macadamia, Coffee, Sunflower, etc.)',
+        '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Citrus, Oranges, Sunflower, etc.)',
         '• Telemetry Ingestion: Over 2,000 data points daily & growing',
         '• Documented Crop Yield Uplift: 9–18% average increase observed in partner orchards',
         '• Indigenous Flora Restored: 2,500+ Indigenous Trees Planted',

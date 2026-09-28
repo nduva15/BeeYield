@@ -226,39 +226,6 @@ export const beePollinationData: Record<string, PollinationCropDetail> = {
       "/images/onion-plantation.png",
     ],
   },
-  "Coffee": {
-    cropName: "Coffee",
-    beeDependence: "Moderate (30%+)",
-    dependencyPercent: 40,
-    optimalHivesPerAcre: "1 – 2 Hives / Acre",
-    targetFPA: 15,
-    beeyieldAdvantage: "Short intense bloom pollination yields heavier, denser coffee cherries.",
-    regionalTrends2026: "Climate-resilient coffee varieties are being paired with BeeYield-supported apiculture initiatives.",
-    economicImpact: "Bees improve both bean yield volume and the sensory cupping profile of Arabica and Robusta.",
-    estimatedMarketValueUsdBn: 2.1,
-    image: "/images/pollination/citrus-bloom-branch-detail.jpg",
-    galleryImages: [
-      "/images/pollination/citrus-bloom-branch-detail.jpg",
-      "/images/pollination/citrus-tree-canopy-closeup.jpg",
-    ],
-  },
-  "Macadamia": {
-    cropName: "Macadamia",
-    beeDependence: "Very High (80%+)",
-    dependencyPercent: 80,
-    optimalHivesPerAcre: "4 – 6 Hives / Acre",
-    targetFPA: 28,
-    beeyieldAdvantage: "Dense racemose bloom saturation maximizes nut retention and kernel grade.",
-    regionalTrends2026: "Synchronized hive stocking during short flowering raceme windows cuts premature nut drop.",
-    economicImpact: "Dramatically lifts Grade-1 nut recovery and crackout percentages.",
-    estimatedMarketValueUsdBn: 1.7,
-    image: "/images/pollination/citrus-tree-young-orchard.jpg",
-    galleryImages: [
-      "/images/pollination/citrus-tree-young-orchard.jpg",
-      "/images/pollination/citrus-grove-drip-irrigation.jpg",
-      "/images/pollination/apisense-sensor-comb-inspection.png",
-    ],
-  },
 };
 
 export const DASHBOARD_POLLINATION_CROPS = [
@@ -273,8 +240,6 @@ export const DASHBOARD_POLLINATION_CROPS = [
   "Onions",
   "Sisal",
   "Vegetables",
-  "Coffee",
-  "Macadamia",
 ] as const;
 
 export const dashboardPollinationCropNames = [...DASHBOARD_POLLINATION_CROPS];

@@ -748,7 +748,7 @@ ESG Page (beeyield.com/esg):
 - Title: "Governance by Integrity."
 - Subtitle: "The BeeYield ESG framework is an immutable commitment to transparency, ecological restoration, and tactical precision in apiculture."
 - Downloadable ESG Report 2026 (PDF).
-- Live Impact Stats: 20+ Custodians, 105 and counting acres pollinated, over 2,000 data points daily and growing, 2,500+ Trees, 184 Smart Hives, 943kg Yield, 2.4M+ Pollinators.
+- Live Impact Stats: 20+ Custodians, 105 and counting acres pollinated, over 2,000 data points daily and growing, 2,500+ Trees, 184 Managed Langstroth Hives (150 Active Colonies), 843kg Certified Yield, 2.4M+ Pollinators.
 - Four ESG Strategic Pillars:
   1. Ecological Intelligence: Acoustic analysis, real-time hive snapshots (Temp, Humidity, Mass), predictive swarming analytics, automated health scoring. Impact: 15% increase in colony resilience.
   2. Radical Transparency: Wasm-powered cryptographic batch verification, immutable records, Hive ID to jar tracking, QR-based public access. Impact: 100% elimination of harvest fraud.
@@ -838,7 +838,7 @@ Pollination Pages:
 - Pollination Services (beeyield.com/pollination-services): Service offerings for farmers and growers in Kibwezi, Makueni, and surrounding regions.
 - Pollination Request (beeyield.com/pollination-request): Form for farmers to request pollination services. Fields include GPS coordinates, crop species, acreage, and desired timeline.
 - Pollination Solutions (beeyield.com/pollination-solutions): Comprehensive solution packages combining hive deployment with monitoring.
-- Crops We Pollinate (beeyield.com/crops-we-pollinate): Maize, Sisal, Mangoes, Beans, Sunflower, Oranges, Vegetables, Tomatoes, Onions, Avocado, Coffee, Macadamia.
+- Crops We Pollinate (beeyield.com/crops-we-pollinate): Maize, Sisal, Mangoes, Beans, Sunflower, Oranges, Citrus, Vegetables, Tomatoes, Onions, Avocado.
 - InLand Pollination Platform (beeyield.com/inland-pollination): Platform for inland pollination management across Kenya.
 
 Other Pages:
@@ -849,6 +849,7 @@ Other Pages:
 - BeeLearn (beeyield.com/learn): Educational resources including video courses and downloadable guides.
 - Bloom Phenology (beeyield.com/bloom-phenology): Tracking flowering seasons and bloom cycles for optimal honey production.
 - Global Hive Network (beeyield.com/global-hive-network): Map of BeeYield's worldwide hive network and partner beekeepers.
+- Master Map View (beeyield.com/master-map): Geospatial overview of all hive locations with health indicators.
 - Measurement Data (beeyield.com/measurement-data): Raw sensor data views including temperature, humidity, weight, and acoustic readings.
 - Account Settings: User profile and preference management.
 - Receipt Page: Order confirmation and receipt display after purchase.

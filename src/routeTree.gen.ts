@@ -8,223 +8,274 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BeeyieldDashboardRouteImport } from './routes/beeyield-dashboard'
+import { Route as BlogsRouteImport } from './routes/blogs'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CommitmentRouteImport } from './routes/commitment'
+import { Route as CropsWePollinateRouteImport } from './routes/crops-we-pollinate'
+import { Route as EsgRouteImport } from './routes/esg'
+import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as MediaRouteImport } from './routes/media'
+import { Route as OurStoryRouteImport } from './routes/our-story'
+import { Route as PandaMitiRouteImport } from './routes/panda-miti'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ShopDashboardRouteImport } from './routes/shop-dashboard'
+import { Route as SharedRunIdRouteImport } from './routes/shared-run.$id'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as ApiPublicBeegptRouteImport } from './routes/api/public/beegpt'
+import { Route as ApiShopCardsRouteImport } from './routes/api/shop/cards'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as UpdatePasswordImport } from './routes/update-password'
-import { Route as TraceabilityImport } from './routes/traceability'
-import { Route as TeamImport } from './routes/team'
-import { Route as ShopImport } from './routes/shop'
-import { Route as PrecisionPollinationImport } from './routes/precision-pollination'
-import { Route as PollinationSolutionsImport } from './routes/pollination-solutions'
-import { Route as PollinationRequestImport } from './routes/pollination-request'
-import { Route as OurstoryImport } from './routes/ourstory'
-import { Route as NotesImport } from './routes/notes'
-import { Route as MyAccountImport } from './routes/my-account'
-import { Route as MediaImport } from './routes/media'
-import { Route as LearnImport } from './routes/learn'
-import { Route as InLandPollinationImport } from './routes/in-land-pollination'
-import { Route as ImpactImport } from './routes/impact'
-import { Route as HoneyImport } from './routes/honey'
-import { Route as GlobalHiveNetworkImport } from './routes/global-hive-network'
-import { Route as EsgImport } from './routes/esg'
-import { Route as DiseasesImport } from './routes/diseases'
-import { Route as CropsWePollinateImport } from './routes/crops-we-pollinate'
-import { Route as ContactImport } from './routes/contact'
-import { Route as CommitmentImport } from './routes/commitment'
-import { Route as CheckoutImport } from './routes/checkout'
-import { Route as CareersImport } from './routes/careers'
-import { Route as BlogsImport } from './routes/blogs'
-import { Route as BeeyieldDashboardImport } from './routes/beeyield-dashboard'
-import { Route as AccountSettingsImport } from './routes/account-settings'
-import { Route as SplatImport } from './routes/$'
-import { Route as IndexImport } from './routes/index'
-import { Route as AdminIndexImport } from './routes/admin/index'
-import { Route as AdminLoginImport } from './routes/admin/login'
-
-// Create/Update Routes
-
-const UpdatePasswordRoute = UpdatePasswordImport.update({
-  id: '/update-password',
-  path: '/update-password',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TraceabilityRoute = TraceabilityImport.update({
-  id: '/traceability',
-  path: '/traceability',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const TeamRoute = TeamImport.update({
-  id: '/team',
-  path: '/team',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ShopRoute = ShopImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const PrecisionPollinationRoute = PrecisionPollinationImport.update({
-  id: '/precision-pollination',
-  path: '/precision-pollination',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const PollinationSolutionsRoute = PollinationSolutionsImport.update({
-  id: '/pollination-solutions',
-  path: '/pollination-solutions',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const PollinationRequestRoute = PollinationRequestImport.update({
-  id: '/pollination-request',
-  path: '/pollination-request',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const OurstoryRoute = OurstoryImport.update({
-  id: '/ourstory',
-  path: '/ourstory',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const NotesRoute = NotesImport.update({
-  id: '/notes',
-  path: '/notes',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MyAccountRoute = MyAccountImport.update({
-  id: '/my-account',
-  path: '/my-account',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const MediaRoute = MediaImport.update({
-  id: '/media',
-  path: '/media',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LearnRoute = LearnImport.update({
-  id: '/learn',
-  path: '/learn',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const InLandPollinationRoute = InLandPollinationImport.update({
-  id: '/in-land-pollination',
-  path: '/in-land-pollination',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ImpactRoute = ImpactImport.update({
-  id: '/impact',
-  path: '/impact',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const HoneyRoute = HoneyImport.update({
-  id: '/honey',
-  path: '/honey',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const GlobalHiveNetworkRoute = GlobalHiveNetworkImport.update({
-  id: '/global-hive-network',
-  path: '/global-hive-network',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const EsgRoute = EsgImport.update({
-  id: '/esg',
-  path: '/esg',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DiseasesRoute = DiseasesImport.update({
-  id: '/diseases',
-  path: '/diseases',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const CropsWePollinateRoute = CropsWePollinateImport.update({
-  id: '/crops-we-pollinate',
-  path: '/crops-we-pollinate',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ContactRoute = ContactImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const CommitmentRoute = CommitmentImport.update({
-  id: '/commitment',
-  path: '/commitment',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const CheckoutRoute = CheckoutImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const CareersRoute = CareersImport.update({
-  id: '/careers',
-  path: '/careers',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const BlogsRoute = BlogsImport.update({
-  id: '/blogs',
-  path: '/blogs',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const BeeyieldDashboardRoute = BeeyieldDashboardImport.update({
-  id: '/beeyield-dashboard',
-  path: '/beeyield-dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AccountSettingsRoute = AccountSettingsImport.update({
-  id: '/account-settings',
-  path: '/account-settings',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SplatRoute = SplatImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BeeyieldDashboardRoute = BeeyieldDashboardRouteImport.update({
+  id: '/beeyield-dashboard',
+  path: '/beeyield-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogsRoute = BlogsRouteImport.update({
+  id: '/blogs',
+  path: '/blogs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommitmentRoute = CommitmentRouteImport.update({
+  id: '/commitment',
+  path: '/commitment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CropsWePollinateRoute = CropsWePollinateRouteImport.update({
+  id: '/crops-we-pollinate',
+  path: '/crops-we-pollinate',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsgRoute = EsgRouteImport.update({
+  id: '/esg',
+  path: '/esg',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MediaRoute = MediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OurStoryRoute = OurStoryRouteImport.update({
+  id: '/our-story',
+  path: '/our-story',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PandaMitiRoute = PandaMitiRouteImport.update({
+  id: '/panda-miti',
+  path: '/panda-miti',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopDashboardRoute = ShopDashboardRouteImport.update({
+  id: '/shop-dashboard',
+  path: '/shop-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharedRunIdRoute = SharedRunIdRouteImport.update({
+  id: '/shared-run/$id',
+  path: '/shared-run/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBeegptRoute = ApiPublicBeegptRouteImport.update({
+  id: '/api/public/beegpt',
+  path: '/api/public/beegpt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiShopCardsRoute = ApiShopCardsRouteImport.update({
+  id: '/api/shop/cards',
+  path: '/api/shop/cards',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
-const AdminIndexRoute = AdminIndexImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AdminLoginRoute = AdminLoginImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
+  '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
+  '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
+  '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
+  '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
+  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
+  '/blogs': typeof BlogsRoute
+  '/careers': typeof CareersRoute
+  '/commitment': typeof CommitmentRoute
+  '/crops-we-pollinate': typeof CropsWePollinateRoute
+  '/esg': typeof EsgRoute
+  '/impact': typeof ImpactRoute
+  '/media': typeof MediaRoute
+  '/our-story': typeof OurStoryRoute
+  '/panda-miti': typeof PandaMitiRoute
+  '/shop': typeof ShopRoute
+  '/shop-dashboard': typeof ShopDashboardRoute
+  '/shared-run/$id': typeof SharedRunIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/api/public/beegpt': typeof ApiPublicBeegptRoute
+  '/api/shop/cards': typeof ApiShopCardsRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/beeyield-dashboard'
+    | '/blogs'
+    | '/careers'
+    | '/commitment'
+    | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
+    | '/media'
+    | '/our-story'
+    | '/panda-miti'
+    | '/shop'
+    | '/shop-dashboard'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
+    | '/api/shop/cards'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/beeyield-dashboard'
+    | '/blogs'
+    | '/careers'
+    | '/commitment'
+    | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
+    | '/media'
+    | '/our-story'
+    | '/panda-miti'
+    | '/shop'
+    | '/shop-dashboard'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
+    | '/api/shop/cards'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/beeyield-dashboard'
+    | '/blogs'
+    | '/careers'
+    | '/commitment'
+    | '/crops-we-pollinate'
+    | '/esg'
+    | '/impact'
+    | '/media'
+    | '/our-story'
+    | '/panda-miti'
+    | '/shop'
+    | '/shop-dashboard'
+    | '/shared-run/$id'
+    | '/.lovable/oauth/consent'
+    | '/api/public/beegpt'
+    | '/api/shop/cards'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
+  BeeyieldDashboardRoute: typeof BeeyieldDashboardRoute
+  BlogsRoute: typeof BlogsRoute
+  CareersRoute: typeof CareersRoute
+  CommitmentRoute: typeof CommitmentRoute
+  CropsWePollinateRoute: typeof CropsWePollinateRoute
+  EsgRoute: typeof EsgRoute
+  ImpactRoute: typeof ImpactRoute
+  MediaRoute: typeof MediaRoute
+  OurStoryRoute: typeof OurStoryRoute
+  PandaMitiRoute: typeof PandaMitiRoute
+  ShopRoute: typeof ShopRoute
+  ShopDashboardRoute: typeof ShopDashboardRoute
+  SharedRunIdRoute: typeof SharedRunIdRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  ApiPublicBeegptRoute: typeof ApiPublicBeegptRoute
+  ApiShopCardsRoute: typeof ApiShopCardsRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
@@ -232,615 +283,169 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/$': {
-      id: '/$'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatImport
-      parentRoute: typeof rootRoute
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/account-settings': {
-      id: '/account-settings'
-      path: '/account-settings'
-      fullPath: '/account-settings'
-      preLoaderRoute: typeof AccountSettingsImport
-      parentRoute: typeof rootRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/beeyield-dashboard': {
       id: '/beeyield-dashboard'
       path: '/beeyield-dashboard'
       fullPath: '/beeyield-dashboard'
-      preLoaderRoute: typeof BeeyieldDashboardImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof BeeyieldDashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/blogs': {
       id: '/blogs'
       path: '/blogs'
       fullPath: '/blogs'
-      preLoaderRoute: typeof BlogsImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof BlogsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/careers': {
       id: '/careers'
       path: '/careers'
       fullPath: '/careers'
-      preLoaderRoute: typeof CareersImport
-      parentRoute: typeof rootRoute
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/commitment': {
       id: '/commitment'
       path: '/commitment'
       fullPath: '/commitment'
-      preLoaderRoute: typeof CommitmentImport
-      parentRoute: typeof rootRoute
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CommitmentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/crops-we-pollinate': {
       id: '/crops-we-pollinate'
       path: '/crops-we-pollinate'
       fullPath: '/crops-we-pollinate'
-      preLoaderRoute: typeof CropsWePollinateImport
-      parentRoute: typeof rootRoute
-    }
-    '/diseases': {
-      id: '/diseases'
-      path: '/diseases'
-      fullPath: '/diseases'
-      preLoaderRoute: typeof DiseasesImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof CropsWePollinateRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/esg': {
       id: '/esg'
       path: '/esg'
       fullPath: '/esg'
-      preLoaderRoute: typeof EsgImport
-      parentRoute: typeof rootRoute
-    }
-    '/global-hive-network': {
-      id: '/global-hive-network'
-      path: '/global-hive-network'
-      fullPath: '/global-hive-network'
-      preLoaderRoute: typeof GlobalHiveNetworkImport
-      parentRoute: typeof rootRoute
-    }
-    '/honey': {
-      id: '/honey'
-      path: '/honey'
-      fullPath: '/honey'
-      preLoaderRoute: typeof HoneyImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof EsgRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/impact': {
       id: '/impact'
       path: '/impact'
       fullPath: '/impact'
-      preLoaderRoute: typeof ImpactImport
-      parentRoute: typeof rootRoute
-    }
-    '/in-land-pollination': {
-      id: '/in-land-pollination'
-      path: '/in-land-pollination'
-      fullPath: '/in-land-pollination'
-      preLoaderRoute: typeof InLandPollinationImport
-      parentRoute: typeof rootRoute
-    }
-    '/learn': {
-      id: '/learn'
-      path: '/learn'
-      fullPath: '/learn'
-      preLoaderRoute: typeof LearnImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof ImpactRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/media': {
       id: '/media'
       path: '/media'
       fullPath: '/media'
-      preLoaderRoute: typeof MediaImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof MediaRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/my-account': {
-      id: '/my-account'
-      path: '/my-account'
-      fullPath: '/my-account'
-      preLoaderRoute: typeof MyAccountImport
-      parentRoute: typeof rootRoute
+    '/our-story': {
+      id: '/our-story'
+      path: '/our-story'
+      fullPath: '/our-story'
+      preLoaderRoute: typeof OurStoryRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/notes': {
-      id: '/notes'
-      path: '/notes'
-      fullPath: '/notes'
-      preLoaderRoute: typeof NotesImport
-      parentRoute: typeof rootRoute
-    }
-    '/ourstory': {
-      id: '/ourstory'
-      path: '/ourstory'
-      fullPath: '/ourstory'
-      preLoaderRoute: typeof OurstoryImport
-      parentRoute: typeof rootRoute
-    }
-    '/pollination-request': {
-      id: '/pollination-request'
-      path: '/pollination-request'
-      fullPath: '/pollination-request'
-      preLoaderRoute: typeof PollinationRequestImport
-      parentRoute: typeof rootRoute
-    }
-    '/pollination-solutions': {
-      id: '/pollination-solutions'
-      path: '/pollination-solutions'
-      fullPath: '/pollination-solutions'
-      preLoaderRoute: typeof PollinationSolutionsImport
-      parentRoute: typeof rootRoute
-    }
-    '/precision-pollination': {
-      id: '/precision-pollination'
-      path: '/precision-pollination'
-      fullPath: '/precision-pollination'
-      preLoaderRoute: typeof PrecisionPollinationImport
-      parentRoute: typeof rootRoute
+    '/panda-miti': {
+      id: '/panda-miti'
+      path: '/panda-miti'
+      fullPath: '/panda-miti'
+      preLoaderRoute: typeof PandaMitiRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/shop': {
       id: '/shop'
       path: '/shop'
       fullPath: '/shop'
-      preLoaderRoute: typeof ShopImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/team': {
-      id: '/team'
-      path: '/team'
-      fullPath: '/team'
-      preLoaderRoute: typeof TeamImport
-      parentRoute: typeof rootRoute
+    '/shop-dashboard': {
+      id: '/shop-dashboard'
+      path: '/shop-dashboard'
+      fullPath: '/shop-dashboard'
+      preLoaderRoute: typeof ShopDashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/traceability': {
-      id: '/traceability'
-      path: '/traceability'
-      fullPath: '/traceability'
-      preLoaderRoute: typeof TraceabilityImport
-      parentRoute: typeof rootRoute
+    '/shared-run/$id': {
+      id: '/shared-run/$id'
+      path: '/shared-run/$id'
+      fullPath: '/shared-run/$id'
+      preLoaderRoute: typeof SharedRunIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/update-password': {
-      id: '/update-password'
-      path: '/update-password'
-      fullPath: '/update-password'
-      preLoaderRoute: typeof UpdatePasswordImport
-      parentRoute: typeof rootRoute
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginImport
-      parentRoute: typeof rootRoute
+    '/api/public/beegpt': {
+      id: '/api/public/beegpt'
+      path: '/api/public/beegpt'
+      fullPath: '/api/public/beegpt'
+      preLoaderRoute: typeof ApiPublicBeegptRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminIndexImport
-      parentRoute: typeof rootRoute
+    '/api/shop/cards': {
+      id: '/api/shop/cards'
+      path: '/api/shop/cards'
+      fullPath: '/api/shop/cards'
+      preLoaderRoute: typeof ApiShopCardsRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-// Create and export the route tree
-
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/$': typeof SplatRoute
-  '/account-settings': typeof AccountSettingsRoute
-  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
-  '/blogs': typeof BlogsRoute
-  '/careers': typeof CareersRoute
-  '/checkout': typeof CheckoutRoute
-  '/commitment': typeof CommitmentRoute
-  '/contact': typeof ContactRoute
-  '/crops-we-pollinate': typeof CropsWePollinateRoute
-  '/diseases': typeof DiseasesRoute
-  '/esg': typeof EsgRoute
-  '/global-hive-network': typeof GlobalHiveNetworkRoute
-  '/honey': typeof HoneyRoute
-  '/impact': typeof ImpactRoute
-  '/in-land-pollination': typeof InLandPollinationRoute
-  '/learn': typeof LearnRoute
-  '/media': typeof MediaRoute
-  '/my-account': typeof MyAccountRoute
-  '/notes': typeof NotesRoute
-  '/ourstory': typeof OurstoryRoute
-  '/pollination-request': typeof PollinationRequestRoute
-  '/pollination-solutions': typeof PollinationSolutionsRoute
-  '/precision-pollination': typeof PrecisionPollinationRoute
-  '/shop': typeof ShopRoute
-  '/team': typeof TeamRoute
-  '/traceability': typeof TraceabilityRoute
-  '/update-password': typeof UpdatePasswordRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin': typeof AdminIndexRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/$': typeof SplatRoute
-  '/account-settings': typeof AccountSettingsRoute
-  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
-  '/blogs': typeof BlogsRoute
-  '/careers': typeof CareersRoute
-  '/checkout': typeof CheckoutRoute
-  '/commitment': typeof CommitmentRoute
-  '/contact': typeof ContactRoute
-  '/crops-we-pollinate': typeof CropsWePollinateRoute
-  '/diseases': typeof DiseasesRoute
-  '/esg': typeof EsgRoute
-  '/global-hive-network': typeof GlobalHiveNetworkRoute
-  '/honey': typeof HoneyRoute
-  '/impact': typeof ImpactRoute
-  '/in-land-pollination': typeof InLandPollinationRoute
-  '/learn': typeof LearnRoute
-  '/media': typeof MediaRoute
-  '/my-account': typeof MyAccountRoute
-  '/notes': typeof NotesRoute
-  '/ourstory': typeof OurstoryRoute
-  '/pollination-request': typeof PollinationRequestRoute
-  '/pollination-solutions': typeof PollinationSolutionsRoute
-  '/precision-pollination': typeof PrecisionPollinationRoute
-  '/shop': typeof ShopRoute
-  '/team': typeof TeamRoute
-  '/traceability': typeof TraceabilityRoute
-  '/update-password': typeof UpdatePasswordRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin': typeof AdminIndexRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/$': typeof SplatRoute
-  '/account-settings': typeof AccountSettingsRoute
-  '/beeyield-dashboard': typeof BeeyieldDashboardRoute
-  '/blogs': typeof BlogsRoute
-  '/careers': typeof CareersRoute
-  '/checkout': typeof CheckoutRoute
-  '/commitment': typeof CommitmentRoute
-  '/contact': typeof ContactRoute
-  '/crops-we-pollinate': typeof CropsWePollinateRoute
-  '/diseases': typeof DiseasesRoute
-  '/esg': typeof EsgRoute
-  '/global-hive-network': typeof GlobalHiveNetworkRoute
-  '/honey': typeof HoneyRoute
-  '/impact': typeof ImpactRoute
-  '/in-land-pollination': typeof InLandPollinationRoute
-  '/learn': typeof LearnRoute
-  '/media': typeof MediaRoute
-  '/my-account': typeof MyAccountRoute
-  '/notes': typeof NotesRoute
-  '/ourstory': typeof OurstoryRoute
-  '/pollination-request': typeof PollinationRequestRoute
-  '/pollination-solutions': typeof PollinationSolutionsRoute
-  '/precision-pollination': typeof PrecisionPollinationRoute
-  '/shop': typeof ShopRoute
-  '/team': typeof TeamRoute
-  '/traceability': typeof TraceabilityRoute
-  '/update-password': typeof UpdatePasswordRoute
-  '/admin/login': typeof AdminLoginRoute
-  '/admin/': typeof AdminIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/$'
-    | '/account-settings'
-    | '/beeyield-dashboard'
-    | '/blogs'
-    | '/careers'
-    | '/checkout'
-    | '/commitment'
-    | '/contact'
-    | '/crops-we-pollinate'
-    | '/diseases'
-    | '/esg'
-    | '/global-hive-network'
-    | '/honey'
-    | '/impact'
-    | '/in-land-pollination'
-    | '/learn'
-    | '/media'
-    | '/my-account'
-    | '/notes'
-    | '/ourstory'
-    | '/pollination-request'
-    | '/pollination-solutions'
-    | '/precision-pollination'
-    | '/shop'
-    | '/team'
-    | '/traceability'
-    | '/update-password'
-    | '/admin/login'
-    | '/admin'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/$'
-    | '/account-settings'
-    | '/beeyield-dashboard'
-    | '/blogs'
-    | '/careers'
-    | '/checkout'
-    | '/commitment'
-    | '/contact'
-    | '/crops-we-pollinate'
-    | '/diseases'
-    | '/esg'
-    | '/global-hive-network'
-    | '/honey'
-    | '/impact'
-    | '/in-land-pollination'
-    | '/learn'
-    | '/media'
-    | '/my-account'
-    | '/notes'
-    | '/ourstory'
-    | '/pollination-request'
-    | '/pollination-solutions'
-    | '/precision-pollination'
-    | '/shop'
-    | '/team'
-    | '/traceability'
-    | '/update-password'
-    | '/admin/login'
-    | '/admin'
-  id:
-    | '__root__'
-    | '/'
-    | '/$'
-    | '/account-settings'
-    | '/beeyield-dashboard'
-    | '/blogs'
-    | '/careers'
-    | '/checkout'
-    | '/commitment'
-    | '/contact'
-    | '/crops-we-pollinate'
-    | '/diseases'
-    | '/esg'
-    | '/global-hive-network'
-    | '/honey'
-    | '/impact'
-    | '/in-land-pollination'
-    | '/learn'
-    | '/media'
-    | '/my-account'
-    | '/notes'
-    | '/ourstory'
-    | '/pollination-request'
-    | '/pollination-solutions'
-    | '/precision-pollination'
-    | '/shop'
-    | '/team'
-    | '/traceability'
-    | '/update-password'
-    | '/admin/login'
-    | '/admin/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  SplatRoute: typeof SplatRoute
-  AccountSettingsRoute: typeof AccountSettingsRoute
-  BeeyieldDashboardRoute: typeof BeeyieldDashboardRoute
-  BlogsRoute: typeof BlogsRoute
-  CareersRoute: typeof CareersRoute
-  CheckoutRoute: typeof CheckoutRoute
-  CommitmentRoute: typeof CommitmentRoute
-  ContactRoute: typeof ContactRoute
-  CropsWePollinateRoute: typeof CropsWePollinateRoute
-  DiseasesRoute: typeof DiseasesRoute
-  EsgRoute: typeof EsgRoute
-  GlobalHiveNetworkRoute: typeof GlobalHiveNetworkRoute
-  HoneyRoute: typeof HoneyRoute
-  ImpactRoute: typeof ImpactRoute
-  InLandPollinationRoute: typeof InLandPollinationRoute
-  LearnRoute: typeof LearnRoute
-  MediaRoute: typeof MediaRoute
-  MyAccountRoute: typeof MyAccountRoute
-  NotesRoute: typeof NotesRoute
-  OurstoryRoute: typeof OurstoryRoute
-  PollinationRequestRoute: typeof PollinationRequestRoute
-  PollinationSolutionsRoute: typeof PollinationSolutionsRoute
-  PrecisionPollinationRoute: typeof PrecisionPollinationRoute
-  ShopRoute: typeof ShopRoute
-  TeamRoute: typeof TeamRoute
-  TraceabilityRoute: typeof TraceabilityRoute
-  UpdatePasswordRoute: typeof UpdatePasswordRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SplatRoute: SplatRoute,
-  AccountSettingsRoute: AccountSettingsRoute,
+  AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
   BeeyieldDashboardRoute: BeeyieldDashboardRoute,
   BlogsRoute: BlogsRoute,
   CareersRoute: CareersRoute,
-  CheckoutRoute: CheckoutRoute,
   CommitmentRoute: CommitmentRoute,
-  ContactRoute: ContactRoute,
   CropsWePollinateRoute: CropsWePollinateRoute,
-  DiseasesRoute: DiseasesRoute,
   EsgRoute: EsgRoute,
-  GlobalHiveNetworkRoute: GlobalHiveNetworkRoute,
-  HoneyRoute: HoneyRoute,
   ImpactRoute: ImpactRoute,
-  InLandPollinationRoute: InLandPollinationRoute,
-  LearnRoute: LearnRoute,
   MediaRoute: MediaRoute,
-  MyAccountRoute: MyAccountRoute,
-  NotesRoute: NotesRoute,
-  OurstoryRoute: OurstoryRoute,
-  PollinationRequestRoute: PollinationRequestRoute,
-  PollinationSolutionsRoute: PollinationSolutionsRoute,
-  PrecisionPollinationRoute: PrecisionPollinationRoute,
+  OurStoryRoute: OurStoryRoute,
+  PandaMitiRoute: PandaMitiRoute,
   ShopRoute: ShopRoute,
-  TeamRoute: TeamRoute,
-  TraceabilityRoute: TraceabilityRoute,
-  UpdatePasswordRoute: UpdatePasswordRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  AdminIndexRoute: AdminIndexRoute,
+  ShopDashboardRoute: ShopDashboardRoute,
+  SharedRunIdRoute: SharedRunIdRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  ApiPublicBeegptRoute: ApiPublicBeegptRoute,
+  ApiShopCardsRoute: ApiShopCardsRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/$",
-        "/account-settings",
-        "/beeyield-dashboard",
-        "/blogs",
-        "/careers",
-        "/checkout",
-        "/commitment",
-        "/contact",
-        "/crops-we-pollinate",
-        "/diseases",
-        "/esg",
-        "/global-hive-network",
-        "/honey",
-        "/impact",
-        "/in-land-pollination",
-        "/learn",
-        "/media",
-        "/my-account",
-        "/notes",
-        "/ourstory",
-        "/pollination-request",
-        "/pollination-solutions",
-        "/precision-pollination",
-        "/shop",
-        "/team",
-        "/traceability",
-        "/update-password",
-        "/admin/login",
-        "/admin/"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/$": {
-      "filePath": "$.tsx"
-    },
-    "/account-settings": {
-      "filePath": "account-settings.tsx"
-    },
-    "/beeyield-dashboard": {
-      "filePath": "beeyield-dashboard.tsx"
-    },
-    "/blogs": {
-      "filePath": "blogs.tsx"
-    },
-    "/careers": {
-      "filePath": "careers.tsx"
-    },
-    "/checkout": {
-      "filePath": "checkout.tsx"
-    },
-    "/commitment": {
-      "filePath": "commitment.tsx"
-    },
-    "/contact": {
-      "filePath": "contact.tsx"
-    },
-    "/crops-we-pollinate": {
-      "filePath": "crops-we-pollinate.tsx"
-    },
-    "/diseases": {
-      "filePath": "diseases.tsx"
-    },
-    "/esg": {
-      "filePath": "esg.tsx"
-    },
-    "/global-hive-network": {
-      "filePath": "global-hive-network.tsx"
-    },
-    "/honey": {
-      "filePath": "honey.tsx"
-    },
-    "/impact": {
-      "filePath": "impact.tsx"
-    },
-    "/in-land-pollination": {
-      "filePath": "in-land-pollination.tsx"
-    },
-    "/learn": {
-      "filePath": "learn.tsx"
-    },
-    "/media": {
-      "filePath": "media.tsx"
-    },
-    "/my-account": {
-      "filePath": "my-account.tsx"
-    },
-    "/notes": {
-      "filePath": "notes.tsx"
-    },
-    "/ourstory": {
-      "filePath": "ourstory.tsx"
-    },
-    "/pollination-request": {
-      "filePath": "pollination-request.tsx"
-    },
-    "/pollination-solutions": {
-      "filePath": "pollination-solutions.tsx"
-    },
-    "/precision-pollination": {
-      "filePath": "precision-pollination.tsx"
-    },
-    "/shop": {
-      "filePath": "shop.tsx"
-    },
-    "/team": {
-      "filePath": "team.tsx"
-    },
-    "/traceability": {
-      "filePath": "traceability.tsx"
-    },
-    "/update-password": {
-      "filePath": "update-password.tsx"
-    },
-    "/admin/login": {
-      "filePath": "admin/login.tsx"
-    },
-    "/admin/": {
-      "filePath": "admin/index.tsx"
-    }
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
-ROUTE_MANIFEST_END */

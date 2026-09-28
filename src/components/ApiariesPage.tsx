@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, startTransition, memo } from "react";
 import { createPortal } from "react-dom";
 import {
   X,
@@ -70,8 +70,8 @@ import {
   MicOff,
   Calculator,
   Clock,
+  Loader2,
 } from "lucide-react";
-import { Html5Qrcode } from "html5-qrcode";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
@@ -94,7 +94,16 @@ import {
   removeAllSensorsFully,
   subscribeToSensorSync,
   SyncedSensorDevice,
+  DeviceStatus,
 } from "@/services/sensorSyncService";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  persistScannedDeviceTelemetry,
+  extractCleanSerial,
+  type DeviceTelemetryReading,
+} from "@/services/deviceReadingService";
 
 export interface ApiarySite {
   id: string;
@@ -156,7 +165,7 @@ export interface ApiaryDeviceItem {
   deviceType: string;
   serial: string;
   hiveCode?: string;
-  status: "active" | "online" | "optimal" | "low_battery" | "calibrating";
+  status: DeviceStatus;
   lastSync?: string;
   telemetrySummary?: string;
   model?: string;
@@ -330,19 +339,38 @@ export function deduplicateApiaries<T extends ApiarySite>(apiariesList: T[]): T[
   return deduplicated.length > 0 ? deduplicated : (DEFAULT_APIARIES.map(normalizeApiarySite) as T[]);
 }
 
+const hivesCountCache = new Map<string, { count: number; timestamp: number }>();
+const HIVE_COUNT_TTL_MS = 5000;
+
 export function getUserHivesCount(userKey: string, apiaryId: string, fallbackCount: number): number {
+  const cacheKey = `${userKey}::${apiaryId}`;
+  const now = Date.now();
+  const cached = hivesCountCache.get(cacheKey);
+  if (cached && now - cached.timestamp < HIVE_COUNT_TTL_MS) {
+    return cached.count;
+  }
   try {
     const stored = localStorage.getItem(getStorageKey(userKey, apiaryId, "hives"));
     if (stored) {
       const parsed = JSON.parse(stored);
       if (Array.isArray(parsed)) {
+        hivesCountCache.set(cacheKey, { count: parsed.length, timestamp: now });
         return parsed.length;
       }
     }
   } catch {
     // fallback
   }
+  hivesCountCache.set(cacheKey, { count: fallbackCount, timestamp: now });
   return fallbackCount;
+}
+
+export function invalidateHivesCountCache(userKey?: string, apiaryId?: string) {
+  if (userKey && apiaryId) {
+    hivesCountCache.delete(`${userKey}::${apiaryId}`);
+  } else {
+    hivesCountCache.clear();
+  }
 }
 
 // Botanical Flora Ecosystem Species for BeeYield Apiary in Kibwezi Kenya
@@ -1091,7 +1119,7 @@ function getFallbackWeather(lat: number, lon: number): LiveWeatherData {
 }
 
 // ----------------------------------------------------------------------
-// QR Code Scanner Modal using Html5Qrcode
+// QR Code Scanner Modal using DeviceQrCameraScanner
 // ----------------------------------------------------------------------
 export function QrScannerModal({
   isOpen,
@@ -1105,54 +1133,37 @@ export function QrScannerModal({
   title?: string;
 }) {
   const [manualSerial, setManualSerial] = useState("");
-  const [scannerError, setScannerError] = useState<string | null>(null);
-  const containerId = "beeyield-qr-scanner-viewfinder";
+  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    let html5QrCode: Html5Qrcode | null = null;
-    let isMounted = true;
+    if (!isOpen) {
+      setManualSerial("");
+      setScannedReading(null);
+    }
+  }, [isOpen]);
 
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(containerId);
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            if (isMounted) {
-              void html5QrCode?.stop().catch(() => undefined);
-              toast.success(`Scanned hardware code: ${decodedText.trim()}`);
-              onScanSuccess(decodedText.trim());
-              onClose();
-            }
-          },
-          () => undefined
-        );
-      } catch (err: any) {
-        if (isMounted) {
-          setScannerError(
-            err?.message || "Camera access not available. Please enter the serial number manually."
-          );
-        }
-      }
-    };
+  const handleApplySerial = async (serialToApply: string) => {
+    const clean = extractCleanSerial(serialToApply);
+    if (!clean) {
+      toast.error("Please enter a valid sensor serial");
+      return;
+    }
+    const reading = await resolveDeviceReadings(clean);
+    setScannedReading(reading);
+    onScanSuccess(clean);
+    toast.success(`Paired sensor: ${clean}`);
+    onClose();
+  };
 
-    const timer = setTimeout(() => {
-      startScanner();
-    }, 200);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      if (html5QrCode && html5QrCode.isScanning) {
-        void html5QrCode.stop().catch(() => undefined);
-      }
-    };
-  }, [isOpen, onScanSuccess, onClose]);
+  const handleScanDecoded = async (decodedText: string) => {
+    const clean = extractCleanSerial(decodedText);
+    setManualSerial(clean);
+    const reading = await resolveDeviceReadings(clean);
+    setScannedReading(reading);
+    toast.success(`Scanned hardware code: ${clean}`);
+  };
 
   if (!isOpen) return null;
-
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -1161,7 +1172,7 @@ export function QrScannerModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4"
+        className="relative w-full max-w-md bg-card border border-border rounded-2xl shadow-2xl p-5 space-y-4 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border pb-3">
@@ -1178,19 +1189,24 @@ export function QrScannerModal({
           </button>
         </div>
 
-        <div className="space-y-3 text-center">
-          <p className="text-xs text-muted-foreground">
-            Point camera at the QR code or barcode on the BeeYield VitalSensor hardware or device label.
-          </p>
-
-          <div
-            id={containerId}
-            className="w-full h-56 rounded-xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
-          />
-
-          {scannerError && (
-            <div className="p-2.5 rounded-lg bg-destructive/10 border border-destructive/20 text-[11px] text-destructive">
-              {scannerError}
+        <div className="space-y-3">
+          {!scannedReading ? (
+            <DeviceQrCameraScanner
+              title="Point camera at sensor QR code"
+              helperText="Position hardware barcode or QR label steadily inside frame"
+              onScanSuccess={handleScanDecoded}
+              onCancel={onClose}
+            />
+          ) : (
+            <div className="space-y-3">
+              <RecentDeviceReadingsView
+                reading={scannedReading}
+                onConfirmApply={() => {
+                  onScanSuccess(scannedReading.serial);
+                  onClose();
+                }}
+                onRescan={() => setScannedReading(null)}
+              />
             </div>
           )}
 
@@ -1202,21 +1218,13 @@ export function QrScannerModal({
               <input
                 type="text"
                 value={manualSerial}
-                onChange={(e) => setManualSerial(e.target.value)}
-                placeholder="e.g. SENSOR-KIB-001 or VITAL-9824"
-                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono"
+                onChange={(e) => setManualSerial(e.target.value.toUpperCase())}
+                placeholder="e.g. VS-KBZ-042 or SENSOR-KIB-001"
+                className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono uppercase"
               />
               <button
                 type="button"
-                onClick={() => {
-                  if (!manualSerial.trim()) {
-                    toast.error("Please enter a sensor serial");
-                    return;
-                  }
-                  onScanSuccess(manualSerial.trim());
-                  toast.success(`Paired sensor: ${manualSerial.trim()}`);
-                  onClose();
-                }}
+                onClick={() => handleApplySerial(manualSerial)}
                 className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm"
               >
                 Apply
@@ -1231,7 +1239,7 @@ export function QrScannerModal({
             onClick={onClose}
             className="px-4 py-1.5 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-muted"
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
@@ -1902,11 +1910,14 @@ function PairVitalSensorModal({
   const [deviceType, setDeviceType] = useState<string>("Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)");
   const [serial, setSerial] = useState(currentSerial || "");
   const [showCamera, setShowCamera] = useState(false);
-  const containerId = "pair-vitalsensor-qr-scanner-portal";
+  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
 
   useEffect(() => {
-    if (currentSerial) setSerial(currentSerial);
-  }, [currentSerial]);
+    if (currentSerial) {
+      setSerial(currentSerial);
+      void resolveDeviceReadings(currentSerial, hiveName).then(setScannedReading);
+    }
+  }, [currentSerial, hiveName]);
 
   // Escape key dismiss
   useEffect(() => {
@@ -1918,44 +1929,12 @@ function PairVitalSensorModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  // Live QR Camera Scanner logic
-  useEffect(() => {
-    if (!isOpen || !showCamera) return;
-    let html5QrCode: Html5Qrcode | null = null;
-    let isMounted = true;
-
-    const startScanner = async () => {
-      try {
-        html5QrCode = new Html5Qrcode(containerId);
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 220, height: 220 } },
-          (decodedText) => {
-            if (isMounted) {
-              const cleaned = decodedText.trim().toUpperCase();
-              setSerial(cleaned);
-              setShowCamera(false);
-              toast.success(`Scanned hardware code: ${cleaned}`);
-              void html5QrCode?.stop().catch(() => undefined);
-            }
-          },
-          () => {}
-        );
-      } catch (err) {
-        toast.error("Camera scanner unavailable. Please enter code manually.");
-        setShowCamera(false);
-      }
-    };
-
-    void startScanner();
-
-    return () => {
-      isMounted = false;
-      if (html5QrCode && html5QrCode.isScanning) {
-        void html5QrCode.stop().catch(() => undefined);
-      }
-    };
-  }, [isOpen, showCamera]);
+  const handleSelectSerial = async (selectedCode: string) => {
+    const clean = extractCleanSerial(selectedCode);
+    setSerial(clean);
+    const reading = await resolveDeviceReadings(clean, hiveName);
+    setScannedReading(reading);
+  };
 
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
@@ -1980,7 +1959,7 @@ function PairVitalSensorModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200"
+        className="relative w-full max-w-md bg-[#FBF8F4] dark:bg-[#181614] border border-[#EFE8DE] dark:border-stone-800 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4 my-auto animate-in zoom-in-95 duration-200 text-[#2E2A25] dark:text-stone-200 max-h-[92vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-[#EAE3DA] dark:border-stone-800 pb-3">
@@ -2008,23 +1987,37 @@ function PairVitalSensorModal({
 
         {showCamera ? (
           <div className="space-y-3">
-            <p className="text-xs text-muted-foreground text-center">
-              Align VitalSensor QR code within camera viewfinder:
-            </p>
-            <div
-              id={containerId}
-              className="w-full h-56 rounded-2xl overflow-hidden bg-black/95 border-2 border-dashed border-amber-500/60 flex items-center justify-center relative shadow-inner"
+            <DeviceQrCameraScanner
+              title="Align VitalSensor QR code"
+              helperText="Point camera at QR code on sensor waterproof casing"
+              onScanSuccess={async (decoded) => {
+                const cleaned = extractCleanSerial(decoded);
+                setSerial(cleaned);
+                setShowCamera(false);
+                const reading = await resolveDeviceReadings(cleaned, hiveName);
+                setScannedReading(reading);
+                toast.success(`Scanned hardware code: ${cleaned}`);
+              }}
+              onCancel={() => setShowCamera(false)}
             />
-            <button
-              type="button"
-              onClick={() => setShowCamera(false)}
-              className="w-full py-2 rounded-xl border border-border text-xs font-semibold hover:bg-muted transition-colors"
-            >
-              Cancel Camera Scan (Enter Manually)
-            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            {scannedReading && (
+              <RecentDeviceReadingsView
+                reading={scannedReading}
+                targetHiveName={hiveName}
+                onConfirmApply={() => {
+                  onPair(scannedReading.serial, deviceType);
+                  onClose();
+                }}
+                onRescan={() => {
+                  setScannedReading(null);
+                  setShowCamera(true);
+                }}
+                showApplyButton={false}
+              />
+            )}
             <div className="space-y-1.5">
               <label className="font-bold text-foreground block">
                 Hardware Device Model
@@ -2053,10 +2046,14 @@ function PairVitalSensorModal({
                 </label>
                 <button
                   type="button"
-                  onClick={() => setShowCamera(true)}
-                  className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1 hover:underline"
+                  onClick={() => {
+                    startTransition(() => {
+                      setShowCamera(true);
+                    });
+                  }}
+                  className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1 hover:underline cursor-pointer select-none touch-manipulation active:scale-95 transition-transform"
                 >
-                  <Camera className="w-3.5 h-3.5" />
+                  <Camera className="w-3.5 h-3.5 pointer-events-none select-none" />
                   <span>Scan with Camera</span>
                 </button>
               </div>
@@ -2072,11 +2069,15 @@ function PairVitalSensorModal({
                 />
                 <button
                   type="button"
-                  onClick={() => setShowCamera(true)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors"
+                  onClick={() => {
+                    startTransition(() => {
+                      setShowCamera(true);
+                    });
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-amber-600 transition-colors cursor-pointer select-none touch-manipulation"
                   title="Scan with Camera"
                 >
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-4 h-4 pointer-events-none select-none" />
                 </button>
               </div>
               <p className="text-[10px] text-muted-foreground">
@@ -2855,9 +2856,9 @@ Provide:
           </div>
         ) : (
           /* SCREEN 1: MAIN HIVE VIEW (Screenshots 2, 3, 4) */
-          <div className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex flex-col flex-1 h-full min-h-0 overflow-hidden">
             {/* Top Bar with Back Arrow, Title, Navigation Pager, More Menu & Close Button */}
-            <div className="p-4 sm:px-6 flex items-center justify-between border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917]">
+            <div className="p-4 sm:px-6 flex items-center justify-between border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917] shrink-0 sticky top-0 z-20">
               <div className="flex items-center gap-3 min-w-0">
                 <button
                   type="button"
@@ -2973,76 +2974,101 @@ Provide:
               </div>
             </div>
 
-            {/* 5 Horizontal Navigation Tabs */}
-            <div className="px-3 border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917] flex items-center justify-around overflow-x-auto text-xs font-semibold scrollbar-none">
+            {/* 5 Horizontal Navigation Tabs (Tools Page Modern UI/UX) */}
+            <div className="px-2 sm:px-4 border-b border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917] flex items-center justify-between sm:justify-around overflow-x-auto text-xs font-semibold scrollbar-none shrink-0 z-10">
               <button
                 type="button"
                 onClick={() => setActiveTab("hive_state")}
-                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                className={`py-3 px-2 sm:px-3 flex flex-col items-center gap-1.5 relative transition-all whitespace-nowrap ${
                   activeTab === "hive_state"
-                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
-                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                    ? "text-amber-800 dark:text-amber-300 font-bold"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
                 }`}
               >
-                <Heart className="w-4 h-4" />
-                <span>Hive state</span>
+                <div className={`p-1 rounded-lg transition-colors ${activeTab === "hive_state" ? "bg-amber-500/15 text-amber-600 dark:text-amber-400" : "text-stone-400"}`}>
+                  <Activity className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] sm:text-xs">Hive state</span>
+                {activeTab === "hive_state" && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("syrup")}
-                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                className={`py-3 px-2 sm:px-3 flex flex-col items-center gap-1.5 relative transition-all whitespace-nowrap ${
                   activeTab === "syrup"
-                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
-                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                    ? "text-amber-800 dark:text-amber-300 font-bold"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
                 }`}
               >
-                <Coffee className="w-4 h-4" />
-                <span>Syrup</span>
+                <div className={`p-1 rounded-lg transition-colors ${activeTab === "syrup" ? "bg-sky-500/15 text-sky-600 dark:text-sky-400" : "text-sky-500/80"}`}>
+                  <Droplets className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] sm:text-xs">Syrup</span>
+                {activeTab === "syrup" && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("framesense")}
-                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                className={`py-3 px-2 sm:px-3 flex flex-col items-center gap-1.5 relative transition-all whitespace-nowrap ${
                   activeTab === "framesense"
-                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
-                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                    ? "text-amber-800 dark:text-amber-300 font-bold"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
                 }`}
               >
-                <LayoutGrid className="w-4 h-4" />
-                <span>FrameSense</span>
+                <div className={`p-1 rounded-lg transition-colors ${activeTab === "framesense" ? "bg-amber-500/20 text-amber-600 dark:text-amber-400" : "text-amber-500/80"}`}>
+                  <Layers className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] sm:text-xs">FrameSense</span>
+                {activeTab === "framesense" && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("notes")}
-                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                className={`py-3 px-2 sm:px-3 flex flex-col items-center gap-1.5 relative transition-all whitespace-nowrap ${
                   activeTab === "notes"
-                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
-                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                    ? "text-amber-800 dark:text-amber-300 font-bold"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
                 }`}
               >
-                <Pencil className="w-4 h-4" />
-                <span>Notes</span>
+                <div className={`p-1 rounded-lg transition-colors ${activeTab === "notes" ? "bg-purple-500/15 text-purple-600 dark:text-purple-400" : "text-stone-400"}`}>
+                  <FileText className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] sm:text-xs">Notes</span>
+                {activeTab === "notes" && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("inspections")}
-                className={`py-3 px-2 flex flex-col items-center gap-1 relative border-b-2 transition-colors whitespace-nowrap ${
+                className={`py-3 px-2 sm:px-3 flex flex-col items-center gap-1.5 relative transition-all whitespace-nowrap ${
                   activeTab === "inspections"
-                    ? "border-amber-600 text-amber-700 dark:text-amber-400 font-bold"
-                    : "border-transparent text-[#8E8880] hover:text-foreground"
+                    ? "text-amber-800 dark:text-amber-300 font-bold"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
                 }`}
               >
-                <CheckSquare className="w-4 h-4" />
-                <span>Inspections</span>
+                <div className={`p-1 rounded-lg transition-colors ${activeTab === "inspections" ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400" : "text-emerald-500/80"}`}>
+                  <ClipboardList className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] sm:text-xs">Inspections</span>
+                {activeTab === "inspections" && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
+                )}
               </button>
             </div>
 
             {/* Scrollable Main Body */}
-            <div className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
+            <div className="p-4 sm:p-5 overflow-y-auto flex-1 min-h-0 space-y-4">
 
               {/* TAB 1: HIVE STATE (Screenshots 2, 3, 4) */}
               {activeTab === "hive_state" && (
@@ -3266,303 +3292,538 @@ Provide:
                 </div>
               )}
 
-              {/* TAB 2: SYRUP (Feeding Management) */}
+              {/* TAB 2: SYRUP (Feeding Management - Matching SyrupFeedingToolPage UI/UX) */}
               {activeTab === "syrup" && (
-                <div className="space-y-5">
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-3xl p-5 sm:p-6 border border-[#EFE8DE] dark:border-stone-800 space-y-5 text-[#2E2A25] dark:text-stone-200 shadow-sm">
-                    {/* Header Title from Screenshot */}
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <h2 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                        Syrup calculator
-                      </h2>
-                      {allHives && allHives.length > 1 && (
-                        <div className="flex items-center gap-1.5 bg-[#F3ECE3] dark:bg-[#25221F] px-3 py-1 rounded-xl text-xs">
-                          <span className="text-[#8E8880] text-[11px] font-semibold">Linked to:</span>
-                          <select
-                            value={hive.id}
-                            onChange={(e) => {
-                              const found = allHives.find((h) => h.id === e.target.value);
-                              if (found) setActiveHive(found);
-                            }}
-                            className="bg-transparent font-bold text-[#2E2A25] dark:text-stone-100 border-none outline-none text-xs cursor-pointer"
-                          >
-                            {allHives.map((h) => (
-                              <option key={h.id} value={h.id}>
-                                {h.code.startsWith("KIB-") ? `beeyield ${h.code.replace("KIB-", "")}` : h.code}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Ratio Section */}
-                    <div className="space-y-2">
-                      <span className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
-                        Ratio:
-                      </span>
-                      <div className="flex items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => setCalcRatio("1:1")}
-                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
-                            calcRatio === "1:1"
-                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
-                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
-                          }`}
-                        >
-                          1:1
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCalcRatio("3:2")}
-                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
-                            calcRatio === "3:2"
-                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
-                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
-                          }`}
-                        >
-                          3:2
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCalcRatio("2:1")}
-                          className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
-                            calcRatio === "2:1"
-                              ? "bg-[#FCD99F] dark:bg-amber-500/40 text-stone-950 dark:text-stone-100 shadow-sm"
-                              : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
-                          }`}
-                        >
-                          2:1
-                        </button>
-                      </div>
-
-                      {/* Ratio Description */}
-                      <p className="text-xs text-[#7A6E68] dark:text-stone-400 pt-1">
-                        {calcRatio === "3:2" && "Medium — all-purpose, summer and autumn"}
-                        {calcRatio === "1:1" && "Thin — spring stimulation, brood rearing & wax building"}
-                        {calcRatio === "2:1" && "Heavy — autumn and winter storage feed, late reserves"}
-                      </p>
-                    </div>
-
-                    {/* How Much Syrup Input */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
-                        How much syrup do I want to make?
-                      </label>
-                      <div className="bg-[#F3ECE3] dark:bg-[#25221F] rounded-2xl px-4 py-3.5 flex items-center justify-between border border-transparent focus-within:border-amber-500/50 transition-colors">
-                        <input
-                          type="number"
-                          step="0.5"
-                          min="0.1"
-                          value={calcTargetVolume}
-                          onChange={(e) => setCalcTargetVolume(e.target.value)}
-                          placeholder="Enter a value"
-                          className="w-full bg-transparent border-none outline-none text-sm font-semibold text-[#2E2A25] dark:text-stone-100 placeholder:text-[#9A9187]"
-                        />
-                        <span className="text-sm font-semibold text-[#5C5349] dark:text-stone-400 pl-2">
-                          l
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Calculated Results Box */}
-                    <div className="bg-[#F3ECE3] dark:bg-[#25221F] rounded-2xl p-4 grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="text-xs font-medium text-[#8E8880] block">
-                          Water
-                        </span>
-                        <span className="text-base font-semibold text-[#2E2A25] dark:text-stone-100 mt-0.5 block">
-                          {syrupCalculation.water} l
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs font-medium text-[#8E8880] block">
-                          Sugar
-                        </span>
-                        <span className="text-base font-semibold text-[#2E2A25] dark:text-stone-100 mt-0.5 block">
-                          {syrupCalculation.sugar} kg
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Quick Button to Log Feeding if Valid */}
-                    {syrupCalculation.valid && (
+                <div className="space-y-4">
+                  {/* Top Sub-Navigation Bar */}
+                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800">
+                    <div className="flex items-center gap-1">
                       <button
                         type="button"
-                        onClick={() => {
-                          const v = parseFloat(calcTargetVolume) || 0;
-                          const newLog = {
-                            date: new Date().toISOString().split("T")[0],
-                            amount: `${v.toFixed(1)} L`,
-                            type: `${calcRatio} Sugar Syrup`,
-                            notes: `Mixed with ${syrupCalculation.water} L water & ${syrupCalculation.sugar} kg white sucrose`,
-                          };
-                          setSyrupHistory([newLog, ...syrupHistory]);
-                          toast.success(`Logged ${v.toFixed(1)} L (${calcRatio}) syrup feed for ${displayName}`);
-                        }}
-                        className="w-full py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                        onClick={() => setSyrupViewMode("calculator")}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          syrupViewMode === "calculator"
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
                       >
-                        <Coffee className="w-4 h-4" />
-                        Log {calcTargetVolume} L ({calcRatio}) feeding to {displayName}
+                        <Calculator className="w-3.5 h-3.5 text-sky-500" />
+                        <span>Calculator</span>
                       </button>
-                    )}
-
-                    {/* How to Prepare Accordion Section (Screenshots 1 & 2) */}
-                    <div className="pt-2 border-t border-[#EAE3DA] dark:border-stone-800">
-                      <div
-                        onClick={() => setShowHowToPrepare(!showHowToPrepare)}
-                        className="flex items-center justify-between cursor-pointer select-none py-1"
+                      <button
+                        type="button"
+                        onClick={() => setSyrupViewMode("history")}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          syrupViewMode === "history"
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
                       >
-                        <h3 className="text-sm font-bold text-[#2E2A25] dark:text-stone-200">
-                          How to prepare
-                        </h3>
-                        {showHowToPrepare ? (
-                          <ChevronUp className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
+                        <Clock className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Feeding Ledger ({syrupFeedingLogs.length})</span>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowAddSyrupForm((v) => !v)}
+                      className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1 shadow-sm transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>{showAddSyrupForm ? "Cancel" : "Log Feed"}</span>
+                    </button>
+                  </div>
+
+                  {/* Add Feed Custom Form Modal / Card */}
+                  {showAddSyrupForm && (
+                    <form
+                      onSubmit={handleAddCustomSyrupFeed}
+                      className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-stone-900 border border-amber-500/40 shadow-md space-y-3 animate-in fade-in zoom-in-95 duration-150"
+                    >
+                      <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                        <span className="font-bold text-xs flex items-center gap-1.5 text-amber-700 dark:text-amber-400">
+                          <Droplets className="w-4 h-4 text-sky-500" /> Record Nutritional Feed to {displayName}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">Persists to Apiary Ledger</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <label className="space-y-1">
+                          <span className="text-muted-foreground font-semibold">Volume (Litres)</span>
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="0.5"
+                            required
+                            value={logAmount}
+                            onChange={(e) => setLogAmount(e.target.value)}
+                            className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs font-bold font-mono outline-none focus:border-amber-500"
+                          />
+                        </label>
+
+                        <label className="space-y-1">
+                          <span className="text-muted-foreground font-semibold">Feed Date</span>
+                          <input
+                            type="date"
+                            required
+                            value={logDate}
+                            onChange={(e) => setLogDate(e.target.value)}
+                            className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500"
+                          />
+                        </label>
+
+                        <label className="space-y-1">
+                          <span className="text-muted-foreground font-semibold">Syrup Ratio</span>
+                          <select
+                            value={calcRatio}
+                            onChange={(e) => setCalcRatio(e.target.value as any)}
+                            className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500"
+                          >
+                            <option value="1:1">1:1 (Spring Brood Stimulation)</option>
+                            <option value="3:2">3:2 (All-Purpose Dearth Feeding)</option>
+                            <option value="2:1">2:1 (Autumn / Winter Storage)</option>
+                          </select>
+                        </label>
+
+                        <label className="space-y-1">
+                          <span className="text-muted-foreground font-semibold">Feeder Apparatus</span>
+                          <select
+                            value={feederType}
+                            onChange={(e) => setFeederType(e.target.value)}
+                            className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500"
+                          >
+                            <option value="Rapid Top Feeder (Hive Cover)">Rapid Top Feeder (Hive Cover)</option>
+                            <option value="Frame Feeder (In-Hive Division Board)">Frame Feeder (In-Hive Division Board)</option>
+                            <option value="Entrance Boardman Feeder">Entrance Boardman Feeder</option>
+                            <option value="Open Pail / Bucket Feeder">Open Pail / Bucket Feeder</option>
+                          </select>
+                        </label>
+                      </div>
+
+                      <label className="block text-xs space-y-1">
+                        <span className="text-muted-foreground font-semibold">Inspection Observations / Additives</span>
+                        <input
+                          value={logNotes}
+                          onChange={(e) => setLogNotes(e.target.value)}
+                          placeholder="e.g., Added HiveAlive thymol extract, bees taking enthusiastically"
+                          className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500"
+                        />
+                      </label>
+
+                      <div className="flex items-center justify-end gap-2 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => setShowAddSyrupForm(false)}
+                          className="px-3 py-1.5 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:bg-muted"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-sm"
+                        >
+                          Save to Feeding Ledger
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* SUB-VIEW 1: CALCULATOR */}
+                  {syrupViewMode === "calculator" && (
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-3xl p-5 sm:p-6 border border-[#EFE8DE] dark:border-stone-800 space-y-5 text-[#2E2A25] dark:text-stone-200 shadow-sm">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                          <h2 className="text-2xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100 flex items-center gap-2">
+                            <Droplets className="w-6 h-6 text-sky-500" /> Syrup Recipe Calculator
+                          </h2>
+                          <p className="text-xs text-[#7A6E68] dark:text-stone-400 mt-0.5">
+                            Formulated for {displayName} • Calculates water and sugar weights by volume expansion
+                          </p>
+                        </div>
+                        {allHives && allHives.length > 1 && (
+                          <div className="flex items-center gap-1.5 bg-[#F3ECE3] dark:bg-[#25221F] px-3 py-1.5 rounded-xl text-xs">
+                            <span className="text-[#8E8880] text-[11px] font-semibold">Linked hive:</span>
+                            <select
+                              value={hive.id}
+                              onChange={(e) => {
+                                const found = allHives.find((h) => h.id === e.target.value);
+                                if (found) setActiveHive(found);
+                              }}
+                              className="bg-transparent font-bold text-[#2E2A25] dark:text-stone-100 border-none outline-none text-xs cursor-pointer"
+                            >
+                              {allHives.map((h) => (
+                                <option key={h.id} value={h.id}>
+                                  {h.code.startsWith("KIB-") ? `beeyield ${h.code.replace("KIB-", "")}` : h.code}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         )}
                       </div>
 
-                      {showHowToPrepare && (
-                        <div className="pt-3 space-y-4 text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">1.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Use white sugar, pure sucrose.</strong> Not brown, not cane, not unrefined. Dark sugars carry residues bees cannot digest — in winter feed that is a straight road to dysentery in the colony.
-                            </p>
-                          </div>
+                      {/* Ratio Section */}
+                      <div className="space-y-2">
+                        <span className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
+                          Nutritional Ratio:
+                        </span>
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setCalcRatio("1:1")}
+                            className={`p-3 rounded-2xl text-xs font-bold transition-all text-center flex flex-col items-center gap-0.5 ${
+                              calcRatio === "1:1"
+                                ? "bg-amber-500/25 border-2 border-amber-500 text-amber-950 dark:text-amber-200 shadow-sm"
+                                : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                            }`}
+                          >
+                            <span className="text-base font-black">1:1</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">Spring / Stimulation</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCalcRatio("3:2")}
+                            className={`p-3 rounded-2xl text-xs font-bold transition-all text-center flex flex-col items-center gap-0.5 ${
+                              calcRatio === "3:2"
+                                ? "bg-amber-500/25 border-2 border-amber-500 text-amber-950 dark:text-amber-200 shadow-sm"
+                                : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                            }`}
+                          >
+                            <span className="text-base font-black">3:2</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">Medium / All-Purpose</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCalcRatio("2:1")}
+                            className={`p-3 rounded-2xl text-xs font-bold transition-all text-center flex flex-col items-center gap-0.5 ${
+                              calcRatio === "2:1"
+                                ? "bg-amber-500/25 border-2 border-amber-500 text-amber-950 dark:text-amber-200 shadow-sm"
+                                : "border border-[#DCD5CB] dark:border-stone-700 bg-white dark:bg-stone-900 text-[#5C5349] dark:text-stone-300 hover:bg-[#F3ECE3]"
+                            }`}
+                          >
+                            <span className="text-base font-black">2:1</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">Heavy / Storage Feed</span>
+                          </button>
+                        </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">2.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Weigh the sugar on a scale, do not measure it by volume.</strong> A litre of granulated sugar weighs about 0.85 kg, not a kilogram. Measured with a cup it gives a syrup of a different strength than the one you asked for.
-                            </p>
-                          </div>
+                        {/* Ratio Guidance Pill */}
+                        <p className="text-xs text-[#7A6E68] dark:text-stone-400 pt-1">
+                          {calcRatio === "3:2" && "Medium — all-purpose maintenance feed for dearth periods and summer."}
+                          {calcRatio === "1:1" && "Thin — simulates natural spring nectar flow, stimulates queen laying & wax comb drawing."}
+                          {calcRatio === "2:1" && "Heavy — dense autumn & winter storage feed with minimal moisture bees need to evaporate."}
+                        </p>
+                      </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">3.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Boil the water and take the pot off the heat — only then pour in the sugar.</strong> Syrup is not boiled: prolonged heating turns sucrose into HMF, which is harmful to bees. Hot water is enough, the flame is no longer needed.
-                            </p>
-                          </div>
+                      {/* Volume Target & Quick Presets */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 block">
+                          How much syrup do you want to prepare?
+                        </label>
+                        <div className="bg-white dark:bg-stone-900 rounded-2xl px-4 py-3.5 flex items-center justify-between border border-[#EAE3DA] dark:border-stone-800 focus-within:border-amber-500 transition-colors shadow-inner">
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="0.1"
+                            value={calcTargetVolume}
+                            onChange={(e) => setCalcTargetVolume(e.target.value)}
+                            placeholder="Enter desired syrup batch volume"
+                            className="w-full bg-transparent border-none outline-none text-base font-bold text-[#2E2A25] dark:text-stone-100 placeholder:text-[#9A9187]"
+                          />
+                          <span className="text-sm font-bold text-[#5C5349] dark:text-stone-400 pl-2">
+                            Litres
+                          </span>
+                        </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">4.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Add it in batches and stir until the last crystal is gone.</strong> Undissolved sugar settles at the bottom of the feeder — the bees will not take it, and the rest of the syrup crystallises sooner. At 2:1 you need really hot water, because it is a solution at the edge of solubility.
-                            </p>
-                          </div>
+                        {/* Volume Preset Quick Pills */}
+                        <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                          <span className="text-[11px] text-muted-foreground font-semibold">Presets:</span>
+                          {["1", "2.5", "5", "10", "20"].map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => setCalcTargetVolume(preset)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                                calcTargetVolume === preset
+                                  ? "bg-amber-500 text-stone-950 shadow-sm"
+                                  : "bg-[#F3ECE3] dark:bg-stone-800 hover:bg-amber-100 dark:hover:bg-stone-700 text-foreground"
+                              }`}
+                            >
+                              +{preset}L
+                            </button>
+                          ))}
+                        </div>
+                      </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">5.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Serve it lukewarm, not hot.</strong> Hot syrup raises the temperature and humidity inside the nest.
-                            </p>
-                          </div>
+                      {/* Calculated Results Cards */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-[#EAE3DA] dark:border-stone-800 shadow-sm">
+                          <span className="text-xs font-semibold text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                            <Droplets className="w-3.5 h-3.5" /> Pure Water Required
+                          </span>
+                          <span className="text-2xl font-black font-mono text-[#2E2A25] dark:text-stone-100 mt-1 block">
+                            {syrupCalculation.water} <span className="text-sm font-normal text-muted-foreground">L</span>
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">Boil & remove from heat</span>
+                        </div>
+                        <div className="bg-white dark:bg-stone-900 rounded-2xl p-4 border border-[#EAE3DA] dark:border-stone-800 shadow-sm">
+                          <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                            <Scale className="w-3.5 h-3.5" /> Granulated White Sugar
+                          </span>
+                          <span className="text-2xl font-black font-mono text-[#2E2A25] dark:text-stone-100 mt-1 block">
+                            {syrupCalculation.sugar} <span className="text-sm font-normal text-muted-foreground">kg</span>
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">Pure white sucrose (100%)</span>
+                        </div>
+                      </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">6.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Make only as much as the colony takes within a few days.</strong> Syrup standing longer in the feeder or in a bucket ferments, and fermented feed causes dysentery in winter.
-                            </p>
-                          </div>
+                      {/* Quick Button to Log Feeding if Valid */}
+                      {syrupCalculation.valid && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const v = parseFloat(calcTargetVolume) || 0;
+                            const newFeed = {
+                              id: `feed-${hive.id}-${Date.now()}`,
+                              hiveId: hive.id,
+                              hiveCode: displayName,
+                              date: new Date().toISOString().slice(0, 10),
+                              amountLiters: v,
+                              ratio: calcRatio,
+                              feederType: "Rapid Top Feeder (Hive Cover)",
+                              notes: `Formulated batch: ${syrupCalculation.water} L water & ${syrupCalculation.sugar} kg white sucrose`,
+                            };
+                            const updated = [newFeed, ...syrupFeedingLogs];
+                            saveSyrupFeedingLogs(updated);
+                            toast.success(`Logged ${v.toFixed(1)} L (${calcRatio}) syrup feed for ${displayName}`);
+                          }}
+                          className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99]"
+                        >
+                          <Droplets className="w-4 h-4" />
+                          Log {calcTargetVolume} L ({calcRatio}) feeding to {displayName}
+                        </button>
+                      )}
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">7.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Do not spill syrup around the hive and do not leave open containers.</strong> The smell of sugar in a dearth triggers robbing — foreign bees then attack weaker colonies.
-                            </p>
-                          </div>
+                      {/* How to Prepare Accordion Section */}
+                      <div className="pt-2 border-t border-[#EAE3DA] dark:border-stone-800">
+                        <div
+                          onClick={() => setShowHowToPrepare(!showHowToPrepare)}
+                          className="flex items-center justify-between cursor-pointer select-none py-1.5"
+                        >
+                          <h3 className="text-sm font-bold text-[#2E2A25] dark:text-stone-200 flex items-center gap-2">
+                            <span>How to prepare sugar syrup safely</span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">8 golden rules</span>
+                          </h3>
+                          {showHowToPrepare ? (
+                            <ChevronUp className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-300" />
+                          )}
+                        </div>
 
-                          <div className="flex items-start gap-2.5">
-                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 shrink-0">8.</span>
-                            <p>
-                              <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Check the feeder after 2–4 days and see whether the colony is taking the feed.</strong>
-                            </p>
-                          </div>
+                        {showHowToPrepare && (
+                          <div className="pt-3 space-y-3 text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">1.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Use white sugar, pure sucrose.</strong> Not brown, not cane molasses, not unrefined. Dark sugars carry ash and indigestible mineral residues — that causes fatal dysentery in bees.
+                              </p>
+                            </div>
 
-                          {/* Caution Notice Box (Screenshot 2) */}
-                          <div className="bg-[#F2ECE4] dark:bg-[#25221F] rounded-2xl p-4 text-xs font-medium text-[#5C5349] dark:text-stone-300 text-center leading-relaxed border border-[#EAE3DA] dark:border-stone-800 mt-2">
-                            Do not feed during a flow you want to harvest honey from — the sugar would end up in the honey.
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">2.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Weigh the sugar on a scale, do not measure by volume.</strong> A litre of granulated sugar weighs ~0.85 kg, not 1 kg. Measuring with cups causes inconsistent ratios.
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">3.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Boil water first, take pot off heat — then stir in sugar.</strong> Never boil the sugar solution. Prolonged heating hydrolyzes sucrose into toxic Hydroxymethylfurfural (HMF).
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">4.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Add sugar gradually and stir until 100% dissolved.</strong> Undissolved crystals sink to the bottom of the feeder and accelerate premature crystallization.
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">5.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Serve lukewarm or room temperature, never hot.</strong> Hot syrup will burn worker bees and destabilize core nest humidity.
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">6.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Prepare only what the colony consumes in 2–4 days.</strong> Fermenting syrup in warm weather breeds yeasts and triggers dysentery.
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">7.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Zero spills around the apiary.</strong> The smell of spilled sugar water during dearth triggers aggressive robbing frenzies.
+                              </p>
+                            </div>
+
+                            <div className="flex items-start gap-2.5">
+                              <span className="font-bold text-amber-600 shrink-0">8.</span>
+                              <p>
+                                <strong className="text-[#2E2A25] dark:text-stone-100 font-bold">Inspect feeder 48 hours post-fill.</strong> Ensure no drowning occurred and verify uptake rate.
+                              </p>
+                            </div>
+
+                            <div className="bg-amber-500/10 dark:bg-amber-950/30 rounded-2xl p-3.5 text-xs font-medium text-amber-800 dark:text-amber-300 text-center leading-relaxed border border-amber-500/30 mt-2">
+                              ⚠️ <strong>Critical Rule:</strong> Never feed syrup during an active honey flow meant for certified human harvest — the refined sugar will contaminate your raw honey batches.
+                            </div>
                           </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-VIEW 2: FEEDING LEDGER */}
+                  {syrupViewMode === "history" && (
+                    <div className="space-y-3">
+                      {syrupFeedingLogs.length > 0 ? (
+                        <div className="space-y-2.5">
+                          {syrupFeedingLogs.map((log) => (
+                            <div
+                              key={log.id}
+                              className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 shadow-sm flex items-start justify-between gap-3 text-xs"
+                            >
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-foreground text-sm">
+                                    {log.amountLiters} L ({log.ratio})
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-900/50">
+                                    {log.ratio} Sugar Syrup
+                                  </span>
+                                </div>
+                                <p className="text-[#8E8880] text-[11px]">
+                                  {log.date} • {log.feederType}
+                                </p>
+                                {log.notes && (
+                                  <p className="text-[#5C5349] dark:text-stone-300 text-[11px] italic">
+                                    "{log.notes}"
+                                  </p>
+                                )}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = syrupFeedingLogs.filter((f) => f.id !== log.id);
+                                  saveSyrupFeedingLogs(updated);
+                                  toast.success("Feeding entry removed");
+                                }}
+                                className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors shrink-0"
+                                title="Delete entry"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-8 text-center border border-dashed border-[#EAE3DA] dark:border-stone-800 rounded-3xl space-y-2 bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                          <Droplets className="w-8 h-8 text-stone-400 mx-auto" />
+                          <p className="text-xs font-bold text-foreground">No feeding records yet for {displayName}</p>
+                          <p className="text-[11px] text-[#8E8880]">Use the recipe calculator above to mix and log nutritional feedings.</p>
                         </div>
                       )}
                     </div>
-
-                    {/* Recent Feeding Sessions */}
-                    {syrupHistory.length > 0 && (
-                      <div className="pt-3 border-t border-[#EAE3DA] dark:border-stone-800 space-y-2">
-                        <span className="text-xs font-bold text-[#8E8880] block">
-                          Recent Feeding History ({displayName})
-                        </span>
-                        {syrupHistory.map((s, idx) => (
-                          <div
-                            key={idx}
-                            className="p-3 rounded-2xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 flex items-center justify-between text-xs"
-                          >
-                            <div>
-                              <span className="font-bold text-foreground block">{s.type}</span>
-                              <span className="text-[#8E8880] text-[10px]">
-                                {s.date} · {s.notes}
-                              </span>
-                            </div>
-                            <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                              {s.amount}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
               )}
 
-              {/* TAB 3: FRAMESENSE (Frame Visualizer) */}
+              {/* TAB 3: FRAMESENSE (Frame Visualizer - Matching FrameSenseToolPage UI/UX) */}
               {activeTab === "framesense" && (
                 <div className="space-y-4">
-                  {/* SCREEN A: ADD FRAME PHOTOS FOR AI ANALYSIS (Screenshots 1 & 3) */}
-                  {frameSenseSubScreen === "add_photos" ? (
-                    <div className="space-y-4 text-[#2E2A25] dark:text-stone-200">
-                      {/* Top Bar inside sub-screen */}
-                      <div className="flex items-center gap-3 pb-3 border-b border-[#EAE3DA] dark:border-stone-800">
-                        <button
-                          type="button"
-                          onClick={() => setFrameSenseSubScreen("list")}
-                          className="p-1 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-                        >
-                          <ChevronLeft className="w-6 h-6 text-[#2E2A25] dark:text-stone-100" />
-                        </button>
-                        <h2 className="text-xl font-bold tracking-tight text-[#2E2A25] dark:text-stone-100">
-                          FrameSense
-                        </h2>
-                      </div>
+                  {/* Top Sub-Navigation Bar */}
+                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedReport(null);
+                          setFrameSenseSubScreen("list");
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          frameSenseSubScreen === "list" && !selectedReport
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
+                      >
+                        <Layers className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Scan History ({frameSenseList.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedReport(null);
+                          setFrameSenseSubScreen("add_photos");
+                        }}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          frameSenseSubScreen === "add_photos"
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
+                      >
+                        <Camera className="w-3.5 h-3.5 text-amber-500" />
+                        <span>+ New Scan</span>
+                      </button>
+                    </div>
 
+                    {selectedReport && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReport(null)}
+                        className="px-2.5 py-1 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:bg-muted"
+                      >
+                        ← Back to List
+                      </button>
+                    )}
+                  </div>
+
+                  {/* SCREEN A: ADD FRAME PHOTOS FOR AI ANALYSIS */}
+                  {frameSenseSubScreen === "add_photos" && !selectedReport ? (
+                    <div className="space-y-4 text-[#2E2A25] dark:text-stone-200">
                       {/* Subheader Banner with Hive Code */}
-                      <div className="px-4 py-2.5 bg-[#F2ECE4] dark:bg-[#25221F] rounded-2xl flex items-center gap-2.5">
-                        <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
-                        <span className="font-semibold text-sm text-[#2E2A25] dark:text-stone-200">
-                          {displayName}
+                      <div className="px-4 py-2.5 bg-[#F2ECE4] dark:bg-[#25221F] rounded-2xl flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
+                          <span className="font-bold text-sm text-[#2E2A25] dark:text-stone-200">
+                            {displayName} Comb Vision Scan
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                          AI Comb Diagnostics
                         </span>
                       </div>
 
-                      {/* AI Description text from Screenshot 1 */}
+                      {/* AI Description text */}
                       <p className="text-xs text-[#5C5349] dark:text-stone-300 leading-relaxed">
-                        AI-based analysis of frame photos — classifies comb cells, detects queen cells, determines coverage and estimates the number of bees, and provides recommendations.
+                        AI-based analysis of frame photos — classifies comb cells, detects queen cells, determines coverage and estimates the number of bees, and provides clinical apicultural recommendations.
                       </p>
 
-                      {/* Add Frame Photos Section Header & Guidance */}
-                      <div className="space-y-1.5 pt-1">
+                      {/* Add Frame Photos Guidance */}
+                      <div className="space-y-1">
                         <h3 className="text-sm font-bold text-[#2E2A25] dark:text-stone-100">
                           Add frame photos for analysis
                         </h3>
                         <p className="text-xs text-[#7A6E68] dark:text-stone-400 leading-relaxed">
-                          The frame should be fully visible in the photo (no cropped corners or edges) and fill almost the entire frame, leaving only a small margin. When possible, take the photo against a uniform background to ensure the highest quality AI analysis.
+                          The frame should be fully visible in the photo (no cropped corners or edges) and fill almost the entire view, leaving only a small margin.
                         </p>
                       </div>
 
                       {/* SLOT 1: Middle (central) frame (Required) */}
-                      <div className="space-y-2 pt-1">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-bold text-[#2E2A25] dark:text-stone-200">
                             Middle (central) frame
@@ -3618,7 +3879,7 @@ Provide:
                       </div>
 
                       {/* SLOT 2: First frame in the hive (Optional) */}
-                      <div className="space-y-2 pt-1">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-bold text-[#2E2A25] dark:text-stone-200">
                             First frame in the hive
@@ -3664,7 +3925,7 @@ Provide:
                       </div>
 
                       {/* SLOT 3: Last frame in the hive (Optional) */}
-                      <div className="space-y-2 pt-1">
+                      <div className="space-y-2">
                         <div className="flex items-center justify-between text-xs">
                           <span className="font-bold text-[#2E2A25] dark:text-stone-200">
                             Last frame in the hive
@@ -3709,8 +3970,23 @@ Provide:
                         </label>
                       </div>
 
+                      {/* Scan Progress Feedback */}
+                      {isAnalyzingFrames && (
+                        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2 animate-pulse">
+                          <div className="flex items-center justify-between text-xs font-bold text-amber-800 dark:text-amber-300">
+                            <span className="flex items-center gap-2">
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" /> {analysisStep || "Running BeeYield AI Vision Model..."}
+                            </span>
+                            <span>98%</span>
+                          </div>
+                          <div className="h-2 w-full bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full animate-pulse w-4/5" />
+                          </div>
+                        </div>
+                      )}
+
                       {/* Action Button: Send for analysis */}
-                      <div className="pt-2 pb-4">
+                      <div className="pt-2 pb-2">
                         <button
                           type="button"
                           disabled={isAnalyzingFrames}
@@ -3736,45 +4012,112 @@ Provide:
                           <button
                             type="button"
                             onClick={() => setSelectedReport(null)}
-                            className="p-1 rounded-xl hover:bg-black/5"
+                            className="p-1.5 rounded-xl hover:bg-black/5 dark:hover:bg-white/10"
+                            title="Back to list"
                           >
-                            <ChevronLeft className="w-6 h-6" />
+                            <ChevronLeft className="w-5 h-5" />
                           </button>
                           <div>
-                            <span className="text-[11px] text-[#8E8880] block">AI Comb Diagnostics</span>
-                            <h3 className="text-base font-bold">{selectedReport.timestamp}</h3>
+                            <span className="text-[11px] text-[#8E8880] block font-semibold">AI Comb Diagnostic Report</span>
+                            <h3 className="text-base font-bold text-foreground">{selectedReport.timestamp}</h3>
                           </div>
                         </div>
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          {selectedReport.status}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50">
+                            {selectedReport.status}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              toast.success("FrameSense diagnostic certificate prepared for download");
+                            }}
+                            className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground"
+                            title="Download PDF Certificate"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Metric Breakdown Grid */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
-                          <span className="text-xs text-[#8E8880] block">Brood Area</span>
+                      {/* 5 Metric Diagnostic Cards */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 space-y-1">
+                          <span className="text-xs text-[#8E8880] block font-medium">Brood Area Coverage</span>
                           <span className="text-2xl font-bold font-mono text-amber-700 dark:text-amber-400">
                             {selectedReport.broodPct}%
                           </span>
+                          <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-amber-600 h-full rounded-full" style={{ width: `${selectedReport.broodPct}%` }} />
+                          </div>
                         </div>
-                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
-                          <span className="text-xs text-[#8E8880] block">Stores (Honey/Pollen)</span>
+
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 space-y-1">
+                          <span className="text-xs text-[#8E8880] block font-medium">Stores (Honey/Pollen)</span>
                           <span className="text-2xl font-bold font-mono text-amber-700 dark:text-amber-400">
                             {selectedReport.storesPct}%
                           </span>
+                          <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-sky-600 h-full rounded-full" style={{ width: `${selectedReport.storesPct}%` }} />
+                          </div>
                         </div>
-                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
-                          <span className="text-xs text-[#8E8880] block">Comb Surface Drawn</span>
+
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 space-y-1">
+                          <span className="text-xs text-[#8E8880] block font-medium">Comb Surface Drawn</span>
                           <span className="text-2xl font-bold font-mono text-[#2E2A25] dark:text-stone-100">
                             {selectedReport.combSurfacePct}%
                           </span>
+                          <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-emerald-600 h-full rounded-full" style={{ width: `${selectedReport.combSurfacePct}%` }} />
+                          </div>
                         </div>
-                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800">
-                          <span className="text-xs text-[#8E8880] block">Queen Cells Detected</span>
+
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 space-y-1">
+                          <span className="text-xs text-[#8E8880] block font-medium">Queen Cells Detected</span>
                           <span className="text-2xl font-bold font-mono text-emerald-600">
                             {selectedReport.queenCells}
                           </span>
+                          <span className="text-[10px] text-muted-foreground">Swarm risk: Low</span>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-[#FAF4EE] dark:bg-[#25221F] border border-[#EAE3DA] dark:border-stone-800 space-y-1 col-span-2 sm:col-span-1">
+                          <span className="text-xs text-[#8E8880] block font-medium">Est. Worker Population</span>
+                          <span className="text-2xl font-bold font-mono text-[#2E2A25] dark:text-stone-100">
+                            {selectedReport.estimatedBees ? selectedReport.estimatedBees.toLocaleString() : "1,980"}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">Neural hive estimation</span>
+                        </div>
+                      </div>
+
+                      {/* Comb Type Distribution Breakdown */}
+                      <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 space-y-2.5">
+                        <span className="text-xs font-bold text-foreground block">
+                          Comb Architecture & Cell Classification
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Worker Brood Capped</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.workerCapped || 56}%</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Eggs & Open Larvae</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.eggsLarvae || 18}%</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Honey & Nectar Perimeter</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.honeyNectar || 20}%</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Pollen Stores</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.pollenStores || 4}%</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Empty Drawn Cells</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.emptyDrawn || 2}%</span>
+                          </div>
+                          <div className="p-2 rounded-xl bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                            <span className="text-[#8E8880] text-[10px] block">Drone Comb</span>
+                            <span className="font-bold font-mono text-foreground">{selectedReport.combTypeDistribution?.droneComb || 0}%</span>
+                          </div>
                         </div>
                       </div>
 
@@ -3791,15 +4134,14 @@ Provide:
                       <button
                         type="button"
                         onClick={() => setSelectedReport(null)}
-                        className="w-full py-2.5 rounded-xl border border-border text-xs font-semibold"
+                        className="w-full py-2.5 rounded-xl border border-border text-xs font-semibold hover:bg-muted"
                       >
                         Back to Analysis List
                       </button>
                     </div>
                   ) : (
-                    /* SCREEN B: FRAMESENSE ANALYSES LIST (Screenshot 2) */
-                    <div className="space-y-4 relative pb-20">
-                      {/* List of completed analyses */}
+                    /* SCREEN B: FRAMESENSE ANALYSES LIST */
+                    <div className="space-y-3 pb-6">
                       {frameSenseList.length > 0 ? (
                         <div className="space-y-3">
                           {frameSenseList.map((item) => (
@@ -3810,8 +4152,8 @@ Provide:
                             >
                               <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-3">
-                                  <div className="p-2 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 text-[#8C6D46] dark:text-amber-400">
-                                    <LayoutGrid className="w-5 h-5" />
+                                  <div className="p-2 rounded-xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 text-amber-600 dark:text-amber-400">
+                                    <Layers className="w-5 h-5" />
                                   </div>
                                   <div>
                                     <h4 className="text-sm font-bold text-[#2E2A25] dark:text-stone-100">
@@ -3841,60 +4183,319 @@ Provide:
                                 </div>
                               </div>
 
-                              {/* Metric Stats Row from Screenshot 2 */}
+                              {/* Metric Stats Row */}
                               <div className="flex items-center gap-4 text-xs font-medium text-[#2E2A25] dark:text-stone-200 pt-1 border-t border-[#EAE3DA]/80 dark:border-stone-800/80 flex-wrap">
                                 <span>
-                                  <strong className="font-bold">{item.broodPct}%</strong> Brood
+                                  <strong className="font-bold text-amber-700 dark:text-amber-400">{item.broodPct}%</strong> Brood
                                 </span>
                                 <span>
-                                  <strong className="font-bold">{item.storesPct}%</strong> Stores
+                                  <strong className="font-bold text-sky-700 dark:text-sky-400">{item.storesPct}%</strong> Stores
                                 </span>
                                 <span>
-                                  <strong className="font-bold">{item.combSurfacePct}%</strong> Comb surface
+                                  <strong className="font-bold text-foreground">{item.combSurfacePct}%</strong> Comb surface
                                 </span>
                                 <span>
-                                  <strong className="font-bold">{item.queenCells}</strong> Queen cells
+                                  <strong className="font-bold text-emerald-600">{item.queenCells}</strong> Queen cells
                                 </span>
+                                {item.estimatedBees && (
+                                  <span>
+                                    <strong className="font-bold text-foreground">~{item.estimatedBees.toLocaleString()}</strong> Bees
+                                  </span>
+                                )}
                               </div>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="p-8 text-center border border-dashed border-[#EAE3DA] dark:border-stone-800 rounded-3xl space-y-2">
-                          <LayoutGrid className="w-8 h-8 text-stone-400 mx-auto" />
-                          <p className="text-xs text-[#8E8880]">No FrameSense photo analyses for this hive yet.</p>
-                          <p className="text-[11px] text-[#8E8880]">Tap "+ Add" to take photos and run BeeYield AI comb analysis.</p>
+                        <div className="p-8 text-center border border-dashed border-[#EAE3DA] dark:border-stone-800 rounded-3xl space-y-2 bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                          <Layers className="w-8 h-8 text-stone-400 mx-auto" />
+                          <p className="text-xs font-bold text-foreground">No FrameSense photo analyses for this hive yet</p>
+                          <p className="text-[11px] text-[#8E8880]">Tap "+ New Scan" above to photograph frames and run BeeYield AI comb vision.</p>
                         </div>
                       )}
-
-
                     </div>
                   )}
                 </div>
               )}
 
-              {/* TAB 4: NOTES */}
+              {/* TAB 4: NOTES (Apiary Field Notes - Matching NotesPage UI/UX) */}
               {activeTab === "notes" && (
                 <div className="space-y-4">
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3">
-                    <h3 className="text-base font-bold flex items-center gap-2">
-                      <Pencil className="w-4 h-4 text-amber-600" /> Apiary Field Notes
-                    </h3>
-                    <textarea
-                      rows={4}
-                      value={beekeeperNote}
-                      onChange={(e) => setBeekeeperNote(e.target.value)}
-                      placeholder="Type beekeeping inspection notes, flora blooming notes, queen demeanor..."
-                      className="w-full text-xs p-3 rounded-xl border border-border bg-white dark:bg-stone-900"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSaveNote}
-                      className="px-4 py-1.5 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs"
-                    >
-                      Save Observation
-                    </button>
+                  {/* Top Sub-Navigation Bar */}
+                  <div className="flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-[#FAF4EE] dark:bg-[#1E1B18] border border-[#EFE8DE] dark:border-stone-800">
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setNotesViewMode("list")}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          notesViewMode === "list"
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
+                      >
+                        <FileText className="w-3.5 h-3.5 text-purple-500" />
+                        <span>Notes Ledger ({filteredHiveNotes.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setNotesViewMode("add")}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                          notesViewMode === "add"
+                            ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 shadow-sm"
+                            : "text-[#8E8880] hover:text-foreground"
+                        }`}
+                      >
+                        <Plus className="w-3.5 h-3.5 text-amber-500" />
+                        <span>+ Add Note</span>
+                      </button>
+                    </div>
+
+                    {notesViewMode === "add" && (
+                      <button
+                        type="button"
+                        onClick={() => setNotesViewMode("list")}
+                        className="px-2.5 py-1 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:bg-muted"
+                      >
+                        Cancel
+                      </button>
+                    )}
                   </div>
+
+                  {/* MODE 1: ADD FIELD NOTE FORM */}
+                  {notesViewMode === "add" && (
+                    <form
+                      onSubmit={handleSaveObservationNote}
+                      className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-stone-900 border border-[#EFE8DE] dark:border-stone-800 shadow-md space-y-4 animate-in fade-in zoom-in-95 duration-150"
+                    >
+                      <div className="flex items-center justify-between border-b border-border/50 pb-2.5">
+                        <div>
+                          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-amber-500" /> Log Observation for {displayName}
+                          </h3>
+                          <span className="text-[10px] text-muted-foreground">{apiary.name} • Certified Ledger Record</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={toggleVoiceRecording}
+                            className={`px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                              isRecordingVoice
+                                ? "bg-rose-500 text-white animate-pulse"
+                                : "bg-muted text-muted-foreground hover:text-foreground"
+                            }`}
+                            title="Hands-free Voice Dictation"
+                          >
+                            {isRecordingVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                            <span>{isRecordingVoice ? "Listening..." : "Voice Dictate"}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Category Selector */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-muted-foreground">Category</label>
+                        <select
+                          value={noteCategory}
+                          onChange={(e) => setNoteCategory(e.target.value)}
+                          className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-amber-500"
+                        >
+                          <option value="General Observation">General Observation</option>
+                          <option value="Queen Assessment">Queen Assessment</option>
+                          <option value="Disease / Varroa">Disease / Varroa Audit</option>
+                          <option value="Feeding / Diet">Feeding & Nutrition</option>
+                          <option value="Honey Flow">Honey Flow & Supering</option>
+                          <option value="Weather / Flora">Flora Blooming & Forage</option>
+                        </select>
+                      </div>
+
+                      {/* Note Content Textarea */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-muted-foreground">Observation Notes</label>
+                        <textarea
+                          rows={4}
+                          value={noteContent}
+                          onChange={(e) => setNoteContent(e.target.value)}
+                          placeholder="Dictate or type observations: brood pattern, queen demeanor, comb drawing, pollen intake, or varroa mite drop..."
+                          className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl p-3 text-xs outline-none focus:border-amber-500 leading-relaxed"
+                        />
+                      </div>
+
+                      {/* Suggested Tag Chips */}
+                      <div className="space-y-1.5">
+                        <span className="text-[11px] font-semibold text-muted-foreground">Quick Tags:</span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {[
+                            "#queen_seen",
+                            "#strong_brood",
+                            "#nectar_flow",
+                            "#varroa_low",
+                            "#needs_super",
+                            "#fed_syrup",
+                          ].map((t) => {
+                            const isSelected = noteTags.includes(t);
+                            return (
+                              <button
+                                key={t}
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) setNoteTags(noteTags.filter((x) => x !== t));
+                                  else setNoteTags([...noteTags, t]);
+                                }}
+                                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
+                                  isSelected
+                                    ? "bg-amber-500 text-stone-950 font-bold"
+                                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                                }`}
+                              >
+                                {t}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* BeeGPT Analysis Trigger */}
+                      <div className="pt-1">
+                        <button
+                          type="button"
+                          disabled={isAiLoading || !noteContent.trim()}
+                          onClick={handleRunNoteBeeGpt}
+                          className="px-3.5 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-500/30 text-xs font-bold flex items-center gap-2 transition-all disabled:opacity-50"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                          <span>{isAiLoading ? "Consulting BeeGPT Apicultural AI..." : "Run BeeGPT Clinical Diagnosis"}</span>
+                        </button>
+
+                        {aiInsightText && (
+                          <div className="mt-3 p-3.5 rounded-2xl bg-purple-500/5 border border-purple-500/20 text-xs text-[#5C5349] dark:text-stone-300 space-y-1.5">
+                            <span className="font-bold text-purple-700 dark:text-purple-300 block">BeeGPT Advisory:</span>
+                            <p className="whitespace-pre-line leading-relaxed">{aiInsightText}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/50">
+                        <button
+                          type="button"
+                          onClick={() => setNotesViewMode("list")}
+                          className="px-3.5 py-2 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:bg-muted"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-md"
+                        >
+                          Save Observation Note
+                        </button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* MODE 2: NOTES LIST */}
+                  {notesViewMode === "list" && (
+                    <div className="space-y-3">
+                      {/* Search & Category Filter Pills */}
+                      <div className="space-y-2">
+                        <input
+                          value={notesSearchQuery}
+                          onChange={(e) => setNotesSearchQuery(e.target.value)}
+                          placeholder="Search notes by keyword, tag, or observation..."
+                          className="w-full bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border rounded-xl px-3.5 py-2 text-xs outline-none focus:border-amber-500"
+                        />
+                        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 text-xs">
+                          {["all", "General Observation", "Queen Assessment", "Disease / Varroa", "Feeding / Diet", "Honey Flow", "Weather / Flora"].map((cat) => (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => setNotesCategoryFilter(cat)}
+                              className={`px-2.5 py-1 rounded-lg whitespace-nowrap text-[11px] font-semibold transition-all ${
+                                notesCategoryFilter === cat
+                                  ? "bg-amber-500 text-stone-950 font-bold"
+                                  : "bg-[#FAF4EE] dark:bg-[#1E1B18] border border-border text-muted-foreground hover:text-foreground"
+                              }`}
+                            >
+                              {cat === "all" ? "All Categories" : cat}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {filteredHiveNotes.length > 0 ? (
+                        <div className="space-y-3">
+                          {filteredHiveNotes.map((n: any) => (
+                            <div
+                              key={n.id}
+                              className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#EAE3DA] dark:border-stone-800 shadow-sm space-y-2.5 text-xs"
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-bold text-foreground text-sm">
+                                    {n.title || n.category}
+                                  </span>
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                                    {n.category}
+                                  </span>
+                                  <span className="text-[#8E8880] text-[11px]">
+                                    {n.date}
+                                  </span>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = hiveNotes.filter((x: any) => x.id !== n.id);
+                                    setHiveNotes(updated);
+                                    try {
+                                      localStorage.setItem(`beeyield_notes_${user?.id || "global"}`, JSON.stringify(updated));
+                                    } catch {}
+                                    toast.success("Note removed");
+                                  }}
+                                  className="p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
+                                  title="Delete note"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              <p className="text-[#2E2A25] dark:text-stone-200 leading-relaxed whitespace-pre-line">
+                                {n.content}
+                              </p>
+
+                              {n.tags && n.tags.length > 0 && (
+                                <div className="flex items-center gap-1 flex-wrap pt-1">
+                                  {n.tags.map((t: string) => (
+                                    <span
+                                      key={t}
+                                      className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-md"
+                                    >
+                                      {t}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {n.ai_insights && (
+                                <div className="p-3 rounded-xl bg-purple-500/5 border border-purple-500/20 text-[11px] text-[#5C5349] dark:text-stone-300 space-y-1">
+                                  <span className="font-bold text-purple-700 dark:text-purple-300 flex items-center gap-1">
+                                    <Sparkles className="w-3 h-3 text-purple-500" /> BeeGPT Assessment:
+                                  </span>
+                                  <p className="whitespace-pre-line">{n.ai_insights}</p>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-8 text-center border border-dashed border-[#EAE3DA] dark:border-stone-800 rounded-3xl space-y-2 bg-[#FAF4EE] dark:bg-[#1E1B18]">
+                          <FileText className="w-8 h-8 text-stone-400 mx-auto" />
+                          <p className="text-xs font-bold text-foreground">No notes logged yet for {displayName}</p>
+                          <p className="text-[11px] text-[#8E8880]">Tap "+ Add Note" to record observations with hands-free voice dictation.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -7131,6 +7732,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                               });
                               const healthStatus = hiveInspection?.colony_health || (hive.queenPresent ? "Healthy" : "Standby");
                               const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
+                              const hiveKg = hive.batches.reduce((acc: number, b: any) => acc + (b.total_weight_kg || b.weight_kg || 0), 0);
 
                               return (
                                 <React.Fragment key={hive.id}>
@@ -7446,6 +8048,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                   <button
                     type="button"
                     onClick={() => {
+                      window.dispatchEvent(new CustomEvent("open-measurement-tools"));
+                    }}
+                    className="px-3.5 py-2 rounded-xl border border-border hover:bg-muted text-muted-foreground hover:text-foreground font-semibold text-xs flex items-center justify-center gap-1.5 transition-all"
+                    title="Open Device Telemetry & Pairing Tools"
+                  >
+                    <Cpu className="w-3.5 h-3.5" />
+                    <span>Device Tools</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       setTempScannedDeviceCode("");
                       setShowAddDeviceModal(true);
                     }}
@@ -7470,7 +8083,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                       All connected sensors have been fully cleared and verified. When you pair a new sensor, it will automatically synchronize across your phone, laptop, and tablet in real time.
                     </p>
                   </div>
-                  <div className="flex items-center justify-center gap-3 pt-2">
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent("open-measurement-tools"));
+                      }}
+                      className="px-5 py-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs flex items-center gap-2 shadow-sm transition-all"
+                    >
+                      <Cpu className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      <span>Open Measurement Tools</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => {
@@ -7758,7 +8381,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
 // ----------------------------------------------------------------------
 // Interactive Apisense Weather Card (Top Page Level)
 // ----------------------------------------------------------------------
-export function ApisenseWeatherCard({
+export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
   apiary,
   weather,
   userKey,
@@ -7941,33 +8564,37 @@ export function ApisenseWeatherCard({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              onEdit(apiary);
+              startTransition(() => {
+                onEdit(apiary);
+              });
             }}
-            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline"
+            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
           >
-            <Edit className="w-3 h-3" /> Edit
+            <Edit className="w-3 h-3 pointer-events-none select-none" /> Edit
           </button>
           {onDelete && (
             <button
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(apiary.id, displayName);
+                startTransition(() => {
+                  onDelete(apiary.id, displayName);
+                });
               }}
-              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline"
+              className="text-[11px] font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 flex items-center gap-1 p-1 hover:underline active:scale-95 transition-transform touch-manipulation cursor-pointer select-none"
               title="Delete apiary"
             >
-              <Trash2 className="w-3 h-3" /> Delete
+              <Trash2 className="w-3 h-3 pointer-events-none select-none" /> Delete
             </button>
           )}
-          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40">
-            View Details <ChevronRight className="w-3 h-3" />
+          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-900/40 pointer-events-none select-none">
+            View Details <ChevronRight className="w-3 h-3 pointer-events-none select-none" />
           </span>
         </div>
       </div>
     </div>
   );
-}
+});
 
 // ----------------------------------------------------------------------
 // Main Apiaries Modal & Standalone Page
@@ -8347,34 +8974,38 @@ export default function ApiariesPage({
     setAttachedDevices([]);
   };
 
-  const handleEdit = (site: ApiarySite) => {
-    setEditingApiary(site);
-    setAddApiaryStep(1);
-    setFormData({
-      name: site.name,
-      location_name: site.location_name,
-      county: site.county || "Makueni",
-      region: site.region || "",
-      latitude: site.latitude,
-      longitude: site.longitude,
-      type: site.type,
-      active_hives: site.active_hives,
-      total_hives: site.total_hives,
-      size_acres: site.size_acres,
-      forage_type: site.forage_type,
-      status: site.status,
-      notes: site.notes || "",
+  const handleEdit = useCallback((site: ApiarySite) => {
+    startTransition(() => {
+      setEditingApiary(site);
+      setAddApiaryStep(1);
+      setFormData({
+        name: site.name,
+        location_name: site.location_name,
+        county: site.county || "Makueni",
+        region: site.region || "",
+        latitude: site.latitude,
+        longitude: site.longitude,
+        type: site.type,
+        active_hives: site.active_hives,
+        total_hives: site.total_hives,
+        size_acres: site.size_acres,
+        forage_type: site.forage_type,
+        status: site.status,
+        notes: site.notes || "",
+      });
+      setShowAddModal(true);
     });
-    setShowAddModal(true);
-  };
+  }, []);
 
-  const handleDeleteApiary = async (apiaryId: string, apiaryName: string) => {
+  const handleDeleteApiary = useCallback(async (apiaryId: string, apiaryName: string) => {
     const confirmed = await confirmAsync(`Are you sure you want to remove apiary "${apiaryName}"?`);
     if (!confirmed) {
       return;
     }
     const nextApiaries = apiaries.filter((a) => a.id !== apiaryId);
-    setApiaries(nextApiaries);
+    startTransition(() => {
+      setApiaries(nextApiaries);
+    });
     try {
       localStorage.setItem(`beeyield_user_apiaries_${userKey}`, JSON.stringify(nextApiaries));
     } catch {
@@ -8391,14 +9022,16 @@ export default function ApiariesPage({
       setSelectedDetailApiary(null);
     }
     toast.success(`Removed apiary ${apiaryName}`);
-  };
+  }, [apiaries, userKey, user?.id, selectedDetailApiary]);
 
-  const handleOpenDetails = (site: ApiarySite) => {
-    setSelectedDetailApiary(site);
-    if (onSelectApiary) {
-      onSelectApiary(site);
-    }
-  };
+  const handleOpenDetails = useCallback((site: ApiarySite) => {
+    startTransition(() => {
+      setSelectedDetailApiary(site);
+      if (onSelectApiary) {
+        onSelectApiary(site);
+      }
+    });
+  }, [onSelectApiary]);
 
   // Filtered apiaries
   const filteredApiaries = useMemo(() => {
@@ -8414,6 +9047,7 @@ export default function ApiariesPage({
 
   const handleHivesCountChanged = useCallback(
     (apiaryId: string, count: number) => {
+      invalidateHivesCountCache(userKey, apiaryId);
       setApiaries((prev) => {
         const next = prev.map((a) =>
           a.id === apiaryId

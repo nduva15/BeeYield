@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   BookOpen,
   Calendar,
@@ -109,7 +109,35 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
+      {/* Top Navbar */}
+      <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={beeyieldLogo} alt="BeeYield" className="h-8 w-auto transition-transform group-hover:scale-105" />
+            <div className="flex flex-col">
+              <span className="font-display font-black text-lg text-foreground tracking-tight flex items-center gap-1.5">
+                BeeYield <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Blogs</span>
+              </span>
+              <span className="text-[10px] text-muted-foreground hidden sm:block">Field Agronomy & Pollination Journal</span>
+            </div>
+          </Link>
 
+          <div className="flex items-center gap-3">
+            <Link
+              to="/about"
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg hover:bg-muted"
+            >
+              Our Story
+            </Link>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 px-3.5 py-1.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all"
+            >
+              Launch AI Platform <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+      </header>
 
       {/* ARTICLE READER VIEW */}
       {activePost ? (
@@ -314,6 +342,9 @@ export default function BlogsPage() {
             </div>
           </footer>
 
+          {/* Panda Miti Ecological Initiative Banner */}
+          <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
+
           {/* Related Articles */}
           <section className="my-12 pt-8 border-t border-border/40">
             <div className="flex items-center justify-between mb-6">
@@ -367,9 +398,6 @@ export default function BlogsPage() {
               The Science of Precision <br />
               <span className="text-emerald-600 dark:text-emerald-400">Crop Pollination in Kenya</span>
             </h1>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-              Dispatches directly from our research apiaries and commercial mango, avocado, and macadamia orchards across Makueni and Kibwezi. Written by founder Timothy Mathuva.
-            </p>
           </section>
 
           {/* Search and Tag Filter Bar */}
@@ -534,6 +562,9 @@ export default function BlogsPage() {
             </div>
           </div>
 
+          {/* Panda Miti Ecological Initiative Banner */}
+          <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
+
           {/* Farmer Consultation CTA Section */}
           <section className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-amber-950/30 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-center space-y-6">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -544,7 +575,7 @@ export default function BlogsPage() {
                 Ready to Maximize Fruit Set on Your Orchard?
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Macadamia in Embu, our intelligent hive precision pollination teams deliver verified yield improvements.
+                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Citrus & Oranges in Kibwezi, our intelligent hive precision pollination teams deliver verified yield improvements.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4">
@@ -565,6 +596,20 @@ export default function BlogsPage() {
               </Button>
             </div>
           </section>
+          {/* Global Partners Strip */}
+          <footer className="mt-12 pt-6 border-t border-border/40 text-center space-y-2">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-muted-foreground">
+              <span className="text-amber-400 font-semibold uppercase tracking-wider text-[11px]">Global Partners:</span>
+              <span className="font-medium text-foreground">Farmers</span>
+              <span>•</span>
+              <a href="https://apisense.ai/en" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">ApiSense</a>
+              <span>•</span>
+              <a href="https://intelligenthives.eu/" target="_blank" rel="noopener noreferrer" className="text-foreground hover:text-amber-400 transition-colors">Intelligent Hives</a>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} BeeYield. Precision pollination and apiculture intelligence.
+            </p>
+          </footer>
         </main>
       )}
     </div>

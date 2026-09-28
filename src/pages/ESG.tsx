@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Database, TrendingUp, Check, Heart, Sprout, Globe, Wind, Sun, ArrowRight, Quote,
   Users, Droplets, TreePine, Bug, Package, MapPin, Shield, Leaf, Cpu, Code, Loader2,
-  Download, ShieldCheck, Zap, Scale, Radio, Activity
+  Download, ShieldCheck, Zap, Scale, Radio, Activity, Trees, Flower2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -602,7 +602,17 @@ const ESG = () => {
                   <p className="text-xl font-medium text-white leading-relaxed mb-4">
                     "Through precision pollination, we're not just harvesting honey—we're creating local food abundance with hard data."
                   </p>
-                  <p className="text-sm font-bold text-beeyield-green">Timothy Nduva, CEO</p>
+                  <div className="flex items-center gap-3">
+                    <img
+                      src="/images/timothy-nduva.png"
+                      alt="Timothy Nduva"
+                      className="w-12 h-12 rounded-full object-cover object-center border-2 border-beeyield-green shadow-md shrink-0"
+                    />
+                    <div>
+                      <p className="text-sm font-bold text-white">Timothy Nduva</p>
+                      <p className="text-xs text-beeyield-green font-medium">Founder &amp; CEO, BeeYield</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

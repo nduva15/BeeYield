@@ -1,5 +1,5 @@
 import { streamBeeGpt } from "@/lib/beegpt-stream";
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Send,
   Loader2,
@@ -40,6 +40,8 @@ import {
   ShoppingBag,
   ArrowRight,
   Droplets,
+  FileText,
+  Hexagon,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -86,6 +88,7 @@ import FeedingSchedule from "@/components/FeedingSchedule";
 import KnowledgeSearch from "@/components/KnowledgeSearch";
 import ApiarySizing from "@/components/ApiarySizing";
 import ApiariesPage from "@/components/ApiariesPage";
+import BeeYieldHivesView from "@/components/beeyield/BeeYieldHivesView";
 import YieldProjection from "@/components/YieldProjection";
 import InspectionsPage from "@/components/InspectionsPage";
 import TasksPage from "@/components/TasksPage";
@@ -253,6 +256,7 @@ export default function Index() {
   const [knowledgeSearchOpen, setKnowledgeSearchOpen] = useState(false);
   const [apiarySizingOpen, setApiarySizingOpen] = useState(false);
   const [apiariesOpen, setApiariesOpen] = useState(false);
+  const [hivesOpen, setHivesOpen] = useState(false);
   const [yieldProjectionOpen, setYieldProjectionOpen] = useState(false);
   const [inspectionsOpen, setInspectionsOpen] = useState(false);
   const [tasksOpen, setTasksOpen] = useState(false);
@@ -384,9 +388,28 @@ export default function Index() {
       });
     };
 
+    const handleOpenMeasurement = () => {
+      setMeasurementToolsOpen(true);
+    };
+
+    const handleNavigateTab = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail === "hives" || detail === "beeyield" || detail === "colonies") {
+        setHivesOpen(true);
+      }
+    };
+
     window.addEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+    window.addEventListener("open-measurement-tools", handleOpenMeasurement);
+    window.addEventListener("beeyield-open-device-pairing", handleOpenMeasurement);
+    window.addEventListener("beeyield-navigate-tab", handleNavigateTab);
+    window.addEventListener("open-hives-modal", () => setHivesOpen(true));
     return () => {
       window.removeEventListener("beeyield:scan-ai-sync", handleScanAiSync);
+      window.removeEventListener("open-measurement-tools", handleOpenMeasurement);
+      window.removeEventListener("beeyield-open-device-pairing", handleOpenMeasurement);
+      window.removeEventListener("beeyield-navigate-tab", handleNavigateTab);
+      window.removeEventListener("open-hives-modal", () => setHivesOpen(true));
     };
   }, [conversationId]);
 
@@ -562,6 +585,11 @@ export default function Index() {
           onClick: () => setOnboardingOpen(true),
         },
         {
+          label: "Hives & Colonies Directory",
+          icon: Hexagon,
+          onClick: () => setHivesOpen(true),
+        },
+        {
           label: "Apiaries & Live Weather",
           icon: Compass,
           onClick: () => setApiariesOpen(true),
@@ -671,7 +699,7 @@ export default function Index() {
         },
         { label: "Florage Database", icon: Sprout, onClick: () => setFloragePageOpen(true) },
         { label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => setForageZonesOpen(true) },
-          { label: "Project Panda Miti (45,000 Trees)", icon: Trees, onClick: () => navigate("/panda-miti") },
+        { label: "Project Panda Miti (45,000 Trees)", icon: Trees, onClick: () => navigate({ to: "/panda-miti" as any }) },
       ],
     },
     {
@@ -726,7 +754,7 @@ export default function Index() {
               icon: LogOut,
               onClick: () => void signOut(),
             }
-          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate("/auth?next=/") },
+          : { label: "Sign in / Sign up", icon: LogIn, onClick: () => navigate({ to: "/auth" as any }) },
       ],
     },
   ];
@@ -784,7 +812,7 @@ export default function Index() {
               onClick={() => {
                 requestAnimationFrame(() => {
                   React.startTransition(() => {
-                    navigate("/panda-miti");
+                    navigate({ to: "/panda-miti" as any });
                   });
                 });
               }}
@@ -884,7 +912,7 @@ export default function Index() {
                 onClick={() => {
                   requestAnimationFrame(() => {
                     React.startTransition(() => {
-                      navigate("/panda-miti");
+                      navigate({ to: "/panda-miti" as any });
                     });
                   });
                 }}
@@ -1186,6 +1214,20 @@ export default function Index() {
       <HiveHealthDashboard isOpen={healthDashOpen} onClose={() => setHealthDashOpen(false)} />
       <SupportPage isOpen={supportOpen} onClose={() => setSupportOpen(false)} />
       <ApiariesPage isOpen={apiariesOpen} onClose={() => setApiariesOpen(false)} />
+      <BeeYieldHivesView
+        isOpen={hivesOpen}
+        onClose={() => setHivesOpen(false)}
+        onTabChange={(tab) => {
+          setHivesOpen(false);
+          if (tab === "inspections") setInspectionsOpen(true);
+          else if (tab === "tasks") setTasksOpen(true);
+          else if (tab === "devices" || tab === "measurement-tools") setMeasurementToolsOpen(true);
+          else if (tab === "apiaries-weather") setApiariesOpen(true);
+          else if (tab === "hive-health") setHealthDashOpen(true);
+          else if (tab === "harvests") setHarvestsOpen(true);
+          else if (tab === "forage-zones") setForageZonesOpen(true);
+        }}
+      />
       <ShopDashboard isOpen={shopDashOpen} onClose={() => setShopDashOpen(false)} />
       <FrameSenseToolPage isOpen={frameSenseOpen} onClose={() => setFrameSenseOpen(false)} />
       <SyrupFeedingToolPage isOpen={syrupToolOpen} onClose={() => setSyrupToolOpen(false)} />

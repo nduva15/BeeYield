@@ -2205,7 +2205,9 @@ export const beeyieldService = {
   // ========== IoT DEVICES & GATEWAYS ==========
   async getDevices(): Promise<IoTDevice[]> {
     try {
-      return await apiGet<IoTDevice[]>("/iot/devices");
+      const res = await apiGet<IoTDevice[]>("/iot/devices");
+      const { isFakeSensorDevice } = await import("@/services/sensorSyncService");
+      return (res || []).filter((d) => !isFakeSensorDevice({ serial: d.device_code, id: d.id, model: d.device_name }));
     } catch (error) {
       console.error("getDevices:", error);
       return [];
@@ -2356,6 +2358,21 @@ export const beeyieldService = {
       if (payload.location_name === "") payload.location_name = null;
       delete payload.linked_apiary_id;
       const data = await apiPost<IoTDevice>("/iot/devices", payload);
+      try {
+        const { saveAndSyncNewSensor } = await import("@/services/sensorSyncService");
+        await saveAndSyncNewSensor({
+          id: data?.id || payload.id,
+          serial: payload.device_code,
+          category: payload.device_type === "disease" ? "disease_devices" : (payload.device_type === "inland" ? "in_land" : "in_hive"),
+          deviceType: payload.device_name || "Apisense IoT Hardware",
+          linkType: "bluetooth",
+          status: "optimal",
+          batteryPct: 98,
+          hiveId: payload.hive_id || null,
+          apiaryId: payload.apiary_id || null,
+        });
+      } catch {}
+
       if (!options?.silent) {
         toast.success("Device linked successfully!");
       }
@@ -2393,6 +2410,10 @@ export const beeyieldService = {
   async deleteDevice(id: string): Promise<{ success: boolean; error: any }> {
     try {
       await apiDelete<void>(`/iot/devices/${id}`);
+      try {
+        const { deleteAndSyncSensor } = await import("@/services/sensorSyncService");
+        await deleteAndSyncSensor(id, id);
+      } catch {}
       toast.success("Device deleted");
       return { success: true, error: null };
     } catch (error) {

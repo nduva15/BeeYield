@@ -13,6 +13,7 @@ import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/d
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 
+
 const CropsWePollinate = () => {
   const pollinationCrops = dashboardPollinationCropDetails;
 
@@ -285,7 +286,7 @@ const CropsWePollinate = () => {
             {pollinationCrops.map((crop: PollinationCropDetail, index: number) => {
               const isSpotlightCrop = !!(crop.galleryImages && crop.galleryImages.length > 0);
               const cropLower = crop.cropName.toLowerCase();
-              const targetHash = ["mangoes", "oranges", "citrus", "maize", "vegetables", "beans", "sunflowers", "avocados", "macadamia", "coffee"].find(c => cropLower.includes(c)) || "latest-pollination";
+              const targetHash = ["mangoes", "oranges", "citrus", "maize", "vegetables", "beans", "sunflowers", "avocados"].find(c => cropLower.includes(c)) || "latest-pollination";
 
               return (
                 <Card key={index} className="overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all group bg-[#FFF9F0] flex flex-col justify-between">
@@ -356,7 +357,7 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-            
+
       {/* Missing Crop CTA */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
         {/* Background Pattern */}

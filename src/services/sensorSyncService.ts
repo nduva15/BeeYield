@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type DeviceCategory = "in_hive" | "in_land" | "disease_devices";
 export type DeviceLinkType = "bluetooth" | "usb" | "online" | "cellular" | "lorawan";
-export type DeviceStatus = "optimal" | "active" | "warning" | "offline" | "standby";
+export type DeviceStatus = "optimal" | "active" | "online" | "warning" | "offline" | "standby" | "low_battery" | "calibrating";
 
 export interface SyncedSensorDevice {
   id: string;
@@ -63,6 +63,40 @@ function getLocalSensorStorageKey(userId: string, apiaryId?: string | null): str
   return `beeyield_synced_sensors_${userId}_${safeApiary}`;
 }
 
+export function isFakeSensorDevice(item: any): boolean {
+  if (!item) return true;
+  const s = String(item.serial || item.device_code || "").trim().toUpperCase();
+  const id = String(item.id || "").trim().toLowerCase();
+  const lbl = String(item.label || item.deviceType || item.name || item.device_type || "").trim().toLowerCase();
+  return (
+    id.startsWith("dev-vs-") ||
+    id.startsWith("dev-hub-") ||
+    id.startsWith("dev-dis-") ||
+    id.startsWith("dev-scale-") ||
+    id.startsWith("dev-tag-") ||
+    id.startsWith("dev-land-") ||
+    s.startsWith("SENS-INP-001") ||
+    s.startsWith("SENS-MIC-002") ||
+    s.startsWith("SENS-LAND-01") ||
+    s.startsWith("SENS-DIS-001") ||
+    s.startsWith("SCALE-KBZ") ||
+    s.startsWith("VS-KBZ") ||
+    s.startsWith("HUB-KBZ") ||
+    s.startsWith("VARROA-KBZ") ||
+    s.startsWith("AFB-DIAG-KBZ") ||
+    s.startsWith("SHB-TRAP-KBZ") ||
+    s.startsWith("IH-BROOD") ||
+    s.startsWith("TAG-KBZ") ||
+    s.startsWith("SOIL-KBZ") ||
+    s.startsWith("PERIMETER-KBZ") ||
+    s.startsWith("RELAY-KBZ") ||
+    lbl.includes("vitalsensor brood core") ||
+    lbl.includes("bio-acoustic queen mic") ||
+    lbl.includes("solar microclimate hub") ||
+    lbl.includes("spectral varroa scanner")
+  );
+}
+
 /**
  * Fetch all synced sensors from Supabase Database and cross-device cloud vault.
  * Falls back to local cache if offline, but always reconciles with Supabase.
@@ -82,7 +116,7 @@ export async function fetchSyncedSensors(
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed)) {
-          cached = parsed;
+          cached = parsed.filter((d) => !isFakeSensorDevice(d));
         }
       }
     } catch {}
@@ -102,7 +136,16 @@ export async function fetchSyncedSensors(
 
       const { data, error } = await query;
       if (!error && Array.isArray(data)) {
-        const mapped: SyncedSensorDevice[] = data.map((d: any) => ({
+        // Proactively purge any fake/mock devices from Supabase database
+        const fakeIds = data.filter((d: any) => isFakeSensorDevice(d)).map((d: any) => d.id);
+        if (fakeIds.length > 0) {
+          try {
+            void (supabase as any).from("devices").delete().in("id", fakeIds);
+          } catch {}
+        }
+
+        const validRows = data.filter((d: any) => !isFakeSensorDevice(d));
+        const mapped: SyncedSensorDevice[] = validRows.map((d: any) => ({
           id: d.id,
           serial: d.serial,
           category: (d.device_kind === "hub" ? "in_land" : d.device_kind?.includes("disease") ? "disease_devices" : "in_hive") as DeviceCategory,
@@ -139,9 +182,9 @@ export async function fetchSyncedSensors(
       const { data: authData } = await supabase.auth.getUser();
       const metaSensors = authData?.user?.user_metadata?.connected_sensors;
       if (Array.isArray(metaSensors)) {
-        const filtered = apiaryId && apiaryId !== "all"
+        const filtered = (apiaryId && apiaryId !== "all"
           ? metaSensors.filter((s: any) => s.apiaryId === apiaryId)
-          : metaSensors;
+          : metaSensors).filter((s: any) => !isFakeSensorDevice(s));
 
         if (typeof window !== "undefined") {
           try {

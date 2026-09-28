@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
@@ -104,9 +104,11 @@ export function AddApiaryModal({
       "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
   }));
 
-  // Re-sync if initialApiary changes
+  // Re-sync only if initialApiary actually changes after mount
+  const prevInitialApiaryIdRef = useRef(initialApiary?.id);
   useEffect(() => {
-    if (initialApiary) {
+    if (initialApiary && initialApiary.id !== prevInitialApiaryIdRef.current) {
+      prevInitialApiaryIdRef.current = initialApiary.id;
       setFormData({
         name: initialApiary.name || "",
         location_name: initialApiary.location_name || "Kiunduani, Kibwezi, Makueni, Kenya",

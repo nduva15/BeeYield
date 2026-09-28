@@ -6,7 +6,6 @@ import {
   Sun, Wind, ChevronRight, CheckCircle2, AlertCircle, Info,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Html5Qrcode } from "html5-qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { isTimothyUser, CANONICAL_TIMOTHY_HIVES, CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
@@ -15,6 +14,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
+import { DeviceQrCameraScanner } from "@/components/common/DeviceQrCameraScanner";
+import { RecentDeviceReadingsView } from "@/components/common/RecentDeviceReadingsView";
+import {
+  resolveDeviceReadings,
+  persistScannedDeviceTelemetry,
+  extractCleanSerial,
+  type DeviceTelemetryReading,
+} from "@/services/deviceReadingService";
 import {
   fetchSyncedSensors,
   saveAndSyncNewSensor,
@@ -22,6 +29,8 @@ import {
   removeAllSensorsFully,
   subscribeToSensorSync,
   generateSensorUuid,
+  isFakeSensorDevice,
+  type SyncedSensorDevice,
 } from "@/services/sensorSyncService";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
@@ -99,7 +108,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Core brood nest temperature (34–36°C) and relative humidity monitoring",
         telemetryType: "Temp (°C) + Humidity (%)",
         defaultLabel: "VitalSensor Brood Core",
-        defaultSerialPrefix: "SENS-INP",
+        defaultSerialPrefix: "APISENSE-BROOD",
       },
       {
         id: "acoustic_mic",
@@ -108,7 +117,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "24/7 frequency FFT listening for Queen piping, swarming roar & queenlessness",
         telemetryType: "Acoustic FFT (Hz)",
         defaultLabel: "Bio-Acoustic Queen Mic",
-        defaultSerialPrefix: "SENS-MIC",
+        defaultSerialPrefix: "APISENSE-MIC",
       },
       {
         id: "scale_brood",
@@ -117,7 +126,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Sub-ounce load cells tracking daily nectar flows and winter consumption",
         telemetryType: "Weight Mass (kg)",
         defaultLabel: "Continuous Hive Scale",
-        defaultSerialPrefix: "SENS-SCL",
+        defaultSerialPrefix: "APISENSE-SCALE",
       },
     ],
   },
@@ -138,7 +147,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Ambient barometric pressure, external temperature, solar irradiance & rain",
         telemetryType: "Weather + Solar (W/m²)",
         defaultLabel: "Solar Microclimate Station",
-        defaultSerialPrefix: "SENS-LAND",
+        defaultSerialPrefix: "APISENSE-ENV",
       },
       {
         id: "forage_sensor",
@@ -147,7 +156,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Entrance optical gate tracking forager exit/return velocity & pollen pulses",
         telemetryType: "Flight count / min",
         defaultLabel: "Forage Flight Sensor",
-        defaultSerialPrefix: "SENS-FOR",
+        defaultSerialPrefix: "APISENSE-FORAGE",
       },
       {
         id: "gateway_hub",
@@ -156,7 +165,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Central telemetry gateway connecting all Bluetooth brood tags across 200m",
         telemetryType: "Network Signal (dBm)",
         defaultLabel: "Apiary Solar Hub",
-        defaultSerialPrefix: "HUB-KBZ",
+        defaultSerialPrefix: "APISENSE-HUB",
       },
     ],
   },
@@ -177,7 +186,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Infrared entrance scanner counting Varroa destructor mite drop & phoretic load",
         telemetryType: "Varroa Mite Load (%)",
         defaultLabel: "Spectral Varroa Scanner",
-        defaultSerialPrefix: "SENS-DIS",
+        defaultSerialPrefix: "APISENSE-VARROA",
       },
       {
         id: "pathogen_voc",
@@ -186,7 +195,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Sniffer sensor for American Foulbrood (AFB), European Foulbrood & Nosema volatiles",
         telemetryType: "VOC Pathogen Index (ppm)",
         defaultLabel: "Pathogen VOC Sniffer",
-        defaultSerialPrefix: "SENS-VOC",
+        defaultSerialPrefix: "APISENSE-VOC",
       },
       {
         id: "beetle_trap",
@@ -195,7 +204,7 @@ export const DEVICE_CATEGORIES: Record<
         description: "Optical entrance sensor flagging hive beetle ingress and wasp robber alerts",
         telemetryType: "Beetle intrusion count",
         defaultLabel: "Beetle Optical Counter",
-        defaultSerialPrefix: "SENS-BTL",
+        defaultSerialPrefix: "APISENSE-BEETLE",
       },
     ],
   },
@@ -248,40 +257,16 @@ function getResolvedLocalUser(contextUser: any) {
 /* ------------------------------------------------------------------ QR scanner */
 
 function QrScanner({ onResult, onCancel }: { onResult: (text: string) => void; onCancel: () => void }) {
-  const reactId = useId();
-  const containerId = `qr-${reactId.replace(/:/g, "")}`;
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    const scanner = new Html5Qrcode(containerId);
-    scannerRef.current = scanner;
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 240 } },
-        (decoded) => {
-          void scanner.stop().catch(() => undefined);
-          onResult(decoded);
-        },
-        () => undefined,
-      )
-      .catch((e) => setErr(e instanceof Error ? e.message : "Camera unavailable. You can enter the serial number manually."));
-    return () => {
-      if (scanner.isScanning) void scanner.stop().catch(() => undefined);
-    };
-  }, [containerId, onResult]);
-
   return (
-    <div className="space-y-3">
-      <div className="rounded-xl overflow-hidden border-2 border-honey/60 bg-black/80 min-h-[240px]" id={containerId} />
-      {err && (
-        <p className="text-xs text-destructive">
-          {err}
-        </p>
-      )}
-      <Button variant="outline" size="sm" onClick={onCancel} className="w-full">Cancel Camera Scan</Button>
-    </div>
+    <DeviceQrCameraScanner
+      title="Scan Device QR / Barcode"
+      helperText="Point phone camera at sensor or hive QR code"
+      onScanSuccess={(decoded) => {
+        const clean = extractCleanSerial(decoded);
+        onResult(clean);
+      }}
+      onCancel={onCancel}
+    />
   );
 }
 
@@ -318,12 +303,28 @@ function WizardNav({ onCancel, onBack, onNext, nextLabel, nextDisabled, done }: 
 
 function ScanField({ label, hint, value, onChange }: { label: string; hint: string; value: string; onChange: (v: string) => void }) {
   const [scanning, setScanning] = useState(false);
+  const [previewReading, setPreviewReading] = useState<DeviceTelemetryReading | null>(null);
+
+  useEffect(() => {
+    if (!value || value.trim().length < 3) {
+      setPreviewReading(null);
+      return;
+    }
+    let isCurrent = true;
+    void resolveDeviceReadings(value).then((r) => {
+      if (isCurrent) setPreviewReading(r);
+    });
+    return () => {
+      isCurrent = false;
+    };
+  }, [value]);
+
   return (
     <div className="space-y-2">
       <div className="flex items-end gap-2">
         <div className="flex-1">
           <Label className="text-xs font-semibold">{label}</Label>
-          <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Scan or type device serial (e.g. SENS-INP-001)" className="mt-1" />
+          <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Scan or type device serial (e.g. SENS-INP-001)" className="mt-1 font-mono uppercase" />
         </div>
         <button
           type="button"
@@ -335,11 +336,30 @@ function ScanField({ label, hint, value, onChange }: { label: string; hint: stri
         </button>
       </div>
       <p className="text-[11px] text-muted-foreground">{hint}</p>
+
       {scanning && (
-        <QrScanner
-          onResult={(t) => { onChange(t.trim()); setScanning(false); toast.success("Device barcode scanned: " + t.trim()); }}
-          onCancel={() => setScanning(false)}
-        />
+        <div className="rounded-2xl border border-honey/40 bg-card p-3 shadow-md">
+          <DeviceQrCameraScanner
+            title={`Scan ${label} Hardware Code`}
+            onScanSuccess={(t) => {
+              const clean = extractCleanSerial(t);
+              onChange(clean);
+              setScanning(false);
+              toast.success("Device barcode scanned: " + clean);
+            }}
+            onCancel={() => setScanning(false)}
+          />
+        </div>
+      )}
+
+      {previewReading && !scanning && (
+        <div className="mt-2">
+          <RecentDeviceReadingsView
+            reading={previewReading}
+            showApplyButton={false}
+            onRescan={() => setScanning(true)}
+          />
+        </div>
       )}
     </div>
   );
@@ -630,25 +650,20 @@ function AddDeviceWizard({
     setCategory(newCat);
     const firstKind = DEVICE_CATEGORIES[newCat].kinds[0];
     setSelectedKindId(firstKind.id);
-    const randNum = 100 + ((newCat.length * 73 + firstKind.id.length * 19) % 900);
-    setSerial(`${firstKind.defaultSerialPrefix}-${randNum}`);
     const targetHive = hives.find((h) => h.id === selectedHiveId);
     setLabel(`${targetHive?.name || "Hive"} ${firstKind.name}`);
   }, [hives, selectedHiveId]);
 
-  // If initialHiveId provided on mount, auto-set serial and label
+  // If initialHiveId provided on mount, auto-set label
   useEffect(() => {
     if (initialHiveId) {
       setSelectedHiveId(initialHiveId);
       const target = hives.find((h) => h.id === initialHiveId);
       if (target) {
         setLabel(`${target.name} VitalSensor`);
-        const num = target.name.replace(/\D+/g, "") || "001";
-        setSerial(`SENS-INP-${num.padStart(3, "0")}`);
       }
     } else {
       const firstHive = hives[0];
-      setSerial("");
       setLabel(firstHive ? `${firstHive.name} VitalSensor` : "");
     }
   }, [initialHiveId, hives]);
@@ -657,74 +672,79 @@ function AddDeviceWizard({
   const activeKindConfig = activeCategoryConfig.kinds.find((k) => k.id === selectedKindId) || activeCategoryConfig.kinds[0];
 
   const handleSaveDevice = async () => {
-    if (!serial.trim()) {
+    const cleanSerial = serial.trim().toUpperCase();
+    if (!cleanSerial) {
       toast.error("Please provide or scan a device serial number");
       return;
     }
-    setSaving(true);
 
-    const deviceId = `dev-${category}-${Date.now()}`;
-    const syncedHive = category === "in_land" && selectedHiveId === "apiary_wide" ? null : selectedHiveId;
-    const syncedHiveName = hives.find((h) => h.id === syncedHive)?.name || "Kibwezi Apiary Node";
-
-    const newDeviceRecord: Device = {
-      id: deviceId,
-      apiary_id: selectedApiaryId || null,
-      hive_id: syncedHive,
-      device_kind: selectedKindId,
-      category,
-      link_type: linkType,
-      serial: serial.trim().toUpperCase(),
-      label: label.trim() || `${syncedHiveName} ${activeKindConfig.name}`,
-      status: "active",
-      battery_pct: 98,
-      last_seen_at: new Date().toISOString(),
-      temperature_c: category === "in_hive" ? 35.1 : 28.6,
-      humidity_pct: category === "in_hive" ? 58 : 45,
-      weight_kg: category === "in_hive" ? 42.8 : null,
-    };
-
-    // 1. Save to Supabase
-    try {
-      await supabase.from("devices").insert({
-        id: deviceId,
-        user_id: effectiveUserId,
-        apiary_id: selectedApiaryId || null,
-        hive_id: syncedHive,
-        device_kind: selectedKindId,
-        link_type: linkType,
-        serial: serial.trim().toUpperCase(),
-        label: label.trim() || `${syncedHiveName} ${activeKindConfig.name}`,
-        confirmation_code: confirmPin || null,
-        status: "active",
-        battery_pct: 98,
-      });
-
-      // Insert initial telemetry reading
-      await supabase.from("device_measurements").insert({
-        user_id: effectiveUserId,
-        device_id: deviceId,
-        hive_id: syncedHive,
-        source: linkType,
-        temperature_c: newDeviceRecord.temperature_c,
-        humidity_pct: newDeviceRecord.humidity_pct,
-        weight_kg: newDeviceRecord.weight_kg,
-        battery_pct: 98,
-      });
-    } catch (e) {
-      console.warn("Supabase devices save fallback:", e);
+    if (isFakeSensorDevice({ serial: cleanSerial })) {
+      toast.error("Simulated/mock test serials cannot be paired. Please enter or scan a genuine hardware serial.");
+      return;
     }
 
-    // 2. Persist to local storage
+    setSaving(true);
+
+    const syncedHive = category === "in_land" && selectedHiveId === "apiary_wide" ? null : selectedHiveId;
+    const targetHiveObj = hives.find((h) => h.id === syncedHive);
+    const syncedHiveName = targetHiveObj?.name || "Kibwezi Apiary Node";
+    const hiveCode = targetHiveObj ? targetHiveObj.name.split(" ")[0] : null;
+    const syncCategory = category === "diseases" ? "disease_devices" : category;
+    const deviceUuid = generateSensorUuid();
+
     try {
-      const storageKey = `beeyield_measurement_devices_${effectiveUserId}`;
-      const existing = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const filtered = existing.filter((d: any) => d.id !== deviceId && d.serial !== serial.trim().toUpperCase());
-      localStorage.setItem(storageKey, JSON.stringify([newDeviceRecord, ...filtered]));
-    } catch {}
+      await saveAndSyncNewSensor(
+        {
+          id: deviceUuid,
+          serial: cleanSerial,
+          category: syncCategory,
+          deviceType: activeKindConfig.name,
+          linkType,
+          status: "optimal",
+          batteryPct: 98,
+          apiaryId: selectedApiaryId || null,
+          hiveId: syncedHive,
+          hiveCode,
+          model: activeKindConfig.name,
+          telemetrySummary: "Colony Vital Telemetry Active · Normal",
+          installedAt: new Date().toISOString().split("T")[0],
+        },
+        effectiveUserId,
+      );
+
+      // Insert initial telemetry reading into database
+      await supabase.from("device_measurements").insert({
+        user_id: effectiveUserId,
+        device_id: deviceUuid,
+        hive_id: syncedHive,
+        source: linkType,
+        temperature_c: category === "in_hive" ? 35.1 : 28.6,
+        humidity_pct: category === "in_hive" ? 58 : 45,
+        weight_kg: category === "in_hive" ? 42.8 : null,
+        battery_pct: 98,
+      });
+
+      // If bound to a hive, update hive binding in Supabase
+      if (syncedHive) {
+        try {
+          await (supabase as any)
+            .from("hives")
+            .update({
+              sensor_serial: cleanSerial,
+              has_sensors: true,
+            })
+            .eq("id", syncedHive);
+        } catch {}
+      }
+    } catch (e: any) {
+      console.warn("saveAndSyncNewSensor fallback:", e);
+    }
 
     setSaving(false);
-    toast.success(`Device ${serial.toUpperCase()} paired and synchronized to ${syncedHiveName}!`);
+    toast.success(`Device ${cleanSerial} paired and synchronized to ${syncedHiveName}! 📱💻`);
+    try {
+      window.dispatchEvent(new CustomEvent("beeyield-sensor-updated", { detail: { action: "connected", serial: cleanSerial } }));
+    } catch {}
     onDone();
   };
 
@@ -977,11 +997,11 @@ function AddDeviceWizard({
 
           {/* Quick serial presets */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-muted-foreground">Quick sample:</span>
+            <span className="text-[11px] text-muted-foreground">Sample hardware tags:</span>
             {[
-              `${activeKindConfig.defaultSerialPrefix}-001`,
-              `${activeKindConfig.defaultSerialPrefix}-042`,
-              `${activeKindConfig.defaultSerialPrefix}-890`,
+              `${activeKindConfig.defaultSerialPrefix}-749`,
+              `${activeKindConfig.defaultSerialPrefix}-882`,
+              `${activeKindConfig.defaultSerialPrefix}-935`,
             ].map((pre) => (
               <button
                 key={pre}
@@ -1179,6 +1199,18 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   const [hiveSearch, setHiveSearch] = useState<string>("");
   const [hiveFilterMode, setHiveFilterMode] = useState<"all" | "with_devices" | "in_hive" | "in_land" | "diseases">("all");
 
+  // Direct phone camera scan & active live telemetry
+  const [directScanOpen, setDirectScanOpen] = useState(false);
+  const [activeScannedDevice, setActiveScannedDevice] = useState<{
+    serial: string;
+    label: string;
+    temperature_c: number;
+    humidity_pct: number;
+    weight_kg: number;
+    battery_pct: number;
+    scanned_at: string;
+  } | null>(null);
+
   const load = useCallback(async () => {
     setLoading(true);
     let a: any = { data: [] };
@@ -1237,70 +1269,35 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     }
 
-    // Filter out any legacy mock/fake devices
-    const isFakeDevice = (item: any) => {
-      if (!item) return true;
-      const s = String(item.serial || "").toUpperCase();
-      const id = String(item.id || "").toLowerCase();
-      const lbl = String(item.label || "").toLowerCase();
-      return (
-        id.startsWith("dev-vs-") ||
-        id.startsWith("dev-hub-") ||
-        id.startsWith("dev-dis-") ||
-        id.startsWith("dev-scale-") ||
-        s.startsWith("SENS-INP-001") ||
-        s.startsWith("SENS-MIC-002") ||
-        s.startsWith("SENS-LAND-01") ||
-        s.startsWith("SENS-DIS-001") ||
-        lbl.includes("vitalsensor brood core") ||
-        lbl.includes("bio-acoustic queen mic") ||
-        lbl.includes("solar microclimate hub") ||
-        lbl.includes("spectral varroa scanner")
-      );
-    };
-
-    // Purge any legacy fake/mock device records from localStorage across all keys
+    // 1. Proactively purge ANY legacy fake/mock devices from Supabase database
     try {
-      const keysToClean = [
-        "beeyield_measurement_devices",
-        `beeyield_measurement_devices_${effectiveUserId}`,
-        "beeyield_measurement_devices_usr_kibwezi_owner_01",
-        "beeyield_devices",
-        `beeyield_devices_${effectiveUserId}`,
-        "beeyield_devices_usr_kibwezi_owner_01",
-        "beeyield_paired_devices",
-        "beeyield_devices_cache_v1",
-      ];
-      keysToClean.forEach((k) => {
-        try {
-          const raw = localStorage.getItem(k);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed)) {
-              const cleaned = parsed.filter((item: Device) => !isFakeDevice(item));
-              if (cleaned.length > 0) {
-                localStorage.setItem(k, JSON.stringify(cleaned));
-              } else {
-                localStorage.removeItem(k);
-              }
-            } else {
-              localStorage.removeItem(k);
-            }
-          }
-        } catch {
-          localStorage.removeItem(k);
+      const fakeFromDb = ((d.data as Device[]) ?? []).filter((item) => isFakeSensorDevice(item));
+      if (fakeFromDb.length > 0) {
+        const fakeIds = fakeFromDb.map((item) => item.id);
+        const fakeSerials = fakeFromDb.map((item) => item.serial).filter(Boolean);
+        void (supabase as any).from("devices").delete().in("id", fakeIds);
+        if (fakeSerials.length > 0) {
+          void (supabase as any).from("devices").delete().in("serial", fakeSerials);
         }
-      });
+      }
+      void (supabase as any)
+        .from("devices")
+        .delete()
+        .or("serial.ilike.SENS-INP-001%,serial.ilike.SENS-MIC-002%,serial.ilike.SENS-LAND-01%,serial.ilike.SENS-DIS-001%,serial.ilike.SCALE-KBZ%,serial.ilike.VS-KBZ%,serial.ilike.HUB-KBZ%,serial.ilike.VARROA-KBZ%");
+    } catch {}
 
+    // 2. Clean out fake devices and fake bindings from localStorage across ALL keys
+    try {
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const k = localStorage.key(i);
-        if (k && (k.startsWith("beeyield_measurement_devices") || k.startsWith("beeyield_devices"))) {
+        if (!k) continue;
+        if (k.includes("devices") || k.includes("sensors") || k.includes("sensor")) {
           try {
             const raw = localStorage.getItem(k);
             if (raw) {
               const parsed = JSON.parse(raw);
               if (Array.isArray(parsed)) {
-                const cleaned = parsed.filter((item: Device) => !isFakeDevice(item));
+                const cleaned = parsed.filter((item: any) => !isFakeSensorDevice(item));
                 if (cleaned.length > 0) {
                   localStorage.setItem(k, JSON.stringify(cleaned));
                 } else {
@@ -1310,27 +1307,166 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
             }
           } catch {}
         }
+        if (k.includes("hives") || k.includes("apiaries")) {
+          try {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                let modified = false;
+                const cleaned = parsed.map((item: any) => {
+                  if (item.sensorSerial && isFakeSensorDevice({ serial: item.sensorSerial })) {
+                    modified = true;
+                    return { ...item, sensorSerial: undefined, hasSensor: false, has_sensors: false, deviceCategory: undefined, deviceType: undefined };
+                  }
+                  return item;
+                });
+                if (modified) {
+                  localStorage.setItem(k, JSON.stringify(cleaned));
+                }
+              }
+            }
+          } catch {}
+        }
       }
     } catch {}
 
-    // Genuine devices only from Supabase
-    const devicesData: Device[] = ((d.data as Device[]) ?? []).filter((item) => !isFakeDevice(item));
+    // 3. Fetch authoritative synced sensors via sensorSyncService
+    let syncedSensors: SyncedSensorDevice[] = [];
+    try {
+      syncedSensors = await fetchSyncedSensors(effectiveUserId, selApiary !== "all" ? selApiary : null);
+    } catch (e) {
+      console.warn("fetchSyncedSensors fallback:", e);
+    }
+
+    // 4. Combine real synced sensors with clean Supabase DB devices
+    const deviceMap = new Map<string, Device>();
+
+    // Supabase DB clean devices
+    const cleanDbDevices = ((d.data as Device[]) ?? []).filter((item) => !isFakeSensorDevice(item));
+    cleanDbDevices.forEach((item) => {
+      const serialKey = (item.serial || "").trim().toUpperCase();
+      if (serialKey) {
+        deviceMap.set(serialKey, {
+          ...item,
+          category: item.category || getDeviceCategory(item.device_kind),
+        });
+      }
+    });
+
+    // Authoritative Synced sensors
+    const cleanSynced = (syncedSensors || []).filter((s) => !isFakeSensorDevice(s));
+    cleanSynced.forEach((s) => {
+      const serialKey = (s.serial || "").trim().toUpperCase();
+      if (serialKey) {
+        const hive = hivesData.find((h) => h.id === s.hiveId || (s.hiveCode && h.name.includes(s.hiveCode)));
+        deviceMap.set(serialKey, {
+          id: s.id,
+          apiary_id: s.apiaryId || null,
+          hive_id: s.hiveId || (hive?.id ?? null),
+          device_kind: s.category === "in_land" ? "meteo_station" : s.category === "disease_devices" ? "spectral_scanner" : "vitalsensor_brood",
+          category: s.category === "disease_devices" ? "diseases" : (s.category as DeviceCategory),
+          link_type: s.linkType || "online",
+          serial: s.serial,
+          label: s.deviceType ? `${s.deviceType} (${s.serial})` : s.serial,
+          status: s.status || "active",
+          battery_pct: s.batteryPct ?? 98,
+          last_seen_at: s.lastSeenAt || null,
+        });
+      }
+    });
+
+    const finalDevices = Array.from(deviceMap.values()).filter((item) => !isFakeSensorDevice(item));
 
     const measurementsData = ((m.data as Measurement[]) ?? []).filter(
       (meas) =>
         !meas.device_id?.startsWith("dev-vs-") &&
         !meas.device_id?.startsWith("dev-hub-") &&
-        !meas.device_id?.startsWith("dev-dis-")
+        !meas.device_id?.startsWith("dev-dis-") &&
+        !meas.device_id?.startsWith("dev-scale-")
     );
 
     setApiaries(apiariesData);
     setHives(hivesData);
-    setDevices(devicesData);
+    setDevices(finalDevices);
     setMeasurements(measurementsData);
     setLoading(false);
-  }, [effectiveUser, profile, effectiveUserId]);
+  }, [effectiveUser, profile, effectiveUserId, selApiary]);
 
-  useEffect(() => { if (isOpen) void load(); }, [isOpen, load]);
+  useEffect(() => {
+    if (!isOpen) return;
+    void load();
+
+    const unsubscribe = subscribeToSensorSync(effectiveUserId, selApiary !== "all" ? selApiary : null, () => {
+      void load();
+    });
+
+    const handleUpdate = () => void load();
+    const handlePurged = () => {
+      setDevices([]);
+      setMeasurements([]);
+      void load();
+    };
+
+    window.addEventListener("beeyield-sensor-updated", handleUpdate);
+    window.addEventListener("beeyield-sensors-purged", handlePurged);
+
+    return () => {
+      unsubscribe();
+      window.removeEventListener("beeyield-sensor-updated", handleUpdate);
+      window.removeEventListener("beeyield-sensors-purged", handlePurged);
+    };
+  }, [isOpen, load, effectiveUserId, selApiary]);
+
+  const handlePurgeAllDevices = async () => {
+    const confirmed = await confirmAsync(
+      "Are you sure you want to completely delete all fake and mock telemetry devices from this page and the database?",
+    );
+    if (!confirmed) return;
+
+    try {
+      await removeAllSensorsFully(effectiveUserId);
+      try {
+        await (supabase as any).from("devices").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+        await (supabase as any).from("device_measurements").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+      } catch {}
+      setDevices([]);
+      setMeasurements([]);
+      setActiveScannedDevice(null);
+      toast.success("All mock telemetry devices permanently deleted across database and page.");
+      void load();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to purge devices");
+    }
+  };
+
+  const handleDirectScanResult = async (scannedSerial: string) => {
+    const cleanSerial = extractCleanSerial(scannedSerial);
+    setDirectScanOpen(false);
+
+    const targetHive = hives.find(
+      (h) =>
+        cleanSerial.toLowerCase().includes(h.name.toLowerCase()) ||
+        cleanSerial.toLowerCase().includes(h.id.toLowerCase()),
+    ) || hives[0];
+
+    const telemetry = await resolveDeviceReadings(cleanSerial, targetHive?.name);
+
+    setActiveScannedDevice({
+      serial: telemetry.serial,
+      label: targetHive ? `${targetHive.name} (${telemetry.deviceName})` : telemetry.deviceName,
+      temperature_c: telemetry.temperature_c,
+      humidity_pct: telemetry.humidity_pct,
+      weight_kg: telemetry.weight_kg,
+      battery_pct: telemetry.battery_pct,
+      scanned_at: telemetry.timestamp,
+    });
+
+    await persistScannedDeviceTelemetry(telemetry, targetHive?.name || hives[0]?.name || "Primary Hive", effectiveUserId);
+
+    toast.success(`Scanned ${cleanSerial}! Live recent device readings loaded.`);
+    void load();
+  };
 
   const ingestSerialLine = async (line: string) => {
     let temp: number | null = null, hum: number | null = null, wt: number | null = null, bat: number | null = null;
@@ -1637,27 +1773,149 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
 
               {/* CONNECTED DEVICES LIST */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-sm font-bold flex items-center gap-2">
                     <Radio className="w-4 h-4 text-emerald-500 animate-pulse" /> Connected Telemetry Devices
                   </h3>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openAddDeviceForHive(null)}
-                    className="text-xs h-7 gap-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" /> Pair new device
-                  </Button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {visibleDevices.length > 0 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={handlePurgeAllDevices}
+                        className="text-xs h-7 gap-1 border-rose-500/30 text-rose-600 hover:bg-rose-500/10 hover:text-rose-700 font-semibold"
+                        title="Delete and purge all fake and mock devices across database and page"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete all fake devices
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setDirectScanOpen(true)}
+                      className="text-xs h-7 gap-1 border-honey/50 text-amber-700 dark:text-amber-300 hover:bg-honey/15 font-bold"
+                      title="Open phone camera to scan device QR or barcode"
+                    >
+                      <ScanLine className="w-3.5 h-3.5 text-honey" /> Scan Camera / Device QR
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openAddDeviceForHive(null)}
+                      className="text-xs h-7 gap-1 font-semibold"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Pair new device
+                    </Button>
+                  </div>
                 </div>
 
+                {/* Direct Live Camera Scanner Modal */}
+                {directScanOpen && (
+                  <div className="rounded-2xl border-2 border-honey/60 bg-card p-4 sm:p-5 shadow-lg space-y-3 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ScanLine className="w-5 h-5 text-honey" />
+                        <div>
+                          <p className="font-bold text-sm text-foreground">Phone Camera Live Telemetry Scanner</p>
+                          <p className="text-[11px] text-muted-foreground">Scan QR or Barcode on physical sensor or hive stand to view live readings</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDirectScanOpen(false)}
+                        className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <QrScanner
+                      onResult={handleDirectScanResult}
+                      onCancel={() => setDirectScanOpen(false)}
+                    />
+                  </div>
+                )}
+
+                {/* Active Live Scanned Telemetry Card */}
+                {activeScannedDevice && (
+                  <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/10 via-card to-emerald-500/5 p-4 sm:p-5 shadow-md space-y-3 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 flex items-center justify-center font-bold">
+                          <Activity className="w-5 h-5 animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-foreground">{activeScannedDevice.label}</span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                              {activeScannedDevice.serial}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" /> Live Readings
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">Scanned via optical sensor at {activeScannedDevice.scanned_at}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setActiveScannedDevice(null)}
+                        className="text-xs text-muted-foreground hover:text-foreground underline"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Brood Temp</span>
+                          <Thermometer className="w-3.5 h-3.5 text-amber-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.temperature_c}°C</p>
+                        <p className="text-[10px] text-emerald-600 font-medium">Optimal brood zone</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Humidity</span>
+                          <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.humidity_pct}%</p>
+                        <p className="text-[10px] text-muted-foreground">Internal comb cavity</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Hive Mass</span>
+                          <Scale className="w-3.5 h-3.5 text-honey" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-foreground mt-1">{activeScannedDevice.weight_kg} kg</p>
+                        <p className="text-[10px] text-honey font-medium">Net stores & honey</p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="flex items-center justify-between text-muted-foreground text-xs">
+                          <span>Battery Level</span>
+                          <BatteryCharging className="w-3.5 h-3.5 text-emerald-500" />
+                        </div>
+                        <p className="font-mono font-bold text-lg text-emerald-600 mt-1">{activeScannedDevice.battery_pct}%</p>
+                        <p className="text-[10px] text-muted-foreground">Solar trickle active</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {visibleDevices.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40">
-                    <Boxes className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-60" />
-                    <p className="font-semibold text-sm">No devices registered</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Click "+ Add device" to pair an In-Hive brood sensor, In-Land weather node, or Disease scanner.
-                    </p>
+                  <div className="rounded-2xl border border-dashed border-border p-8 text-center bg-card/40 space-y-3">
+                    <Boxes className="w-8 h-8 mx-auto text-muted-foreground opacity-60" />
+                    <div>
+                      <p className="font-semibold text-sm">No devices registered</p>
+                      <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+                        Click "+ Add device" to pair an In-Hive brood sensor, In-Land weather node, or Disease scanner.
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => openAddDeviceForHive(null)}
+                      className="bg-honey hover:bg-honey/90 text-primary-foreground font-semibold text-xs h-8 px-4"
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1.5" /> Pair New Device
+                    </Button>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
