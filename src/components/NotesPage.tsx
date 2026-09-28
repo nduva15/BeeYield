@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import { createPortal } from "react-dom";
 import {
   ArrowLeft,
-  MoreVertical,
   Droplets,
   Layers,
   FileText,
@@ -27,14 +26,13 @@ import {
   ChevronUp,
   RefreshCw,
   LayoutGrid,
-  Bell,
-  PlusCircle,
   Check,
   Thermometer,
   Mic,
   MicOff,
   CloudCheck,
   Database as DatabaseIcon,
+  ImagePlus,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -162,8 +160,9 @@ export function NotesPage({
   const [dbSyncing, setDbSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [hiveFilter, setHiveFilter] = useState<string>("all");
 
-  // Form State (Dedicated Add/Edit Screen)
+  // Form State
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formApiaryId, setFormApiaryId] = useState("");
@@ -172,7 +171,7 @@ export function NotesPage({
   const [formCategory, setFormCategory] = useState<NoteCategory>("General Observation");
   const [formDate, setFormDate] = useState<string>(() => {
     const now = new Date();
-    return `${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()}`;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   });
   const [formContent, setFormContent] = useState("");
   const [formTags, setFormTags] = useState<string[]>([]);
@@ -185,7 +184,6 @@ export function NotesPage({
   const [saving, setSaving] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [expandedAiNoteId, setExpandedAiNoteId] = useState<string | null>(null);
-  const [showMenu, setShowMenu] = useState(false);
   const [isRecordingVoice, setIsRecordingVoice] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -399,8 +397,6 @@ export function NotesPage({
       try {
         localStorage.setItem(storageKey, JSON.stringify(mergedList));
       } catch {}
-    } catch (e) {
-      console.error("Error in full database notes sync:", e);
     } finally {
       setLoading(false);
       setDbSyncing(false);
@@ -411,10 +407,17 @@ export function NotesPage({
     loadNotes();
   }, [loadNotes]);
 
-  // LIVE REALTIME SUPABASE SYNC SUBSCRIPTION
+  // Realtime Supabase Subscription
   useEffect(() => {
-    const channel = supabase
-      .channel("beeyield-notes-realtime")
+    const channel = (supabase as any)
+      .channel("hive_notes_realtime_sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "hive_notes" },
+        () => {
+          loadNotes();
+        }
+      )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "inspections" },
@@ -422,67 +425,151 @@ export function NotesPage({
           loadNotes();
         }
       )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "hives" },
-        () => {
-          loadApiariesAndHives();
-        }
-      )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      (supabase as any).removeChannel(channel);
     };
-  }, [loadNotes, loadApiariesAndHives]);
+  }, [loadNotes]);
 
-  // Save notes locally and remotely
-  const persistNotes = async (updated: HiveNote[]) => {
-    setNotes(updated);
-    try {
-      const storageKey = `beeyield_notes_${user?.id || deviceId || "global"}`;
-      localStorage.setItem(storageKey, JSON.stringify(updated));
-    } catch {}
-  };
-
-  const fetchHiveTelemetry = async (hiveId: string) => {
-    try {
-      const { data: reading } = await (supabase as any)
-        .from("sensor_readings")
-        .select("temperature, humidity")
-        .eq("hive_id", hiveId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (reading) {
-        if (reading.temperature != null) setFormTemp(Number(Number(reading.temperature).toFixed(1)));
-        if (reading.humidity != null) setFormHumidity(Math.round(Number(reading.humidity)));
+  // Voice Dictation Handler
+  const toggleVoiceRecording = useCallback(() => {
+    if (isRecordingVoice) {
+      if (speechRecognitionRef.current) {
+        speechRecognitionRef.current.stop();
       }
-    } catch {}
+      setIsRecordingVoice(false);
+      return;
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("Voice dictation is not supported by your current browser. You can type directly into the note box.");
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        setIsRecordingVoice(true);
+        toast.info("Listening... Speak your observation notes.");
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript.trim()) {
+          setFormContent((prev) => {
+            const trimmed = prev.trim();
+            return trimmed ? `${trimmed} ${transcript}` : transcript;
+          });
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn("Speech recognition error:", event.error);
+        setIsRecordingVoice(false);
+        if (event.error !== "no-speech") {
+          toast.error(`Voice dictation notice: ${event.error}`);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsRecordingVoice(false);
+      };
+
+      speechRecognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.warn("Failed to initialize speech recognition:", err);
+      setIsRecordingVoice(false);
+    }
+  }, [isRecordingVoice]);
+
+  // Photo Attachment Handler
+  const handleAttachmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please attach image files only.");
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error("File size limit is 8MB per photo.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        if (base64) {
+          setFormAttachments((prev) => [...prev, base64]);
+          toast.success("Photo attached to observation note.");
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    if (e.target) e.target.value = "";
   };
 
-  const handleOpenAddForm = () => {
+  const removeAttachment = (index: number) => {
+    setFormAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Pre-fill telemetry when hive changes in form
+  const fetchHiveTelemetry = useCallback(
+    async (hiveId: string) => {
+      try {
+        const { data } = await (supabase as any)
+          .from("inspections")
+          .select("temperature_c, humidity_pct, weather")
+          .eq("hive_id", hiveId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (data) {
+          if (data.temperature_c != null) setFormTemp(data.temperature_c);
+          if (data.humidity_pct != null) setFormHumidity(data.humidity_pct);
+          if (data.weather) setFormWeather(data.weather);
+        }
+      } catch {}
+    },
+    []
+  );
+
+  const handleOpenAddForm = (targetHiveId?: string) => {
+    const activeId = targetHiveId || selectedHive.id;
     setEditingId(null);
-    setFormApiaryId(selectedHive.apiary_id || (userApiaries[0]?.id || "apiary-kibwezi"));
-    setFormHiveId(selectedHive.id);
+    setFormHiveId(activeId);
+    setFormApiaryId(selectedHive.apiary_id || "apiary-kibwezi");
     setFormTitle("");
     setFormCategory("General Observation");
     const now = new Date();
-    setFormDate(`${String(now.getDate()).padStart(2, "0")}.${String(now.getMonth() + 1).padStart(2, "0")}.${now.getFullYear()}`);
+    setFormDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`);
     setFormContent("");
     setFormTags([]);
     setFormAttachments([]);
-    setFormWeather("Clear, sunny");
     setAiText("");
-    fetchHiveTelemetry(selectedHive.id);
+    fetchHiveTelemetry(activeId);
     setShowForm(true);
   };
 
   const handleEditNote = (note: HiveNote) => {
     setEditingId(note.id);
-    setFormApiaryId(note.apiary_id);
-    setFormHiveId(note.hive_id);
+    setFormHiveId(note.hive_id || selectedHive.id);
+    setFormApiaryId(note.apiary_id || selectedHive.apiary_id || "apiary-kibwezi");
     setFormTitle(note.title);
     setFormCategory(note.category);
     setFormDate(note.date);
@@ -502,351 +589,235 @@ export function NotesPage({
     );
   };
 
-  const toggleVoiceRecording = () => {
-    if (isRecordingVoice) {
-      if (speechRecognitionRef.current) {
-        speechRecognitionRef.current.stop();
-      }
-      setIsRecordingVoice(false);
-      return;
-    }
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      toast.info("Voice recognition not supported in this browser. You can type observations directly.");
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = "en-US";
-
-      recognition.onstart = () => {
-        setIsRecordingVoice(true);
-        toast.success("Voice recording active — Speak observation now");
-      };
-
-      recognition.onresult = (event: any) => {
-        let transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
-        }
-        setFormContent((prev) => (prev ? `${prev} ${transcript}` : transcript));
-      };
-
-      recognition.onerror = (e: any) => {
-        console.warn("Speech recognition error:", e);
-        setIsRecordingVoice(false);
-      };
-
-      recognition.onend = () => {
-        setIsRecordingVoice(false);
-      };
-
-      speechRecognitionRef.current = recognition;
-      recognition.start();
-    } catch (err) {
-      console.warn("Failed to initialize speech recognition:", err);
-      toast.error("Could not access microphone.");
-    }
-  };
-
-  const handleAttachmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        const result = uploadEvent.target?.result as string;
-        if (result) {
-          setFormAttachments((prev) => [...prev, result]);
-          toast.success(`Attached photo: ${file.name}`);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removeAttachment = (index: number) => {
-    setFormAttachments((prev) => prev.filter((_, i) => i !== index));
-  };
-
+  // AI Diagnostic Analysis
   const runAiInsights = async () => {
-    if (!formContent.trim()) {
-      toast.error("Please add observation content before generating AI insights.");
+    if (!formContent.trim() && formTags.length === 0) {
+      toast.error("Please provide some observation text or tags before running AI analysis.");
       return;
     }
+
     setAiLoading(true);
     setAiText("");
+
+    const targetHive = userHives.find((h) => h.id === formHiveId) || selectedHive;
+
+    const prompt = `You are the BeeYield Lead Apiary Agronomist.
+Please perform a rigorous clinical analysis of this observation note recorded for Hive ${targetHive.hive_code || targetHive.name} (${targetHive.apiary_name || CANONICAL_APIARY_NAME}):
+
+- Observation Date: ${formDate}
+- Category: ${formCategory}
+- Note Title: ${formTitle || "Observation"}
+- Field Note Content: "${formContent}"
+- Tags: ${formTags.join(", ") || "None"}
+- Ambient Telemetry: ${formTemp ? `${formTemp}°C` : "N/A"}, ${formHumidity ? `${formHumidity}% RH` : "N/A"}
+- Weather: ${formWeather || "Fair"}
+
+Provide:
+1. Clinical Assessment (colony condition, vigor, queen health)
+2. Immediate Action Recommendations (feeding, supering, disease mitigation)
+3. 7-Day Follow-Up Priority`;
+
     try {
-      const targetHiveObj = userHives.find((h) => h.id === formHiveId) || selectedHive;
-      const targetApiaryObj = userApiaries.find((a) => a.id === formApiaryId);
-      const prompt = `Act as BeeYield's master apiculturist and colony diagnostic auditor.
-Analyze this hive field note:
-Hive: ${targetHiveObj.hive_code || targetHiveObj.name}
-Apiary: ${targetApiaryObj?.name || targetHiveObj.apiary_name || CANONICAL_APIARY_NAME}
-Category: ${formCategory}
-Date: ${formDate}
-Observations: ${formContent}
-Tags: ${formTags.join(", ") || "None"}
-Weather/Temp: ${formWeather || "Ambient"} (${formTemp ? `${formTemp}°C` : "N/A"})
-
-Provide a concise 3-bullet evaluation:
-1. Biological colony status diagnosis
-2. Risk flags & nutritional/queen health assessment
-3. Prescriptive 48-hour beekeeper action plan.`;
-
-      await streamBeeGpt(prompt, setAiText);
-    } catch {
-      setAiText(
-        `### BeeYield Apicultural Diagnostic\n- **Colony Status:** Active biological state verified.\n- **Assessment:** Consistent with seasonal patterns in ${CANONICAL_APIARY_NAME}.\n- **Directives:** Monitor hive entrance foraging activity and confirm steady comb utilization.`
-      );
+      await streamBeeGpt(prompt, (token) => {
+        setAiText((prev) => prev + token);
+      });
+    } catch (err: any) {
+      toast.error(`BeeGPT Analysis notice: ${err?.message || "Service busy"}`);
     } finally {
       setAiLoading(false);
     }
   };
 
-  // FULL DATABASE SAVE HANDLER (SUPABASE + BACKEND API + INTEGRATIONS)
-  const handleSaveNote = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!formContent.trim() && !formTitle.trim()) {
-      toast.error("Observation note content cannot be empty");
+  // Save Note to Database
+  const handleSaveNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formContent.trim()) {
+      toast.error("Please enter observation content before saving.");
       return;
     }
 
     setSaving(true);
-    const toastId = toast.loading("Syncing note with BeeYield database...");
+    const targetHive = userHives.find((h) => h.id === formHiveId) || selectedHive;
+    const targetApiary = userApiaries.find((a) => a.id === formApiaryId) || {
+      id: "apiary-kibwezi",
+      name: CANONICAL_APIARY_NAME,
+    };
+
+    const notePayload: HiveNote = {
+      id: editingId || `note-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      title: formTitle.trim() || `${formCategory} check on ${targetHive.hive_code || targetHive.name}`,
+      content: formContent.trim(),
+      date: formDate,
+      category: formCategory,
+      apiary_id: targetApiary.id,
+      apiary_name: targetApiary.name,
+      hive_id: targetHive.id,
+      hive_code: targetHive.hive_code || targetHive.name,
+      tags: formTags,
+      attachments: formAttachments,
+      weather: formWeather || null,
+      temperature_c: formTemp,
+      humidity_pct: formHumidity,
+      ai_insights: aiText.trim() || null,
+      created_at: editingId
+        ? notes.find((n) => n.id === editingId)?.created_at || new Date().toISOString()
+        : new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      synced_to_db: true,
+    };
 
     try {
-      const targetHiveObj = userHives.find((h) => h.id === formHiveId) || selectedHive;
-      const targetApiaryObj = userApiaries.find((a) => a.id === formApiaryId);
-      const noteId = editingId || `note-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const isoDate = new Date().toISOString();
-
-      const newRecord: HiveNote = {
-        id: noteId,
-        title: formTitle.trim() || `${formCategory} — ${targetHiveObj.hive_code || targetHiveObj.name}`,
-        content: formContent.trim() || formTitle.trim(),
-        date: formDate,
-        category: formCategory,
-        apiary_id: targetApiaryObj?.id || targetHiveObj.apiary_id || "apiary-kibwezi",
-        apiary_name: targetApiaryObj?.name || targetHiveObj.apiary_name || CANONICAL_APIARY_NAME,
-        hive_id: targetHiveObj.id,
-        hive_code: targetHiveObj.hive_code || targetHiveObj.name || "beeyield 001",
-        tags: formTags,
-        attachments: formAttachments,
-        weather: formWeather || null,
-        temperature_c: formTemp,
-        humidity_pct: formHumidity,
-        ai_insights: aiText || null,
-        created_at: editingId
-          ? notes.find((n) => n.id === editingId)?.created_at || isoDate
-          : isoDate,
-        updated_at: isoDate,
-        synced_to_db: true,
-      };
-
-      // 1. SUPABASE SYNC: Write to `inspections` table as an official apicultural record
-      try {
-        const inspectionPayload: any = {
-          id: newRecord.id,
-          device_id: deviceId || user?.id || "anonymous",
-          inspected_on: newRecord.date,
-          location: newRecord.apiary_name,
-          hive_label: newRecord.hive_code,
-          batch: newRecord.category,
-          colony_health: "Healthy",
-          temperament: "Calm",
-          queen_seen: newRecord.tags.includes("Queen Verified"),
-          queen_cells: newRecord.tags.includes("Swarm Cells") ? 1 : 0,
-          brood_frames: 6,
-          honey_frames: 4,
-          total_frames: 10,
-          varroa_count: 0,
-          issues: newRecord.category.includes("Pest") ? ["Health check"] : [],
-          actions: newRecord.tags,
-          weather: newRecord.weather,
-          notes: newRecord.content,
-          ai_insights: aiText || null,
-        };
-        if (user?.id) inspectionPayload.user_id = user.id;
-
-        const { error: inspErr } = await (supabase as any)
-          .from("inspections")
-          .upsert(inspectionPayload);
-
-        if (inspErr && inspErr.message?.includes("user_id")) {
-          delete inspectionPayload.user_id;
-          await (supabase as any).from("inspections").upsert(inspectionPayload);
-        }
-      } catch (err) {
-        console.warn("Supabase inspections table sync non-fatal:", err);
-      }
-
-      // 2. SUPABASE SYNC: Update `hives.notes` column with the latest observation
-      try {
-        if (targetHiveObj.id) {
-          const summaryNote = `${newRecord.title}: ${newRecord.content.slice(0, 180)}`;
-          await (supabase as any)
-            .from("hives")
-            .update({ notes: summaryNote, updated_at: isoDate })
-            .eq("id", targetHiveObj.id);
-        }
-      } catch (err) {
-        console.warn("Supabase hives.notes update non-fatal:", err);
-      }
-
-      // 3. SUPABASE SYNC: Write to `hive_notes` table if available
+      // 1. Save to Supabase `hive_notes` table
       try {
         await (supabase as any).from("hive_notes").upsert({
-          id: newRecord.id,
+          id: notePayload.id,
+          title: notePayload.title,
+          content: notePayload.content,
+          date: notePayload.date,
+          category: notePayload.category,
+          apiary_id: notePayload.apiary_id,
+          apiary_name: notePayload.apiary_name,
+          hive_id: notePayload.hive_id,
+          hive_code: notePayload.hive_code,
+          tags: notePayload.tags,
+          attachments: notePayload.attachments,
+          weather: notePayload.weather,
+          temperature_c: notePayload.temperature_c,
+          humidity_pct: notePayload.humidity_pct,
+          ai_insights: notePayload.ai_insights,
           user_id: user?.id || null,
-          device_id: deviceId,
-          title: newRecord.title,
-          content: newRecord.content,
-          date: newRecord.date,
-          category: newRecord.category,
-          apiary_id: newRecord.apiary_id,
-          apiary_name: newRecord.apiary_name,
-          hive_id: newRecord.hive_id,
-          hive_code: newRecord.hive_code,
-          tags: newRecord.tags,
-          attachments: newRecord.attachments,
-          weather: newRecord.weather,
-          temperature_c: newRecord.temperature_c,
-          humidity_pct: newRecord.humidity_pct,
-          ai_insights: newRecord.ai_insights,
-          created_at: newRecord.created_at,
-          updated_at: newRecord.updated_at,
+          device_id: deviceId || null,
+          updated_at: new Date().toISOString(),
         });
       } catch (err) {
-        console.warn("Remote hive_notes sync non-fatal:", err);
+        console.warn("Supabase hive_notes table upsert notice:", err);
       }
 
-      // 4. BACKEND API SYNC
+      // 2. Also record in Supabase `inspections` table for unified ledger
       try {
-        const endpoint = editingId ? `/api/v1/inspections/${editingId}` : "/api/v1/inspections";
-        const method = editingId ? "PATCH" : "POST";
-        await fetch(endpoint, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: newRecord.id,
-            user_id: user?.id || null,
-            device_id: deviceId,
-            inspected_on: newRecord.date,
-            location: newRecord.apiary_name,
-            hive_label: newRecord.hive_code,
-            batch: newRecord.category,
-            notes: newRecord.content,
-            actions: newRecord.tags,
-            weather: newRecord.weather,
-            ai_insights: newRecord.ai_insights,
-          }),
+        await (supabase as any).from("inspections").upsert({
+          id: notePayload.id,
+          inspected_on: notePayload.date,
+          location: notePayload.apiary_name,
+          hive_label: notePayload.hive_code,
+          batch: notePayload.category,
+          colony_health: notePayload.tags.includes("Queen Verified") ? "Healthy" : "Watch",
+          temperament: notePayload.tags.includes("Calm Colony") ? "Calm" : "Nervous",
+          queen_seen: notePayload.tags.includes("Queen Verified"),
+          queen_cells: notePayload.tags.includes("Swarm Cells") ? 2 : 0,
+          total_frames: 10,
+          brood_frames: notePayload.tags.includes("Eggs & Larvae") ? 5 : 4,
+          honey_frames: notePayload.tags.includes("Nectar Flow") ? 4 : 3,
+          varroa_count: 0,
+          issues: notePayload.tags.filter((t) => t.includes("Swarm") || t.includes("Aggression")),
+          actions: notePayload.tags,
+          weather: notePayload.weather || "Fair",
+          notes: notePayload.content,
+          ai_insights: notePayload.ai_insights,
+          temperature_c: notePayload.temperature_c,
+          humidity_pct: notePayload.humidity_pct,
+          user_id: user?.id || null,
+          device_id: deviceId || null,
         });
-      } catch {}
+      } catch (err) {
+        console.warn("Supabase inspections table notes sync notice:", err);
+      }
 
-      // 5. COMMERCE & ACCOUNTING INTEGRATION SYNC
-      void autoSyncRecord({
-        deviceId,
-        kind: "inspection",
-        recordId: newRecord.id,
-        hiveLabel: newRecord.hive_code,
-        title: newRecord.title,
-        summary: newRecord.content,
-        status: newRecord.category,
-        occurredAt: newRecord.date,
-        metrics: {
-          category: newRecord.category,
-          hive: newRecord.hive_code,
-          apiary: newRecord.apiary_name,
+      // 3. Auto sync with backend integration pipeline
+      autoSyncRecord({
+        module: "inspection",
+        recordId: notePayload.id,
+        action: editingId ? "update" : "create",
+        data: {
+          ...notePayload,
+          type: "hive_observation_note",
         },
       });
 
-      // 6. SYNC TO BEEYIELD AI SCAN INTELLIGENCE
-      void syncScanWithBeeYieldAi({
-        scanType: "hive_note",
-        scanTitle: `Hive Field Note (${newRecord.category})`,
-        hiveId: targetHiveObj.id,
-        hiveCode: newRecord.hive_code,
-        apiaryName: newRecord.apiary_name,
-        timestamp: newRecord.date,
-        metrics: {
-          Category: newRecord.category,
-          Tags: newRecord.tags.join(", ") || "None",
-          Weather: newRecord.weather || "Standard",
-          Temperature: newRecord.temperature_c ? `${newRecord.temperature_c}°C` : "Ambient",
-        },
-        summary: newRecord.title,
-        rawFindings: newRecord.content,
+      // 4. Update UI State
+      setNotes((prev) => {
+        const filtered = prev.filter((n) => n.id !== notePayload.id);
+        const updated = [notePayload, ...filtered].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        // Persist local cache
+        const storageKey = `beeyield_notes_${user?.id || deviceId || "global"}`;
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+        } catch {}
+        return updated;
       });
 
-      // 7. LOCAL STORAGE BACKUP
-      const nextNotes = editingId
-        ? notes.map((n) => (n.id === editingId ? newRecord : n))
-        : [newRecord, ...notes];
-
-      await persistNotes(nextNotes);
-      toast.success(editingId ? "Note updated and synced with database" : `Note synced with database for ${newRecord.hive_code}!`, { id: toastId });
+      toast.success(editingId ? "Observation note updated" : "Observation note saved to hive history");
       setShowForm(false);
+      setEditingId(null);
     } catch (err: any) {
-      toast.error(err.message || "Failed to save note to database", { id: toastId });
+      console.error("Save note error:", err);
+      toast.error(`Save notice: ${err?.message || "Saved to local cache"}`);
     } finally {
       setSaving(false);
     }
   };
 
-  // FULL DATABASE DELETE HANDLER
+  // Delete Note
   const handleDeleteNote = async (id: string) => {
-    const toastId = toast.loading("Removing note from database...");
     try {
-      try {
-        await (supabase as any).from("inspections").delete().eq("id", id);
-      } catch {}
       try {
         await (supabase as any).from("hive_notes").delete().eq("id", id);
       } catch {}
+      try {
+        await (supabase as any).from("inspections").delete().eq("id", id);
+      } catch {}
 
-      const filtered = notes.filter((n) => n.id !== id);
-      await persistNotes(filtered);
-      toast.success("Note removed and database updated", { id: toastId });
-    } catch {
-      toast.error("Failed to delete note from database", { id: toastId });
+      autoSyncRecord({
+        module: "inspection",
+        recordId: id,
+        action: "delete",
+        data: { id },
+      });
+
+      setNotes((prev) => {
+        const updated = prev.filter((n) => n.id !== id);
+        const storageKey = `beeyield_notes_${user?.id || deviceId || "global"}`;
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+
+      toast.success("Observation note deleted");
+    } catch (err) {
+      toast.error("Failed to delete note");
     } finally {
       setDeleteConfirmId(null);
     }
   };
 
+  // Export PDF Certificate
   const exportNotePdf = (note: HiveNote) => {
     downloadReportPdf({
-      kind: "inspection",
-      title: `Hive Note — ${note.hive_code}`,
-      subtitle: `${note.apiary_name} · Recorded ${note.date}`,
-      badge: note.category.toUpperCase(),
-      fileName: `beeyield-note-${safeName(note.hive_code)}-${note.date}.pdf`,
+      title: `Hive Observation Note — ${note.hive_code}`,
+      subtitle: `${note.category} | Logged on ${note.date} | ${note.apiary_name}`,
+      metadata: [
+        { label: "Hive Code", value: note.hive_code },
+        { label: "Apiary Location", value: note.apiary_name },
+        { label: "Observation Date", value: note.date },
+        { label: "Category", value: note.category },
+        { label: "Cloud Sync", value: "Verified DB Live" },
+        ...(note.weather ? [{ label: "Weather", value: note.weather }] : []),
+        ...(note.temperature_c != null ? [{ label: "Brood Temp", value: `${note.temperature_c} °C` }] : []),
+        ...(note.humidity_pct != null ? [{ label: "Humidity", value: `${note.humidity_pct} %` }] : []),
+      ],
       sections: [
         {
-          type: "kv",
-          heading: "Note Metadata",
-          rows: [
-            ["Hive Identifier", note.hive_code],
-            ["Apiary Location", note.apiary_name],
-            ["Category", note.category],
-            ["Date Recorded", note.date],
-            ["Weather Condition", note.weather || "Standard"],
-            ["Tags / Observations", note.tags.join(", ") || "None"],
-          ],
+          type: "text",
+          heading: "Field Notes & Observations",
+          body: note.content,
         },
         {
-          type: "text",
-          heading: "Beekeeper Observation",
-          body: note.content,
+          type: "keyValue",
+          heading: "Observation Tags",
+          data: (note.tags || []).map((t) => ({ label: "Tag", value: t })),
         },
         ...(note.ai_insights
           ? [
@@ -861,13 +832,15 @@ Provide a concise 3-bullet evaluation:
     });
   };
 
-  const currentHiveNotes = useMemo(() => {
+  // Filtered notes
+  const filteredNotes = useMemo(() => {
     return notes.filter((n) => {
-      const matchesHive =
-        !selectedHive.id ||
-        n.hive_id === selectedHive.id ||
-        n.hive_code?.toLowerCase() === (selectedHive.hive_code || selectedHive.name).toLowerCase();
-      if (!matchesHive) return false;
+      if (hiveFilter !== "all") {
+        const matchesHive =
+          n.hive_id === hiveFilter ||
+          n.hive_code?.toLowerCase() === hiveFilter.toLowerCase();
+        if (!matchesHive) return false;
+      }
 
       if (categoryFilter !== "all" && n.category !== categoryFilter) return false;
 
@@ -876,848 +849,618 @@ Provide a concise 3-bullet evaluation:
         return (
           n.title.toLowerCase().includes(q) ||
           n.content.toLowerCase().includes(q) ||
+          n.hive_code.toLowerCase().includes(q) ||
+          n.apiary_name.toLowerCase().includes(q) ||
           n.tags.some((t) => t.toLowerCase().includes(q))
         );
       }
       return true;
     });
-  }, [notes, selectedHive, categoryFilter, searchQuery]);
+  }, [notes, hiveFilter, categoryFilter, searchQuery]);
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    const total = notes.length;
+    const categories = new Set(notes.map((n) => n.category)).size;
+    const hivesCount = new Set(notes.map((n) => n.hive_code || n.hive_id)).size;
+    const withAi = notes.filter((n) => !!n.ai_insights).length;
+    return { total, categories, hivesCount, withAi };
+  }, [notes]);
 
   if (!isOpen && !embedded) return null;
 
-  const hasNotes = currentHiveNotes.length > 0;
-
   // =========================================================================
-  // VIEW 1: DEDICATED ADD/EDIT NOTE SCREEN (MATCHING EXACT SCREENSHOT 2)
+  // INSPECTIONS-STYLE DASHBOARD UI/UX
   // =========================================================================
-  if (showForm) {
-    const activeFormHive = userHives.find((h) => h.id === formHiveId) || selectedHive;
+  const mainContent = (
+    <div className="space-y-6">
+      {/* Hidden File Input for Attachments */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleAttachmentUpload}
+        multiple
+        accept="image/*"
+        className="hidden"
+      />
 
-    return (
-      <div className="fixed inset-0 z-50 bg-[#FDFBF7] dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col font-sans overflow-hidden">
-        {/* Hidden File Input for Attachments */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleAttachmentUpload}
-          multiple
-          accept="image/*"
-          className="hidden"
-        />
-
-        {/* Top Header Bar */}
-        <div className="bg-[#FDFBF7] dark:bg-stone-950 px-4 pt-3 pb-3 flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800 shrink-0">
-          <button
-            type="button"
-            onClick={() => setShowForm(false)}
-            className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
-            title="Back to Notes"
-          >
-            <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
-          </button>
-
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-stone-800 dark:text-stone-200" />
-            <h1 className="text-lg sm:text-xl font-bold text-stone-900 dark:text-white">
-              {editingId ? "Edit note" : "Add note"}
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
+            <FileText className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold text-foreground">
+              Observation <span className="text-honey">Notes</span>
             </h1>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              DB Live
-            </span>
-          </div>
-        </div>
-
-        {/* Highlighted Hive Context Banner (Exact Match: Soft Beige Bar) */}
-        <div className="bg-[#F5EDE3] dark:bg-amber-950/25 px-4 py-2.5 flex items-center justify-between border-b border-[#E8DEC9] dark:border-amber-900/30 shrink-0">
-          <div className="flex items-center gap-2.5">
-            {/* Langstroth Hive Box Icon (Exact SVG Line Art) */}
-            <svg
-              className="w-5 h-5 text-stone-800 dark:text-stone-200 shrink-0"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="4" y="3" width="16" height="4" rx="1" />
-              <rect x="3" y="9" width="18" height="4" rx="1" />
-              <rect x="3" y="15" width="18" height="4" rx="1" />
-              <line x1="9" y1="21" x2="15" y2="21" />
-              <line x1="10" y1="11" x2="14" y2="11" />
-              <line x1="10" y1="17" x2="14" y2="17" />
-            </svg>
-
-            <span className="font-bold text-sm sm:text-base text-stone-900 dark:text-white tracking-tight">
-              {activeFormHive.hive_code || activeFormHive.name || "beeyield 001"}
-            </span>
-          </div>
-
-          {/* Quick Hive Switcher Dropdown */}
-          <select
-            value={formHiveId}
-            onChange={(e) => {
-              setFormHiveId(e.target.value);
-              fetchHiveTelemetry(e.target.value);
-            }}
-            className="text-xs bg-white/70 dark:bg-stone-900/70 border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 text-stone-800 dark:text-stone-200 focus:outline-none cursor-pointer"
-          >
-            {userHives.map((h) => (
-              <option key={h.id} value={h.id} className="text-stone-900 bg-white dark:bg-stone-900">
-                {h.hive_code || h.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Scrollable Form Content */}
-        <div className="flex-1 overflow-y-auto px-4 py-5 max-w-lg mx-auto w-full space-y-6 custom-scroll">
-          {/* Field 1: Date */}
-          <div className="space-y-1">
-            <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
-              Date
-            </label>
-            <div className="flex items-center justify-between border-b border-stone-400 dark:border-stone-600 pb-1.5 focus-within:border-amber-600">
-              <input
-                type="text"
-                value={formDate}
-                onChange={(e) => setFormDate(e.target.value)}
-                placeholder="27.09.2026"
-                className="bg-transparent text-sm sm:text-base font-normal text-stone-900 dark:text-white focus:outline-none w-full"
-              />
-              <Calendar className="w-5 h-5 text-stone-700 dark:text-stone-300 shrink-0 ml-2" />
-            </div>
-          </div>
-
-          {/* Field 2: Title (optional) */}
-          <div className="space-y-1">
-            <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
-              Title (optional)
-            </label>
-            <div className="border-b border-stone-400 dark:border-stone-600 pb-1.5 focus-within:border-amber-600">
-              <input
-                type="text"
-                value={formTitle}
-                onChange={(e) => setFormTitle(e.target.value)}
-                placeholder="Title (optional)"
-                className="bg-transparent text-sm sm:text-base font-normal text-stone-900 dark:text-white placeholder:text-stone-500 focus:outline-none w-full"
-              />
-            </div>
-          </div>
-
-          {/* Field 3: Note with Voice Dictation */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-stone-600 dark:text-stone-400 font-medium block">
-                Note
-              </label>
-            </div>
-
-            <div className="relative border-b border-stone-400 dark:border-stone-600 pb-2 focus-within:border-amber-600">
-              <textarea
-                rows={4}
-                value={formContent}
-                onChange={(e) => setFormContent(e.target.value)}
-                placeholder={`don't know what to write?\ne.g. added two frames with foundation, introduced an unmated queen, fed bees with sugar paste, opened ceiling ventilation, collecting bee pollen...`}
-                className="w-full bg-transparent text-xs sm:text-[13px] text-stone-800 dark:text-stone-200 placeholder:text-stone-400 dark:placeholder:text-stone-500 focus:outline-none resize-none pr-9 leading-relaxed"
-              />
-
-              {/* Microphone Voice Note Button */}
-              <button
-                type="button"
-                onClick={toggleVoiceRecording}
-                className={`absolute right-1 top-2 p-1.5 rounded-full transition-colors cursor-pointer ${
-                  isRecordingVoice
-                    ? "bg-rose-500 text-white animate-pulse"
-                    : "text-stone-800 dark:text-stone-200 hover:bg-stone-200/50"
-                }`}
-                title={isRecordingVoice ? "Stop voice recording" : "Click to add a voice note"}
-              >
-                {isRecordingVoice ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-              </button>
-            </div>
-
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1">
-              {isRecordingVoice
-                ? "🎙️ Listening... Speak your observation clearly."
-                : "Click the icon to add a voice note."}
+            <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
+              <span>Personal account observation notes ledger</span>
+              {user?.email && (
+                <span className="font-mono text-honey">· {user.email}</span>
+              )}
             </p>
           </div>
-
-          {/* Field 4: Add Attachment Button */}
-          <div>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-5 py-2.5 rounded-full border border-stone-800 dark:border-stone-400 text-stone-900 dark:text-stone-100 font-medium text-xs flex items-center gap-1.5 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>Add attachment</span>
-            </button>
-
-            {/* Attachment Thumbnails */}
-            {formAttachments.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {formAttachments.map((imgUrl, idx) => (
-                  <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-stone-300 dark:border-stone-700">
-                    <img src={imgUrl} alt={`Attachment ${idx + 1}`} className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => removeAttachment(idx)}
-                      className="absolute top-1 right-1 p-0.5 bg-black/60 rounded-full text-white hover:bg-rose-600 cursor-pointer"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* APICULTURAL DIAGNOSTICS & TELEMETRY */}
-          <div className="pt-2 space-y-3 border-t border-stone-200 dark:border-stone-800">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-stone-700 dark:text-stone-300 block">
-                Colony Observation Category:
-              </label>
-              <select
-                value={formCategory}
-                onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
-                className="w-full bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-xl px-3 py-2 text-xs text-stone-900 dark:text-white focus:outline-none focus:border-amber-600"
-              >
-                {NOTE_CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <span className="text-xs font-semibold text-stone-700 dark:text-stone-300 block mb-1.5">
-                Apicultural Tags & Findings:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {SUGGESTED_TAGS.map((tag) => {
-                  const isSelected = formTags.includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => toggleTag(tag)}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-                        isSelected
-                          ? "bg-amber-600 text-white font-bold shadow-xs"
-                          : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
-                      }`}
-                    >
-                      {isSelected ? `✓ ${tag}` : `+ ${tag}`}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* BeeGPT AI Diagnostic Engine */}
-            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-amber-600" />
-                  BeeGPT Clinical Analysis
-                </span>
-                <button
-                  type="button"
-                  onClick={runAiInsights}
-                  disabled={aiLoading}
-                  className="px-3 py-1 rounded-full bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                >
-                  {aiLoading ? (
-                    <>
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      <span>Analyzing...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-3 h-3" />
-                      <span>Analyze Note</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {aiText && (
-                <div className="p-3 rounded-xl bg-white/80 dark:bg-stone-900/80 border border-amber-200 dark:border-amber-900/40 text-xs text-stone-800 dark:text-stone-200 leading-relaxed">
-                  <MarkdownRenderer content={aiText} />
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
-        {/* Floating / Docked Bottom Actions (Exact Match: Cancel & Save) */}
-        <div className="bg-[#FDFBF7] dark:bg-stone-950 px-6 py-4 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
-            <DatabaseIcon className="w-3.5 h-3.5 text-amber-600" />
-            <span>Auto-syncs with Cloud DB</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setShowForm(false)}
-              className="px-6 py-2.5 rounded-full border border-stone-800 dark:border-stone-400 text-stone-900 dark:text-stone-100 font-medium text-xs hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSaveNote()}
-              disabled={saving}
-              className="px-7 py-2.5 rounded-full bg-[#FFB800] hover:bg-amber-400 active:bg-amber-500 text-stone-950 font-bold text-xs shadow-xs transition-all cursor-pointer disabled:opacity-50"
-            >
-              {saving ? "Syncing..." : "Save"}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // =========================================================================
-  // VIEW 2: NOTES OVERVIEW / EMPTY STATE SCREEN (SCREENSHOT 1 MATCH)
-  // =========================================================================
-  const content = (
-    <div className="fixed inset-0 z-50 bg-[#FDFBF7] dark:bg-stone-950 text-stone-900 dark:text-stone-100 flex flex-col overflow-y-auto no-scrollbar font-sans">
-      {/* Top Header Bar */}
-      <div className="sticky top-0 z-20 bg-[#FDFBF7]/95 dark:bg-stone-950/95 backdrop-blur-md px-4 pt-3 pb-2 flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800">
-        <button
-          type="button"
-          onClick={() => (onClose ? onClose() : window.history.back())}
-          className="p-1.5 -ml-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
-          title="Back"
-        >
-          <ArrowLeft className="w-5 h-5 stroke-[2.2]" />
-        </button>
-
-        {/* Hive Selector Dropdown / Name Display */}
-        <div className="flex items-center gap-1.5 cursor-pointer">
-          <select
-            value={selectedHive.id}
-            onChange={(e) => setSelectedHiveId(e.target.value)}
-            className="bg-transparent font-normal text-xl sm:text-2xl text-stone-900 dark:text-white tracking-tight cursor-pointer focus:outline-none appearance-none text-center pr-1"
-          >
-            {userHives.map((h) => (
-              <option key={h.id} value={h.id} className="text-stone-900 bg-white dark:bg-stone-900 text-sm">
-                {h.hive_code || h.name}
-              </option>
-            ))}
-          </select>
-          <ChevronDown className="w-4 h-4 text-stone-400 mt-1 pointer-events-none" />
-        </div>
-
-        {/* More Options Menu & Live DB Indicator */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => {
               loadNotes();
               toast.success("Synchronized with BeeYield Database");
             }}
-            disabled={dbSyncing}
-            className="p-1.5 text-stone-600 dark:text-stone-400 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors"
-            title="Refresh database sync"
+            disabled={loading || dbSyncing}
+            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+            title="Refresh Notes"
           >
-            <RefreshCw className={`w-4 h-4 ${dbSyncing ? "animate-spin text-amber-600" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading || dbSyncing ? "animate-spin text-honey" : ""}`} />
           </button>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 -mr-1 text-stone-800 dark:text-stone-200 hover:text-stone-950 rounded-full hover:bg-stone-200/50 transition-colors cursor-pointer"
-              title="Options"
-            >
-              <MoreVertical className="w-5 h-5" />
-            </button>
+          <button
+            onClick={() => {
+              if (showForm) {
+                setShowForm(false);
+                setEditingId(null);
+              } else {
+                handleOpenAddForm();
+              }
+            }}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
+            title="Add Observation Note"
+          >
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Note</span>
+          </button>
 
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-xl py-1 z-30 text-xs">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMenu(false);
-                    handleOpenAddForm();
-                  }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Add New Note</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowMenu(false);
-                    loadNotes();
-                    toast.success("Synchronized with Supabase & Backend Database");
-                  }}
-                  className="w-full text-left px-4 py-2 hover:bg-stone-100 dark:hover:bg-stone-800 flex items-center gap-2 cursor-pointer"
-                >
-                  <DatabaseIcon className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Full Database Sync</span>
-                </button>
-              </div>
-            )}
-          </div>
+          {!embedded && onClose && (
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg border border-border hover:bg-card">
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* SUB-NAV TOOL BAR: Syrup | FrameSense | Notes (Active) | Inspection | Tasks */}
-      <div className="bg-[#FDFBF7] dark:bg-stone-950 px-4 pt-1 pb-1 border-b border-stone-200/80 dark:border-stone-800">
-        <div className="flex items-center justify-between overflow-x-auto no-scrollbar gap-2 text-center">
-          {/* 1. Syrup */}
+      {/* Prominent Add Note Banner */}
+      {!showForm && (
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+              <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+            </div>
+            <div>
+              <h3 className="font-display text-sm sm:text-base font-bold text-white">
+                Add Observation & Field Note Record
+              </h3>
+              <p className="text-xs text-emerald-200/90 mt-0.5">
+                Record colony behavior, queen presence, brood pattern, supers added, and BeeGPT AI analysis.
+              </p>
+            </div>
+          </div>
           <button
-            type="button"
-            onClick={() => {
-              if (onOpenSyrup) {
-                onOpenSyrup(selectedHive.id);
-              } else {
-                setIsSyrupOpen(true);
-              }
-            }}
-            className="flex flex-col items-center flex-1 min-w-[56px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
+            onClick={() => handleOpenAddForm()}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-400/50 whitespace-nowrap shrink-0"
           >
-            <Droplets className="w-5 h-5 mb-1 text-stone-500 group-hover:scale-105 transition-transform" />
-            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Syrup</span>
-          </button>
-
-          {/* 2. FrameSense */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenFrameSense) {
-                onOpenFrameSense(selectedHive.id);
-              } else {
-                setIsFrameSenseOpen(true);
-              }
-            }}
-            className="flex flex-col items-center flex-1 min-w-[56px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-          >
-            <Layers className="w-5 h-5 mb-1 text-stone-500 group-hover:scale-105 transition-transform" />
-            <span className="text-[11px] font-medium leading-none whitespace-nowrap">FrameSense</span>
-          </button>
-
-          {/* 3. Notes (Active) */}
-          <button
-            type="button"
-            onClick={() => {}}
-            className="flex flex-col items-center flex-1 min-w-[56px] py-1 text-amber-800 dark:text-amber-400 relative cursor-pointer font-bold"
-          >
-            <FileText className="w-5 h-5 mb-1 text-amber-700 dark:text-amber-400 scale-105" />
-            <span className="text-[11px] leading-none whitespace-nowrap">Notes</span>
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-[2.5px] rounded-full bg-amber-600 dark:bg-amber-400" />
-          </button>
-
-          {/* 4. Inspection */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenInspections) {
-                onOpenInspections(selectedHive.id);
-              } else {
-                setIsInspectionsOpen(true);
-              }
-            }}
-            className="flex flex-col items-center flex-1 min-w-[56px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-          >
-            <ClipboardList className="w-5 h-5 mb-1 text-stone-500 group-hover:scale-105 transition-transform" />
-            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Inspection</span>
-          </button>
-
-          {/* 5. Tasks */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenTasks) {
-                onOpenTasks(selectedHive.id);
-              } else {
-                setIsTasksOpen(true);
-              }
-            }}
-            className="flex flex-col items-center flex-1 min-w-[56px] py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-          >
-            <CalendarDays className="w-5 h-5 mb-1 text-stone-500 group-hover:scale-105 transition-transform" />
-            <span className="text-[11px] font-medium leading-none whitespace-nowrap">Tasks</span>
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add Observation Note</span>
           </button>
         </div>
+      )}
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: "Total notes", value: stats.total, icon: FileText, tone: "text-honey" },
+          { label: "Distinct categories", value: stats.categories, icon: Tag, tone: "text-emerald-400" },
+          { label: "Active hives noted", value: stats.hivesCount, icon: Layers, tone: "text-blue-400" },
+          { label: "With AI insights", value: stats.withAi, icon: Sparkles, tone: "text-amber-400" },
+        ].map((s) => (
+          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</span>
+              <s.icon className={`w-4 h-4 ${s.tone}`} />
+            </div>
+            <p className={`mt-2 font-display text-3xl font-bold ${s.tone}`}>{s.value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Main Body */}
-      <div className="flex-1 flex flex-col px-4 py-6 max-w-lg mx-auto w-full">
-        {!hasNotes && (
-          /* SCREENSHOT MATCH: EMPTY STATE (PHONE WITH BEE & TAPPING HAND) */
-          <div className="flex-1 flex flex-col items-center justify-center my-auto py-8 text-center">
-            <h2 className="text-xl sm:text-2xl font-normal text-stone-900 dark:text-white mb-8">
-              Add note
-            </h2>
-
-            <div className="relative w-48 h-56 mb-12 flex items-center justify-center select-none">
-              <svg
-                viewBox="0 0 240 280"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full drop-shadow-xs"
-              >
-                {/* Phone Body Outline */}
-                <rect
-                  x="45"
-                  y="20"
-                  width="125"
-                  height="215"
-                  rx="26"
-                  stroke="#A8A29E"
-                  strokeWidth="5"
-                  className="dark:stroke-stone-600"
-                />
-
-                {/* Bottom Home Indicator / Speaker bar */}
-                <line
-                  x1="88"
-                  y1="218"
-                  x2="128"
-                  y2="218"
-                  stroke="#A8A29E"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  className="dark:stroke-stone-600"
-                />
-
-                {/* Bee Emblem Inside Phone Screen (Golden Amber) */}
-                <g className="opacity-90">
-                  <ellipse
-                    cx="88"
-                    cy="80"
-                    rx="15"
-                    ry="20"
-                    transform="rotate(-25 88 80)"
-                    stroke="#D4A359"
-                    strokeWidth="4.5"
-                    fill="none"
-                  />
-                  <ellipse
-                    cx="128"
-                    cy="80"
-                    rx="15"
-                    ry="20"
-                    transform="rotate(25 128 80)"
-                    stroke="#D4A359"
-                    strokeWidth="4.5"
-                    fill="none"
-                  />
-                  <circle
-                    cx="108"
-                    cy="68"
-                    r="9"
-                    stroke="#D4A359"
-                    strokeWidth="4.5"
-                    fill="none"
-                  />
-                  <path
-                    d="M97 86 C97 76 119 76 119 86 C119 105 108 118 108 118 C108 118 97 105 97 86 Z"
-                    stroke="#D4A359"
-                    strokeWidth="4.5"
-                    fill="none"
-                    strokeLinejoin="round"
-                  />
-                  <line
-                    x1="101"
-                    y1="96"
-                    x2="115"
-                    y2="96"
-                    stroke="#D4A359"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-                </g>
-
-                {/* Hand Touching/Tapping Screen */}
-                <g className="text-stone-400">
-                  <path
-                    d="M136 128 C124 128 114 138 114 150 C114 162 124 172 136 172 L146 172 C146 172 152 186 160 196 C168 206 182 208 196 198 C208 188 208 172 206 160 C204 152 196 142 188 138 C182 135 174 135 168 138 L168 128 C168 118 158 110 148 110 C141 110 136 118 136 128 Z"
-                    stroke="#A8A29E"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="#FDFBF7"
-                    className="dark:fill-stone-950 dark:stroke-stone-500"
-                  />
-                  <path
-                    d="M130 114 A 20 20 0 0 1 150 114"
-                    stroke="#D4A359"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    opacity="0.7"
-                  />
-                </g>
-              </svg>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleOpenAddForm}
-              className="w-full max-w-[280px] py-3.5 px-6 rounded-full bg-[#FFB800] hover:bg-amber-400 active:bg-amber-500 text-stone-950 font-bold text-sm shadow-xs transition-all text-center cursor-pointer"
-            >
-              Add note
-            </button>
-          </div>
-        )}
-
-        {/* NOTES LEDGER LIST (WHEN NOTES EXIST) */}
-        {hasNotes && (
-          <div className="flex-1 flex flex-col space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search observation notes, tags..."
-                  className="w-full pl-9 pr-3 py-2 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-full text-xs text-stone-900 dark:text-white placeholder:text-stone-400 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-
+      {/* Quick Filters */}
+      <div className="rounded-xl border border-border bg-card p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2">
+          <Tag className="w-4 h-4 text-honey" />
+          <span className="font-bold text-foreground">Categories:</span>
+          <span className="text-muted-foreground text-[11px]">Filter observation stream</span>
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setCategoryFilter("all")}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border ${
+              categoryFilter === "all"
+                ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border-emerald-500/40 shadow-sm"
+                : "bg-background border-border text-muted-foreground hover:border-honey/40"
+            }`}
+          >
+            All Categories ({notes.length})
+          </button>
+          {NOTE_CATEGORIES.map((cat) => {
+            const count = notes.filter((n) => n.category === cat).length;
+            return (
               <button
+                key={cat}
                 type="button"
-                onClick={handleOpenAddForm}
-                className="px-4 py-2 rounded-full bg-[#FFB800] hover:bg-amber-400 text-stone-950 font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-xs cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.5]" />
-                <span>Add note</span>
-              </button>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-              <button
-                type="button"
-                onClick={() => setCategoryFilter("all")}
-                className={`px-3 py-1 rounded-full text-xs whitespace-nowrap font-medium transition-colors ${
-                  categoryFilter === "all"
-                    ? "bg-amber-600 text-white font-bold"
-                    : "bg-stone-200/70 dark:bg-stone-900 text-stone-700 dark:text-stone-300"
+                onClick={() => setCategoryFilter(cat)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border whitespace-nowrap ${
+                  categoryFilter === cat
+                    ? "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold shadow-md border-emerald-500/40 shadow-sm"
+                    : "bg-background border-border text-muted-foreground hover:border-honey/40"
                 }`}
               >
-                All ({notes.length})
+                {cat} ({count})
               </button>
-              {NOTE_CATEGORIES.map((cat) => {
-                const count = notes.filter((n) => n.category === cat).length;
-                if (count === 0) return null;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setCategoryFilter(cat)}
-                    className={`px-3 py-1 rounded-full text-xs whitespace-nowrap font-medium transition-colors ${
-                      categoryFilter === cat
-                        ? "bg-amber-600 text-white font-bold"
-                        : "bg-stone-200/70 dark:bg-stone-900 text-stone-700 dark:text-stone-300"
-                    }`}
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Form (Create or Edit Note) */}
+      {showForm && (
+        <div className="rounded-xl border border-emerald-500/50 bg-card overflow-hidden shadow-lg transition-all">
+          <div className="bg-emerald-600 px-5 py-3.5 flex items-center justify-between text-white">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
+                {editingId ? <Pencil className="w-4 h-4 text-white" /> : <Plus className="w-4 h-4 text-white stroke-[2.5]" />}
+              </div>
+              <div>
+                <h2 className="font-display text-sm sm:text-base font-bold text-white tracking-wide">
+                  {editingId ? "Edit Observation Note" : "Add Observation Note"}
+                </h2>
+                <p className="text-[11px] text-emerald-100">
+                  {editingId ? `Editing note for ${userHives.find((h) => h.id === formHiveId)?.hive_code || "selected hive"}` : "Record new colony observation, field inspection notes & AI analysis"}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setShowForm(false);
+                setEditingId(null);
+                setAiText("");
+              }}
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/25 text-white transition-colors"
+              aria-label="Close form"
+            >
+              <X className="w-4 h-4 text-white" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveNote} className="p-5 space-y-4">
+            {/* Apiary & Hive Target Selectors */}
+            <div className="p-4 rounded-xl border border-border bg-background space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-2">
+                <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-500" /> Target Hive & Apiary
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  Active target: <strong className="text-emerald-600 dark:text-emerald-400">{userApiaries.find((a) => a.id === formApiaryId)?.name || CANONICAL_APIARY_NAME}</strong> • <strong className="text-honey">{userHives.find((h) => h.id === formHiveId)?.hive_code || "Hive"}</strong>
+                </span>
+              </div>
+
+              <div className="grid md:grid-cols-4 gap-3">
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
+                    <CalendarDays className="w-3 h-3 text-honey" /> Observation Date
+                  </span>
+                  <input
+                    type="date"
+                    value={formDate}
+                    onChange={(e) => setFormDate(e.target.value)}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-medium text-foreground"
+                  />
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
+                    <MapPin className="w-3 h-3 text-emerald-500" /> Apiary Record
+                  </span>
+                  <select
+                    value={formApiaryId}
+                    onChange={(e) => setFormApiaryId(e.target.value)}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
                   >
-                    {cat} ({count})
-                  </button>
-                );
-              })}
+                    {userApiaries.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
+                    <Layers className="w-3 h-3 text-honey" /> Hive Record
+                  </span>
+                  <select
+                    value={formHiveId}
+                    onChange={(e) => {
+                      setFormHiveId(e.target.value);
+                      fetchHiveTelemetry(e.target.value);
+                    }}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
+                  >
+                    {userHives.map((h) => (
+                      <option key={h.id} value={h.id}>
+                        {h.hive_code || h.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="text-xs space-y-1">
+                  <span className="text-muted-foreground flex items-center gap-1 font-semibold">
+                    <Tag className="w-3 h-3 text-blue-500" /> Category
+                  </span>
+                  <select
+                    value={formCategory}
+                    onChange={(e) => setFormCategory(e.target.value as NoteCategory)}
+                    className="w-full bg-card border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground truncate"
+                  >
+                    {NOTE_CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
             </div>
 
-            {/* Notes Cards */}
-            <div className="space-y-3 pt-1">
-              {currentHiveNotes.map((note) => (
-                <div
-                  key={note.id}
-                  className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/80 dark:border-stone-800 p-4 shadow-xs hover:border-amber-400/50 transition-all space-y-2.5"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-800 dark:text-amber-400">
-                          {note.category}
-                        </span>
-                        <span className="text-[11px] text-stone-400 dark:text-stone-500">
-                          {note.date}
-                        </span>
-                        {note.synced_to_db && (
-                          <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded-full">
-                            Synced
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-bold text-sm text-stone-900 dark:text-white">
-                        {note.title}
-                      </h3>
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 text-stone-400" />
-                        <span>{note.apiary_name}</span>
-                        <span>•</span>
-                        <span className="font-medium text-amber-700 dark:text-amber-400">
-                          {note.hive_code}
-                        </span>
-                      </p>
-                    </div>
+            {/* Title (Optional) */}
+            <label className="text-xs space-y-1 block">
+              <span className="text-muted-foreground font-semibold">Note Title (Optional)</span>
+              <input
+                type="text"
+                value={formTitle}
+                onChange={(e) => setFormTitle(e.target.value)}
+                placeholder="e.g. Colony temperament, brood expansion, super inspection"
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-xs font-medium text-foreground"
+              />
+            </label>
 
-                    <div className="flex items-center gap-1">
+            {/* Note Content with Voice Dictation */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground font-semibold">
+                  Observation Content & Field Notes
+                </span>
+                <button
+                  type="button"
+                  onClick={toggleVoiceRecording}
+                  className={`text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer ${
+                    isRecordingVoice
+                      ? "bg-rose-500 text-white animate-pulse"
+                      : "bg-honey/10 text-honey hover:bg-honey/20"
+                  }`}
+                  title={isRecordingVoice ? "Stop voice dictation" : "Click to speak voice note"}
+                >
+                  {isRecordingVoice ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  <span>{isRecordingVoice ? "Stop Recording" : "Voice Dictation"}</span>
+                </button>
+              </div>
+
+              <textarea
+                value={formContent}
+                onChange={(e) => setFormContent(e.target.value)}
+                rows={4}
+                placeholder="Record brood pattern, queen behavior, syrup uptake, pollen stores, swarm cells, or colony health..."
+                className="w-full bg-background border border-border rounded-lg p-3 text-xs text-foreground leading-relaxed resize-y"
+              />
+            </div>
+
+            {/* Quick Observation Badges */}
+            <div className="space-y-1.5">
+              <span className="text-xs text-muted-foreground font-semibold block">
+                Quick Observation Tags
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {SUGGESTED_TAGS.map((tag) => {
+                  const active = formTags.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all cursor-pointer border ${
+                        active
+                          ? "bg-emerald-600 text-white font-bold border-emerald-500/40 shadow-xs"
+                          : "bg-background border-border text-muted-foreground hover:border-honey/40"
+                      }`}
+                    >
+                      {active ? `✓ ${tag}` : `+ ${tag}`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Photo Attachments */}
+            <div className="space-y-2 border-t border-border pt-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <ImagePlus className="w-3.5 h-3.5 text-honey" /> Attached Photos ({formAttachments.length})
+                </span>
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-2.5 py-1 rounded-lg border border-border hover:bg-background text-xs font-semibold flex items-center gap-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Attach Photo
+                </button>
+              </div>
+
+              {formAttachments.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {formAttachments.map((img, idx) => (
+                    <div key={idx} className="relative w-20 h-20 rounded-xl overflow-hidden border border-border group">
+                      <img src={img} alt="Attachment" className="w-full h-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => exportNotePdf(note)}
-                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
-                        title="Export PDF Certificate"
+                        onClick={() => removeAttachment(idx)}
+                        className="absolute top-1 right-1 p-1 rounded-full bg-black/70 text-white hover:bg-rose-600 transition-colors"
+                        title="Remove photo"
                       >
-                        <FileDown className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleEditNote(note)}
-                        className="p-1.5 text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
-                        title="Edit Note"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteConfirmId(note.id)}
-                        className="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/30 cursor-pointer"
-                        title="Delete Note"
-                      >
-                        <Trash2 className="w-4 h-4" />
+                        <X className="w-3 h-3" />
                       </button>
                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* BeeGPT Clinical Analysis */}
+            <div className="border-t border-border pt-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-honey flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> BeeGPT Clinical Analysis
+                </span>
+                <button
+                  type="button"
+                  onClick={runAiInsights}
+                  disabled={aiLoading}
+                  className="px-3 py-1 rounded-lg bg-honey/10 text-honey hover:bg-honey/20 text-xs font-semibold flex items-center gap-1 disabled:opacity-50"
+                >
+                  {aiLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                  <span>Run Analysis</span>
+                </button>
+              </div>
+              {aiText && (
+                <div className="rounded-lg border border-honey/30 bg-background/50 p-3 text-xs leading-relaxed">
+                  <MarkdownRenderer content={aiText} />
+                </div>
+              )}
+            </div>
+
+            {/* Save / Cancel */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingId(null);
+                  setAiText("");
+                }}
+                className="px-3 py-1.5 rounded-lg border border-border text-xs hover:bg-background"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 disabled:opacity-50 shadow-md hover:shadow-lg transition-all border border-emerald-400/40"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Save className="w-4 h-4 text-white" />}
+                <span className="text-white">{editingId ? "Update Observation Note" : "Save Observation Note"}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search observation notes by hive, apiary, category, tag, or content…"
+          className="w-full bg-card border border-border rounded-lg pl-9 pr-3 py-2.5 text-sm"
+        />
+      </div>
+
+      {/* Notes List / Empty State */}
+      {loading ? (
+        <div className="py-16 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
+          <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading observation notes…
+        </div>
+      ) : filteredNotes.length === 0 ? (
+        <div className="py-16 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-8">
+          <div className="w-12 h-12 rounded-2xl bg-honey/10 border border-honey/30 flex items-center justify-center text-honey mx-auto mb-3">
+            <FileText className="w-6 h-6" />
+          </div>
+          <h3 className="font-display text-base font-bold text-foreground">
+            {notes.length === 0 ? "No Observation Notes Logged Yet" : "No Notes Match Your Filter"}
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground max-w-md mx-auto">
+            {notes.length === 0
+              ? "There are no observation notes logged for this hive yet. Record colony behavior, queen status, feeding, forage notes, and BeeGPT AI analysis."
+              : "Try clearing your search query or selecting 'All Categories' above."}
+          </p>
+          <button
+            onClick={() => handleOpenAddForm()}
+            className="mt-4 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-emerald-400/40 inline-flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="text-white">Add First Observation Note</span>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredNotes.map((note) => (
+            <div
+              key={note.id}
+              className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-honey/30 p-4 sm:p-5 space-y-3 shadow-xs"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-honey/15 text-honey border border-honey/30">
+                      {note.category}
+                    </span>
+                    <span className="font-bold text-sm text-foreground">
+                      {note.hive_code}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-emerald-500" />
+                      {note.apiary_name}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <CalendarDays className="w-3 h-3 text-muted-foreground" />
+                      {note.date}
+                    </span>
+                    {note.synced_to_db && (
+                      <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Live DB
+                      </span>
+                    )}
                   </div>
 
-                  <p className="text-xs text-stone-700 dark:text-stone-300 leading-relaxed font-normal whitespace-pre-line">
-                    {note.content}
-                  </p>
-
-                  {note.attachments && note.attachments.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {note.attachments.map((img, i) => (
-                        <img key={i} src={img} alt="Attachment" className="w-14 h-14 object-cover rounded-lg border border-stone-200 dark:border-stone-800" />
-                      ))}
-                    </div>
+                  {note.title && (
+                    <h3 className="font-bold text-sm sm:text-base text-foreground pt-1">
+                      {note.title}
+                    </h3>
                   )}
+                </div>
 
-                  {note.tags && note.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 pt-1">
-                      {note.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200/60 dark:border-stone-700"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => exportNotePdf(note)}
+                    className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                    title="Export PDF Certificate"
+                  >
+                    <FileDown className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleEditNote(note)}
+                    className="p-1.5 rounded-lg border border-border hover:border-honey/50 hover:bg-honey/10 text-muted-foreground hover:text-honey transition-colors text-xs flex items-center gap-1"
+                    title="Edit Note"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteConfirmId(note.id)}
+                    className="p-1.5 rounded-lg border border-border hover:border-rose-500/50 hover:bg-rose-500/10 text-muted-foreground hover:text-rose-500 transition-colors text-xs flex items-center gap-1"
+                    title="Delete Note"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
 
-                  {note.ai_insights && (
-                    <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedAiNoteId(expandedAiNoteId === note.id ? null : note.id)
-                        }
-                        className="w-full flex items-center justify-between text-left text-xs font-semibold text-amber-700 dark:text-amber-400 cursor-pointer"
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                          BeeYield Master Apiculturist Insights
-                        </span>
-                        {expandedAiNoteId === note.id ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </button>
+              {/* Note Content */}
+              <p className="text-xs sm:text-sm text-foreground/90 leading-relaxed whitespace-pre-line bg-background/50 p-3 rounded-lg border border-border/50">
+                {note.content}
+              </p>
 
-                      {expandedAiNoteId === note.id && (
-                        <div className="mt-2 p-3 rounded-xl bg-[#F5EDE3] dark:bg-amber-950/20 border border-[#E8DEC9] dark:border-amber-900/30 text-xs text-stone-800 dark:text-amber-200/90 leading-relaxed">
-                          <MarkdownRenderer content={note.ai_insights} />
-                        </div>
-                      )}
+              {/* Tags */}
+              {note.tags && note.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {note.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-secondary-foreground border border-border/40"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Photos */}
+              {note.attachments && note.attachments.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {note.attachments.map((img, i) => (
+                    <a
+                      key={i}
+                      href={img}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-16 h-16 rounded-lg overflow-hidden border border-border hover:border-honey transition-colors"
+                    >
+                      <img src={img} alt="Attachment" className="w-full h-full object-cover" />
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {/* BeeGPT Clinical Insights */}
+              {note.ai_insights && (
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setExpandedAiNoteId(expandedAiNoteId === note.id ? null : note.id)}
+                    className="w-full flex items-center justify-between text-xs font-bold text-amber-500 hover:text-amber-400"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      BeeGPT Clinical Analysis
+                    </span>
+                    {expandedAiNoteId === note.id ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
+
+                  {expandedAiNoteId === note.id && (
+                    <div className="text-xs leading-relaxed text-foreground/90 pt-1 border-t border-amber-500/20">
+                      <MarkdownRenderer content={note.ai_insights} />
                     </div>
                   )}
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* BOTTOM NAVIGATION BAR */}
-      <div className="sticky bottom-0 z-20 bg-[#FDFBF7]/95 dark:bg-stone-950/95 backdrop-blur-md px-6 py-2 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-between text-center max-w-lg mx-auto w-full">
-        <button
-          type="button"
-          onClick={() => {
-            if (onClose) onClose();
-          }}
-          className="flex flex-col items-center py-1 text-stone-900 dark:text-white font-bold cursor-pointer group"
-        >
-          <div className="px-3 py-1 rounded-full bg-[#F3E8DB] dark:bg-stone-800 mb-0.5">
-            <LayoutGrid className="w-5 h-5 text-stone-900 dark:text-white" />
-          </div>
-          <span className="text-[11px] leading-tight font-medium">Details</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            toast.info(`0 unread notifications for ${hiveDisplayName}`);
-          }}
-          className="flex flex-col items-center py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-        >
-          <div className="px-3 py-1 mb-0.5">
-            <Bell className="w-5 h-5 group-hover:scale-105 transition-transform" />
-          </div>
-          <span className="text-[11px] leading-tight font-medium">Notifications</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleOpenAddForm}
-          className="flex flex-col items-center py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-        >
-          <div className="px-3 py-1 mb-0.5">
-            <PlusCircle className="w-5 h-5 group-hover:scale-105 transition-transform" />
-          </div>
-          <span className="text-[11px] leading-tight font-medium">Add...</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            toast.info("BeeYield Assistant ready: Ask questions about hive state, nectar flows, or syrup feeding.");
-          }}
-          className="flex flex-col items-center py-1 text-stone-500 dark:text-stone-400 hover:text-stone-900 transition-colors cursor-pointer group"
-        >
-          <div className="px-3 py-1 mb-0.5">
-            <div className="w-5 h-5 rounded-full border-2 border-amber-600 dark:border-amber-400 flex items-center justify-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-600 dark:bg-amber-400" />
-            </div>
-          </div>
-          <span className="text-[11px] leading-tight font-medium whitespace-nowrap">
-            Your assistant
-          </span>
-        </button>
-      </div>
-
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete observation note?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The note will be permanently removed from this hive and the database.
+              This action cannot be undone. The note will be permanently removed from this hive history.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -1732,7 +1475,7 @@ Provide a concise 3-bullet evaluation:
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Seamless Tool Nav Switching */}
+      {/* Sub-nav tool modals */}
       {isSyrupOpen && (
         <SyrupFeedingToolPage
           isOpen={isSyrupOpen}
@@ -1775,7 +1518,24 @@ Provide a concise 3-bullet evaluation:
     </div>
   );
 
-  return embedded ? content : createPortal(content, document.body);
+  if (embedded) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8">
+        <div className="max-w-6xl mx-auto">
+          {mainContent}
+        </div>
+      </div>
+    );
+  }
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        {mainContent}
+      </div>
+    </div>,
+    document.body
+  );
 }
 
 export default NotesPage;
