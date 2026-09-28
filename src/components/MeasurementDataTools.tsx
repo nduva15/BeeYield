@@ -639,8 +639,9 @@ function AddDeviceWizard({
         setSerial(`SENS-INP-${num.padStart(3, "0")}`);
       }
     } else {
-      setSerial("SENS-INP-042");
-      setLabel("KIB-001 VitalSensor Brood Core");
+      const firstHive = hives[0];
+      setSerial("");
+      setLabel(firstHive ? `${firstHive.name} VitalSensor` : "");
     }
   }, [initialHiveId, hives]);
 
@@ -1228,34 +1229,91 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     }
 
-    // Load devices from Supabase + localStorage merge (clean real devices only)
-    let devicesData = (d.data as Device[]) ?? [];
+    // Filter out any legacy mock/fake devices
+    const isFakeDevice = (item: any) => {
+      if (!item) return true;
+      const s = String(item.serial || "").toUpperCase();
+      const id = String(item.id || "").toLowerCase();
+      const lbl = String(item.label || "").toLowerCase();
+      return (
+        id.startsWith("dev-vs-") ||
+        id.startsWith("dev-hub-") ||
+        id.startsWith("dev-dis-") ||
+        id.startsWith("dev-scale-") ||
+        s.startsWith("SENS-INP-001") ||
+        s.startsWith("SENS-MIC-002") ||
+        s.startsWith("SENS-LAND-01") ||
+        s.startsWith("SENS-DIS-001") ||
+        lbl.includes("vitalsensor brood core") ||
+        lbl.includes("bio-acoustic queen mic") ||
+        lbl.includes("solar microclimate hub") ||
+        lbl.includes("spectral varroa scanner")
+      );
+    };
+
+    // Purge any legacy fake/mock device records from localStorage across all keys
     try {
-      const storageKey = `beeyield_measurement_devices_${effectiveUserId}`;
-      const localStored = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      if (Array.isArray(localStored) && localStored.length > 0) {
-        // Clean out any legacy mock/fake devices
-        const cleanLocal = localStored.filter(
-          (item: Device) =>
-            !item.id?.startsWith("dev-vs-") &&
-            !item.id?.startsWith("dev-hub-") &&
-            !item.id?.startsWith("dev-dis-") &&
-            !item.serial?.startsWith("SENS-INP-001") &&
-            !item.serial?.startsWith("SENS-MIC-002") &&
-            !item.serial?.startsWith("SENS-LAND-01") &&
-            !item.serial?.startsWith("SENS-DIS-001")
-        );
-        const map = new Map<string, Device>();
-        devicesData.forEach((item) => map.set(item.serial, item));
-        cleanLocal.forEach((item) => map.set(item.serial, item));
-        devicesData = Array.from(map.values());
-        if (cleanLocal.length !== localStored.length) {
-          localStorage.setItem(storageKey, JSON.stringify(cleanLocal));
+      const keysToClean = [
+        "beeyield_measurement_devices",
+        `beeyield_measurement_devices_${effectiveUserId}`,
+        "beeyield_measurement_devices_usr_kibwezi_owner_01",
+        "beeyield_devices",
+        `beeyield_devices_${effectiveUserId}`,
+        "beeyield_devices_usr_kibwezi_owner_01",
+        "beeyield_paired_devices",
+        "beeyield_devices_cache_v1",
+      ];
+      keysToClean.forEach((k) => {
+        try {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              const cleaned = parsed.filter((item: Device) => !isFakeDevice(item));
+              if (cleaned.length > 0) {
+                localStorage.setItem(k, JSON.stringify(cleaned));
+              } else {
+                localStorage.removeItem(k);
+              }
+            } else {
+              localStorage.removeItem(k);
+            }
+          }
+        } catch {
+          localStorage.removeItem(k);
+        }
+      });
+
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("beeyield_measurement_devices") || k.startsWith("beeyield_devices"))) {
+          try {
+            const raw = localStorage.getItem(k);
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) {
+                const cleaned = parsed.filter((item: Device) => !isFakeDevice(item));
+                if (cleaned.length > 0) {
+                  localStorage.setItem(k, JSON.stringify(cleaned));
+                } else {
+                  localStorage.removeItem(k);
+                }
+              }
+            }
+          } catch {}
         }
       }
     } catch {}
 
-    const measurementsData = (m.data as Measurement[]) ?? [];
+    // Genuine devices only from Supabase
+    const devicesData: Device[] = ((d.data as Device[]) ?? []).filter((item) => !isFakeDevice(item));
+
+    const measurementsData = ((m.data as Measurement[]) ?? []).filter(
+      (meas) =>
+        !meas.device_id?.startsWith("dev-vs-") &&
+        !meas.device_id?.startsWith("dev-hub-") &&
+        !meas.device_id?.startsWith("dev-dis-")
+    );
 
     setApiaries(apiariesData);
     setHives(hivesData);

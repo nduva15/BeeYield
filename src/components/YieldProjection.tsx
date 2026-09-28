@@ -233,6 +233,24 @@ function getCachedUserDevices(userId?: string): any[] {
 
   const pushDevice = (item: any) => {
     if (!item || typeof item !== "object") return;
+    const s = String(item.serial || "").toUpperCase();
+    const id = String(item.id || "").toLowerCase();
+    const lbl = String(item.label || "").toLowerCase();
+    if (
+      id.startsWith("dev-vs-") ||
+      id.startsWith("dev-hub-") ||
+      id.startsWith("dev-dis-") ||
+      s.startsWith("SENS-INP-001") ||
+      s.startsWith("SENS-MIC-002") ||
+      s.startsWith("SENS-LAND-01") ||
+      s.startsWith("SENS-DIS-001") ||
+      lbl.includes("vitalsensor brood core") ||
+      lbl.includes("bio-acoustic queen mic") ||
+      lbl.includes("solar microclimate hub") ||
+      lbl.includes("spectral varroa scanner")
+    ) {
+      return;
+    }
     const key = item.serial || item.id || `${item.label}_${item.hive_id}`;
     if (key && !seen.has(key)) {
       seen.add(key);
