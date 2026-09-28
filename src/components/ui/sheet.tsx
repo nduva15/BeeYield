@@ -19,7 +19,7 @@ const SheetOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-slate-900/10 backdrop-blur-sm transform-gpu will-change-[opacity] select-none data-[state=closed]:pointer-events-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-50 bg-black/70 select-none touch-manipulation data-[state=closed]:pointer-events-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-150",
       className,
     )}
     {...props}
@@ -49,9 +49,7 @@ const sheetVariants = cva(
 
 interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-  VariantProps<typeof sheetVariants> { }
-
-import { motion } from "framer-motion";
+    VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
   ({ side = "right", className, children, onCloseAutoFocus, ...props }, ref) => (
@@ -61,31 +59,19 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
         ref={ref}
         onCloseAutoFocus={(e) => {
           if (onCloseAutoFocus) {
-          onCloseAutoFocus(e);
-        } else {
-          e.preventDefault();
-        }
-      }}
-      className={cn(sheetVariants({ side }), className)}
-      {...props}
-    >
-        <motion.div
-          initial={
-            side === "right" ? { x: 20, opacity: 0 } :
-              side === "left" ? { x: -20, opacity: 0 } :
-                side === "top" ? { y: -20, opacity: 0 } :
-                  { y: 20, opacity: 0 }
+            onCloseAutoFocus(e);
+          } else {
+            e.preventDefault();
           }
-          animate={{ x: 0, y: 0, opacity: 1 }}
-          transition={{ type: "spring", damping: 20, stiffness: 300 }}
-          className="h-full w-full"
-        >
-          {children}
-          <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </SheetPrimitive.Close>
-        </motion.div>
+        }}
+        className={cn(sheetVariants({ side }), className)}
+        {...props}
+      >
+        {children}
+        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </SheetPrimitive.Close>
       </SheetPrimitive.Content>
     </SheetPortal>
   ),

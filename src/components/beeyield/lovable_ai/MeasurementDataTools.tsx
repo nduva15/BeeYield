@@ -2063,7 +2063,7 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto transform-gpu will-change-[opacity] select-none">
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3 sm:p-6 overflow-y-auto select-none touch-manipulation">
       <div
         className="bg-card border border-border/60 rounded-3xl w-full max-w-6xl shadow-2xl p-4 sm:p-6 overflow-y-auto max-h-[92vh] my-auto select-text pointer-events-auto"
         onClick={(e) => e.stopPropagation()}
