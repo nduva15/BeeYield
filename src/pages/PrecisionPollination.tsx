@@ -245,12 +245,27 @@ const FeatureShowcaseSection = () => {
             transition={{ duration: 0.5 }}
             className="relative"
           >
-            <div className="rounded-[2rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200 bg-white">
-              <img
-                src={current.image}
-                alt={current.title}
-                className="w-full h-auto"
-              />
+            <div className="rounded-[2rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white">
+              <div className="px-4 py-2.5 bg-neutral-100/80 border-b border-neutral-200/70 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                </div>
+                <div className="text-[11px] font-mono text-neutral-500 font-medium truncate max-w-[220px]">
+                  app.beeyield.com/in-hive
+                </div>
+                <Badge className="bg-beeyield-green/15 text-beeyield-green border-none text-[9px] font-bold px-2 py-0.5">
+                  Live Platform
+                </Badge>
+              </div>
+              <div className="p-1 sm:p-2 bg-[#FAF9F5]">
+                <img
+                  src={current.image}
+                  alt={current.title}
+                  className="w-full h-auto object-contain rounded-xl"
+                />
+              </div>
             </div>
           </motion.div>
 

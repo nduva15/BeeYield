@@ -1,0 +1,4 @@
+[advisories]
+ignore = [
+    "RUSTSEC-2026-0258", # Transitive via actix-web 4.15.0 / actix-http 3.18.12. Upstream h2 0.3.x is EOL; Actix limits request body size.
+]

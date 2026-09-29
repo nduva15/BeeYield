@@ -145,55 +145,55 @@ const FIELD_INSPECTION_PHOTOS = [
     }
 ];
 
-// Real Mobile App Telemetry Screens
+// Real Desktop Platform Telemetry Screens
 const REAL_APP_SCREENS = [
     {
-        src: "/images/diseases/hive-health-colony-monitoring.png",
-        tabLabel: "Love & Care",
-        title: "Hive Health & Colony Monitoring",
-        subtitle: "How Much You Should Love Bees • Full-Spectrum Sensor Telemetry",
-        badge: "Colony Protection",
-        detail: "Demonstrating how much you should love bees: 24/7 acoustic audits, brood chamber microclimate, colony scales, and Asian hornet guard."
+        src: "/images/dashboard/dashboard-hive-telemetry.png",
+        tabLabel: "In-Hive Telemetry",
+        title: "Active Colony Biometrics & Telemetry",
+        subtitle: "Acoustic Audits • Varroa Sensor • Asian Hornet Guard",
+        badge: "Biometric Guard",
+        detail: "Real-time acoustic health index, brood chamber temperature and humidity sensors, colony weight scales, and automated hornet alerts."
     },
     {
-        src: "/images/app-screenshots/hive-list-varroa.png",
-        tabLabel: "Live Hive List",
-        title: "VitalSensor Apiary Telemetry",
-        subtitle: "Real-time colony status: Varroa alert vs. Healthy",
-        badge: "Live Field Data",
-        detail: "Monitors battery health, Bluetooth signal, core temperature (30.5°C), and automated disease flags across every hive in the yard."
+        src: "/images/dashboard/dashboard-beeyield-ai.png",
+        tabLabel: "BeeYield AI",
+        title: "BeeYield AI Disease & Diagnostic Assistant",
+        subtitle: "Global Apiculture Knowledge System",
+        badge: "AI Pathogen Engine",
+        detail: "Trained on thousands of apicultural studies for immediate diagnosis of Varroa destructor, Colony Collapse Disorder, foulbrood, and treatment protocols."
     },
     {
-        src: "/images/app-screenshots/varroa-detail.png",
-        tabLabel: "Varroa Diagnosis",
-        title: "AI Pathogen Risk & Protocols",
-        subtitle: "Natural mite drop >11/day, >5% wash alert",
-        badge: "Treatment Guidance",
-        detail: "Instant veterinary guidance prescribing powdered sugar roll tests, treatment thresholds, and colony defense steps."
+        src: "/images/dashboard/dashboard-microclimate-forecast.png",
+        tabLabel: "Microclimate",
+        title: "Hourly Microclimate & 5-Day Forecast",
+        subtitle: "Hyper-Local Brood & Flight Conditions",
+        badge: "Weather Curves",
+        detail: "Hourly microclimate monitoring with 5-day predictive forecasts to identify optimal foraging windows and prevent thermal stress."
     },
     {
-        src: "/images/app-screenshots/hive-conditions.png",
-        tabLabel: "Hive Microclimate",
-        title: "Brood Core Environmental Sensors",
-        subtitle: "Inside temperature 30.5°C, humidity 57%, pressure 907 hPa",
-        badge: "Microclimate",
-        detail: "High-precision internal sensors detect microclimate fluctuations before pest incursions or brood chilling occur."
+        src: "/images/dashboard/dashboard-hive-directory.png",
+        tabLabel: "Hive Directory",
+        title: "Apiary Colony Registry & FrameSense",
+        subtitle: "Frame Counts • Harvest Ledgers • Syrup Feeds",
+        badge: "Field Operations",
+        detail: "Live registry of Langstroth hives tracking honey batches harvested (16 kg / 8 batches), frame counts, syrup feeding, and FrameSense AI."
     },
     {
-        src: "/images/app-screenshots/honey-gain-chart.png",
-        tabLabel: "Honey Gain Curve",
-        title: "24h Diurnal Honey Accumulation",
-        subtitle: "+0.5 kg net gain curve with diurnal flow tracking",
-        badge: "Nectar Flow",
-        detail: "Tracks active foraging hours and overnight nectar ripening moisture loss with hourly granularity."
+        src: "/images/dashboard/dashboard-apiary-tasks.png",
+        tabLabel: "Field Tasks",
+        title: "Apiary Field Tasks & Scheduled Workflows",
+        subtitle: "Colony Feeding • Mite Treatments • Super Rotations",
+        badge: "Task Automation",
+        detail: "Priority-queued field tasks for scheduling colony feedings, scheduled mite treatments, super box additions, and routine apiary care."
     },
     {
-        src: "/images/app-screenshots/weight-chart.png",
-        tabLabel: "Colony Weight",
-        title: "Industrial Load Cell Weight Telemetry",
-        subtitle: "Continuous 40.5 kg total mass tracking",
-        badge: "Scale Telemetry",
-        detail: "Multi-scale telemetry (24h to 6 months) detecting sudden swarming departures, robbing events, and harvest readiness."
+        src: "/images/dashboard/dashboard-commerce-integrations.png",
+        tabLabel: "Integrations",
+        title: "Commercial & Compliance Integrations",
+        subtitle: "Shopify • QuickBooks Online • KRA eTIMS",
+        badge: "Commercial Sync",
+        detail: "Automated sync for selling honey, wax, and nucs directly connected to Shopify stores, QuickBooks accounting, and tax compliance."
     }
 ];
 
@@ -833,8 +833,8 @@ const Diseases = () => {
                         <div className="rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white p-2 sm:p-4">
                             <div className="rounded-[2rem] overflow-hidden border border-neutral-100 bg-[#FAF9F5]">
                                 <img
-                                    src="/images/diseases/hive-health-colony-monitoring.png"
-                                    alt="Hive Health and Colony Monitoring dashboard showing how much you should love and safeguard bees"
+                                    src="/images/dashboard/dashboard-hive-telemetry.png"
+                                    alt="Hive Health and Colony Monitoring dashboard showing active hive biometrics, acoustic audits, and Varroa guard"
                                     className="w-full h-auto object-contain"
                                 />
                             </div>

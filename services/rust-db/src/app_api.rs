@@ -3,13 +3,11 @@ use actix_web::{web, HttpRequest, HttpResponse, Result};
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use base64::Engine;
 use chrono::Utc;
-use printpdf::{BuiltinFont, Mm, PdfDocument};
 use rust_xlsxwriter::Workbook;
 use serde::Deserialize;
 use serde_json::{json, Map, Value};
 use std::collections::{HashMap, HashSet};
-use std::fs::{self, File};
-use std::io::BufWriter;
+use std::fs;
 use std::path::PathBuf;
 
 use crate::handlers::AppState;
@@ -978,60 +976,120 @@ async fn collect_report_summary(
     out
 }
 
+fn escape_pdf_text(s: &str) -> String {
+    let mut out = String::new();
+    for c in s.chars() {
+        match c {
+            '(' => out.push_str("\\("),
+            ')' => out.push_str("\\)"),
+            '\\' => out.push_str("\\\\"),
+            '\r' | '\n' => out.push(' '),
+            _ if (c as u32) < 128 => out.push(c),
+            _ => out.push('?'),
+        }
+    }
+    out
+}
+
 fn write_pdf_report(
     path: &PathBuf,
     report_type: &str,
     parameters: &Value,
     summary: &[(String, usize)],
 ) -> std::result::Result<(), Box<dyn std::error::Error>> {
-    let (doc, page, layer) = PdfDocument::new("BeeYield Report", Mm(210.0), Mm(297.0), "Layer 1");
-    let current_layer = doc.get_page(page).get_layer(layer);
-    let font = doc.add_builtin_font(BuiltinFont::Helvetica)?;
-
-    current_layer.use_text("BeeYield Report", 20.0, Mm(20.0), Mm(280.0), &font);
-    current_layer.use_text(
-        format!("Type: {}", report_type),
-        12.0,
-        Mm(20.0),
-        Mm(268.0),
-        &font,
-    );
-    current_layer.use_text(
-        format!("Generated: {}", Utc::now().to_rfc3339()),
-        10.0,
-        Mm(20.0),
-        Mm(260.0),
-        &font,
-    );
     let scope_days = parameters
         .get("scope_days")
         .and_then(|value| value.as_i64())
         .unwrap_or(30);
-    current_layer.use_text(
-        format!("Scope: last {} days", scope_days),
-        10.0,
-        Mm(20.0),
-        Mm(252.0),
-        &font,
-    );
 
-    let mut y = 238.0;
-    current_layer.use_text("Summary", 14.0, Mm(20.0), Mm(y), &font);
-    y -= 10.0;
+    let mut stream_content = String::new();
+    // Title
+    stream_content.push_str("BT /F1 20 Tf 56.7 793.7 Td (BeeYield Report) Tj ET\n");
+    // Metadata
+    stream_content.push_str(&format!(
+        "BT /F1 12 Tf 56.7 759.7 Td (Type: {}) Tj ET\n",
+        escape_pdf_text(report_type)
+    ));
+    stream_content.push_str(&format!(
+        "BT /F1 10 Tf 56.7 737.0 Td (Generated: {}) Tj ET\n",
+        escape_pdf_text(&Utc::now().to_rfc3339())
+    ));
+    stream_content.push_str(&format!(
+        "BT /F1 10 Tf 56.7 714.3 Td (Scope: last {} days) Tj ET\n",
+        scope_days
+    ));
+    // Summary header
+    let mut y = 674.6;
+    stream_content.push_str(&format!(
+        "BT /F1 14 Tf 56.7 {:.1} Td (Summary) Tj ET\n",
+        y
+    ));
+    y -= 28.3;
 
     for (label, count) in summary {
-        current_layer.use_text(
-            format!("{}: {}", label, count),
-            11.0,
-            Mm(24.0),
-            Mm(y),
-            &font,
-        );
-        y -= 8.0;
+        stream_content.push_str(&format!(
+            "BT /F1 11 Tf 68.0 {:.1} Td ({}: {}) Tj ET\n",
+            y,
+            escape_pdf_text(label),
+            count
+        ));
+        y -= 22.7;
     }
 
-    let mut writer = BufWriter::new(File::create(path)?);
-    doc.save(&mut writer)?;
+    let stream_bytes = stream_content.as_bytes();
+    let stream_len = stream_bytes.len();
+
+    let mut pdf = Vec::new();
+    pdf.extend_from_slice(b"%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+
+    let mut offsets = Vec::new();
+
+    // 1 0 obj: Catalog
+    offsets.push(pdf.len());
+    pdf.extend_from_slice(b"1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n");
+
+    // 2 0 obj: Pages
+    offsets.push(pdf.len());
+    pdf.extend_from_slice(b"2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n");
+
+    // 3 0 obj: Page (A4 is 595.28 x 841.89 points)
+    offsets.push(pdf.len());
+    pdf.extend_from_slice(
+        b"3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>\nendobj\n",
+    );
+
+    // 4 0 obj: Contents stream
+    offsets.push(pdf.len());
+    let stream_header = format!("4 0 obj\n<< /Length {} >>\nstream\n", stream_len);
+    pdf.extend_from_slice(stream_header.as_bytes());
+    pdf.extend_from_slice(stream_bytes);
+    pdf.extend_from_slice(b"\nendstream\nendobj\n");
+
+    // 5 0 obj: Font Helvetica
+    offsets.push(pdf.len());
+    pdf.extend_from_slice(
+        b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>\nendobj\n",
+    );
+
+    // xref table
+    let xref_offset = pdf.len();
+    pdf.extend_from_slice(format!("xref\n0 {}\n", offsets.len() + 1).as_bytes());
+    pdf.extend_from_slice(b"0000000000 65535 f \n");
+    for offset in &offsets {
+        pdf.extend_from_slice(format!("{:010} 00000 n \n", offset).as_bytes());
+    }
+
+    // trailer
+    pdf.extend_from_slice(
+        format!(
+            "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{}\n%%EOF\n",
+            offsets.len() + 1,
+            xref_offset
+        )
+        .as_bytes(),
+    );
+
+    fs::write(path, pdf)?;
     Ok(())
 }
 

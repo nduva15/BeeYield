@@ -24,34 +24,40 @@ export interface ShowcaseSlide {
 
 export const SHOWCASE_SLIDES: ShowcaseSlide[] = [
   {
-    image: '/images/app-screenshots/hive-list-varroa.png',
-    title: 'Live Apiary & Hive Overview',
+    image: '/images/dashboard/dashboard-hive-telemetry.png',
+    title: 'In-Hive IoT Telemetry & Biometrics',
     description:
-      'Real-time telemetry showing live VitalSensor Bluetooth signals, battery health, internal brood temperatures (30.5°C), and automated colony state classifications (Healthy vs. Varroa alert) across each hive unit.',
+      'Continuous sensor telemetry displaying brood chamber temperature, in-hive humidity, colony scale weight, acoustic audits, and automated Varroa & Asian hornet threat detection in real time.',
   },
   {
-    image: '/images/app-screenshots/varroa-detail.png',
-    title: 'AI Disease & Varroa Diagnostics',
+    image: '/images/dashboard/dashboard-hive-directory.png',
+    title: 'Live Colony Directory & FrameSense',
     description:
-      'Automated pathogen tracking with mite drop thresholds (>11/day, >5% wash), infestation duration records, and step-by-step veterinary protocols including powdered sugar roll tests to prevent colony collapse.',
+      'Verified apiary hive registry tracking colony frames (Langstroth), cumulative honey harvest batches, instant hive inspections, syrup calculations, and FrameSense AI comb diagnostics.',
   },
   {
-    image: '/images/app-screenshots/hive-conditions.png',
-    title: 'In-Hive Microclimate Telemetry',
+    image: '/images/dashboard/dashboard-beeyield-ai.png',
+    title: 'BeeYield AI Knowledge & Disease Diagnostics',
     description:
-      'Continuous precision monitoring of core hive temperature (30.5°C), internal relative humidity (57%), and local atmospheric barometric pressure (907 hPa) for complete climate stability.',
+      'The world\'s most comprehensive apiculture AI model covering every bee species, honey variety, Varroa destructor lifecycle, Colony Collapse Disorder remedies, and pathogen treatment protocols.',
   },
   {
-    image: '/images/app-screenshots/honey-gain-chart.png',
-    title: '24h Diurnal Honey Gain Dynamics',
+    image: '/images/dashboard/dashboard-microclimate-forecast.png',
+    title: 'Hourly Microclimate & 5-Day Foraging Forecast',
     description:
-      'Continuous hourly weight change analytics (+0.5 kg 24h gain) showing real-time forage curves, peak foraging hours, and night-time moisture evaporation from fresh nectar.',
+      'Hyper-local hourly temperature curves and 5-day diurnal meteorological forecasts to precisely map optimal bee flight windows and anticipate nectar flow shifts across orchards.',
   },
   {
-    image: '/images/app-screenshots/weight-chart.png',
-    title: 'Precision Colony Weight Telemetry',
+    image: '/images/dashboard/dashboard-apiary-tasks.png',
+    title: 'Apiary Field Operations & Task Scheduling',
     description:
-      'Continuous sub-milligram load cell telemetry tracking total hive mass (40.5 kg) with interactive 24h, 7-day, 1-month, 3-month, and 6-month historical harvest trends.',
+      'Streamlined field task management allowing apiary operators to schedule colony feeding, mite treatments, super box rotations, and routine yard workflows with real-time priority tracking.',
+  },
+  {
+    image: '/images/dashboard/dashboard-commerce-integrations.png',
+    title: 'Shopify, ERP & Tax Integrations',
+    description:
+      'Enterprise apiary commerce sync connecting field harvests directly with Shopify stores, QuickBooks Online ledger accounting, and KRA eTIMS regulatory compliance for honey and nuc sales.',
   },
 ];
 
