@@ -1,5 +1,6 @@
-﻿import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   Sprout, Droplets, TreePine, Bug, Download, ArrowRight, Loader2,
   ShieldCheck, Zap, Globe, Heart, Radio, Scale, Activity, CheckCircle2

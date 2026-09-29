@@ -43,6 +43,17 @@ export const createFileRoute = (path?: any) => (opts?: any) => ({
     ...opts,
 });
 
+export interface ErrorComponentProps {
+    error: any;
+    reset: () => void;
+    info?: any;
+}
+
+export const createRootRouteWithContext = <TContext = any>() => (opts?: any) => ({
+    ...genericRoute,
+    ...opts,
+});
+
 export const createRootRoute = (opts?: any) => ({
     ...genericRoute,
     ...opts,
@@ -57,6 +68,7 @@ export const RouterProvider = (props?: any) => null;
 export const useRouter = () => ({
     navigate: (opts?: any) => { },
     state: {},
+    invalidate: () => Promise.resolve(),
 });
 
 // TanStack Start Shims

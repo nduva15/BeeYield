@@ -94,7 +94,7 @@ function normalizeResult(table: string, context: GuardContext, result: any) {
   if (OPTIONAL_TABLES.has(table) || table === "app_settings" || table === "support_tickets" || table === "requests") {
     return {
       ...result,
-      data: context.op === "select" ? makeReadFallback(context.shape) : (result.data || null),
+      data: result.data || null,
       error: null,
       status: 200,
       statusText: "OK",

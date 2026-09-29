@@ -100,12 +100,13 @@ export default function SupportPageModal({ isOpen, onClose, embedded = false }: 
 
     setIsSubmitting(true);
     try {
+      const deviceId = (typeof window !== "undefined" && (localStorage.getItem("beeyield_device_id") || localStorage.getItem("device_id"))) || "device_guest";
       const res = await supportTicketService.createTicket({
         category: formData.category,
         subject: formData.subject.trim(),
         body: formData.description.trim(),
         priority: formData.priority,
-      });
+      }, deviceId);
 
       const newTicket: SupportTicket = {
         id: res.data?.id || ("TICK-" + Math.floor(1000 + Math.random() * 9000)),

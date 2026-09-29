@@ -76,10 +76,6 @@ import { glass } from "./GlassTheme";
 import AddApiaryModal from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
 import NewRecordModal from "./NewRecordModal";
-import { SunlightModeToggle } from "./SunlightModeToggle";
-import { FieldTimezoneIndicator } from "../telemetry/FieldTimezoneIndicator";
-import { LiveStreamStatusBadge } from "../telemetry/LiveStreamStatusBadge";
-import { useIoTConnection } from "@/hooks/useIoTConnection";
 
 interface DashboardHeaderProps {
   onTabChange: (tab: string) => void;
@@ -118,7 +114,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const [isAddHiveOpen, setIsAddHiveOpen] = React.useState(false);
   const [isNewRecordModalOpen, setIsNewRecordModalOpen] = React.useState(false);
   const [newRecordInitialTab, setNewRecordInitialTab] = React.useState<"apiary" | "hive">("hive");
-  const iotConn = useIoTConnection();
 
   React.useEffect(() => {
     let isScrolled = false;
@@ -424,26 +419,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </DropdownMenu>
       </div>
 
-      {/* Right: Telemetry Connection, Solar Time, Sunlight Mode, Search, Quick Action, Alerts, Profile */}
+      {/* Right: Search, Quick Action, Alerts, Profile */}
       <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* IoT Live Stream Watchdog Status */}
-        <LiveStreamStatusBadge
-          status={iotConn.status}
-          timeSinceLastPacketSec={iotConn.timeSinceLastPacketSec}
-          onReconnect={iotConn.triggerReconnect}
-          className="hidden 2xl:inline-flex"
-        />
-
-        {/* Orchard Solar Time Indicator & Switcher */}
-        <div className="hidden lg:block">
-          <FieldTimezoneIndicator />
-        </div>
-
-        {/* High-Contrast Outdoor Sunlight Mode Toggle */}
-        <SunlightModeToggle variant="icon" />
-
         {/* Search Bar (Desktop) */}
-        <div className="relative hidden xl:flex items-center gap-2 px-3 py-1.5 bg-stone-100/80 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 rounded-2xl w-44 group-focus-within/search:w-56 transition-all group/search">
+        <div className="relative hidden xl:flex items-center gap-2 px-3 py-1.5 bg-stone-100/80 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 rounded-2xl w-48 group-focus-within/search:w-64 transition-all group/search">
           <Search className="w-4 h-4 text-stone-400 group-focus-within/search:text-amber-500 transition-colors" />
           <input
             type="text"

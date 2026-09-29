@@ -7278,6 +7278,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                           const isHealthy = healthStatus === "Healthy";
                           const isWatch = healthStatus === "Watch";
                           const totalFrames = (hive.broodFrames || 6) + (hive.honeyFrames || 4);
+                          const queenColor = getQueenYearColor(hive.queenBreedingYear || 2026);
 
                           // Live outside ambient temperature from Open-Meteo
                           const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;

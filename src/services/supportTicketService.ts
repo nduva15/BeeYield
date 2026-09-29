@@ -172,7 +172,7 @@ export const supportTicketService = {
     return combined;
   },
 
-  async createTicket(draft: CreateTicketDraft, deviceId: string): Promise<{ data: Ticket; error: null }> {
+  async createTicket(draft: CreateTicketDraft, deviceId?: string): Promise<{ data: Ticket; error: null }> {
     const newId = crypto.randomUUID();
     const now = new Date().toISOString();
 
