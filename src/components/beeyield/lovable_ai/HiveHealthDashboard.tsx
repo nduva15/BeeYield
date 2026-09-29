@@ -38,6 +38,7 @@ import { Label } from "@/components/ui/label";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 import { Html5Qrcode } from "html5-qrcode";
 import { cn } from "@/lib/utils";
+import { isFakeSensorDevice } from "@/services/sensorSyncService";
 
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
@@ -490,7 +491,9 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       ]);
 
       const rawHives = hivesResult.status === "fulfilled" ? hivesResult.value : [];
-      const pairedDevices = devicesResult.status === "fulfilled" ? devicesResult.value : [];
+      const pairedDevices = (devicesResult.status === "fulfilled" ? devicesResult.value : []).filter(
+        (d: any) => !isFakeSensorDevice({ serial: d.serial, id: d.id })
+      );
 
       if (rawHives && rawHives.length > 0) {
         const pulledHives: HiveItemInfo[] = rawHives

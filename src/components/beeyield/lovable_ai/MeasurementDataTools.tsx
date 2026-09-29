@@ -1228,119 +1228,32 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
       }
     }
 
-    // Load devices from Supabase + localStorage merge
-    let devicesData = (d.data as Device[]) ?? [];
+    // Load only real devices from Supabase — zero fake/mock seed devices
+    const { isFakeSensorDevice } = await import("@/services/sensorSyncService");
+    const rawDevicesData = (d.data as Device[]) ?? [];
+    const devicesData = rawDevicesData.filter((item) => !isFakeSensorDevice(item));
+
+    // Purge any legacy fake device caches from localStorage
     try {
       const storageKey = `beeyield_measurement_devices_${effectiveUserId}`;
       const localStored = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      if (Array.isArray(localStored) && localStored.length > 0) {
-        const map = new Map<string, Device>();
-        devicesData.forEach((item) => map.set(item.serial, item));
-        localStored.forEach((item) => map.set(item.serial, item));
-        devicesData = Array.from(map.values());
+      if (Array.isArray(localStored)) {
+        const cleaned = localStored.filter((item: any) => !isFakeSensorDevice(item));
+        if (cleaned.length > 0) {
+          localStorage.setItem(storageKey, JSON.stringify(cleaned));
+        } else {
+          localStorage.removeItem(storageKey);
+        }
       }
     } catch {}
 
-    // Initial seed if no devices exist so user can see immediate differentiation
-    if (devicesData.length === 0) {
-      devicesData = [
-        {
-          id: "dev-vs-001",
-          apiary_id: "apiary-kibwezi",
-          hive_id: hivesData[0]?.id || "hive-kib-001",
-          device_kind: "vitalsensor_brood",
-          category: "in_hive",
-          link_type: "online",
-          serial: "SENS-INP-001",
-          label: "KIB-001 VitalSensor Brood Core",
-          status: "active",
-          battery_pct: 98,
-          last_seen_at: new Date().toISOString(),
-          temperature_c: 35.2,
-          humidity_pct: 58,
-          weight_kg: 42.6,
-        },
-        {
-          id: "dev-vs-002",
-          apiary_id: "apiary-kibwezi",
-          hive_id: hivesData[1]?.id || "hive-kib-002",
-          device_kind: "acoustic_mic",
-          category: "in_hive",
-          link_type: "bluetooth",
-          serial: "SENS-MIC-002",
-          label: "KIB-002 Bio-Acoustic Queen Mic",
-          status: "active",
-          battery_pct: 94,
-          last_seen_at: new Date().toISOString(),
-          temperature_c: 34.9,
-          humidity_pct: 55,
-          weight_kg: 39.8,
-        },
-        {
-          id: "dev-hub-01",
-          apiary_id: "apiary-kibwezi",
-          hive_id: null,
-          device_kind: "meteo_station",
-          category: "in_land",
-          link_type: "online",
-          serial: "SENS-LAND-01",
-          label: "Kibwezi Solar Microclimate Hub",
-          status: "online",
-          battery_pct: 100,
-          last_seen_at: new Date().toISOString(),
-          temperature_c: 28.5,
-          humidity_pct: 44,
-          weight_kg: null,
-        },
-        {
-          id: "dev-dis-001",
-          apiary_id: "apiary-kibwezi",
-          hive_id: hivesData[2]?.id || "hive-kib-003",
-          device_kind: "spectral_scanner",
-          category: "diseases",
-          link_type: "online",
-          serial: "SENS-DIS-001",
-          label: "KIB-003 Spectral Varroa Scanner",
-          status: "active",
-          battery_pct: 96,
-          last_seen_at: new Date().toISOString(),
-          temperature_c: 35.0,
-          humidity_pct: 56,
-          weight_kg: 41.2,
-        },
-      ];
-      try {
-        localStorage.setItem(`beeyield_measurement_devices_${effectiveUserId}`, JSON.stringify(devicesData));
-      } catch {}
-    }
-
-    let measurementsData = (m.data as Measurement[]) ?? [];
-    if (measurementsData.length === 0) {
-      measurementsData = [
-        {
-          id: "m-001",
-          device_id: "dev-vs-001",
-          hive_id: hivesData[0]?.id || "hive-kib-001",
-          recorded_at: new Date().toISOString(),
-          source: "online",
-          temperature_c: 35.2,
-          humidity_pct: 58,
-          weight_kg: 42.6,
-          battery_pct: 98,
-        },
-        {
-          id: "m-002",
-          device_id: "dev-vs-002",
-          hive_id: hivesData[1]?.id || "hive-kib-002",
-          recorded_at: new Date(Date.now() - 3600000).toISOString(),
-          source: "bluetooth",
-          temperature_c: 34.9,
-          humidity_pct: 55,
-          weight_kg: 39.8,
-          battery_pct: 94,
-        },
-      ];
-    }
+    const measurementsData = ((m.data as Measurement[]) ?? []).filter(
+      (meas) =>
+        !meas.device_id?.startsWith("dev-vs-") &&
+        !meas.device_id?.startsWith("dev-hub-") &&
+        !meas.device_id?.startsWith("dev-dis-") &&
+        !meas.device_id?.startsWith("dev-scale-")
+    );
 
     setApiaries(apiariesData);
     setHives(hivesData);

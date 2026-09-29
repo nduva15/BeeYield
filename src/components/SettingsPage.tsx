@@ -1460,16 +1460,21 @@ export default function SettingsPage({
 
             {/* Our Story Banner & Links */}
             <div className="p-4 sm:p-5 rounded-2xl border border-border bg-gradient-to-r from-amber-500/10 via-honey/5 to-transparent flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="space-y-1 text-center sm:text-left">
-                <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <Heart className="w-4 h-4 text-honey" />
-                  <span className="font-display font-bold text-sm text-foreground">
-                    From 4 Hives to 184 — The BeeYield Journey
-                  </span>
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:block w-16 h-16 rounded-xl overflow-hidden border border-amber-300/30 shadow-sm flex-shrink-0">
+                  <img src="/images/story/hives/apiary-langstroth-row.jpg" alt="BeeYield apiary" className="w-full h-full object-cover" />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Three siblings, zero external investors, pure grit. Founded in Kibwezi & Makueni, Kenya.
-                </p>
+                <div className="space-y-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <Heart className="w-4 h-4 text-honey" />
+                    <span className="font-display font-bold text-sm text-foreground">
+                      From 4 Hives to 184 — The BeeYield Journey
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Three siblings, zero external investors, pure grit. Founded in Kibwezi & Makueni, Kenya.
+                  </p>
+                </div>
               </div>
               <Link
                 to="/our-story"
