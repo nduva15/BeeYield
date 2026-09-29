@@ -33,43 +33,6 @@ const IMPACT_IMAGES = {
   combProbe3: '/images/pollination/hive-comb-inspection-8.png',
 };
 
-// Resilient icon components to guarantee zero ReferenceError under any bundle condition
-const TreesIcon = ({ className = "w-4 h-4" }: { className?: string }) => {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M10 10v.2A3 3 0 0 1 8.9 16v0H5v0h0a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z" />
-      <path d="M7 16v6" />
-      <path d="M13 19v3" />
-      <path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5" />
-    </svg>
-  );
-};
-
-const Flower2Icon = ({ className = "w-4 h-4" }: { className?: string }) => {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <path d="M12 5a3 3 0 1 1 5.9 1.5A3 3 0 1 1 19.5 12a3 3 0 1 1-1.5 5.9A3 3 0 1 1 12 19.5a3 3 0 1 1-5.9-1.5A3 3 0 1 1 4.5 12a3 3 0 1 1 1.5-5.9A3 3 0 1 1 12 5Z" />
-      <path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" />
-    </svg>
-  );
-};
-
 const Impact = () => {
   const [downloading, setDownloading] = useState(false);
   const [liveStats, setLiveStats] = useState<any>(null);
@@ -140,7 +103,7 @@ const Impact = () => {
         '• IoT Telemetry Nodes: 22 Live Nodes (Apisense & Intelligent Hives)',
         '• Land Under Pollination: 105 acres and counting (Verified • Lead Farmer: Timothy Nduva)',
         '• Counties Served: 1 County (Makueni & Counting)',
-        '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Citrus, Oranges, Sunflower, etc.)',
+        '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Macadamia, Coffee, Sunflower, etc.)',
         '• Telemetry Ingestion: Over 2,000 data points daily & growing',
         '• Documented Crop Yield Uplift: 9–18% average increase observed in partner orchards',
         '• Indigenous Flora Restored: 2,500+ Indigenous Trees Planted',
@@ -392,11 +355,11 @@ const Impact = () => {
           <div className="container mx-auto px-4 max-w-5xl relative z-10">
             <div className="p-8 sm:p-12 rounded-[2.5rem] bg-gradient-to-r from-white via-emerald-50/60 to-white border border-emerald-200 shadow-xl text-neutral-900">
               <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-800 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
-                  <TreesIcon className="w-4 h-4 text-emerald-600" />
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                  <Trees className="w-4 h-4 text-emerald-400" />
                   <span>Featured Ecological Initiative • Panda Miti Corridors</span>
                 </div>
-                <Badge variant="outline" className="border-emerald-500/40 text-emerald-800 bg-emerald-500/10 font-bold text-xs px-3 py-1">
+                <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-bold text-xs px-3 py-1">
                   2,500 / 45,000 Trees (5.6%)
                 </Badge>
               </div>
@@ -404,7 +367,7 @@ const Impact = () => {
               <div className="grid lg:grid-cols-12 gap-8 items-center mb-8">
                 <div className="lg:col-span-7 space-y-4">
                   <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight">
-                    Project Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600">45,000 Trees</span> for Kibwezi
+                    Project Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">45,000 Trees</span> for Kibwezi
                   </h3>
                   <p className="text-sm sm:text-base text-neutral-600 leading-relaxed">
                     2,500+ indigenous trees already planted to restore groundwater aquifers, cool microclimates, and secure continuous nectar and pollen sanctuaries for bees. By planting native Acacia, Mukau, and Moringa, Panda Miti ends dry-season famine for over 184+ colonies and millions of wild pollinators.
@@ -417,27 +380,27 @@ const Impact = () => {
                 <div className="lg:col-span-5 bg-white/95 p-6 rounded-2xl border border-emerald-200 space-y-4 shadow-sm">
                   <div className="flex justify-between text-xs font-semibold text-emerald-800">
                     <span>Field Planting Progress</span>
-                    <span className="text-emerald-600 font-bold">2,500 / 45,000 Goal</span>
+                    <span className="text-emerald-400 font-bold">2,500 / 45,000 Goal</span>
                   </div>
-                  <div className="h-3 w-full bg-neutral-200 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
+                  <div className="h-3 w-full bg-neutral-800 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
                     <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 text-center text-[10px] sm:text-[11px] pt-2 border-t border-emerald-100">
                     <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                      <TreePine className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
+                      <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
                       <span className="font-bold text-neutral-900 block">Tree Restoration</span>
-                      <span className="text-neutral-500 text-[9px]">Aquifer recovery</span>
+                      <span className="text-emerald-200/70 text-[9px]">Aquifer recovery</span>
                     </div>
                     <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                      <Heart className="w-4 h-4 text-amber-500 mx-auto mb-1" />
+                      <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
                       <span className="font-bold text-neutral-900 block">Bees Saved</span>
-                      <span className="text-neutral-500 text-[9px]">Colony survival</span>
+                      <span className="text-amber-200/70 text-[9px]">Colony survival</span>
                     </div>
                     <div className="p-2 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                      <Flower2Icon className="w-4 h-4 text-teal-600 mx-auto mb-1" />
+                      <Flower2 className="w-4 h-4 text-teal-400 mx-auto mb-1" />
                       <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
-                      <span className="text-neutral-500 text-[9px]">85%+ dependent</span>
+                      <span className="text-teal-200/70 text-[9px]">85%+ dependent</span>
                     </div>
                   </div>
                 </div>
