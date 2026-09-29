@@ -58,7 +58,7 @@ impl MpesaEngine {
         let simulate = env::var("SIMULATE_MPESA").unwrap_or_default() == "true";
         
         if simulate {
-            let dict = PyDict::new_bound(py);
+            let dict = PyDict::new(py);
             dict.set_item("success", true)?;
             dict.set_item("CheckoutRequestID", format!("ws_CO_SIM_{}", Local::now().timestamp()))?;
             dict.set_item("ResponseCode", "0")?;
@@ -95,7 +95,7 @@ impl MpesaEngine {
         let status = response.status();
         let body = response.text().unwrap_or_default();
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         if status.is_success() {
             let res_json: Value = serde_json::from_str(&body).unwrap_or_default();
             dict.set_item("success", true)?;
@@ -112,7 +112,7 @@ impl MpesaEngine {
     /// Parse and validate the M-Pesa Callback Result
     pub fn parse_callback_result<'py>(&self, py: Python<'py>, body: String) -> PyResult<Bound<'py, PyDict>> {
         let v: Value = serde_json::from_str(&body).map_err(|_| PyErr::new::<pyo3::exceptions::PyValueError, _>("Invalid JSON callback"))?;
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
 
         // Safaricom Result Structure: Body.stkCallback.ResultCode
         if let Some(res_code) = v.pointer("/Body/stkCallback/ResultCode") {

@@ -105,7 +105,7 @@ impl HiveHealthEngine {
         self.anomalies
             .iter()
             .map(|a| {
-                let dict = PyDict::new_bound(py);
+                let dict = PyDict::new(py);
                 dict.set_item("type", &a.anomaly_type)?;
                 dict.set_item("severity", &a.severity)?;
                 dict.set_item("description", &a.description)?;
@@ -122,7 +122,7 @@ impl HiveHealthEngine {
         self.disease_risks
             .iter()
             .map(|r| {
-                let dict = PyDict::new_bound(py);
+                let dict = PyDict::new(py);
                 dict.set_item("disease", &r.disease)?;
                 dict.set_item("probability", format!("{}%", r.probability))?;
                 dict.set_item("confidence", &r.confidence)?;
@@ -156,7 +156,7 @@ impl HiveHealthEngine {
             _ => "HEALTHY",
         };
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         result.set_item("hive_id", hive_id)?;
         result.set_item("status", status)?;
         result.set_item("health_score", format!("{}/100", score))?;

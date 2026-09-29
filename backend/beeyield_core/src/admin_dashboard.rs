@@ -108,7 +108,7 @@ impl AdminDashboardEngine {
             }
         }
 
-        let out = PyDict::new_bound(py);
+        let out = PyDict::new(py);
         out.set_item("total_orders", total_orders)?;
         out.set_item("total_products", total_products)?;
         out.set_item("total_users", total_users)?;

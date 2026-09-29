@@ -33,12 +33,12 @@ impl TraceabilityEngine {
         harvest: &Bound<'py, PyDict>,
         apiary: &Bound<'py, PyDict>,
     ) -> PyResult<Bound<'py, PyList>> {
-        let timeline = PyList::empty_bound(py);
+        let timeline = PyList::empty(py);
 
         // Step 1: Distribution (Ready for You)
-        let step1 = PyDict::new_bound(py);
+        let step1 = PyDict::new(py);
         step1.set_item("title", "Ready for You")?;
-        step1.set_item("date", harvest.get_item("created_at")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "Now").into_any()))?;
+        step1.set_item("date", harvest.get_item("created_at")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "Now").into_any()))?;
         step1.set_item("location", "BeeYield Distribution Center")?;
         let batch_code: String = harvest.get_item("batch_code")?.unwrap_or_else(|| harvest.get_item("id").unwrap().unwrap()).extract()?;
         step1.set_item("description", format!("Batch {} is safely bottled and ready. Purity and standards verified.", batch_code))?;
@@ -46,23 +46,23 @@ impl TraceabilityEngine {
         timeline.append(step1)?;
 
         // Step 2: Processing
-        let step2 = PyDict::new_bound(py);
+        let step2 = PyDict::new(py);
         step2.set_item("title", "Processing & Quality Check")?;
-        step2.set_item("date", harvest.get_item("harvest_date")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "").into_any()))?;
+        step2.set_item("date", harvest.get_item("harvest_date")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "").into_any()))?;
         step2.set_item("location", "Makueni Processing Facility")?;
-        let moisture = harvest.get_item("moisture_content_percent")?.unwrap_or_else(|| pyo3::types::PyFloat::new_bound(py, 17.5).into_any());
-        let grade = harvest.get_item("color_grade")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "Premium").into_any());
+        let moisture = harvest.get_item("moisture_content_percent")?.unwrap_or_else(|| pyo3::types::PyFloat::new(py, 17.5).into_any());
+        let grade = harvest.get_item("color_grade")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "Premium").into_any());
         step2.set_item("description", format!("Cold-extracted. Moisture: {}%. Grade: {}.", moisture, grade))?;
         step2.set_item("icon", "Factory")?;
         timeline.append(step2)?;
 
         // Step 3: Harvest
-        let step3 = PyDict::new_bound(py);
+        let step3 = PyDict::new(py);
         step3.set_item("title", "Harvest Day")?;
-        step3.set_item("date", harvest.get_item("harvest_date")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "").into_any()))?;
-        step3.set_item("location", apiary.get_item("location_name")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "Local Apiary").into_any()))?;
-        let florage = harvest.get_item("florage_type")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "Multifloral").into_any());
-        let qty = harvest.get_item("quantity_kg")?.unwrap_or_else(|| pyo3::types::PyFloat::new_bound(py, 0.0).into_any());
+        step3.set_item("date", harvest.get_item("harvest_date")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "").into_any()))?;
+        step3.set_item("location", apiary.get_item("location_name")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "Local Apiary").into_any()))?;
+        let florage = harvest.get_item("florage_type")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "Multifloral").into_any());
+        let qty = harvest.get_item("quantity_kg")?.unwrap_or_else(|| pyo3::types::PyFloat::new(py, 0.0).into_any());
         step3.set_item("description", format!("Ethically harvested from {} blooms. {}kg collected.", florage, qty))?;
         step3.set_item("icon", "Basket")?;
         timeline.append(step3)?;
@@ -91,7 +91,7 @@ impl TraceabilityEngine {
             }
         }
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("total_honey_kg", total_kg)?;
         dict.set_item("hive_count", hive_ids.len())?;
         dict.set_item("beekeepers", farmer_ids.len())?;

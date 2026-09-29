@@ -79,7 +79,7 @@ impl HarvestBatcher {
         farmer_name: &str,
         extra_data: Option<&Bound<'py, PyDict>>,
     ) -> PyResult<Bound<'py, PyDict>> {
-        let record = PyDict::new_bound(py);
+        let record = PyDict::new(py);
         
         record.set_item("user_id", user_id)?;
         record.set_item("batch_id", batch_id)?;

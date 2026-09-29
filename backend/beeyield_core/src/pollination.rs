@@ -205,7 +205,7 @@ impl PollinationEngine {
             ("MINIMUM", "1.0 km")
         };
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         result.set_item("crop_type", crop_type)?;
         result.set_item("acreage", acreage)?;
         result.set_item("target_fpa", target_fpa)?;
@@ -264,7 +264,7 @@ impl PollinationEngine {
             base_flight_hours,
         );
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         result.set_item("frame_count", metrics.frame_count)?;
         result.set_item("orientation", metrics.orientation)?;
         result.set_item("bees_per_frame", metrics.bees_per_frame)?;
@@ -344,7 +344,7 @@ impl PollinationEngine {
             }
         }
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         result.set_item("total_contracts", contracts.len())?;
         result.set_item("active_contracts", active_count)?;
         result.set_item("total_hives_deployed", total_hives_deployed)?;

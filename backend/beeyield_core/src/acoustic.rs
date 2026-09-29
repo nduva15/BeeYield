@@ -69,7 +69,7 @@ impl AcousticEngine {
         }
 
         if votes.is_empty() {
-            let empty = PyDict::new_bound(py);
+            let empty = PyDict::new(py);
             empty.set_item("state", "Unknown")?;
             empty.set_item("confidence", 0.0)?;
             return Ok(empty);
@@ -79,16 +79,16 @@ impl AcousticEngine {
         let winner = votes.iter().max_by_key(|&(_, count)| count).unwrap().0;
         let avg_confidence = confidence_sums.get(winner).unwrap() / (*votes.get(winner).unwrap() as f64);
 
-        let final_dict = PyDict::new_bound(py);
+        let final_dict = PyDict::new(py);
         final_dict.set_item("state", winner)?;
         final_dict.set_item("confidence", avg_confidence)?;
         final_dict.set_item("piping_segments", piping_count)?;
         final_dict.set_item("alert", piping_count > 0)?;
         final_dict.set_item("segments_analyzed", results.len())?;
 
-        let details = PyDict::new_bound(py);
+        let details = PyDict::new(py);
         for (state, count) in votes {
-            let state_details = PyDict::new_bound(py);
+            let state_details = PyDict::new(py);
             state_details.set_item("votes", count)?;
             state_details.set_item("avg_confidence", confidence_sums.get(&state).unwrap() / (count as f64))?;
             details.set_item(state, state_details)?;

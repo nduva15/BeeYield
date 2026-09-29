@@ -53,7 +53,7 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
         payment_status: Option<String>,
         token: Option<String>,
     ) -> PyResult<PyObject> {
-        let db = py.import_bound("app.db.supabase_db")?;
+        let db = py.import("app.db.supabase_db")?;
         let db_update = db.getattr("db_update")?;
         
         let mut update_data = std::collections::HashMap::new();
@@ -64,7 +64,7 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
         
         let filters = std::collections::HashMap::from([("id", order_id)]);
         
-        let kwargs = PyDict::new_bound(py);
+        let kwargs = PyDict::new(py);
         kwargs.set_item("filters", filters)?;
         if let Some(t) = token {
             kwargs.set_item("token", t)?;

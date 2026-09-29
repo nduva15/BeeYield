@@ -91,7 +91,7 @@ impl DashboardEngine {
             })
             .count();
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         result.set_item("total_apiaries", total_apiaries)?;
         result.set_item("total_hives", total_hives)?;
         result.set_item("active_hives", active_hives)?;

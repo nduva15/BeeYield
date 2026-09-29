@@ -1,7 +1,7 @@
 """
 Careers / Jobs Schemas
 """
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from typing import Optional
 from datetime import date
 
@@ -31,8 +31,7 @@ class Joblisting(JoblistingBase):
     posted_date: date
     closing_date: Optional[date] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class JobApplicationCreate(BaseModel):
@@ -52,5 +51,4 @@ class JobApplication(JobApplicationCreate):
     status: str = "new"
     notes: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

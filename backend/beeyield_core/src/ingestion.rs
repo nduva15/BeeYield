@@ -32,7 +32,7 @@ impl IngestionEngine {
         domain: &str,
         items: &Bound<'py, PyList>,
     ) -> PyResult<Bound<'py, PyList>> {
-        let result_list = PyList::empty_bound(py);
+        let result_list = PyList::empty(py);
 
         for item in items.iter() {
             let raw: Bound<'_, PyDict> = item.downcast()?.clone();
@@ -88,7 +88,7 @@ impl IngestionEngine {
             }
         }
 
-        let stats = PyDict::new_bound(py);
+        let stats = PyDict::new(py);
         stats.set_item("total_nodes", total_nodes)?;
         stats.set_item("by_domain", domain_counts)?;
         stats.set_item("by_repository", repo_counts)?;
@@ -134,15 +134,15 @@ impl IngestionEngine {
         let pub_date: String = raw.get_item("publication_date")?.map(|v| v.extract()).transpose()?.unwrap_or_else(|| "n.d.".to_string());
         let source = if !journal.is_empty() { format!("{} ({})", journal, pub_date) } else { "Academic Paper".to_string() };
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("content", content)?;
-        dict.set_item("title", raw.get_item("title")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "Untitled Paper").into_any()))?;
+        dict.set_item("title", raw.get_item("title")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "Untitled Paper").into_any()))?;
         dict.set_item("source", source)?;
-        dict.set_item("url", raw.get_item("url")?.unwrap_or_else(|| pyo3::types::PyString::new_bound(py, "").into_any()))?;
-        dict.set_item("authors", raw.get_item("authors")?.unwrap_or_else(|| pyo3::types::PyList::empty_bound(py).into_any()))?;
+        dict.set_item("url", raw.get_item("url")?.unwrap_or_else(|| pyo3::types::PyString::new(py, "").into_any()))?;
+        dict.set_item("authors", raw.get_item("authors")?.unwrap_or_else(|| pyo3::types::PyList::empty(py).into_any()))?;
         dict.set_item("publication_date", raw.get_item("publication_date")?.unwrap_or_else(|| py.None().bind(py).clone().into_any()))?;
         
-        let meta = PyDict::new_bound(py);
+        let meta = PyDict::new(py);
         meta.set_item("doi", raw.get_item("doi")?.unwrap_or_else(|| py.None().bind(py).clone().into_any()))?;
         meta.set_item("tags", vec![journal, "academic".to_string(), "peer-reviewed".to_string()])?;
         if pub_date.len() >= 4 {
@@ -166,13 +166,13 @@ impl IngestionEngine {
             name, state, sensor, hz, loc, desc
         );
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("content", content)?;
         dict.set_item("title", format!("{} — {}", name, state))?;
         dict.set_item("source", name.clone())?;
         dict.set_item("publication_date", raw.get_item("recording_date")?.unwrap_or_else(|| py.None().bind(py).clone().into_any()))?;
         
-        let meta = PyDict::new_bound(py);
+        let meta = PyDict::new(py);
         meta.set_item("tags", vec![sensor, state, name, "iot".to_string(), "acoustic".to_string()])?;
         dict.set_item("metadata", meta)?;
 
@@ -196,7 +196,7 @@ impl IngestionEngine {
             species, common, region, country, lat, lng, habitat, obs_date, source_db, occ_id
         );
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("content", content)?;
         dict.set_item("title", format!("{} — {}", species, country))?;
         dict.set_item("source", source_db.clone())?;
@@ -205,7 +205,7 @@ impl IngestionEngine {
         }
         dict.set_item("publication_date", raw.get_item("observation_date")?.unwrap_or_else(|| py.None().bind(py).clone().into_any()))?;
         
-        let meta = PyDict::new_bound(py);
+        let meta = PyDict::new(py);
         meta.set_item("tags", vec![species, habitat, "biodiversity".to_string(), "geospatial".to_string()])?;
         dict.set_item("metadata", meta)?;
 
@@ -226,12 +226,12 @@ impl IngestionEngine {
             disease, pathogen, host, treatment, eff, cost, framework
         );
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("content", content)?;
         dict.set_item("title", format!("{} — {}", disease, pathogen))?;
         dict.set_item("source", framework.clone())?;
         
-        let meta = PyDict::new_bound(py);
+        let meta = PyDict::new(py);
         meta.set_item("economic_impact_usd", cost)?;
         meta.set_item("tags", vec![pathogen, disease, treatment, "disease".to_string(), "stressor".to_string()])?;
         if let Some(yr) = raw.get_item("year")? {
@@ -252,12 +252,12 @@ impl IngestionEngine {
             name, method, body
         );
 
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("content", content)?;
         dict.set_item("title", format!("{} — {}", name, method))?;
         dict.set_item("source", body.clone())?;
         
-        let meta = PyDict::new_bound(py);
+        let meta = PyDict::new(py);
         meta.set_item("tags", vec![method, name, "traceability".to_string(), "authentication".to_string(), "quality".to_string()])?;
         dict.set_item("metadata", meta)?;
 

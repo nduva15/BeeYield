@@ -137,9 +137,9 @@ impl RateLimiter {
 
     /// Get statistics for all tracked APIs.
     fn get_stats<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyDict>> {
-        let result = PyDict::new_bound(py);
-        let call_counts = PyDict::new_bound(py);
-        let last_calls = PyDict::new_bound(py);
+        let result = PyDict::new(py);
+        let call_counts = PyDict::new(py);
+        let last_calls = PyDict::new(py);
 
         for (name, state) in &self.apis {
             call_counts.set_item(name, state.call_count)?;

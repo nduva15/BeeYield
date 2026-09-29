@@ -96,7 +96,7 @@ impl ShopEngine {
             }
         }
 
-        let result = PyList::empty_bound(py);
+        let result = PyList::empty(py);
         let mut sorted_batches: Vec<String> = batches.into_iter().collect();
         sorted_batches.sort();
         for b in sorted_batches {
@@ -111,7 +111,7 @@ impl ShopEngine {
     /// 3. If not, create a placeholder record and proceed.
     #[pyo3(signature = (idempotency_key, user_id, payload))]
     pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: Option<String>, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
-        let db = py.import_bound("app.db.supabase_db")?;
+        let db = py.import("app.db.supabase_db")?;
         let db_select_sync = db.getattr("db_select_sync")?;
         let db_insert_sync = db.getattr("db_insert_sync")?;
 
@@ -119,12 +119,12 @@ impl ShopEngine {
         let mut filter_map = std::collections::HashMap::new();
         filter_map.insert("idempotency_key", idempotency_key.clone());
         
-        let filters_py = PyDict::new_bound(py);
+        let filters_py = PyDict::new(py);
         for (k, v) in filter_map {
             filters_py.set_item(k, v)?;
         }
 
-        let kwargs = PyDict::new_bound(py);
+        let kwargs = PyDict::new(py);
         kwargs.set_item("filters", filters_py)?;
         
         // Use sync SELECT
@@ -133,7 +133,7 @@ impl ShopEngine {
         
         if existing.len() > 0 {
             // Found cached transaction — return the first match
-            return Ok(existing.get_item(0)?.to_object(py));
+            return Ok(existing.get_item(0)?.unbind());
         }
 
         // Part 2: Proceed with new transaction record
@@ -158,13 +158,13 @@ impl ShopEngine {
         payment_data.insert("module_type", "shop".to_string());
 
         // Use sync INSERT
-        let data_py = PyDict::new_bound(py);
+        let data_py = PyDict::new(py);
         for (k, v) in payment_data {
             data_py.set_item(k, v)?;
         }
         
         let result = db_insert_sync.call(("billing_ledger", data_py), None)?;
-        Ok(result.to_object(py))
+        Ok(result.unbind())
     }
 
     /// Check if a combined weight exceeds the total harvest limit.
@@ -195,7 +195,7 @@ impl ShopEngine {
 
     /// Sanitize order data before DB insertion.
     pub fn sanitize_order_data<'py>(&self, py: Python<'py>, data: &Bound<'py, PyDict>) -> PyResult<Bound<'py, PyDict>> {
-        let sanitized = PyDict::new_bound(py);
+        let sanitized = PyDict::new(py);
         
         // Copy selectively and trim strings
         for (k, v) in data.iter() {

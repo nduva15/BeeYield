@@ -1,7 +1,7 @@
 """
 Company Schemas - About, Story, Team, Stats, Partners, FAQs
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -30,8 +30,7 @@ class TeamMember(TeamMemberBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ COMPANY MILESTONES (Story) ============
@@ -54,8 +53,7 @@ class Milestone(MilestoneBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ COMPANY STATS ============
@@ -78,8 +76,7 @@ class CompanyStat(CompanyStatBase):
     display_order: int
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ PARTNERS ============
@@ -103,8 +100,7 @@ class Partner(PartnerBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ FAQs ============
@@ -126,8 +122,7 @@ class FAQ(FAQBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ COMPANY INFO ============

@@ -256,7 +256,7 @@ impl MetadataEngine {
     /// Detect geography from content. Returns dict with continent/country/region.
     fn detect_geography<'py>(&self, py: Python<'py>, content: &str) -> PyResult<Bound<'py, PyDict>> {
         let (continent, country, region) = self.detect_geography_internal(content);
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("continent", continent)?;
         dict.set_item("country", country)?;
         dict.set_item("region", region)?;
@@ -272,7 +272,7 @@ impl MetadataEngine {
         has_doi: bool,
     ) -> PyResult<Bound<'py, PyDict>> {
         let (tier, score) = self.detect_reliability_from_strings(domain, source_repo, has_doi);
-        let dict = PyDict::new_bound(py);
+        let dict = PyDict::new(py);
         dict.set_item("tier", tier.as_str())?;
         dict.set_item("score", score)?;
         Ok(dict)
@@ -289,7 +289,7 @@ impl MetadataEngine {
         let py_nodes: Vec<Bound<'py, PyDict>> = nodes.iter()
             .map(|n| node_to_pydict(py, n))
             .collect::<PyResult<_>>()?;
-        let result = PyList::new_bound(py, &py_nodes);
+        let result = PyList::new(py, &py_nodes)?;
         Ok(result)
     }
 
@@ -310,11 +310,11 @@ impl MetadataEngine {
             }
         }
 
-        let result = PyDict::new_bound(py);
+        let result = PyDict::new(py);
         let py_nodes: Vec<Bound<'py, PyDict>> = all_nodes.iter()
             .map(|n| node_to_pydict(py, n))
             .collect::<PyResult<_>>()?;
-        let nodes_list = PyList::new_bound(py, &py_nodes);
+        let nodes_list = PyList::new(py, &py_nodes)?;
         result.set_item("nodes", nodes_list)?;
         result.set_item("count", all_nodes.len())?;
         result.set_item("errors", &errors)?;
@@ -555,9 +555,9 @@ fn chunk_with_overlap(text: &str, max_size: usize, overlap: usize) -> Vec<String
 }
 
 fn node_to_pydict<'py>(py: Python<'py>, node: &StandardizedNode) -> PyResult<Bound<'py, PyDict>> {
-    let dict = PyDict::new_bound(py);
+    let dict = PyDict::new(py);
 
-    let meta = PyDict::new_bound(py);
+    let meta = PyDict::new(py);
     meta.set_item("global_id", &node.global_id)?;
     meta.set_item("knowledge_domain", node.domain.as_str())?;
     meta.set_item("source_repository", node.source_repo.as_str())?;

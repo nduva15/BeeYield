@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List, Optional, Union
 import os
 from pydantic import field_validator, Field, model_validator
@@ -117,9 +117,10 @@ class Settings(BaseSettings):
     ETIMS_BASE_URL: str = "https://etims-sandbox.kra.go.ke/api/v1"
     ETIMS_VSCU_SERIAL: str = "BY-VSCU-MOCK-2026"
 
-    class Config:
-        case_sensitive = True
-        env_file = ".env"
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        case_sensitive=True,
+        env_file=".env",
+        extra="ignore"
+    )
 
 settings = Settings()

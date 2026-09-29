@@ -1,7 +1,7 @@
 """
 Services Schemas - Pollination, Learning, ESG
 """
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -30,8 +30,7 @@ class PollinationService(PollinationServiceBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ CROPS POLLINATED ============
@@ -57,8 +56,7 @@ class Crop(CropBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ LEARNING MODULES ============
@@ -75,8 +73,7 @@ class LearningLesson(LearningLessonBase):
     module_id: str
     display_order: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LearningModuleBase(BaseModel):
@@ -101,8 +98,7 @@ class LearningModule(LearningModuleBase):
     lessons: list[LearningLesson] = []
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ ESG METRICS ============
@@ -127,8 +123,7 @@ class ESGMetric(ESGMetricBase):
     is_verified: bool
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ IMPACT STORIES ============
@@ -156,8 +151,7 @@ class ImpactStory(ImpactStoryBase):
     published_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ GLOBAL HIVE NETWORK ============
@@ -185,8 +179,7 @@ class Apiary(ApiaryBase):
     is_active: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ============ PAGE RESPONSES ============

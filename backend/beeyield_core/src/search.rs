@@ -37,7 +37,7 @@ impl SearchEngine {
     ) -> PyResult<Bound<'py, PyList>> {
         let terms: HashSet<String> = query.to_lowercase().split_whitespace().map(|s| s.to_string()).collect();
         if terms.is_empty() {
-            return Ok(PyList::empty_bound(py));
+            return Ok(PyList::empty(py));
         }
 
         let mut doc_lengths = Vec::new();
@@ -96,9 +96,9 @@ impl SearchEngine {
 
         // Sort and Take
         scored.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
-        let result_list = PyList::empty_bound(py);
+        let result_list = PyList::empty(py);
         for (score, item) in scored.into_iter().take(limit) {
-            let dict = PyDict::new_bound(py);
+            let dict = PyDict::new(py);
             dict.set_item("score", score)?;
             dict.set_item("node", item)?;
             result_list.append(dict)?;
@@ -163,9 +163,9 @@ impl SearchEngine {
 
         reranked.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap());
         
-        let result_list = PyList::empty_bound(py);
+        let result_list = PyList::empty(py);
         for (score, node) in reranked.into_iter().take(top_k) {
-            let dict = PyDict::new_bound(py);
+            let dict = PyDict::new(py);
             dict.set_item("score", score)?;
             dict.set_item("node", node)?;
             result_list.append(dict)?;
@@ -182,7 +182,7 @@ impl SearchEngine {
     ) -> PyResult<Bound<'py, PyList>> {
         use md5;
         let mut seen = HashSet::new();
-        let deduped = PyList::empty_bound(py);
+        let deduped = PyList::empty(py);
 
         for item in results.iter() {
             let result_obj = item.downcast::<PyDict>()?;

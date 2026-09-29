@@ -93,7 +93,7 @@ impl ImageEngine {
                 "Low"
             };
 
-            let dict = PyDict::new_bound(py);
+            let dict = PyDict::new(py);
             dict.set_item("disease", disease.clone())?;
             dict.set_item("probability", (probability * 100.0).round() / 100.0)?;
             
@@ -269,7 +269,7 @@ impl ImageEngine {
         if brightness > 100.0 && brightness < 200.0 { base_count += 5; }
 
         let estimated_count = (base_count as i32 + rng.gen_range(-10..15)).clamp(5, 80);
-        let list = pyo3::types::PyList::empty_bound(py);
+        let list = pyo3::types::PyList::empty(py);
 
         let min_side = std::cmp::min(width, height) as f64;
         let min_size = f64::max(30.0, min_side / 20.0) as i32;
@@ -290,12 +290,12 @@ impl ImageEngine {
             let conf = (rng.gen_range(confidence_threshold..0.98) * pos_factor).clamp(confidence_threshold, 0.99);
 
             if conf >= confidence_threshold {
-                let dict = PyDict::new_bound(py);
+                let dict = PyDict::new(py);
                 dict.set_item("id", i + 1)?;
                 dict.set_item("label", "Bee")?;
                 dict.set_item("confidence", (conf * 100.0).round() / 100.0)?;
                 
-                let bbox = PyDict::new_bound(py);
+                let bbox = PyDict::new(py);
                 bbox.set_item("x", x)?;
                 bbox.set_item("y", y)?;
                 bbox.set_item("width", box_w)?;
