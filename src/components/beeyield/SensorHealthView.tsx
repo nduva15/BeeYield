@@ -17,6 +17,7 @@ import { glass, PageHeader } from './GlassTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import HiveHealthDashboard from './lovable_ai/HiveHealthDashboard';
 import { useAuth } from '@/contexts/AuthContext';
+import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -522,6 +523,24 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                         </span>
                     </div>
                 </div>
+            </div>
+
+            {/* Agronomic Decision Engine: Plain-English Actionable Insights */}
+            <div className={cn(glass.card, "p-4 sm:p-5 bg-white border border-border/80 shadow-sm rounded-2xl")}>
+                <ActionableInsightsPanel
+                    inputs={{
+                        hiveCode: selectedHive?.code || 'Colony Matrix',
+                        temperature_c: weather?.currentTemp ?? 34.8,
+                        humidity_pct: weather?.currentHumidity ?? 58,
+                        bloom_stage_pct: 80,
+                        forager_flight_index: 85
+                    }}
+                    onActionClick={(actionType) => {
+                        if (actionType === 'inspect') onTabChange('inspections');
+                        else if (actionType === 'deploy_hive') onTabChange('precision-pollination');
+                        else onTabChange('measurements');
+                    }}
+                />
             </div>
 
             {/* Selected Colony Inspection Dossier */}

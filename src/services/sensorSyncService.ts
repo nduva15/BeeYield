@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { KNOWN_FAKE_SAMPLE_SERIALS } from "@/services/deviceReadingService";
 
 export type DeviceCategory = "in_hive" | "in_land" | "disease_devices";
 export type DeviceLinkType = "bluetooth" | "usb" | "online" | "cellular" | "lorawan";
@@ -68,13 +69,31 @@ export function isFakeSensorDevice(item: any): boolean {
   const s = String(item.serial || item.device_code || "").trim().toUpperCase();
   const id = String(item.id || "").trim().toLowerCase();
   const lbl = String(item.label || item.deviceType || item.name || item.device_type || "").trim().toLowerCase();
-  return (
+
+  // 1. Check known sample blacklist or sample suffixes
+  if (
+    KNOWN_FAKE_SAMPLE_SERIALS.has(s) ||
+    /-(001|042|890|749|882|935)$/i.test(s) ||
+    /^(SAMPLE|TEST|MOCK|DEMO|SIMULAT|000000|123456|FAKE)/i.test(s)
+  ) {
+    return true;
+  }
+
+  // 2. Check legacy mock database record IDs
+  if (
     id.startsWith("dev-vs-") ||
     id.startsWith("dev-hub-") ||
     id.startsWith("dev-dis-") ||
     id.startsWith("dev-scale-") ||
     id.startsWith("dev-tag-") ||
     id.startsWith("dev-land-") ||
+    id.startsWith("mock-")
+  ) {
+    return true;
+  }
+
+  // 3. Fallback mock sensor prefixes
+  return (
     s.startsWith("SENS-INP-001") ||
     s.startsWith("SENS-MIC-002") ||
     s.startsWith("SENS-LAND-01") ||
@@ -89,11 +108,7 @@ export function isFakeSensorDevice(item: any): boolean {
     s.startsWith("TAG-KBZ") ||
     s.startsWith("SOIL-KBZ") ||
     s.startsWith("PERIMETER-KBZ") ||
-    s.startsWith("RELAY-KBZ") ||
-    lbl.includes("vitalsensor brood core") ||
-    lbl.includes("bio-acoustic queen mic") ||
-    lbl.includes("solar microclimate hub") ||
-    lbl.includes("spectral varroa scanner")
+    s.startsWith("RELAY-KBZ")
   );
 }
 

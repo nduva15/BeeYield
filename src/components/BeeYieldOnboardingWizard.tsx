@@ -40,6 +40,7 @@ import {
   resolveDeviceReadings,
   extractCleanSerial,
   persistScannedDeviceTelemetry,
+  validateSensorDeviceSerial,
   type ScannedDeviceReadings,
 } from '@/services/deviceReadingService';
 
@@ -242,7 +243,7 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   // 'pair' = Connect physical Apisense / VitalSensor hardware
   const [deviceMode, setDeviceMode] = useState<'none' | 'pair'>('pair');
   const [deviceForm, setDeviceForm] = useState({
-    serial: 'APISENSE-NODE-' + Math.floor(1000 + Math.random() * 9000),
+    serial: '',
     device_kind: 'audio_node',
     link_type: 'cellular',
     label: 'Hive Core Acoustic & Telemetry Node',
@@ -424,8 +425,15 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   // Submit Step 3: Log Device
   const handleSaveDevice = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (!deviceForm.serial.trim()) {
+    const cleanSerial = deviceForm.serial.trim().toUpperCase();
+    if (!cleanSerial) {
       toast.error('Please enter a hardware serial number');
+      return;
+    }
+
+    const check = validateSensorDeviceSerial(cleanSerial, 'in_hive');
+    if (!check.isValid) {
+      toast.error(check.error || 'Please enter or scan a valid genuine hardware serial.');
       return;
     }
 

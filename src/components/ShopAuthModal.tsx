@@ -295,7 +295,7 @@ export default function ShopAuthModal({
                   Full Name / Organization
                 </Label>
                 <Input
-                  placeholder="e.g. Grace Wanjiku"
+                  placeholder="e.g. Timothy Nduva"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   className="h-9 text-xs bg-background/60 border-input rounded-xl"

@@ -3,7 +3,7 @@ import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
   ShieldAlert, Activity, Sparkles, Filter, Search, Layers, Radio, RefreshCw, Unlink,
-  Sun, Wind, ChevronRight, CheckCircle2, AlertCircle, Info,
+  Sun, Wind, ChevronRight, CheckCircle2, AlertCircle, Info, AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,7 @@ import {
   resolveDeviceReadings,
   persistScannedDeviceTelemetry,
   extractCleanSerial,
+  validateSensorDeviceSerial,
   type DeviceTelemetryReading,
 } from "@/services/deviceReadingService";
 import {
@@ -642,7 +643,7 @@ function AddDeviceWizard({
   const [linkType, setLinkType] = useState<"online" | "bluetooth" | "usb">("online");
   const [serial, setSerial] = useState<string>("");
   const [label, setLabel] = useState<string>("");
-  const [confirmPin, setConfirmPin] = useState<string>("123456");
+  const [confirmPin, setConfirmPin] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
   // Update kind and serial defaults when category changes
@@ -671,10 +672,31 @@ function AddDeviceWizard({
   const activeCategoryConfig = DEVICE_CATEGORIES[category];
   const activeKindConfig = activeCategoryConfig.kinds.find((k) => k.id === selectedKindId) || activeCategoryConfig.kinds[0];
 
+  const validation = useMemo(() => {
+    if (!serial.trim()) {
+      return {
+        isValid: false,
+        cleanSerial: "",
+        error: undefined,
+        detectedCategory: "unknown" as const,
+        detectedCategoryName: "",
+        isFakeSample: false,
+        isCategoryMatch: false,
+      };
+    }
+    return validateSensorDeviceSerial(serial, category, selectedKindId);
+  }, [serial, category, selectedKindId]);
+
   const handleSaveDevice = async () => {
     const cleanSerial = serial.trim().toUpperCase();
     if (!cleanSerial) {
       toast.error("Please provide or scan a device serial number");
+      return;
+    }
+
+    const check = validateSensorDeviceSerial(cleanSerial, category, selectedKindId);
+    if (!check.isValid) {
+      toast.error(check.error || "Cannot pair device: serial does not match hardware requirements.");
       return;
     }
 
@@ -995,24 +1017,56 @@ function AddDeviceWizard({
             onChange={setSerial}
           />
 
-          {/* Quick serial presets */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-muted-foreground">Sample hardware tags:</span>
-            {[
-              `${activeKindConfig.defaultSerialPrefix}-749`,
-              `${activeKindConfig.defaultSerialPrefix}-882`,
-              `${activeKindConfig.defaultSerialPrefix}-935`,
-            ].map((pre) => (
-              <button
-                key={pre}
-                type="button"
-                onClick={() => setSerial(pre)}
-                className="px-2 py-0.5 rounded-md border border-border bg-background hover:bg-muted text-[11px] font-mono transition-colors"
-              >
-                {pre}
-              </button>
-            ))}
-          </div>
+          {/* Live hardware serial validation & category matching banner */}
+          {serial.trim() && (
+            <div
+              className={`p-3 rounded-xl border text-xs transition-all ${
+                validation.isValid
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                  : validation.isFakeSample
+                  ? "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300"
+                  : !validation.isCategoryMatch
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300"
+                  : "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  {validation.isValid ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  )}
+                  <div>
+                    <p className="font-bold">
+                      {validation.isValid
+                        ? `Genuine ${activeCategoryConfig.name} Hardware Verified`
+                        : validation.isFakeSample
+                        ? "Simulated / Sample Hardware Code Detected"
+                        : !validation.isCategoryMatch
+                        ? "Device Category Mismatch"
+                        : "Invalid Serial Number"}
+                    </p>
+                    <p className="text-[11px] mt-0.5 opacity-90">
+                      {validation.isValid
+                        ? `Serial ${validation.cleanSerial} matches the ${activeKindConfig.name} hardware specification.`
+                        : validation.error}
+                    </p>
+                  </div>
+                </div>
+
+                {!validation.isValid && !validation.isCategoryMatch && validation.detectedCategory !== "unknown" && (
+                  <button
+                    type="button"
+                    onClick={() => handleCategoryChange(validation.detectedCategory as DeviceCategory)}
+                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-500/40 text-[10px] font-bold whitespace-nowrap transition-colors"
+                  >
+                    Switch to {validation.detectedCategoryName}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -1040,7 +1094,7 @@ function AddDeviceWizard({
             onBack={() => setStep(1)}
             onNext={handleSaveDevice}
             nextLabel={saving ? "Pairing & Syncing..." : "Pair & Synchronize Device"}
-            nextDisabled={!serial.trim() || saving}
+            nextDisabled={!serial.trim() || !validation.isValid || saving}
             done
           />
         </div>

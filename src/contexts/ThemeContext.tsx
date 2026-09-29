@@ -1,14 +1,20 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { beeyieldService } from "@/services/beeyieldService"
 
+export type ThemeMode = "light" | "dark" | "sunlight";
+
 type ThemeState = {
-    theme: "light" | "dark"
-    setTheme: (theme: "light" | "dark") => void
+    theme: ThemeMode;
+    setTheme: (theme: ThemeMode) => void;
+    isSunlightMode: boolean;
+    toggleSunlightMode: () => void;
 }
 
 const initialState: ThemeState = {
     theme: "light",
     setTheme: () => null,
+    isSunlightMode: false,
+    toggleSunlightMode: () => null,
 }
 
 const ThemeContext = createContext<ThemeState>(initialState)
@@ -21,25 +27,34 @@ type ThemeProviderProps = {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
     const storageKey = "beeyield_theme_v1";
-    const [theme, setThemeState] = useState<"light" | "dark">(() => {
+    const [theme, setThemeState] = useState<ThemeMode>(() => {
         const saved = window.localStorage.getItem(storageKey);
+        if (saved === "sunlight") return "sunlight";
         return saved === "dark" ? "dark" : "light";
     });
 
     useEffect(() => {
         const root = window.document.documentElement;
-        root.classList.remove("dark", "light");
+        root.classList.remove("dark", "light", "sunlight");
         root.classList.add(theme);
         window.localStorage.setItem(storageKey, theme);
     }, [theme]);
 
-    const setTheme = (next: "light" | "dark") => {
+    const setTheme = (next: ThemeMode) => {
         setThemeState(next);
-        // Persist to Supabase auth user_metadata as source-of-truth across devices
         void beeyieldService.updateUserMetadata({ theme: next });
     };
 
-    const value = useMemo(() => ({ theme, setTheme }), [theme]);
+    const toggleSunlightMode = () => {
+        setTheme(theme === "sunlight" ? "light" : "sunlight");
+    };
+
+    const value = useMemo(() => ({
+        theme,
+        setTheme,
+        isSunlightMode: theme === "sunlight",
+        toggleSunlightMode
+    }), [theme]);
 
     return (
         <ThemeContext.Provider value={value}>

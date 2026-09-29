@@ -7,6 +7,7 @@ import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
 import ToolSidebar, { type ToolGroup } from './lovable_ai/ToolSidebar';
 import { useAuth } from '@/contexts/AuthContext';
+import { OfflineStatusBanner } from '@/components/common/OfflineStatusBanner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import {
@@ -168,6 +169,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 "flex-1 flex flex-col h-full overflow-hidden relative transition-all duration-300",
                 hideSidebar ? "md:pl-0" : "md:pl-[280px]"
             )}>
+                {/* Offline Field Fallback Banner */}
+                <OfflineStatusBanner />
+
                 {!hideHeader && (
                     <DashboardHeader
                         onLogout={onLogout}

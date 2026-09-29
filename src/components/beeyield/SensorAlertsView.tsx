@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
 import { useApiaries, useHives } from '@/hooks/useApiaries';
 import { useSensorAlerts, useResolveAlert } from '@/hooks/useSensorAlerts';
+import { CalibratedAlertsList } from '@/components/telemetry/CalibratedAlertsList';
 
 const SensorAlertsView: React.FC = () => {
     const [filter, setFilter] = React.useState<'active' | 'resolved' | 'all'>('active');
@@ -76,108 +77,39 @@ const SensorAlertsView: React.FC = () => {
                 }
             />
 
-            {/* Alert List */}
+            {/* 3-Tier Calibrated Alert List (Eliminates Alert Fatigue) */}
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(glass.card, "p-0 overflow-hidden bg-white border-gray-200 shadow-sm")}
+                className={cn(glass.card, "p-4 sm:p-6 bg-white border-gray-200 shadow-sm")}
             >
-                <div className="p-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
                     <div className="flex items-center gap-3">
-                         <div className="w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-sm">
-                            <Bell className="w-4 h-4 text-muted-foreground/70" />
+                        <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shadow-xs">
+                            <Bell className="w-4 h-4 text-amber-600" />
                         </div>
-                        <h2 className="text-sm font-bold text-foreground tracking-tight">Notifications</h2>
+                        <div>
+                            <h2 className="text-sm font-bold text-foreground tracking-tight">Calibrated Telemetry Alarms</h2>
+                            <p className="text-[11px] text-muted-foreground">Classified into 3 distinct tiers: Critical Emergency, Operational Warning, and Routine Log.</p>
+                        </div>
                     </div>
                     <button 
                         onClick={loadData}
-                        className="p-2 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-gray-100"
+                        className="p-2 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                        title="Sync latest alerts"
                     >
-                        <RefreshCw className={cn("w-4 h-4 text-muted-foreground/70", loading && "animate-spin")} />
+                        <RefreshCw className={cn("w-4 h-4 text-muted-foreground", loading && "animate-spin")} />
                     </button>
                 </div>
 
-                <div className="divide-y divide-gray-100">
-                    <AnimatePresence mode="popLayout">
-                        {loading && alerts.length === 0 ? (
-                            <div className="p-20 flex flex-col items-center justify-center gap-3">
-                                <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
-                                <span className="text-xs font-bold text-muted-foreground/70">Syncing Matrix...</span>
-                            </div>
-                        ) : alerts.length === 0 ? (
-                            <div className="p-20 flex flex-col items-center justify-center gap-4 text-gray-200">
-                                <CheckCircle2 className="w-16 h-16" />
-                                <div className="text-center">
-                                    <h3 className="text-lg font-bold text-gray-300">All Clear</h3>
-                                    <p className="text-xs font-medium text-muted-foreground/70">No {filter !== 'all' ? filter : ''} items to show.</p>
-                                </div>
-                            </div>
-                        ) : (
-                            alerts.map((alert) => (
-                                <motion.div
-                                    layout
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    key={alert.id}
-                                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50/50 transition-all group gap-4"
-                                >
-                                    <div className="flex items-start gap-4 flex-1">
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border shadow-sm transition-transform group-hover:scale-105",
-                                            alert.resolved ? "bg-emerald-50 border-emerald-100 text-emerald-600" : 
-                                            alert.severity === 'critical' ? "bg-red-50 border-red-100 text-red-500" : 
-                                            "bg-amber-50 border-amber-100 text-amber-600"
-                                        )}>
-                                            {alert.resolved ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-3">
-                                                <h4 className="text-sm font-bold text-foreground tracking-tight">{alert.alert_type} Alert</h4>
-                                                <span className={cn(
-                                                    "text-[10px] font-bold px-2 py-0.5 rounded-md border",
-                                                    alert.severity === 'critical' ? "bg-red-50 text-red-600 border-red-100" : 
-                                                    alert.severity === 'warning' ? "bg-amber-50 text-amber-600 border-amber-100" : 
-                                                    "bg-emerald-50 text-emerald-600 border-emerald-100"
-                                                )}>{alert.severity.toUpperCase()}</span>
-                                            </div>
-                                            <p className="text-xs font-medium text-muted-foreground leading-relaxed border-l-2 border-gray-100 pl-3 group-hover:border-[#F4D03F] transition-colors">{alert.message}</p>
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md">
-                                                     <div className="w-1 h-1 rounded-full bg-gray-400" />
-                                                     <span className="text-[10px] font-bold text-muted-foreground/70 tracking-tighter sm:tracking-normal">{getHiveName(alert.hive_id)}</span>
-                                                </div>
-                                                {alert.apiary_id && (
-                                                    <div className="flex items-center gap-1.5 bg-white border border-gray-100 px-2 py-0.5 rounded-md">
-                                                        <div className="w-1 h-1 rounded-full bg-[#F4D03F]" />
-                                                        <span className="text-[10px] font-bold text-muted-foreground tracking-tighter sm:tracking-normal">
-                                                            {getApiaryName(alert.apiary_id)}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                <span className="text-[10px] font-medium text-gray-300">{new Date(alert.created_at).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-3 self-end sm:self-center">
-                                        {!alert.resolved && (
-                                            <button
-                                                onClick={() => handleResolve(alert.id)}
-                                                className={cn(glass.btnSecondary, "h-8 px-4 text-[10px] font-bold rounded-lg bg-white border-gray-200 sm:opacity-0 sm:group-hover:opacity-100 transition-all")}
-                                            >
-                                                Resolve
-                                            </button>
-                                        )}
-                                        {alert.resolved && (
-                                            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-50 shadow-none font-bold text-[10px] h-8 px-3 rounded-lg">Resolved</Badge>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            ))
-                        )}
-                    </AnimatePresence>
-                </div>
+                {loading && alerts.length === 0 ? (
+                    <div className="p-16 flex flex-col items-center justify-center gap-3">
+                        <Loader2 className="w-8 h-8 animate-spin text-[#F4D03F]" />
+                        <span className="text-xs font-bold text-muted-foreground">Syncing Alert Matrix...</span>
+                    </div>
+                ) : (
+                    <CalibratedAlertsList alerts={alerts} onResolve={handleResolve} />
+                )}
             </motion.div>
 
             {/* Metrics */}

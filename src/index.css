@@ -91,6 +91,25 @@ All colors MUST be HSL.
     --shadow-diffuse: 0 30px 60px -28px rgba(15, 23, 42, 0.28);
     --radius-extreme: 2rem;
   }
+
+  .sunlight {
+    /* Ultra-High-Contrast Outdoor Sunlight Mode */
+    --background: 0 0% 100%; /* Pure White */
+    --foreground: 0 0% 0%; /* Absolute Black */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --primary: 48 100% 45%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 0%;
+    --accent: 150 100% 28%;
+    --accent-foreground: 0 0% 100%;
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 10%; /* Maximum contrast, never faded */
+    --border: 0 0% 0% / 0.45; /* 45% dark solid border */
+    --input: 0 0% 0% / 0.4;
+    --ring: 0 0% 0%;
+  }
 }
 
 @theme inline {
@@ -138,6 +157,39 @@ All colors MUST be HSL.
     font-family: inherit;
     font-size: 1rem;
     line-height: 1.6;
+  }
+
+  /* Outdoor Sunlight High-Contrast & Mobile Scale Overrides */
+  .sunlight {
+    --tw-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  }
+  .sunlight .text-muted-foreground,
+  .sunlight .text-gray-400,
+  .sunlight .text-gray-500,
+  .sunlight .text-stone-400,
+  .sunlight .text-stone-500,
+  .sunlight .text-slate-400,
+  .sunlight .text-slate-500 {
+    color: #000000 !important;
+    font-weight: 600 !important;
+  }
+  .sunlight button,
+  .sunlight [role="button"],
+  .sunlight a.inline-flex {
+    min-height: 44px;
+    font-weight: 700 !important;
+  }
+  .sunlight input,
+  .sunlight select,
+  .sunlight textarea {
+    min-height: 44px;
+    border-color: #000000 !important;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+  }
+  .sunlight .border,
+  .sunlight [class*="border-"] {
+    border-color: rgba(0, 0, 0, 0.45) !important;
   }
 
   /* Distinct headings with hierarchy */

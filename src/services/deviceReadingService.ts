@@ -74,6 +74,279 @@ export function extractCleanSerial(rawText: string): string {
 }
 
 /**
+ * Registry of known sample/mock serial numbers used in development demos and documentation templates.
+ * These are strictly forbidden from being registered as physical hardware.
+ */
+export const KNOWN_FAKE_SAMPLE_SERIALS = new Set([
+  "SENS-DIS-001",
+  "SENS-DIS-042",
+  "SENS-DIS-890",
+  "SENS-DIS-749",
+  "SENS-DIS-882",
+  "SENS-DIS-935",
+  "SENS-INP-001",
+  "SENS-INP-042",
+  "SENS-INP-890",
+  "SENS-INP-749",
+  "SENS-INP-882",
+  "SENS-INP-935",
+  "SENS-MIC-001",
+  "SENS-MIC-002",
+  "SENS-MIC-042",
+  "SENS-MIC-890",
+  "SENS-MIC-749",
+  "SENS-MIC-882",
+  "SENS-MIC-935",
+  "SENS-LAND-001",
+  "SENS-LAND-01",
+  "SENS-LAND-042",
+  "SENS-LAND-890",
+  "SENS-LAND-749",
+  "SENS-LAND-882",
+  "SENS-LAND-935",
+  "SENS-SCL-001",
+  "SENS-SCL-042",
+  "SENS-SCL-890",
+  "SENS-SCL-749",
+  "SENS-SCL-882",
+  "SENS-SCL-935",
+  "SENS-FOR-001",
+  "SENS-FOR-042",
+  "SENS-FOR-890",
+  "SENS-FOR-749",
+  "SENS-FOR-882",
+  "SENS-FOR-935",
+  "SENS-VOC-001",
+  "SENS-VOC-042",
+  "SENS-VOC-890",
+  "SENS-VOC-749",
+  "SENS-VOC-882",
+  "SENS-VOC-935",
+  "SENS-BTL-001",
+  "SENS-BTL-042",
+  "SENS-BTL-890",
+  "SENS-BTL-749",
+  "SENS-BTL-882",
+  "SENS-BTL-935",
+  "VS-KBZ-042",
+  "VS-KBZ-089",
+  "VS-TAITA-012",
+  "VS-KBZ-001",
+  "VS-KBZ-002",
+  "VS-KBZ-006",
+  "VS-KBZ-008",
+  "SCALE-KBZ-150",
+  "SCALE-KBZ-001",
+  "SCALE-KBZ-002",
+  "SCALE-KBZ-003",
+  "SCALE-KBZ-004",
+  "HUB-KBZ-001",
+  "HUB-KBZ-042",
+  "HUB-KBZ-890",
+  "HUB-KBZ-749",
+  "VARROA-KBZ-001",
+  "VARROA-KBZ-042",
+  "AFB-DIAG-KBZ-001",
+  "SHB-TRAP-KBZ-001",
+  "IH-BROOD-005",
+  "IH-BROOD-007",
+]);
+
+export interface DeviceSerialValidationResult {
+  isValid: boolean;
+  cleanSerial: string;
+  error?: string;
+  detectedCategory: "in_hive" | "in_land" | "diseases" | "unknown";
+  detectedCategoryName: string;
+  detectedModel?: string;
+  isFakeSample: boolean;
+  isCategoryMatch: boolean;
+}
+
+/**
+ * Detects the biological IoT device category and sensor model from the hardware serial code.
+ */
+export function detectDeviceCategoryFromSerial(serial: string): {
+  category: "in_hive" | "in_land" | "diseases" | "unknown";
+  categoryName: string;
+  matchedModel?: string;
+} {
+  const s = serial.toUpperCase();
+
+  // Biosecurity & Disease Diagnostic IoT
+  if (
+    s.includes("DIS") ||
+    s.includes("VARROA") ||
+    s.includes("SPEC") ||
+    s.includes("PATHOGEN") ||
+    s.includes("VOC") ||
+    s.includes("BEETLE") ||
+    s.includes("BTL") ||
+    s.includes("AFB") ||
+    s.includes("EFB") ||
+    s.includes("SHB")
+  ) {
+    return {
+      category: "diseases",
+      categoryName: "Biosecurity & Disease Diagnostic IoT",
+      matchedModel:
+        s.includes("VARROA") || s.includes("SPEC") || s.includes("DIS")
+          ? "Spectral Comb & Varroa Scanner"
+          : s.includes("VOC") || s.includes("AFB") || s.includes("PATHOGEN")
+          ? "Pathogen VOC Gas Detector"
+          : "Small Hive Beetle Optical Counter",
+    };
+  }
+
+  // In-Land Environmental Node
+  if (
+    s.includes("LAND") ||
+    s.includes("HUB") ||
+    s.includes("ENV") ||
+    s.includes("MET") ||
+    s.includes("WEATHER") ||
+    s.includes("SOLAR") ||
+    s.includes("FORAGE") ||
+    s.includes("FOR-") ||
+    s.includes("FLIGHT") ||
+    s.includes("GATEWAY") ||
+    s.includes("PERIMETER") ||
+    s.includes("RELAY")
+  ) {
+    return {
+      category: "in_land",
+      categoryName: "In-Land Environmental Node",
+      matchedModel:
+        s.includes("FOR") || s.includes("FLIGHT")
+          ? "Forage & Flight Velocity Sensor"
+          : s.includes("HUB") || s.includes("GATEWAY") || s.includes("RELAY")
+          ? "Apiary LoRaWAN / 4G Solar Hub"
+          : "Solar Microclimate Station",
+    };
+  }
+
+  // In-Hive Colony Sensor
+  if (
+    s.includes("INP") ||
+    s.includes("VS") ||
+    s.includes("BROOD") ||
+    s.includes("IH") ||
+    s.includes("MIC") ||
+    s.includes("ACOUSTIC") ||
+    s.includes("QUEEN") ||
+    s.includes("SCALE") ||
+    s.includes("SCL") ||
+    s.includes("HIVE")
+  ) {
+    return {
+      category: "in_hive",
+      categoryName: "In-Hive Colony Sensor",
+      matchedModel:
+        s.includes("MIC") || s.includes("ACOUSTIC") || s.includes("QUEEN")
+          ? "Bio-Acoustic Queen Health Mic"
+          : s.includes("SCALE") || s.includes("SCL")
+          ? "Continuous Hive Scale"
+          : "VitalSensor Brood Core",
+    };
+  }
+
+  return {
+    category: "unknown",
+    categoryName: "Unrecognized Device Category",
+  };
+}
+
+/**
+ * Validates whether a device serial matches physical hardware requirements,
+ * checks for category mismatch, and rejects simulated/sample codes.
+ */
+export function validateSensorDeviceSerial(
+  rawSerial: string,
+  expectedCategory?: string,
+  expectedKindId?: string
+): DeviceSerialValidationResult {
+  const clean = extractCleanSerial(rawSerial);
+  if (!clean) {
+    return {
+      isValid: false,
+      cleanSerial: "",
+      error: "Please enter or scan a device serial number / barcode.",
+      detectedCategory: "unknown",
+      detectedCategoryName: "Unknown",
+      isFakeSample: false,
+      isCategoryMatch: false,
+    };
+  }
+
+  // 1. Check known fake / simulated sample serial numbers
+  const isSample =
+    KNOWN_FAKE_SAMPLE_SERIALS.has(clean) ||
+    /^(SAMPLE|TEST|MOCK|DEMO|SIMULAT|000000|123456|FAKE)/i.test(clean) ||
+    /-(001|042|890|749|882|935)$/i.test(clean);
+
+  if (isSample) {
+    return {
+      isValid: false,
+      cleanSerial: clean,
+      error: "Simulated or sample serial numbers cannot be added. Please scan or enter a genuine physical hardware serial number.",
+      detectedCategory: "unknown",
+      detectedCategoryName: "Sample / Mock Code",
+      isFakeSample: true,
+      isCategoryMatch: false,
+    };
+  }
+
+  // 2. Hardware format verification
+  const validFormatRegex = /^[A-Z0-9]{2,}[-_/][A-Z0-9-_/]{3,}$/i;
+  if (clean.length < 6 || !validFormatRegex.test(clean)) {
+    return {
+      isValid: false,
+      cleanSerial: clean,
+      error: "Invalid serial format. Genuine IoT hardware serials contain a model prefix and unique hardware ID (e.g. SENS-INP-104928, VS-KBZ-829104).",
+      detectedCategory: "unknown",
+      detectedCategoryName: "Invalid Format",
+      isFakeSample: false,
+      isCategoryMatch: false,
+    };
+  }
+
+  // 3. Category detection & matching
+  const detected = detectDeviceCategoryFromSerial(clean);
+
+  // Normalize expected category (handle "disease" vs "diseases")
+  const normExpected = expectedCategory
+    ? expectedCategory === "disease"
+      ? "diseases"
+      : expectedCategory
+    : undefined;
+
+  let isMatch = true;
+  let errorMsg: string | undefined;
+
+  if (normExpected && detected.category !== "unknown" && detected.category !== normExpected) {
+    isMatch = false;
+    const expectedLabel =
+      normExpected === "in_hive"
+        ? "In-Hive Colony Sensor"
+        : normExpected === "in_land"
+        ? "In-Land Environmental Node"
+        : "Biosecurity & Disease Diagnostic IoT";
+    errorMsg = `Device serial '${clean}' is an ${detected.categoryName} device, which does not match the selected category (${expectedLabel}).`;
+  }
+
+  return {
+    isValid: isMatch,
+    cleanSerial: clean,
+    error: errorMsg,
+    detectedCategory: detected.category,
+    detectedCategoryName: detected.categoryName,
+    detectedModel: detected.matchedModel,
+    isFakeSample: false,
+    isCategoryMatch: isMatch,
+  };
+}
+
+/**
  * Seeded pseudorandom number generator for consistent hardware calibration
  */
 function hashString(str: string): number {

@@ -48,15 +48,22 @@ const HeatLayer = ({ points, visible }: { points: HeatPoint[]; visible: boolean 
             map.removeLayer(heatRef.current);
             heatRef.current = null;
         }
-        if (!visible || points.length === 0) return;
-        const heatPoints = points.map((point) => [point.lat, point.lng, point.intensity] as [number, number, number]);
-        // @ts-expect-error leaflet.heat augments L at runtime.
-        heatRef.current = L.heatLayer(heatPoints, {
-            radius: 28,
-            blur: 22,
-            maxZoom: 16,
-            gradient: { 0.2: '#10b981', 0.45: '#f59e0b', 0.7: '#f97316', 1: '#ef4444' },
-        }).addTo(map);
+        if (!visible || !points || points.length === 0) return;
+        const validPoints = points.filter(p => p && typeof p.lat === 'number' && !isNaN(p.lat) && typeof p.lng === 'number' && !isNaN(p.lng));
+        if (validPoints.length === 0) return;
+
+        const heatPoints = validPoints.map((point) => [point.lat, point.lng, point.intensity || 0.7] as [number, number, number]);
+        try {
+            // @ts-expect-error leaflet.heat augments L at runtime.
+            heatRef.current = L.heatLayer(heatPoints, {
+                radius: 28,
+                blur: 22,
+                maxZoom: 16,
+                gradient: { 0.2: '#10b981', 0.45: '#f59e0b', 0.7: '#f97316', 1: '#ef4444' },
+            }).addTo(map);
+        } catch (e) {
+            console.warn('Leaflet heat layer initialization skipped:', e);
+        }
         return () => {
             if (heatRef.current) {
                 map.removeLayer(heatRef.current);
@@ -668,7 +675,9 @@ const FlightMapView: React.FC = () => {
                                     </div>
                                 </Popup>
                             </CircleMarker>
-                            {heatmapPoints.map((point) => (
+                            {heatmapPoints
+                                .filter((point) => point && typeof point.lat === 'number' && !isNaN(point.lat) && typeof point.lng === 'number' && !isNaN(point.lng))
+                                .map((point) => (
                                 <CircleMarker
                                     key={point.id}
                                     center={[point.lat, point.lng]}
@@ -689,11 +698,13 @@ const FlightMapView: React.FC = () => {
                                 </CircleMarker>
                             ))}
                             {showForagePotential
-                                ? forageZonePoints.map((zone: any) => (
+                                ? forageZonePoints
+                                      .filter((zone: any) => zone && typeof zone.lat === 'number' && !isNaN(zone.lat) && typeof zone.lng === 'number' && !isNaN(zone.lng))
+                                      .map((zone: any) => (
                                       <Circle
                                           key={zone.id}
                                           center={[zone.lat, zone.lng]}
-                                          radius={zone.radius_m}
+                                          radius={zone.radius_m || 500}
                                           pathOptions={{
                                               color: '#10b981',
                                               fillColor: '#6ee7b7',

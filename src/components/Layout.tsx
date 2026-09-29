@@ -4,6 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
 import { PartnersMarquee } from "./PartnersMarquee";
+import { OfflineStatusBanner } from "./common/OfflineStatusBanner";
 
 interface LayoutProps {
   children: ReactNode;
@@ -48,6 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
   if (isStandalone) {
     return (
       <>
+        <OfflineStatusBanner />
         <div className="animate-in fade-in duration-300">
           {children}
         </div>
@@ -58,6 +60,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <OfflineStatusBanner />
       <CartDrawer />
       <Header />
 

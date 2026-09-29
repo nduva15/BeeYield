@@ -1497,13 +1497,12 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                             {apiaryCenter ? (
                                 <MapContainer center={apiaryCenter} zoom={zoom} style={{ height: '100%', width: '100%' }} zoomControl={false} className="z-0" worldCopyJump={true}>
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png" attribution="&copy; CARTO" />
-                                    {zoom < 8 && <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-boundaries/{z}/{x}/{y}.png" opacity={0.3} />}
-                                    {zoom >= 8 && <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" attribution="&copy; Google Maps Hybrid" />}
+                                    {zoom >= 12 && <TileLayer url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}" attribution="&copy; Google Maps Hybrid" opacity={0.65} />}
                                     
                                     <MapController center={apiaryCenter} zoom={zoom} boundsPoints={mapBoundsPoints} />
                                     
-                                    {zoom > 10 && orchardPolygon.length > 0 && (
-                                        <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 3, fillOpacity: 0.1, dashArray: '10, 10' }} />
+                                    {orchardPolygon.length > 0 && (
+                                        <Polygon positions={orchardPolygon as any} pathOptions={{ color: '#1B9157', weight: 2.5, fillColor: '#2ECC71', fillOpacity: 0.12, dashArray: '8, 8' }} />
                                     )}
                                     
                                     <Marker 
@@ -1513,30 +1512,39 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                             dragend: (e) => {
                                                 const marker = e.target;
                                                 const position = marker.getLatLng();
-                                                setMapCenter([position.lat, position.lng]);
+                                                if (position && !isNaN(position.lat) && !isNaN(position.lng)) {
+                                                    setMapCenter([position.lat, position.lng]);
+                                                }
                                             }
                                         }}
                                     >
-                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">Apiary anchor</p></Popup>
+                                        <Popup className="custom-popup"><p className="text-[10px] font-black text-[#1B9157]">Apiary Anchor (GPS Locked)</p></Popup>
                                     </Marker>
 
-                                    {optimalPlacements.map((pos, idx) => (
-                                        <Circle
-                                            key={`placement-${idx}`}
-                                            center={[pos.lat, pos.lng] as any}
-                                            radius={pos.coverage_radius_km * 1000}
-                                            pathOptions={{ color: '#F4D03F', weight: 1, fillOpacity: 0.1, dashArray: '5, 5' }}
-                                        />
-                                    ))}
+                                    {optimalPlacements.map((pos, idx) => {
+                                        if (!pos || isNaN(pos.lat) || isNaN(pos.lng)) return null;
+                                        return (
+                                            <Circle
+                                                key={`placement-${idx}`}
+                                                center={[pos.lat, pos.lng] as any}
+                                                radius={(pos.coverage_radius_km || 0.8) * 1000}
+                                                pathOptions={{ color: '#F4D03F', weight: 1.5, fillOpacity: 0.08, dashArray: '5, 5' }}
+                                            />
+                                        );
+                                    })}
 
                                     {hiveMapPlacements.map((placement, index) => {
-                                        const isSelected = placement.hive.id === selectedMapHive?.hive.id;
+                                        if (!placement?.markerPosition || isNaN(placement.markerPosition[0]) || isNaN(placement.markerPosition[1])) return null;
+                                        const isSelected = placement.hive?.id === selectedMapHive?.hive?.id;
                                         const markerStroke = isSelected ? '#1A1A1A' : placement.placementSource === 'optimized' ? '#F4D03F' : '#1B9157';
                                         const markerFill = placement.placementSource === 'estimated' ? '#94A3B8' : placement.placementSource === 'optimized' ? '#F59E0B' : '#1B9157';
 
+                                        const latStr = placement.placement?.[0] != null ? placement.placement[0].toFixed(6) : '—';
+                                        const lngStr = placement.placement?.[1] != null ? placement.placement[1].toFixed(6) : '—';
+
                                         return (
                                             <CircleMarker
-                                                key={placement.hive.id}
+                                                key={placement.hive?.id || `hive-pin-${index}`}
                                                 center={placement.markerPosition}
                                                 radius={isSelected ? 11 : 9}
                                                 pathOptions={{
@@ -1546,20 +1554,22 @@ const PrecisionPollinationView: React.FC<PrecisionPollinationViewProps> = ({
                                                     weight: isSelected ? 3 : 2,
                                                 }}
                                                 eventHandlers={{
-                                                    click: () => setSelectedMapHiveId(placement.hive.id),
+                                                    click: () => {
+                                                        if (placement.hive?.id) setSelectedMapHiveId(placement.hive.id);
+                                                    },
                                                 }}
                                             >
                                                 <Popup className="custom-popup">
                                                     <div className="space-y-2 min-w-[200px]">
                                                         <p className="text-[11px] font-black text-foreground">
-                                                            {placement.hive.hive_code || `Hive ${index + 1}`}
+                                                            {placement.hive?.hive_code || `Colony #${index + 1}`}
                                                         </p>
-                                                        <p className="text-[10px] font-bold text-[#1B9157]">{placement.placementLabel}</p>
-                                                        <p className="text-[10px] text-muted-foreground/90">
-                                                            {placement.placement[0].toFixed(6)}, {placement.placement[1].toFixed(6)}
+                                                        <p className="text-[10px] font-bold text-[#1B9157]">{placement.placementLabel || 'Precision Placement'}</p>
+                                                        <p className="text-[10px] text-muted-foreground/90 font-mono">
+                                                            {latStr}, {lngStr}
                                                         </p>
                                                         <p className="text-[10px] text-muted-foreground">
-                                                            Status: {placement.hive.status || 'Unspecified'}
+                                                            Status: {placement.hive?.status || 'Active Colony'}
                                                         </p>
                                                     </div>
                                                 </Popup>

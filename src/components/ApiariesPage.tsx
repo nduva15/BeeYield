@@ -104,6 +104,7 @@ import {
   resolveDeviceReadings,
   persistScannedDeviceTelemetry,
   extractCleanSerial,
+  validateSensorDeviceSerial,
   type DeviceTelemetryReading,
 } from "@/services/deviceReadingService";
 
@@ -1157,6 +1158,11 @@ export function QrScannerModal({
       toast.error("Please enter a valid sensor serial");
       return;
     }
+    const check = validateSensorDeviceSerial(clean, "in_hive");
+    if (!check.isValid) {
+      toast.error(check.error || "Cannot pair sensor: hardware serial does not match an In-Hive sensor.");
+      return;
+    }
     const reading = await resolveDeviceReadings(clean);
     setScannedReading(reading);
     onScanSuccess(clean);
@@ -1955,12 +1961,14 @@ function PairVitalSensorModal({
       toast.error("Please enter or scan a sensor serial");
       return;
     }
+    const check = validateSensorDeviceSerial(final, "in_hive");
+    if (!check.isValid) {
+      toast.error(check.error || "Cannot pair sensor: hardware serial does not match an In-Hive sensor.");
+      return;
+    }
     onPair(final, deviceType);
     onClose();
   };
-
-  const cleanNum = hiveCode.replace(/^KIB-?/i, "").padStart(3, "0") || "001";
-  const quickSerials = [`VS-KBZ-${cleanNum}`, `VS-KBZ-042`, `SCALE-KBZ-150`];
 
   return createPortal(
     <div
@@ -2094,24 +2102,29 @@ function PairVitalSensorModal({
               </p>
             </div>
 
-            {/* Quick serial chips */}
-            <div className="space-y-1 pt-1">
-              <span className="text-[10px] text-muted-foreground font-semibold block">
-                Quick sample codes:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {quickSerials.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setSerial(s)}
-                    className="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-amber-100 dark:hover:bg-amber-950/40 hover:text-amber-800 dark:hover:text-amber-300 border border-border text-[10px] font-mono font-bold transition-colors"
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Live validation feedback */}
+            {(() => {
+              const val = serial.trim() ? validateSensorDeviceSerial(serial, "in_hive") : null;
+              if (!val) return null;
+              return (
+                <div
+                  className={`p-2.5 rounded-xl border text-xs ${
+                    val.isValid
+                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                      : "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300"
+                  }`}
+                >
+                  <p className="font-bold flex items-center gap-1.5">
+                    {val.isValid ? "✓ In-Hive Hardware Verified" : "⚠ Invalid or Mismatched Serial"}
+                  </p>
+                  <p className="text-[11px] mt-0.5 opacity-90">
+                    {val.isValid
+                      ? `Valid sensor format recognized (${val.cleanSerial}). Ready to pair.`
+                      : val.error}
+                  </p>
+                </div>
+              );
+            })()}
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#EAE3DA] dark:border-stone-800">
               <button
@@ -2123,7 +2136,7 @@ function PairVitalSensorModal({
               </button>
               <button
                 type="submit"
-                disabled={!serial.trim()}
+                disabled={!serial.trim() || !validateSensorDeviceSerial(serial, "in_hive").isValid}
                 className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />

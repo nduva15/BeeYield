@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Globe, 
   Award, 
@@ -33,7 +33,11 @@ import {
   Fingerprint,
   PlayCircle,
   Video,
-  Home
+  Home,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Camera
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -49,17 +53,110 @@ import LOGO from "@/assets/Logo.png";
 
 const Team = () => {
     const [selectedMember, setSelectedMember] = useState<any | null>(null);
+    const [memberPhotoTab, setMemberPhotoTab] = useState<"executive" | "field">("executive");
+    const [activeStoryPhotoIdx, setActiveStoryPhotoIdx] = useState(0);
+
+    const originPhotos = [
+        {
+            src: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
+            title: "Ancestral Acacia Canopy Apiary",
+            subtitle: "Mature acacia tree with traditional log hives in canopy",
+            badge: "Kibwezi Roots • 2020",
+            location: "Kibwezi, Makueni County",
+            description: "Where our journey started: 4 traditional log hives received from our father, suspended high in the branches of savannah acacia trees safe from ground pests and sun."
+        },
+        {
+            src: "/images/team/timothy-beekeeper-suit.jpg",
+            title: "Field Operations in Official Suit",
+            subtitle: "Timothy conducting evening apiary inspections",
+            badge: "Hands-On Leadership",
+            location: "Kibwezi Apiary Site",
+            description: "Hands-on beekeeping in the Kibwezi bush. Timothy wearing the official BeeYield suit at dusk, assessing brood comb health and hive weight balance."
+        },
+        {
+            src: "/images/team/beekeeper-field-inspection.jpg",
+            title: "Twilight Colony Assessment",
+            subtitle: "Listening to colony acoustics & entrance traffic",
+            badge: "Colony Health",
+            location: "Makueni Demonstration Yard",
+            description: "Field beekeepers observing flight entrance activity at sunset when African honeybees settle for the night, checking queen vitality and cluster strength."
+        },
+        {
+            src: "/images/story/hives/savannah-hanging-hive.jpg",
+            title: "Suspended Savannah Log Hive",
+            subtitle: "Traditional Kamba hive hanging by wire",
+            badge: "Heritage Craft",
+            location: "Savannah Shrubland",
+            description: "Suspended high in acacia branches to protect the colony against termites, army ants, and honey badgers — an ancient tradition enhanced with modern telemetry."
+        },
+        {
+            src: "/images/story/hives/acacia-tree-log-hive.jpg",
+            title: "Acacia Tree Fork Nesting",
+            subtitle: "Hand-carved cedar trunk hive",
+            badge: "Natural Insulation",
+            location: "Kibwezi Bushland",
+            description: "Thick hand-carved wood provides natural thermal regulation during 35°C+ daytime heat, creating ideal brood conditions for wild African bees."
+        },
+        {
+            src: "/images/story/hives/apiary-langstroth-row.jpg",
+            title: "Modern Langstroth Apiary",
+            subtitle: "Scaled from 4 to 184+ colonies",
+            badge: "Modern Scale",
+            location: "Central Apiary Hub",
+            description: "Today's apiary with yellow Langstroth hives on anti-termite stands operating alongside 22 smart IoT monitoring units and digital load scales."
+        }
+    ];
+
+    const fieldOperationHighlights = [
+        {
+            image: "/images/team/timothy-beekeeper-suit.jpg",
+            title: "Frontline Apiary Stewardship",
+            role: "Timothy Nduva (CEO & Founder)",
+            badge: "Field Leadership",
+            desc: "Leadership rooted in the dirt and the smoke. Timothy regularly leads evening hive inspections, testing new sensors directly in active colonies."
+        },
+        {
+            image: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
+            title: "The Kibwezi Acacia Canopy",
+            role: "Family Apiary Origins",
+            badge: "Ancestral Heritage",
+            desc: "The sacred acacia trees where BeeYield's first four hives were hung in 2020. These mature canopies continue to house thriving colonies today."
+        },
+        {
+            image: "/images/team/beekeeper-field-inspection.jpg",
+            title: "Twilight Hive Inspections",
+            role: "Beekeeping Specialists",
+            badge: "Biological Integrity",
+            desc: "African honeybees (Apis mellifera scutellata) are fierce defenders. Evening inspections minimize colony stress while checking comb health."
+        },
+        {
+            image: "/images/story/hives/savannah-hanging-hive.jpg",
+            title: "Savannah Wire-Suspended Hives",
+            role: "Traditional Engineering",
+            badge: "Predator Protection",
+            desc: "Suspended by heavy wire to thwart badgers and safari ants, representing centuries of indigenous Kamba apicultural ingenuity."
+        },
+        {
+            image: "/images/story/hives/apiary-langstroth-row.jpg",
+            title: "Langstroth Fleet at 184 Hives",
+            role: "Modern Scaling",
+            badge: "IoT Integration",
+            desc: "From 4 inherited hives to a fleet of 184 modern Langstroth hives equipped with solar telemetry, microclimate probes, and precision scales."
+        }
+    ];
 
     const founders = [
         {
             name: "Timothy Nduva",
             role: "CEO & Founder",
             department: "Directorate",
-            description: "A visionary leader committed to the intersection of traditional apiology and digital precision. Timothy oversees the global strategic direction of the BeeYield ecosystem.",
+            description: "A visionary leader committed to the intersection of traditional apiology and digital precision. Timothy oversees the global strategic direction of the BeeYield ecosystem, spending equal time on software architecture and evening apiary inspections in Kibwezi.",
             image: TIMOTHY_PHOTO,
+            fieldImage: "/images/team/timothy-beekeeper-suit.jpg",
+            fieldCaption: "Timothy inspecting hives in Kibwezi apiary wearing custom BeeYield protective gear at dusk",
             linkedin: "https://linkedin.com/in/timothynduva",
             email: "info@beeyield.com",
-            achievements: ["Vision Lead", "Architecture Head", "Global Strategy"]
+            achievements: ["Vision Lead", "Architecture Head", "Global Strategy", "Field Beekeeper"]
         },
         {
             name: "Carole Nduva",
@@ -236,42 +333,190 @@ const Team = () => {
             </section>
 
             {/* ═══════════════════════════════════════════════════════════════
-                 OUR STORY — Family Origins (Matching Diseases "Partnership Narrative")
+                 FIELD OPERATIONS — Frontline Beekeepers & Living Apiary
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+            <section className="py-24 bg-white border-b border-neutral-100 relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto items-center">
-                        <motion.div 
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm"
-                        >
-                            <img src={"/images/story/hives/savannah-log-hive-tree.jpg"} alt="Traditional log hive in acacia tree — our Kibwezi origins" className="w-full h-full object-cover opacity-80" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent" />
-                            <div className="absolute inset-0 flex items-end justify-center p-12 text-center text-neutral-900">
-                                <div className="space-y-4">
-                                    <div className="h-16 w-16 bg-beeyield-green/10 rounded-full flex items-center justify-center mx-auto text-beeyield-green">
-                                        <Home className="h-8 w-8" />
-                                    </div>
-                                    <h4 className="text-xl font-bold">Born in Kibwezi</h4>
-                                    <p className="text-sm font-medium opacity-70">Makueni County, Kenya • 2020</p>
-                                </div>
-                            </div>
-                        </motion.div>
+                    <div className="max-w-3xl mx-auto text-center mb-16">
+                        <Badge className="bg-amber-500/10 text-amber-700 border-none mb-4 px-5 py-2 font-semibold text-[10px] rounded-full uppercase tracking-wider">
+                            <Camera className="w-3.5 h-3.5 inline mr-1.5" />
+                            Frontline Workforce in Action
+                        </Badge>
+                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-4">
+                            Stewardship <span className="text-beeyield-green">in the Field</span>
+                        </h2>
+                        <p className="text-neutral-500 text-base max-w-2xl mx-auto leading-relaxed">
+                            Behind every line of code, IoT telemetry stream, and pollination report is sweat and passion in the Kenyan bush. Meet the reality of our apiary operations.
+                        </p>
+                    </div>
 
-                        <div className="space-y-6">
-                            <Badge className="bg-amber-500/10 text-amber-700 border-none px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider mb-2 inline-block">
-                                The Genesis
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                        {fieldOperationHighlights.map((item, idx) => (
+                            <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.1 }}
+                                className={cn(
+                                    "group rounded-[2.5rem] overflow-hidden border border-neutral-200/80 bg-neutral-900 shadow-md hover:shadow-2xl transition-all duration-500 flex flex-col justify-between",
+                                    idx === 0 ? "md:col-span-2 lg:col-span-1" : ""
+                                )}
+                            >
+                                <div className="relative aspect-[4/3] overflow-hidden">
+                                    <img
+                                        src={item.image}
+                                        alt={item.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
+                                    <div className="absolute top-4 left-4">
+                                        <Badge className="bg-white/90 text-neutral-900 backdrop-blur-md border-none font-bold text-[9px] uppercase tracking-wider px-3 py-1">
+                                            {item.badge}
+                                        </Badge>
+                                    </div>
+                                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                                        <p className="text-xs font-semibold text-beeyield-green uppercase tracking-wider">{item.role}</p>
+                                        <h4 className="text-lg font-bold leading-tight">{item.title}</h4>
+                                    </div>
+                                </div>
+                                <div className="p-6 bg-white flex-1 flex flex-col justify-center">
+                                    <p className="text-xs text-neutral-600 leading-relaxed font-medium">
+                                        {item.desc}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                 OUR STORY — Family Origins & Interactive Photo Archive
+            ═══════════════════════════════════════════════════════════════ */}
+            <section className="py-24 bg-[#FAFAF8] relative overflow-hidden border-b border-neutral-100">
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="grid lg:grid-cols-12 gap-12 max-w-6xl mx-auto items-center">
+                        
+                        {/* Interactive Photo Showcase Column */}
+                        <div className="lg:col-span-7 space-y-4">
+                            <motion.div 
+                                key={activeStoryPhotoIdx}
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.35 }}
+                                className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-neutral-950 border border-neutral-200/80 shadow-xl group"
+                            >
+                                <img 
+                                    src={originPhotos[activeStoryPhotoIdx].src} 
+                                    alt={originPhotos[activeStoryPhotoIdx].title} 
+                                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-700" 
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/20 to-transparent" />
+                                
+                                <div className="absolute top-6 left-6 right-6 flex items-center justify-between">
+                                    <Badge className="bg-beeyield-green text-neutral-950 border-none font-bold text-[10px] uppercase tracking-wider px-3.5 py-1.5 shadow-md">
+                                        {originPhotos[activeStoryPhotoIdx].badge}
+                                    </Badge>
+                                    <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white/90 text-[10px] font-medium flex items-center gap-1.5">
+                                        <MapPin className="w-3 h-3 text-beeyield-green" />
+                                        {originPhotos[activeStoryPhotoIdx].location}
+                                    </div>
+                                </div>
+
+                                <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
+                                    <p className="text-xs text-beeyield-green font-bold uppercase tracking-wider">
+                                        Photo {activeStoryPhotoIdx + 1} of {originPhotos.length}
+                                    </p>
+                                    <h4 className="text-2xl font-extrabold tracking-tight">
+                                        {originPhotos[activeStoryPhotoIdx].title}
+                                    </h4>
+                                    <p className="text-xs text-neutral-300 leading-relaxed max-w-xl">
+                                        {originPhotos[activeStoryPhotoIdx].description}
+                                    </p>
+                                </div>
+
+                                {/* Arrow controls */}
+                                <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setActiveStoryPhotoIdx((prev) => (prev - 1 + originPhotos.length) % originPhotos.length);
+                                        }}
+                                        className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-neutral-900 flex items-center justify-center shadow-lg transition-transform active:scale-95"
+                                        aria-label="Previous photo"
+                                    >
+                                        <ChevronLeft className="w-5 h-5" />
+                                    </button>
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setActiveStoryPhotoIdx((prev) => (prev + 1) % originPhotos.length);
+                                        }}
+                                        className="w-9 h-9 rounded-full bg-white/90 hover:bg-white text-neutral-900 flex items-center justify-center shadow-lg transition-transform active:scale-95"
+                                        aria-label="Next photo"
+                                    >
+                                        <ChevronRight className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </motion.div>
+
+                            {/* Thumbnail Selector Strip */}
+                            <div className="grid grid-cols-6 gap-2.5">
+                                {originPhotos.map((photo, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setActiveStoryPhotoIdx(i)}
+                                        className={cn(
+                                            "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
+                                            activeStoryPhotoIdx === i 
+                                                ? "border-beeyield-green ring-2 ring-beeyield-green/30 scale-105 shadow-md" 
+                                                : "border-neutral-200/80 opacity-70 hover:opacity-100"
+                                        )}
+                                    >
+                                        <img src={photo.src} alt={photo.title} className="w-full h-full object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Narrative Column */}
+                        <div className="lg:col-span-5 space-y-6">
+                            <Badge className="bg-amber-500/10 text-amber-700 border-none px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider inline-block">
+                                The Genesis • Our Full Story
                             </Badge>
                             <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight leading-tight">
                                 A Pandemic Spark, <br />
                                 <span className="text-beeyield-green">A Family Mission</span>
                             </h2>
-                            <p className="text-lg text-muted-foreground leading-relaxed pt-2">
-                                In 2020, as the world slowed down, <strong className="text-neutral-900">Timothy Nduva</strong> saw an opportunity for innovation in rural Kenya. Together with his sisters <strong className="text-neutral-900">Agatha</strong> and <strong className="text-neutral-900">Carole</strong>, they transformed a small family apiary into a platform for agricultural impact.
-                            </p>
+                            <div className="space-y-4 text-neutral-600 text-sm leading-relaxed">
+                                <p>
+                                    In <strong className="text-neutral-900">2020</strong>, during the pandemic slowdown, <strong className="text-neutral-900">Timothy Nduva</strong> inherited 4 traditional log hives from his father in Kibwezi, Makueni County. What began as a quarter-acre family inheritance became the crucible for a modern agricultural mission.
+                                </p>
+                                <p>
+                                    As Timothy studied Finance & Marketing and later IT at Strathmore University, he saved his salary to fund the apiary. In <strong className="text-neutral-900">2022</strong>, his sisters <strong className="text-neutral-900">Agatha</strong> (Distributed Systems & Security) and <strong className="text-neutral-900">Carole</strong> (Operations & Scalability) joined the journey — uniting three distinct skill sets under one banner.
+                                </p>
+                                <p>
+                                    When pesticide drift threatened local colonies in 2025, Timothy quit his job to protect the bees full-time. The team pivoted to precision pollination, expanding from traditional log hives to <strong className="text-neutral-900">184 modern hives</strong>, deploying <strong className="text-neutral-900">22 IoT stations</strong>, and serving <strong className="text-neutral-900">105 and counting acres</strong> across Kenya.
+                                </p>
+                            </div>
+
+                            <div className="pt-2 flex flex-wrap gap-3">
+                                <div className="px-4 py-2 bg-white rounded-2xl border border-neutral-200 shadow-sm">
+                                    <p className="text-lg font-black text-beeyield-green">4 → 184</p>
+                                    <p className="text-[10px] uppercase font-bold text-neutral-500">Hive Growth</p>
+                                </div>
+                                <div className="px-4 py-2 bg-white rounded-2xl border border-neutral-200 shadow-sm">
+                                    <p className="text-lg font-black text-neutral-900">22 IoT</p>
+                                    <p className="text-[10px] uppercase font-bold text-neutral-500">Live Stations</p>
+                                </div>
+                                <div className="px-4 py-2 bg-white rounded-2xl border border-neutral-200 shadow-sm">
+                                    <p className="text-lg font-black text-amber-600">105+</p>
+                                    <p className="text-[10px] uppercase font-bold text-neutral-500">Acres Served</p>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </section>
@@ -404,16 +649,48 @@ const Team = () => {
                     <AnimatePresence>
                         {selectedMember && (
                             <div className="flex flex-col md:flex-row bg-white">
-                                <div className="md:w-5/12 relative aspect-[4/5] bg-neutral-100 shrink-0">
+                                <div className="md:w-5/12 relative aspect-[4/5] bg-neutral-900 shrink-0 overflow-hidden">
                                     <img 
-                                        src={selectedMember.image} 
+                                        src={selectedMember.fieldImage && memberPhotoTab === "field" ? selectedMember.fieldImage : selectedMember.image} 
                                         alt={selectedMember.name} 
                                         className={cn(
-                                            "w-full h-full object-cover",
+                                            "w-full h-full object-cover transition-all duration-500",
                                             selectedMember.image === LOGO ? "opacity-10 p-12" : ""
                                         )}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/40 to-transparent" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent pointer-events-none" />
+                                    
+                                    {selectedMember.fieldImage && (
+                                        <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2">
+                                            {memberPhotoTab === "field" && (
+                                                <p className="text-[10px] text-white/90 bg-black/60 backdrop-blur-md p-2 rounded-xl leading-tight font-medium">
+                                                    {selectedMember.fieldCaption}
+                                                </p>
+                                            )}
+                                            <div className="flex bg-black/70 backdrop-blur-md p-1 rounded-xl self-start gap-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMemberPhotoTab("executive")}
+                                                    className={cn(
+                                                        "px-2.5 py-1 text-[9px] font-bold rounded-lg transition-all",
+                                                        memberPhotoTab === "executive" ? "bg-white text-neutral-950 shadow-sm" : "text-white/70 hover:text-white"
+                                                    )}
+                                                >
+                                                    Executive
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMemberPhotoTab("field")}
+                                                    className={cn(
+                                                        "px-2.5 py-1 text-[9px] font-bold rounded-lg transition-all",
+                                                        memberPhotoTab === "field" ? "bg-beeyield-green text-neutral-950 shadow-sm" : "text-white/70 hover:text-white"
+                                                    )}
+                                                >
+                                                    In Apiary Suit
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="md:w-7/12 p-10 md:p-16 flex flex-col justify-center text-left">

@@ -39,6 +39,7 @@ import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normali
 import { Html5Qrcode } from "html5-qrcode";
 import { cn } from "@/lib/utils";
 import { isFakeSensorDevice } from "@/services/sensorSyncService";
+import { validateSensorDeviceSerial } from "@/services/deviceReadingService";
 
 export interface HiveHealthDashboardProps {
   isOpen: boolean;
@@ -740,10 +741,18 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
   // Confirm VitalSensor Quick Pairing
   const handleConfirmPairSensor = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pairingSerial.trim()) {
+    const cleanSerial = pairingSerial.trim().toUpperCase();
+    if (!cleanSerial) {
       toast.error("Please enter a valid sensor serial code");
       return;
     }
+
+    const check = validateSensorDeviceSerial(cleanSerial, "in_hive");
+    if (!check.isValid) {
+      toast.error(check.error || "Cannot pair device: serial does not match an In-Hive sensor.");
+      return;
+    }
+
     const targetHiveName = pairingHive || (hivesList[0]?.name ?? "Primary Hive");
 
     const updatedHives = hivesList.map((h) => {
@@ -751,7 +760,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
         return {
           ...h,
           hasSensor: true,
-          sensorSerial: pairingSerial.trim().toUpperCase(),
+          sensorSerial: cleanSerial,
         };
       }
       return h;
@@ -762,7 +771,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
       localStorage.setItem(`beeyield_cached_hives_${userKey}`, JSON.stringify(updatedHives));
     } catch {}
 
-    toast.success(`VitalSensor ${pairingSerial.trim().toUpperCase()} paired to ${targetHiveName}`);
+    toast.success(`VitalSensor ${cleanSerial} paired to ${targetHiveName}`);
     setPairSensorModalOpen(false);
     setPairingSerial("");
   };
@@ -1887,20 +1896,29 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                 </p>
               </div>
 
-              {/* Quick sample chips */}
-              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                <span className="text-[10px] text-muted-foreground font-medium">Quick serials:</span>
-                {["VS-KBZ-042", "VS-KBZ-089", "VS-TAITA-012"].map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setPairingSerial(s)}
-                    className="px-2 py-0.5 rounded-md bg-stone-100 hover:bg-amber-100 hover:text-amber-900 border border-stone-200 text-[10px] font-mono transition-colors"
+              {/* Live validation feedback banner */}
+              {(() => {
+                const val = pairingSerial.trim() ? validateSensorDeviceSerial(pairingSerial, "in_hive") : null;
+                if (!val) return null;
+                return (
+                  <div
+                    className={`p-2.5 rounded-xl border text-xs ${
+                      val.isValid
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800"
+                        : "border-red-500/40 bg-red-500/10 text-red-800"
+                    }`}
                   >
-                    {s}
-                  </button>
-                ))}
-              </div>
+                    <p className="font-bold flex items-center gap-1.5">
+                      {val.isValid ? "✓ In-Hive Hardware Verified" : "⚠ Invalid or Mismatched Serial"}
+                    </p>
+                    <p className="text-[11px] mt-0.5">
+                      {val.isValid
+                        ? `Valid sensor format recognized (${val.cleanSerial}). Ready to mount.`
+                        : val.error}
+                    </p>
+                  </div>
+                );
+              })()}
 
               {/* Footer actions */}
               <div className="flex items-center justify-between gap-2 pt-3 border-t">
@@ -1928,7 +1946,7 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                   <Button
                     type="submit"
                     size="sm"
-                    disabled={!pairingSerial.trim()}
+                    disabled={!pairingSerial.trim() || !validateSensorDeviceSerial(pairingSerial, "in_hive").isValid}
                     className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold flex items-center gap-1.5 shadow-sm"
                   >
                     <Check className="w-3.5 h-3.5" />

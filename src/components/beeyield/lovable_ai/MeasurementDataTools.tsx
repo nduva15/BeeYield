@@ -3,7 +3,7 @@ import {
   X, Cpu, Usb, Bluetooth, Wifi, Plus, Trash2, ScanLine, ArrowLeft, ArrowRight, Check,
   Loader2, Thermometer, Droplets, Scale, BatteryCharging, MapPin, Boxes, Terminal,
   ShieldAlert, Activity, Sparkles, Filter, Search, Layers, Radio, RefreshCw, Unlink,
-  Sun, Wind, ChevronRight, CheckCircle2, AlertCircle, Info,
+  Sun, Wind, ChevronRight, CheckCircle2, AlertCircle, Info, AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Html5Qrcode } from "html5-qrcode";
@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
+import { extractCleanSerial, validateSensorDeviceSerial } from "@/services/deviceReadingService";
+import { generateSensorUuid } from "@/services/sensorSyncService";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
 type Hive = {
@@ -315,7 +317,12 @@ function ScanField({ label, hint, value, onChange }: { label: string; hint: stri
       <div className="flex items-end gap-2">
         <div className="flex-1">
           <Label className="text-xs font-semibold">{label}</Label>
-          <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Scan or type device serial (e.g. SENS-INP-001)" className="mt-1" />
+          <Input
+            value={value}
+            onChange={(e) => onChange(e.target.value.toUpperCase().trim())}
+            placeholder="Scan or type device serial (e.g. SENS-INP-104928)"
+            className="mt-1 font-mono uppercase"
+          />
         </div>
         <button
           type="button"
@@ -329,7 +336,12 @@ function ScanField({ label, hint, value, onChange }: { label: string; hint: stri
       <p className="text-[11px] text-muted-foreground">{hint}</p>
       {scanning && (
         <QrScanner
-          onResult={(t) => { onChange(t.trim()); setScanning(false); toast.success("Device barcode scanned: " + t.trim()); }}
+          onResult={(t) => {
+            const clean = extractCleanSerial(t);
+            onChange(clean);
+            setScanning(false);
+            toast.success("Device barcode scanned: " + clean);
+          }}
           onCancel={() => setScanning(false)}
         />
       )}
@@ -614,47 +626,66 @@ function AddDeviceWizard({
   const [linkType, setLinkType] = useState<"online" | "bluetooth" | "usb">("online");
   const [serial, setSerial] = useState<string>("");
   const [label, setLabel] = useState<string>("");
-  const [confirmPin, setConfirmPin] = useState<string>("123456");
+  const [confirmPin, setConfirmPin] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
-  // Update kind and serial defaults when category changes
+  // Update kind defaults when category changes
   const handleCategoryChange = useCallback((newCat: DeviceCategory) => {
     setCategory(newCat);
     const firstKind = DEVICE_CATEGORIES[newCat].kinds[0];
     setSelectedKindId(firstKind.id);
-    const randNum = 100 + ((newCat.length * 73 + firstKind.id.length * 19) % 900);
-    setSerial(`${firstKind.defaultSerialPrefix}-${randNum}`);
     const targetHive = hives.find((h) => h.id === selectedHiveId);
     setLabel(`${targetHive?.name || "Hive"} ${firstKind.name}`);
   }, [hives, selectedHiveId]);
 
-  // If initialHiveId provided on mount, auto-set serial and label
+  // If initialHiveId provided on mount, auto-set label
   useEffect(() => {
     if (initialHiveId) {
       setSelectedHiveId(initialHiveId);
       const target = hives.find((h) => h.id === initialHiveId);
       if (target) {
         setLabel(`${target.name} VitalSensor`);
-        const num = target.name.replace(/\D+/g, "") || "001";
-        setSerial(`SENS-INP-${num.padStart(3, "0")}`);
       }
     } else {
-      setSerial("SENS-INP-042");
-      setLabel("KIB-001 VitalSensor Brood Core");
+      const firstHive = hives[0];
+      setLabel(firstHive ? `${firstHive.name} VitalSensor` : "");
     }
   }, [initialHiveId, hives]);
 
   const activeCategoryConfig = DEVICE_CATEGORIES[category];
   const activeKindConfig = activeCategoryConfig.kinds.find((k) => k.id === selectedKindId) || activeCategoryConfig.kinds[0];
 
-  const handleSaveDevice = async () => {
+  const validation = useMemo(() => {
     if (!serial.trim()) {
+      return {
+        isValid: false,
+        cleanSerial: "",
+        error: undefined,
+        detectedCategory: "unknown" as const,
+        detectedCategoryName: "",
+        isFakeSample: false,
+        isCategoryMatch: false,
+      };
+    }
+    return validateSensorDeviceSerial(serial, category, selectedKindId);
+  }, [serial, category, selectedKindId]);
+
+  const handleSaveDevice = async () => {
+    const cleanSerial = serial.trim().toUpperCase();
+    if (!cleanSerial) {
       toast.error("Please provide or scan a device serial number");
       return;
     }
+
+    const check = validateSensorDeviceSerial(cleanSerial, category, selectedKindId);
+    if (!check.isValid) {
+      toast.error(check.error || "Cannot pair device: serial does not match hardware requirements.");
+      return;
+    }
+
     setSaving(true);
 
-    const deviceId = `dev-${category}-${Date.now()}`;
+    const deviceId = generateSensorUuid();
     const syncedHive = category === "in_land" && selectedHiveId === "apiary_wide" ? null : selectedHiveId;
     const syncedHiveName = hives.find((h) => h.id === syncedHive)?.name || "Kibwezi Apiary Node";
 
@@ -665,7 +696,7 @@ function AddDeviceWizard({
       device_kind: selectedKindId,
       category,
       link_type: linkType,
-      serial: serial.trim().toUpperCase(),
+      serial: cleanSerial,
       label: label.trim() || `${syncedHiveName} ${activeKindConfig.name}`,
       status: "active",
       battery_pct: 98,
@@ -684,7 +715,7 @@ function AddDeviceWizard({
         hive_id: syncedHive,
         device_kind: selectedKindId,
         link_type: linkType,
-        serial: serial.trim().toUpperCase(),
+        serial: cleanSerial,
         label: label.trim() || `${syncedHiveName} ${activeKindConfig.name}`,
         confirmation_code: confirmPin || null,
         status: "active",
@@ -710,12 +741,12 @@ function AddDeviceWizard({
     try {
       const storageKey = `beeyield_measurement_devices_${effectiveUserId}`;
       const existing = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const filtered = existing.filter((d: any) => d.id !== deviceId && d.serial !== serial.trim().toUpperCase());
+      const filtered = existing.filter((d: any) => d.id !== deviceId && d.serial !== cleanSerial);
       localStorage.setItem(storageKey, JSON.stringify([newDeviceRecord, ...filtered]));
     } catch {}
 
     setSaving(false);
-    toast.success(`Device ${serial.toUpperCase()} paired and synchronized to ${syncedHiveName}!`);
+    toast.success(`Device ${cleanSerial} paired and synchronized to ${syncedHiveName}!`);
     onDone();
   };
 
@@ -966,24 +997,56 @@ function AddDeviceWizard({
             onChange={setSerial}
           />
 
-          {/* Quick serial presets */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] text-muted-foreground">Quick sample:</span>
-            {[
-              `${activeKindConfig.defaultSerialPrefix}-001`,
-              `${activeKindConfig.defaultSerialPrefix}-042`,
-              `${activeKindConfig.defaultSerialPrefix}-890`,
-            ].map((pre) => (
-              <button
-                key={pre}
-                type="button"
-                onClick={() => setSerial(pre)}
-                className="px-2 py-0.5 rounded-md border border-border bg-background hover:bg-muted text-[11px] font-mono transition-colors"
-              >
-                {pre}
-              </button>
-            ))}
-          </div>
+          {/* Live hardware serial validation & category matching banner */}
+          {serial.trim() && (
+            <div
+              className={`p-3 rounded-xl border text-xs transition-all ${
+                validation.isValid
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                  : validation.isFakeSample
+                  ? "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300"
+                  : !validation.isCategoryMatch
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-800 dark:text-amber-300"
+                  : "border-red-500/40 bg-red-500/10 text-red-800 dark:text-red-300"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-2">
+                  {validation.isValid ? (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  )}
+                  <div>
+                    <p className="font-bold">
+                      {validation.isValid
+                        ? `Genuine ${activeCategoryConfig.name} Hardware Verified`
+                        : validation.isFakeSample
+                        ? "Simulated / Sample Hardware Code Detected"
+                        : !validation.isCategoryMatch
+                        ? "Device Category Mismatch"
+                        : "Invalid Serial Number"}
+                    </p>
+                    <p className="text-[11px] mt-0.5 opacity-90">
+                      {validation.isValid
+                        ? `Serial ${validation.cleanSerial} matches the ${activeKindConfig.name} hardware specification.`
+                        : validation.error}
+                    </p>
+                  </div>
+                </div>
+
+                {!validation.isValid && !validation.isCategoryMatch && validation.detectedCategory !== "unknown" && (
+                  <button
+                    type="button"
+                    onClick={() => handleCategoryChange(validation.detectedCategory as DeviceCategory)}
+                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-500/40 text-[10px] font-bold whitespace-nowrap transition-colors"
+                  >
+                    Switch to {validation.detectedCategoryName}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -1011,7 +1074,7 @@ function AddDeviceWizard({
             onBack={() => setStep(1)}
             onNext={handleSaveDevice}
             nextLabel={saving ? "Pairing & Syncing..." : "Pair & Synchronize Device"}
-            nextDisabled={!serial.trim() || saving}
+            nextDisabled={!serial.trim() || !validation.isValid || saving}
             done
           />
         </div>
