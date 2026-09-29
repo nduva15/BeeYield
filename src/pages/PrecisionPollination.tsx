@@ -391,24 +391,24 @@ const PrecisionPollination = () => {
                               className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform"
                               style={{ transitionDuration: '2000ms' }}
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/20 to-transparent" />
-                          <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-neutral-950/80 backdrop-blur-2xl rounded-[2rem] border border-white/15 shadow-2xl">
+                          <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/30 to-transparent" />
+                          <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-white/90 backdrop-blur-2xl rounded-[2rem] border border-neutral-200/80 shadow-xl">
                               <div className="flex items-center gap-3 mb-4">
-                                  <Quote className="w-5 h-5 text-beeyield-green shrink-0 fill-beeyield-green/20" />
-                                  <div className="h-0.5 w-10 bg-beeyield-green" />
-                                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-beeyield-green">Timothy Nduva • Founder & CEO</span>
+                                  <Quote className="w-5 h-5 text-emerald-600 shrink-0 fill-emerald-600/20" />
+                                  <div className="h-0.5 w-10 bg-emerald-600" />
+                                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700">Timothy Nduva • Founder & CEO</span>
                               </div>
-                              <p className="text-white text-lg sm:text-xl md:text-2xl font-bold leading-relaxed tracking-tight italic">
+                              <p className="text-neutral-900 text-lg sm:text-xl md:text-2xl font-bold leading-relaxed tracking-tight italic">
                                   “Pollination powers the planet—precision sustains it.”
                               </p>
-                              <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
-                                <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-beeyield-green/40 shadow-sm" />
+                              <div className="mt-4 flex items-center gap-3 pt-3 border-t border-neutral-200/60">
+                                <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-emerald-500 shadow-sm" />
                                 <div>
-                                  <div className="font-bold text-white text-sm flex items-center gap-2">
+                                  <div className="font-bold text-neutral-900 text-sm flex items-center gap-2">
                                     Timothy Nduva
-                                    <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">Founder & CEO</span>
+                                    <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300">Founder & CEO</span>
                                   </div>
-                                  <div className="text-xs text-white/60">BeeYield In-Hive Precision</div>
+                                  <div className="text-xs text-neutral-500 font-medium">BeeYield In-Hive Precision</div>
                                 </div>
                               </div>
                           </div>
@@ -680,16 +680,16 @@ const PrecisionPollination = () => {
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
                           transition={{ delay: index * 0.08 }}
-                          className="grid md:grid-cols-3 gap-6 p-8 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all"
+                          className="grid md:grid-cols-3 gap-6 p-8 bg-white rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md hover:border-beeyield-green/30 transition-all"
                       >
                           <div className="flex items-center gap-4">
-                              <div className="h-10 w-10 shrink-0 rounded-xl bg-beeyield-green/20 flex items-center justify-center text-beeyield-green">
+                              <div className="h-10 w-10 shrink-0 rounded-xl bg-beeyield-green/10 flex items-center justify-center text-beeyield-green">
                                   <row.icon className="h-5 w-5" />
                               </div>
-                              <span className="font-bold text-sm">{row.feature}</span>
+                              <span className="font-bold text-sm text-neutral-900">{row.feature}</span>
                           </div>
-                          <p className="text-neutral-400 text-sm leading-relaxed">{row.technology}</p>
-                          <p className="text-beeyield-green/90 text-sm leading-relaxed font-medium">{row.benefit}</p>
+                          <p className="text-neutral-600 text-sm leading-relaxed">{row.technology}</p>
+                          <p className="text-emerald-700 text-sm leading-relaxed font-semibold">{row.benefit}</p>
                       </motion.div>
                   ))}
               </div>

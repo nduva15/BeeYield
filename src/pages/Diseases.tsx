@@ -568,7 +568,7 @@ const Diseases = () => {
                         >
                             <Button
                                 size="lg"
-                                className="h-14 px-10 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
+                                className="h-14 px-10 bg-beeyield-green text-neutral-950 font-bold text-xs rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-xl shadow-beeyield-green/25"
                                 onClick={() => document.getElementById('partnership')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Explore the Partnership <ArrowRight className="ml-2 h-4 w-4" />
@@ -643,7 +643,7 @@ const Diseases = () => {
                       </div>
                       
                       <div className="pt-4">
-                          <Button size="lg" className="w-full bg-beeyield-green hover:bg-neutral-900 text-white shadow-xl shadow-beeyield-green/20 transition-all rounded-xl" onClick={() => document.getElementById('partnership')?.scrollIntoView({ behavior: 'smooth' })}>
+                          <Button size="lg" className="w-full bg-beeyield-green hover:bg-emerald-600 text-neutral-950 hover:text-white shadow-xl shadow-beeyield-green/20 transition-all rounded-xl font-bold" onClick={() => document.getElementById('partnership')?.scrollIntoView({ behavior: 'smooth' })}>
                               Learn more <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
                       </div>
@@ -692,31 +692,31 @@ const Diseases = () => {
                             viewport={{ once: true }}
                             className="relative"
                         >
-                            <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
+                            <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-100 group">
                                 <img
                                     src={HIVE_INSPECTION_2}
                                     alt="Apisense IoT Sensor probe installed inside active beehive cluster"
                                     className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform"
                                     style={{ transitionDuration: '2000ms' }}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/30 to-transparent" />
-                                <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-neutral-950/85 backdrop-blur-2xl rounded-[2rem] border border-white/15 shadow-2xl">
+                                <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/40 to-transparent" />
+                                <div className="absolute bottom-6 left-6 right-6 sm:bottom-10 sm:left-10 sm:right-10 p-6 sm:p-8 bg-white/90 backdrop-blur-2xl rounded-[2rem] border border-neutral-200/80 shadow-xl">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <Quote className="w-5 h-5 text-beeyield-green shrink-0 fill-beeyield-green/20" />
-                                        <div className="h-0.5 w-10 bg-beeyield-green" />
-                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-beeyield-green">Timothy Nduva • Founder & CEO</span>
+                                        <Quote className="w-5 h-5 text-emerald-600 shrink-0 fill-emerald-600/20" />
+                                        <div className="h-0.5 w-10 bg-emerald-600" />
+                                        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-700">Timothy Nduva • Founder & CEO</span>
                                     </div>
-                                    <p className="text-white text-base sm:text-lg md:text-xl font-bold leading-relaxed tracking-tight italic">
+                                    <p className="text-neutral-900 text-base sm:text-lg md:text-xl font-bold leading-relaxed tracking-tight italic">
                                         “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
                                     </p>
-                                    <div className="mt-4 flex items-center gap-3 pt-3 border-t border-white/10">
-                                      <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-beeyield-green/40 shadow-sm" />
+                                    <div className="mt-4 flex items-center gap-3 pt-3 border-t border-neutral-200/60">
+                                      <img src={TIMOTHY_PHOTO} alt="Timothy Nduva" className="w-9 h-9 rounded-full object-cover border-2 border-emerald-500 shadow-sm" />
                                       <div>
-                                        <div className="font-bold text-white text-sm flex items-center gap-2">
+                                        <div className="font-bold text-neutral-900 text-sm flex items-center gap-2">
                                           Timothy Nduva
-                                          <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">Founder & CEO</span>
+                                          <span className="inline-flex items-center text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300">Founder & CEO</span>
                                         </div>
-                                        <div className="text-xs text-white/60">BeeYield Colony Health & Disease Defense</div>
+                                        <div className="text-xs text-neutral-500 font-medium">BeeYield Colony Health & Disease Defense</div>
                                       </div>
                                     </div>
                                 </div>
