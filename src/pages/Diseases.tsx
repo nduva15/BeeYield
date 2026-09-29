@@ -772,8 +772,8 @@ const Diseases = () => {
             {/* ───────────────────────────────────────────────────────────────
                 EXECUTIVE VISION • TIMOTHY NDUVA STATEMENT ON BEE HEALTH
             ─────────────────────────────────────────────────────────────── */}
-            <section className="py-20 lg:py-28 bg-neutral-950 text-white relative overflow-hidden border-y border-neutral-800/80">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-beeyield-green/15 via-transparent to-transparent pointer-events-none" />
+            <section className="py-20 lg:py-28 bg-[#FAFAF8] text-neutral-900 relative overflow-hidden border-y border-neutral-200/80">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-beeyield-green/5 via-transparent to-transparent pointer-events-none" />
                 <div className="container mx-auto px-4 max-w-4xl relative z-10 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -785,7 +785,7 @@ const Diseases = () => {
                             <Quote className="w-3.5 h-3.5 fill-beeyield-green/20" />
                             Executive Vision • Colony Health & Conservation
                         </div>
-                        <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-white mb-10 max-w-3xl mx-auto italic">
+                        <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug sm:leading-tight text-neutral-900 mb-10 max-w-3xl mx-auto italic">
                             “Bees are guardians of biodiversity, invisible partners in agriculture, and lifelines for human survival.”
                         </blockquote>
                         <div className="flex items-center justify-center gap-4">
@@ -795,13 +795,13 @@ const Diseases = () => {
                                 className="w-14 h-14 rounded-full object-cover border-2 border-beeyield-green shadow-xl"
                             />
                             <div className="text-left">
-                                <div className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
+                                <div className="font-bold text-neutral-900 text-base sm:text-lg flex items-center gap-2">
                                     Timothy Nduva
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-300 bg-emerald-500/20 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Founder & CEO
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Founder & CEO
                                     </span>
                                 </div>
-                                <div className="text-xs sm:text-sm text-neutral-400 font-medium">
+                                <div className="text-xs sm:text-sm text-neutral-500 font-medium">
                                     BeeYield • Precision Pollination & Early Disease Detection
                                 </div>
                             </div>
@@ -933,26 +933,26 @@ const Diseases = () => {
             {/* ═══════════════════════════════════════════════════════════════
                 HIGH EFFICIENCY PROVEN BY RESEARCH
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5" />
+            <section className="py-24 bg-[#FAFAF8] text-neutral-900 border-y border-neutral-200/80 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5 pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
                         <div className="md:w-1/3">
-                            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight">
+                            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-neutral-900">
                                 High efficiency <br />
                                 <span className="text-beeyield-green">proven by research:</span>
                             </h2>
                         </div>
-                        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-10 border-t md:border-t-0 md:border-l border-white/10 pt-10 md:pt-0 md:pl-12">
+                        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-10 border-t md:border-t-0 md:border-l border-neutral-200 pt-10 md:pt-0 md:pl-12">
                             <div>
-                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">95%</h3>
-                                <h4 className="text-lg font-bold text-white mb-2">Disease detection</h4>
-                                <p className="text-neutral-400 text-sm leading-relaxed">Early-stage anomaly warning across thermal, acoustic, and gas metrics before visual hive collapse.</p>
+                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-beeyield-green to-emerald-700 mb-4 tracking-tighter">95%</h3>
+                                <h4 className="text-lg font-bold text-neutral-900 mb-2">Disease detection</h4>
+                                <p className="text-neutral-600 text-sm leading-relaxed">Early-stage anomaly warning across thermal, acoustic, and gas metrics before visual hive collapse.</p>
                             </div>
                             <div>
-                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-400 mb-4 tracking-tighter">10x</h3>
-                                <h4 className="text-lg font-bold text-white mb-2">Faster intervention</h4>
-                                <p className="text-neutral-400 text-sm leading-relaxed">Automated cloud alerts allow targeted organic treatments days before comb cross-contamination.</p>
+                                <h3 className="text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-beeyield-green to-emerald-700 mb-4 tracking-tighter">10x</h3>
+                                <h4 className="text-lg font-bold text-neutral-900 mb-2">Faster intervention</h4>
+                                <p className="text-neutral-600 text-sm leading-relaxed">Automated cloud alerts allow targeted organic treatments days before comb cross-contamination.</p>
                             </div>
                         </div>
                     </div>
@@ -962,17 +962,17 @@ const Diseases = () => {
             {/* ═══════════════════════════════════════════════════════════════
                 LIVE FIELD INSPECTION GALLERY — Multiple 3-Photo Slideshows
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-24 bg-neutral-950 text-white border-b border-neutral-800 relative overflow-hidden">
+            <section className="py-24 bg-white text-neutral-900 border-b border-neutral-200/80 relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16 max-w-3xl mx-auto">
-                        <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
+                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
                             Real Hive Deployments
                         </Badge>
-                        <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4">
+                        <h2 className="text-3xl lg:text-5xl font-bold tracking-tight mb-4 text-neutral-900">
                             Live In-Hive <span className="text-beeyield-green">Sensor Inspections</span>
                         </h2>
                         <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
-                        <p className="text-neutral-400 text-base leading-relaxed">
+                        <p className="text-neutral-600 text-base leading-relaxed">
                             4 specialized 3-photo slideshows demonstrating early pathogen screening, autonomous field hardware, in-hive bio-sensors, and biocompatible comb integration.
                         </p>
                     </div>
@@ -1007,7 +1007,7 @@ const Diseases = () => {
                             badge="Pathogen Defense"
                             title="Disease & Thermal Probes"
                             subtitle="In-hive VOC, acoustic & thermal sensors"
-                            dark={true}
+                            dark={false}
                         />
 
                         {/* Slideshow 2: Field Telemetry & Gateway */}
@@ -1038,7 +1038,7 @@ const Diseases = () => {
                             badge="Field Hardware"
                             title="Solar Gateways & Stands"
                             subtitle="Autonomous field telemetry hubs"
-                            dark={true}
+                            dark={false}
                         />
 
                         {/* Slideshow 3: Bio-Sensor Interaction */}
@@ -1069,7 +1069,7 @@ const Diseases = () => {
                             badge="Biocompatibility"
                             title="ApiSense Bio-Sensors"
                             subtitle="Live bee interaction on PCB"
-                            dark={true}
+                            dark={false}
                         />
 
                         {/* Slideshow 4: Scales & Comb Wax */}
@@ -1100,7 +1100,7 @@ const Diseases = () => {
                             badge="Pathogen & Scales"
                             title="Scales & Disease Screening"
                             subtitle="Continuous scales & pathogen defense"
-                            dark={true}
+                            dark={false}
                         />
                     </div>
                 </div>
@@ -1282,24 +1282,24 @@ const Diseases = () => {
             {/* ═══════════════════════════════════════════════════════════════
                 ADVANTAGE TABLE — BeeYield × Apisense
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-24 bg-neutral-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-10 pointer-events-none" />
+            <section className="py-24 bg-[#FAFAF8] text-neutral-900 border-b border-neutral-200/80 relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5 pointer-events-none" />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="text-center mb-16 max-w-3xl mx-auto">
-                        <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
+                        <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">
                             Technology × Pollination
                         </Badge>
-                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4">
+                        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight mb-4 text-neutral-900">
                             The BeeYield & Apisense <span className="text-beeyield-green">Advantage</span>
                         </h2>
                     </div>
 
                     <div className="max-w-6xl mx-auto space-y-4">
                         {/* Table Header */}
-                        <div className="hidden md:grid md:grid-cols-3 gap-4 px-8 pb-4 border-b border-white/10">
-                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Feature</span>
-                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Apisense Technology</span>
-                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">BeeYield Pollination Benefit</span>
+                        <div className="hidden md:grid md:grid-cols-3 gap-4 px-8 pb-4 border-b border-neutral-200">
+                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Feature</span>
+                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Apisense Technology</span>
+                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">BeeYield Pollination Benefit</span>
                         </div>
 
                         {advantageTable.map((row, index) => (
@@ -1309,16 +1309,16 @@ const Diseases = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.08 }}
-                                className="grid md:grid-cols-3 gap-6 p-8 bg-white/5 rounded-2xl border border-white/5 hover:bg-white/10 transition-all"
+                                className="grid md:grid-cols-3 gap-6 p-8 bg-white rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md hover:border-beeyield-green/30 transition-all"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="h-10 w-10 shrink-0 rounded-xl bg-beeyield-green/20 flex items-center justify-center text-beeyield-green">
+                                    <div className="h-10 w-10 shrink-0 rounded-xl bg-beeyield-green/10 flex items-center justify-center text-beeyield-green">
                                         {row.icon}
                                     </div>
-                                    <span className="font-bold text-sm">{row.feature}</span>
+                                    <span className="font-bold text-sm text-neutral-900">{row.feature}</span>
                                 </div>
-                                <p className="text-neutral-400 text-sm leading-relaxed">{row.technology}</p>
-                                <p className="text-beeyield-green/90 text-sm leading-relaxed font-medium">{row.benefit}</p>
+                                <p className="text-neutral-600 text-sm leading-relaxed">{row.technology}</p>
+                                <p className="text-emerald-700 text-sm leading-relaxed font-semibold">{row.benefit}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -1557,22 +1557,22 @@ const Diseases = () => {
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="max-w-4xl mx-auto text-center mb-32 bg-neutral-900 p-16 rounded-[3rem] shadow-[0_40px_80px_rgba(0,0,0,0.15)] relative overflow-hidden"
+                        className="max-w-4xl mx-auto text-center mb-32 bg-gradient-to-br from-emerald-50 via-white to-neutral-50 p-12 sm:p-16 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-emerald-100/80 relative overflow-hidden"
                     >
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none" />
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5 pointer-events-none" />
                         <div className="relative z-10">
-                            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-8 px-5 py-2 font-semibold text-[10px] rounded-full">
+                            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-8 px-5 py-2 font-semibold text-[10px] rounded-full">
                                 Shaping the Future of Beekeeping
                             </Badge>
-                            <h2 className="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-6">
+                            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-6">
                                 Try Apisense in Your Apiary — <span className="text-beeyield-green">2026 & Beyond</span>
                             </h2>
-                            <p className="text-neutral-400 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
+                            <p className="text-neutral-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
                                 BeeYield's participation in the 2026 Apisense Global Field Research is more than just a technological upgrade — it is a commitment to the future of global food security. You will gain early access to innovative solutions and have a real impact on their development.
                             </p>
                             <Button
                                 size="lg"
-                                className="h-16 px-12 bg-beeyield-green text-neutral-900 font-bold text-sm rounded-2xl hover:bg-beeyield-green/90 shadow-[0_0_40px_rgba(45,168,79,0.3)] transition-all hover:scale-[1.02] active:scale-95"
+                                className="h-16 px-12 bg-beeyield-green text-neutral-950 font-bold text-sm rounded-2xl hover:bg-emerald-600 hover:text-white shadow-[0_10px_30px_rgba(45,168,79,0.25)] transition-all hover:scale-[1.02] active:scale-95"
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Join the 2026 Research Program <ArrowRight className="ml-2 h-5 w-5" />
@@ -1710,7 +1710,7 @@ const Diseases = () => {
                                         </div>
                                         <Button
                                             type="submit"
-                                            className="w-full h-16 rounded-2xl bg-neutral-900 text-beeyield-green font-bold text-xs shadow-2xl shadow-neutral-900/30 hover:scale-[1.02] active:scale-95 transition-all"
+                                            className="w-full h-16 rounded-2xl bg-beeyield-green text-neutral-950 hover:bg-emerald-600 hover:text-white font-bold text-xs shadow-2xl shadow-beeyield-green/30 hover:scale-[1.02] active:scale-95 transition-all"
                                             disabled={loading}
                                         >
                                             {loading ? "Sending..." : "Send Inquiry"}

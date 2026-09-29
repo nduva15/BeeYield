@@ -361,7 +361,7 @@ const PrecisionPollination = () => {
                   >
                       <Button
                           size="lg"
-                          className="h-14 px-10 bg-neutral-900 text-beeyield-green font-bold text-xs rounded-2xl hover:bg-neutral-800 transition-all shadow-xl shadow-neutral-900/20"
+                          className="h-14 px-10 bg-beeyield-green text-neutral-950 font-bold text-xs rounded-2xl hover:bg-emerald-600 hover:text-white transition-all shadow-xl shadow-beeyield-green/20"
                           onClick={() => document.getElementById('in-hive-form')?.scrollIntoView({ behavior: 'smooth' })}
                       >
                           Get a Free Consultation <ArrowRight className="ml-2 h-4 w-4" />
@@ -384,7 +384,7 @@ const PrecisionPollination = () => {
                       viewport={{ once: true }}
                       className="relative"
                   >
-                      <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-900 group">
+                      <div className="relative rounded-[3rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] aspect-square bg-neutral-100 group">
                           <img
                               src={BEEHUB_IMAGES.deployed}
                               alt="In-hive telemetry probe deployed inside active beehive with clustering bees"
@@ -546,7 +546,7 @@ const PrecisionPollination = () => {
                       viewport={{ once: true }}
                       className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
                   >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
+                      <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
                           <img src="/images/pollination/gateway-solar-node.png" alt="Solar LTE IoT Gateway node deployed on hive with dual antennas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
@@ -562,7 +562,7 @@ const PrecisionPollination = () => {
                       transition={{ delay: 0.1 }}
                       className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
                   >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
+                      <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
                           <img src="/images/pollination/hive-scale-loadcell.png" alt="Precision load cell scale mounted under wooden hive" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                       </div>
                       <div className="p-6 bg-white">
@@ -736,7 +736,7 @@ const PrecisionPollination = () => {
                       className="relative"
                   >
                       <div className="relative mx-auto max-w-lg">
-                          <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-neutral-900 aspect-[4/3]">
+                          <div className="rounded-[2rem] overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.18)] border border-neutral-200 bg-neutral-100 aspect-[4/3]">
                               <img
                                   src="/images/beehub/beeyield-dashboard.png"
                                   alt="Real worker bees building fresh honeycomb wax along in-hive telemetry sensor probe"
@@ -770,7 +770,7 @@ const PrecisionPollination = () => {
                 viewport={{ once: true }}
                 className="bg-white rounded-[2rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] p-5 border border-neutral-100 hover:-translate-y-4 hover:shadow-[0_48px_80px_-16px_rgba(0,0,0,0.2)] transition-all duration-500 w-full max-w-sm"
               >
-                <div className="aspect-[3/4] bg-neutral-900 rounded-[1.5rem] flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
+                <div className="aspect-[3/4] bg-gradient-to-br from-emerald-800 to-emerald-950 rounded-[1.5rem] flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/20 rounded-full blur-3xl" />
                   <div className="absolute bottom-0 left-0 w-32 h-32 bg-beeyield-green/20 rounded-full blur-3xl" />
                   
@@ -804,7 +804,7 @@ const PrecisionPollination = () => {
               <p className="text-muted-foreground mb-8">
                 Download our free guide to understand bees and how to get the most from them during pollination.
               </p>
-              <Button className="h-14 px-8 bg-neutral-900 hover:bg-neutral-800 text-neutral-900 font-bold text-xs rounded-2xl shadow-xl transition-all" asChild>
+              <Button className="h-14 px-8 bg-beeyield-green hover:bg-emerald-600 text-neutral-950 font-bold text-xs rounded-2xl shadow-xl shadow-beeyield-green/20 transition-all" asChild>
                 <Link to="/learn">Download the Free Guide <ArrowRight className="h-4 w-4 ml-2" /></Link>
               </Button>
             </div>

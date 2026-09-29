@@ -65,7 +65,7 @@ export const ThreePhotoSlideshow: React.FC<ThreePhotoSlideshowProps> = ({
     >
       {/* Header if provided */}
       {(title || badge) && (
-        <div className="p-6 md:p-8 pb-4 border-b border-neutral-800/50 flex flex-wrap items-center justify-between gap-4">
+        <div className={`p-6 md:p-8 pb-4 border-b ${dark ? "border-neutral-800/50" : "border-neutral-100"} flex flex-wrap items-center justify-between gap-4`}>
           <div>
             {badge && (
               <Badge
@@ -118,7 +118,7 @@ export const ThreePhotoSlideshow: React.FC<ThreePhotoSlideshowProps> = ({
       )}
 
       {/* Main Image Stage */}
-      <div className={`relative ${aspectRatio} overflow-hidden bg-neutral-950 flex items-center justify-center group`}>
+      <div className={`relative ${aspectRatio} overflow-hidden ${dark ? "bg-neutral-950" : "bg-neutral-100"} flex items-center justify-center group`}>
         <AnimatePresence mode="wait">
           <motion.img
             key={activeIdx}
