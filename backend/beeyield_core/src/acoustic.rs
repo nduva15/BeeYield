@@ -54,7 +54,7 @@ impl AcousticEngine {
         let mut piping_count = 0;
 
         for item in results.iter() {
-            let res: Bound<'_, PyDict> = item.downcast()?.clone();
+            let res: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             
             let state: String = res.get_item("state")?.unwrap().extract()?;
             let confidence: f64 = res.get_item("confidence")?.unwrap().extract()?;

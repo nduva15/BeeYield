@@ -46,7 +46,7 @@ impl SearchEngine {
 
         // Pass 1: Statistics
         for item in nodes.iter() {
-            let node = item.downcast::<PyDict>()?;
+            let node = item.cast::<PyDict>()?;
             let content: String = match node.get_item("content")? {
                 Some(c) => c.extract::<String>()?.to_lowercase(),
                 None => "".to_string(),
@@ -71,7 +71,7 @@ impl SearchEngine {
         // Pass 2: Scoring
         let mut scored = Vec::new();
         for (idx, item) in nodes.iter().enumerate() {
-            let node = item.downcast::<PyDict>()?;
+            let node = item.cast::<PyDict>()?;
             let content: String = match node.get_item("content")? {
                 Some(c) => c.extract::<String>()?.to_lowercase(),
                 None => "".to_string(),
@@ -120,13 +120,13 @@ impl SearchEngine {
         let mut reranked = Vec::new();
 
         for item in candidates.iter() {
-            let cand = item.downcast::<PyDict>()?;
+            let cand = item.cast::<PyDict>()?;
             let orig_score: f64 = match cand.get_item("score")? {
                 Some(s) => s.extract()?,
                 None => 0.0,
             };
             let node = match cand.get_item("node")? {
-                Some(n) => n.downcast::<PyDict>()?.clone(),
+                Some(n) => n.cast::<PyDict>()?.clone(),
                 None => continue,
             };
             
@@ -135,7 +135,7 @@ impl SearchEngine {
                 None => "".to_string(),
             };
             let meta = match node.get_item("metadata")? {
-                Some(m) => m.downcast::<PyDict>()?.clone(),
+                Some(m) => m.cast::<PyDict>()?.clone(),
                 None => continue,
             };
 
@@ -185,12 +185,12 @@ impl SearchEngine {
         let deduped = PyList::empty(py);
 
         for item in results.iter() {
-            let result_obj = item.downcast::<PyDict>()?;
+            let result_obj = item.cast::<PyDict>()?;
             let node_any = match result_obj.get_item("node")? {
                 Some(n) => n,
                 None => continue,
             };
-            let node = node_any.downcast::<PyDict>()?;
+            let node = node_any.cast::<PyDict>()?;
             let content: String = match node.get_item("content")? {
                 Some(c) => c.extract()?,
                 None => "".to_string(),

@@ -36,7 +36,7 @@ impl AdminDashboardEngine {
         let pending_orders = orders
             .iter()
             .filter(|o| {
-                o.downcast::<PyDict>()
+                o.cast::<PyDict>()
                     .ok()
                     .and_then(|d| d.get_item("status").ok().flatten())
                     .and_then(|s| s.extract::<String>().ok())
@@ -48,7 +48,7 @@ impl AdminDashboardEngine {
         let active_products = products
             .iter()
             .filter(|p| {
-                p.downcast::<PyDict>()
+                p.cast::<PyDict>()
                     .ok()
                     .and_then(|d| d.get_item("is_active").ok().flatten())
                     .and_then(|v| v.extract::<bool>().ok())
@@ -58,7 +58,7 @@ impl AdminDashboardEngine {
 
         let mut total_revenue: f64 = 0.0;
         for o in orders.iter() {
-            if let Ok(d) = o.downcast::<PyDict>() {
+            if let Ok(d) = o.cast::<PyDict>() {
                 if let Some(status) = d.get_item("status").ok().flatten() {
                     if let Ok(s) = status.extract::<String>() {
                         if s.eq_ignore_ascii_case("cancelled") {
@@ -78,7 +78,7 @@ impl AdminDashboardEngine {
 
         let mut total_honey_kg: f64 = 0.0;
         for b in batches.iter() {
-            if let Ok(d) = b.downcast::<PyDict>() {
+            if let Ok(d) = b.cast::<PyDict>() {
                 let qty: f64 = d
                     .get_item("quantity_kg")
                     .ok()
@@ -97,7 +97,7 @@ impl AdminDashboardEngine {
 
         let mut total_acres: f64 = 0.0;
         for p in pollination_contracts.iter() {
-            if let Ok(d) = p.downcast::<PyDict>() {
+            if let Ok(d) = p.cast::<PyDict>() {
                 let acres: f64 = d
                     .get_item("farm_size_acres")
                     .ok()

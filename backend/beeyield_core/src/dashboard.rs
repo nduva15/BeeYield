@@ -34,7 +34,7 @@ impl DashboardEngine {
         // Sum helpers
         let mut total_honey_kg: f64 = 0.0;
         for item in harvests.iter() {
-            let dict: Bound<'_, PyDict> = item.downcast()?.clone();
+            let dict: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let qty: f64 = dict
                 .get_item("quantity_kg")?
                 .and_then(|v| v.extract().ok())
@@ -44,7 +44,7 @@ impl DashboardEngine {
 
         let mut total_acres: f64 = 0.0;
         for item in apiaries.iter() {
-            let dict: Bound<'_, PyDict> = item.downcast()?.clone();
+            let dict: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let acres: f64 = dict
                 .get_item("size_acres")?
                 .and_then(|v| v.extract().ok())
@@ -55,7 +55,7 @@ impl DashboardEngine {
         let pending_tasks = tasks
             .iter()
             .filter(|t| {
-                t.downcast::<PyDict>()
+                t.cast::<PyDict>()
                     .ok()
                     .and_then(|d| d.get_item("status").ok().flatten())
                     .and_then(|s| s.extract::<String>().ok())
@@ -67,7 +67,7 @@ impl DashboardEngine {
         let active_hives = hives
             .iter()
             .filter(|h| {
-                h.downcast::<PyDict>()
+                h.cast::<PyDict>()
                     .ok()
                     .and_then(|d| d.get_item("status").ok().flatten())
                     .and_then(|s| s.extract::<String>().ok())
@@ -82,7 +82,7 @@ impl DashboardEngine {
         let active_apiaries = apiaries
             .iter()
             .filter(|a| {
-                a.downcast::<PyDict>()
+                a.cast::<PyDict>()
                     .ok()
                     .and_then(|d| d.get_item("status").ok().flatten())
                     .and_then(|s| s.extract::<String>().ok())

@@ -304,7 +304,7 @@ impl PollinationEngine {
         let mut total_hives_deployed = 0;
 
         for item in contracts.iter() {
-            let c: Bound<'_, PyDict> = item.downcast()?.clone();
+            let c: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let status: String = c.get_item("status")?.unwrap().extract()?;
 
             if status == "active" {
@@ -334,7 +334,7 @@ impl PollinationEngine {
         let mut critical = 0;
 
         for item in sensor_data.iter() {
-            let s: Bound<'_, PyDict> = item.downcast()?.clone();
+            let s: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let status: String = s.get_item("status")?.unwrap().extract()?;
             match status.as_str() {
                 "healthy" => healthy += 1,

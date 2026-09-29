@@ -35,7 +35,7 @@ impl IngestionEngine {
         let result_list = PyList::empty(py);
 
         for item in items.iter() {
-            let raw: Bound<'_, PyDict> = item.downcast()?.clone();
+            let raw: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let transformed = match domain {
                 "academic" => self.transform_academic(py, &raw)?,
                 "iot_acoustic" => self.transform_iot(py, &raw)?,
@@ -65,12 +65,12 @@ impl IngestionEngine {
         let mut reliability_count = 0;
 
         for item in nodes.iter() {
-            let node: Bound<'_, PyDict> = item.downcast()?.clone();
+            let node: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             total_nodes += 1;
 
             let meta_obj = node.get_item("metadata")?;
             if let Some(meta) = meta_obj {
-                let meta_dict: Bound<'_, PyDict> = meta.downcast()?.clone();
+                let meta_dict: Bound<'_, PyDict> = meta.cast::<PyDict>()?.clone();
                 
                 if let Some(d) = meta_dict.get_item("knowledge_domain")? {
                     *domain_counts.entry(d.extract()?).or_insert(0) += 1;
@@ -107,7 +107,7 @@ impl IngestionEngine {
     ) -> PyResult<Vec<usize>> {
         let mut keep_indices = Vec::new();
         for (i, item) in new_nodes.iter().enumerate() {
-            let node: Bound<'_, PyDict> = item.downcast()?.clone();
+            let node: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let content: String = node.get_item("content")?.ok_or_else(|| pyo3::exceptions::PyKeyError::new_err("content"))?.extract()?;
             
             let mut hasher = Sha256::new();

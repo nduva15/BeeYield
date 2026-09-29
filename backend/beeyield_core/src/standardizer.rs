@@ -303,7 +303,7 @@ impl MetadataEngine {
         let mut errors: Vec<String> = Vec::new();
 
         for item in raw_items.iter() {
-            let dict: Bound<'py, PyDict> = item.downcast()?.clone();
+            let dict: Bound<'py, PyDict> = item.cast::<PyDict>()?.clone();
             match self.standardize_internal(&dict) {
                 Ok(nodes) => all_nodes.extend(nodes),
                 Err(e) => errors.push(format!("{}", e)),

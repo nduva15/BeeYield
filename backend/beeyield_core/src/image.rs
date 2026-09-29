@@ -52,7 +52,7 @@ impl ImageEngine {
         let mut total_classified = 0;
 
         for item in detections.iter() {
-            let d: Bound<'_, PyDict> = item.downcast()?.clone();
+            let d: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let health_res = d.get_item("health")?;
             let health: String = match health_res {
                 Some(h) => h.extract()?,
@@ -117,7 +117,7 @@ impl ImageEngine {
     ) -> PyResult<Vec<Bound<'py, PyDict>>> {
         let mut classified = Vec::new();
         for (idx, item) in detections.iter().enumerate() {
-            let d: Bound<'_, PyDict> = item.downcast()?.clone();
+            let d: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             // Use confidence and a stable id-derived hash to pick a label (no randomness).
             let conf: f64 = d
                 .get_item("confidence")?
@@ -159,7 +159,7 @@ impl ImageEngine {
         let mut score: i32 = 100;
 
         for item in indicators.iter() {
-            let ind: Bound<'_, PyDict> = item.downcast()?.clone();
+            let ind: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let sev_res = ind.get_item("severity")?;
             let severity: String = match sev_res {
                 Some(s) => s.extract()?,
@@ -213,7 +213,7 @@ impl ImageEngine {
         }
 
         for item in indicators.iter() {
-            let ind: Bound<'_, PyDict> = item.downcast()?.clone();
+            let ind: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             let disease: String = ind.get_item("disease")?.and_then(|d| d.extract().ok()).unwrap_or_default();
             let prob: f64 = ind.get_item("probability")?.and_then(|p| p.extract().ok()).unwrap_or(0.0);
 

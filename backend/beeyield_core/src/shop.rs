@@ -33,7 +33,7 @@ impl ShopEngine {
     pub fn calculate_total_weight(&self, items: &Bound<'_, PyList>) -> PyResult<i64> {
         let mut total_grams = 0;
         for item in items.iter() {
-            let item_dict = item.downcast::<PyDict>()?;
+            let item_dict = item.cast::<PyDict>()?;
             if let Some(name_bound) = item_dict.get_item("product_name")? {
                 let name = name_bound.extract::<String>()?.to_lowercase();
                 if name.contains("honey") || name.contains("acacia") || name.contains("blossom") {
@@ -62,7 +62,7 @@ impl ShopEngine {
     ) -> PyResult<Bound<'py, PyList>> {
         let mut total_honey_weight = 0;
         for item in items.iter() {
-            let item_dict = item.downcast::<PyDict>()?;
+            let item_dict = item.cast::<PyDict>()?;
             let name_result = item_dict.get_item("product_name")?.or(item_dict.get_item("name")?);
             if let Some(name_bound) = name_result {
                 let name = name_bound.extract::<String>()?.to_lowercase();
@@ -110,7 +110,7 @@ impl ShopEngine {
     /// 2. If it does, return the existing record immediately.
     /// 3. If not, create a placeholder record and proceed.
     #[pyo3(signature = (idempotency_key, user_id, payload))]
-    pub fn process_idempotent(&self, py: Python<'_>, idempotency_key: String, user_id: Option<String>, payload: &Bound<'_, PyDict>) -> PyResult<PyObject> {
+    pub fn process_idempotent<'py>(&self, py: Python<'py>, idempotency_key: String, user_id: Option<String>, payload: &Bound<'_, PyDict>) -> PyResult<Bound<'py, PyAny>> {
         let db = py.import("app.db.supabase_db")?;
         let db_select_sync = db.getattr("db_select_sync")?;
         let db_insert_sync = db.getattr("db_insert_sync")?;
@@ -129,11 +129,11 @@ impl ShopEngine {
         
         // Use sync SELECT
         let result_py = db_select_sync.call(("billing_ledger",), Some(&kwargs))?;
-        let existing: Bound<'_, PyList> = result_py.downcast_into::<PyList>()?;
+        let existing: Bound<'py, PyList> = result_py.cast_into::<PyList>()?;
         
         if existing.len() > 0 {
             // Found cached transaction — return the first match
-            return Ok(existing.get_item(0)?.unbind());
+            return existing.get_item(0);
         }
 
         // Part 2: Proceed with new transaction record
@@ -163,8 +163,7 @@ impl ShopEngine {
             data_py.set_item(k, v)?;
         }
         
-        let result = db_insert_sync.call(("billing_ledger", data_py), None)?;
-        Ok(result.unbind())
+        db_insert_sync.call(("billing_ledger", data_py), None)
     }
 
     /// Check if a combined weight exceeds the total harvest limit.
@@ -177,7 +176,7 @@ impl ShopEngine {
     pub fn validate_order_prices(&self, items: &Bound<'_, PyList>, price_map: &Bound<'_, PyDict>) -> PyResult<f64> {
         let mut calculated_total = 0.0;
         for item in items.iter() {
-            let item_dict = item.downcast::<PyDict>()?;
+            let item_dict = item.cast::<PyDict>()?;
             let _product_id = item_dict.get_item("product_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("product_id missing"))?.extract::<String>()?;
             let variant_id = item_dict.get_item("variant_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("variant_id missing"))?.extract::<String>()?;
             let quantity = item_dict.get_item("quantity")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("quantity missing"))?.extract::<i64>()?;

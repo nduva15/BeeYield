@@ -46,13 +46,13 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Standalone functional helpers
     #[pyfunction]
     #[pyo3(signature = (order_id, status, payment_status=None, token=None))]
-    fn rust_update_order_status(
-        py: Python<'_>,
+    fn rust_update_order_status<'py>(
+        py: Python<'py>,
         order_id: String,
         status: String,
         payment_status: Option<String>,
         token: Option<String>,
-    ) -> PyResult<PyObject> {
+    ) -> PyResult<Bound<'py, PyAny>> {
         let db = py.import("app.db.supabase_db")?;
         let db_update = db.getattr("db_update")?;
         
@@ -70,7 +70,7 @@ fn honey_rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
             kwargs.set_item("token", t)?;
         }
         
-        db_update.call(( "orders", update_data), Some(&kwargs))?.extract()
+        db_update.call(("orders", update_data), Some(&kwargs))
     }
 
     #[pyfunction]

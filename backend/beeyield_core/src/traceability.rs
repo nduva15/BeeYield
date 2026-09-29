@@ -81,7 +81,7 @@ impl TraceabilityEngine {
         let mut farmer_ids = std::collections::HashSet::new();
 
         for item in records.iter() {
-            let r: Bound<'_, PyDict> = item.downcast()?.clone();
+            let r: Bound<'_, PyDict> = item.cast::<PyDict>()?.clone();
             total_kg += r.get_item("quantity_kg")?.unwrap().extract::<f64>()?;
             if let Some(h) = r.get_item("hive_id")? {
                 hive_ids.insert(h.extract::<String>()?);
