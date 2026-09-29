@@ -447,7 +447,7 @@ jobs:
     needs: [build-frontend, build-backend]
     if: github.ref == 'refs/heads/staging' || github.event.inputs.environment == 'staging'
     environment:
-      name: 
+      name: staging
     
     steps:
       - name: Checkout Code
