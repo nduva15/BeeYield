@@ -21,6 +21,7 @@ use pyo3::types::PyDict;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BBox {
     pub x: i32,
@@ -111,7 +112,7 @@ impl ImageEngine {
     /// Adds `health` and `health_confidence` fields to each detection dict.
     fn classify_health<'py>(
         &self,
-        py: Python<'py>,
+        _py: Python<'py>,
         detections: &Bound<'py, pyo3::types::PyList>,
     ) -> PyResult<Vec<Bound<'py, PyDict>>> {
         let mut classified = Vec::new();

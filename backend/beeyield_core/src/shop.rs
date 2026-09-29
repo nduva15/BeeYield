@@ -178,7 +178,7 @@ impl ShopEngine {
         let mut calculated_total = 0.0;
         for item in items.iter() {
             let item_dict = item.downcast::<PyDict>()?;
-            let product_id = item_dict.get_item("product_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("product_id missing"))?.extract::<String>()?;
+            let _product_id = item_dict.get_item("product_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("product_id missing"))?.extract::<String>()?;
             let variant_id = item_dict.get_item("variant_id")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("variant_id missing"))?.extract::<String>()?;
             let quantity = item_dict.get_item("quantity")?.ok_or_else(|| PyErr::new::<pyo3::exceptions::PyKeyError, _>("quantity missing"))?.extract::<i64>()?;
 

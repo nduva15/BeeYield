@@ -87,5 +87,3 @@ impl InvoicingEngine {
         Ok(template)
     }
 }
-# [cfg(feature = "none")] // placeholder to avoid compile errors if I need more complex SVG logic
-fn dummy() {}
