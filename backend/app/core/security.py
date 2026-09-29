@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional, Union, Any, Dict
-from jose import jwt, JWTError
+import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -48,17 +48,17 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
         if user_id is None:
             raise credentials_exception
         return payload
-    except JWTError:
+    except jwt.PyJWTError:
         if settings.DEBUG:
             # Fallback for development where SECRET_KEY might not match Supabase secret.
             # If the token itself is malformed, still return a clean 401 instead of a 500.
             try:
-                payload = jwt.get_unverified_claims(token)
+                payload = jwt.decode(token, options={"verify_signature": False})
                 user_id: str = payload.get("sub")
                 if user_id is None:
                     raise credentials_exception
                 return payload
-            except JWTError:
+            except jwt.PyJWTError:
                 raise credentials_exception
         raise credentials_exception
 
@@ -78,10 +78,10 @@ def get_optional_current_user(token: Optional[str] = Depends(OAuth2PasswordBeare
             options={"verify_aud": False}
         )
         return payload
-    except JWTError:
+    except jwt.PyJWTError:
         if settings.DEBUG:
             try:
-                return jwt.get_unverified_claims(token)
-            except JWTError:
+                return jwt.decode(token, options={"verify_signature": False})
+            except jwt.PyJWTError:
                 return None
         return None

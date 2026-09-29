@@ -1381,18 +1381,31 @@ const Diseases = () => {
                                 ))}
                             </div>
 
-                            {/* Mobile Frame Container */}
-                            <div className="relative mx-auto max-w-[360px]">
-                                <div className="rounded-[2.5rem] overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.2)] border-[8px] border-neutral-900 bg-neutral-950">
-                                    <div className="relative aspect-[9/18] overflow-hidden bg-neutral-950 flex items-center justify-center">
+                            {/* Desktop Platform Frame Container */}
+                            <div className="relative mx-auto w-full">
+                                <div className="rounded-[2rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white">
+                                    <div className="px-4 py-2.5 bg-neutral-100/80 border-b border-neutral-200/70 flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                                            <div className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
+                                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
+                                        </div>
+                                        <div className="text-[11px] font-mono text-neutral-500 font-medium truncate max-w-[220px]">
+                                            app.beeyield.com/pathology
+                                        </div>
+                                        <Badge className="bg-beeyield-green/15 text-beeyield-green border-none text-[9px] font-bold px-2 py-0.5">
+                                            Live Platform
+                                        </Badge>
+                                    </div>
+                                    <div className="relative overflow-hidden bg-[#FAF9F5] p-2 sm:p-3 flex items-center justify-center">
                                         <motion.img
                                             key={activeAppScreenIdx}
-                                            initial={{ opacity: 0, scale: 0.96 }}
+                                            initial={{ opacity: 0, scale: 0.98 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ duration: 0.3 }}
                                             src={REAL_APP_SCREENS[activeAppScreenIdx].src}
                                             alt={REAL_APP_SCREENS[activeAppScreenIdx].title}
-                                            className="w-full h-full object-contain"
+                                            className="w-full h-auto object-contain rounded-xl"
                                         />
                                     </div>
                                 </div>

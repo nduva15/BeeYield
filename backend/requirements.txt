@@ -6,7 +6,7 @@ python-multipart>=0.0.20
 pydantic>=2.5.0
 pydantic-settings
 email-validator
-python-jose[cryptography]
+pyjwt[crypto]>=2.8.0
 passlib[bcrypt]
 
 # Database

@@ -159,8 +159,42 @@ const FeatureShowcaseSection = () => {
   );
 };
 
+const INLAND_DASHBOARD_SCREENS = [
+  {
+    id: "microclimate",
+    label: "Microclimate & 5-Day Forecast",
+    badge: "Open-Meteo Weather",
+    url: "app.beeyield.com/in-land/microclimate",
+    src: "/images/dashboard/dashboard-microclimate-forecast.png",
+    alt: "BeeYield Live Microclimate & 5-Day Forecast",
+    floatingBadge1: "Open-Meteo Live API",
+    floatingBadge2: "Optimal Flight Window • 184 Hives",
+  },
+  {
+    id: "telemetry",
+    label: "Colony Sensor Telemetry",
+    badge: "IoT Telemetry Stream",
+    url: "app.beeyield.com/in-land/telemetry",
+    src: "/images/dashboard/dashboard-hive-telemetry.png",
+    alt: "In-Hive Telemetry with Acoustic Audits and Varroa Guard",
+    floatingBadge1: "Live Biometric Telemetry",
+    floatingBadge2: "Varroa & Hornet Guard Active",
+  },
+  {
+    id: "colonies",
+    label: "Colony Directory & Yield",
+    badge: "Apiary Harvests",
+    url: "app.beeyield.com/in-land/colonies",
+    src: "/images/dashboard/dashboard-hive-directory.png",
+    alt: "Colony Directory showing Langstroth hives and FrameSense",
+    floatingBadge1: "16 kg Harvested (8 batches)",
+    floatingBadge2: "FrameSense AI Integrated",
+  },
+];
 
 const InLandPollination = () => {
+  const [activeInlandScreenIdx, setActiveInlandScreenIdx] = useState(0);
+  const currentInlandScreen = INLAND_DASHBOARD_SCREENS[activeInlandScreenIdx];
 
   const howItWorks = [
     {
@@ -511,20 +545,50 @@ const InLandPollination = () => {
                   </p>
               </div>
 
+              {/* Dashboard Showcase Tab Switcher */}
+              <div className="flex flex-wrap gap-2 justify-center mb-8">
+                  {INLAND_DASHBOARD_SCREENS.map((screen, idx) => (
+                      <button
+                          key={screen.id}
+                          onClick={() => setActiveInlandScreenIdx(idx)}
+                          className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                              activeInlandScreenIdx === idx
+                                  ? "bg-beeyield-green text-neutral-950 shadow-md shadow-beeyield-green/20"
+                                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                          }`}
+                      >
+                          {screen.label}
+                      </button>
+                  ))}
+              </div>
+
               {/* Full high-resolution easy to read dashboard screenshot presentation */}
               <motion.div
-                  initial={{ opacity: 0, y: 25 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5 }}
+                  key={currentInlandScreen.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
                   className="relative mx-auto max-w-5xl mb-14"
               >
-                  <div className="rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white p-2 sm:p-4">
-                      <div className="rounded-[2rem] overflow-hidden border border-neutral-100 bg-[#FAF9F5]">
+                  <div className="rounded-[2.5rem] overflow-hidden shadow-[0_32px_64px_rgba(0,0,0,0.12)] border border-neutral-200/90 bg-white">
+                      <div className="px-5 py-3 bg-neutral-100/80 border-b border-neutral-200/70 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 rounded-full bg-red-400/80" />
+                              <div className="w-3 h-3 rounded-full bg-amber-400/80" />
+                              <div className="w-3 h-3 rounded-full bg-emerald-400/80" />
+                          </div>
+                          <div className="text-xs font-mono text-neutral-500 font-medium">
+                              {currentInlandScreen.url}
+                          </div>
+                          <Badge className="bg-beeyield-green/15 text-beeyield-green border-none text-[10px] font-bold px-2.5 py-0.5">
+                              {currentInlandScreen.badge}
+                          </Badge>
+                      </div>
+                      <div className="p-2 sm:p-4 bg-[#FAF9F5]">
                           <img
-                              src={BEEYIELD_DASHBOARD}
-                              alt="BeeYield Apiary Microclimate & In-Land Telemetry Dashboard with Open-Meteo live weather, 5-day outlook, and certified harvest yields"
-                              className="w-full h-auto object-contain"
+                              src={currentInlandScreen.src}
+                              alt={currentInlandScreen.alt}
+                              className="w-full h-auto object-contain rounded-2xl"
                           />
                       </div>
                   </div>
@@ -532,11 +596,11 @@ const InLandPollination = () => {
                   {/* Floating badges */}
                   <div className="hidden sm:flex absolute -top-3 -right-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-beeyield-green" />
-                      <span className="text-xs font-bold text-neutral-900">Open-Meteo Live API</span>
+                      <span className="text-xs font-bold text-neutral-900">{currentInlandScreen.floatingBadge1}</span>
                   </div>
                   <div className="hidden sm:flex absolute -bottom-3 -left-3 bg-white rounded-2xl shadow-xl border border-neutral-100 px-4 py-2.5 items-center gap-2">
                       <Activity className="h-4 w-4 text-beeyield-green" />
-                      <span className="text-xs font-bold text-neutral-900">Optimal Flight Window • 184 Hives</span>
+                      <span className="text-xs font-bold text-neutral-900">{currentInlandScreen.floatingBadge2}</span>
                   </div>
               </motion.div>
 
