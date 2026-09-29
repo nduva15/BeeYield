@@ -135,6 +135,77 @@ const CommitmentPage = () => {
         </div>
       </section>
 
+      {/* SDGs Grid */}
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center space-y-4 mb-14">
+            <h2 className="text-3xl font-black md:text-4xl text-foreground">
+              Advancing 8 UN Sustainable Development Goals
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
+              Every hive deployed and every tree planted supports systemic social and environmental progress.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {sdgs.map((sdg) => {
+              const Icon = sdg.icon;
+              return (
+                <Card key={sdg.number} className="overflow-hidden border border-border/60 hover:shadow-lg transition-all flex flex-col justify-between bg-card">
+                  <div className={`h-2 bg-gradient-to-r ${sdg.color}`} />
+                  <CardContent className="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-black text-foreground">SDG {sdg.number}</span>
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                      </div>
+                      <h3 className="font-bold text-lg text-foreground leading-snug">{sdg.title}</h3>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{sdg.description}</p>
+                    </div>
+                    <div className="pt-3 border-t border-border/50">
+                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">
+                        Impact Metric:
+                      </span>
+                      <p className="text-xs font-semibold text-foreground/90 mt-0.5">{sdg.impact}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 relative overflow-hidden z-10 bg-secondary/10">
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto text-center bg-card rounded-[2.5rem] p-10 md:p-14 shadow-2xl border border-border/50 relative overflow-hidden">
+            <h2 className="text-3xl md:text-5xl font-black mb-4 relative z-10 text-foreground">
+              Join The <span className="text-primary">Movement</span>
+            </h2>
+
+            <p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto relative z-10">
+              Whether you're a farmer, investor, or sustainability advocate—there's a place for you in our mission to save bees and secure food systems.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-4 relative z-10">
+              <Link to="/blogs">
+                <Button size="lg" className="h-12 px-8 rounded-full font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
+                  Start Learning <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/about">
+                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full font-bold text-sm border-2 hover:bg-muted/50">
+                  Partner With Us
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─────────────────────────────────────────────────────────────
           SDG 15 & PROJECT PANDA MITI: REFORESTATION & BEE POLLINATION
       ───────────────────────────────────────────────────────────── */}
@@ -217,77 +288,6 @@ const CommitmentPage = () => {
                   Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SDGs Grid */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="text-center space-y-4 mb-14">
-            <h2 className="text-3xl font-black md:text-4xl text-foreground">
-              Advancing 8 UN Sustainable Development Goals
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-base">
-              Every hive deployed and every tree planted supports systemic social and environmental progress.
-            </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {sdgs.map((sdg) => {
-              const Icon = sdg.icon;
-              return (
-                <Card key={sdg.number} className="overflow-hidden border border-border/60 hover:shadow-lg transition-all flex flex-col justify-between bg-card">
-                  <div className={`h-2 bg-gradient-to-r ${sdg.color}`} />
-                  <CardContent className="p-6 space-y-4 flex-1 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-black text-foreground">SDG {sdg.number}</span>
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
-                          <Icon className="w-5 h-5" />
-                        </div>
-                      </div>
-                      <h3 className="font-bold text-lg text-foreground leading-snug">{sdg.title}</h3>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{sdg.description}</p>
-                    </div>
-                    <div className="pt-3 border-t border-border/50">
-                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 block">
-                        Impact Metric:
-                      </span>
-                      <p className="text-xs font-semibold text-foreground/90 mt-0.5">{sdg.impact}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 relative overflow-hidden z-10 bg-secondary/10">
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto text-center bg-card rounded-[2.5rem] p-10 md:p-14 shadow-2xl border border-border/50 relative overflow-hidden">
-            <h2 className="text-3xl md:text-5xl font-black mb-4 relative z-10 text-foreground">
-              Join The <span className="text-primary">Movement</span>
-            </h2>
-
-            <p className="text-base sm:text-lg text-muted-foreground mb-8 max-w-2xl mx-auto relative z-10">
-              Whether you're a farmer, investor, or sustainability advocate—there's a place for you in our mission to save bees and secure food systems.
-            </p>
-
-            <div className="flex flex-wrap justify-center gap-4 relative z-10">
-              <Link to="/blogs">
-                <Button size="lg" className="h-12 px-8 rounded-full font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-                  Start Learning <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full font-bold text-sm border-2 hover:bg-muted/50">
-                  Partner With Us
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

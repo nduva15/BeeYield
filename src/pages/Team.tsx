@@ -247,8 +247,9 @@ const Team = () => {
                             viewport={{ once: true }}
                             className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm"
                         >
-                            <img src={"https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80"} alt="Family Origins" className="w-full h-full object-cover grayscale opacity-20" />
-                            <div className="absolute inset-0 flex items-center justify-center p-12 text-center text-neutral-900">
+                            <img src={"/images/story/hives/savannah-log-hive-tree.jpg"} alt="Traditional log hive in acacia tree — our Kibwezi origins" className="w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-white/80 to-transparent" />
+                            <div className="absolute inset-0 flex items-end justify-center p-12 text-center text-neutral-900">
                                 <div className="space-y-4">
                                     <div className="h-16 w-16 bg-beeyield-green/10 rounded-full flex items-center justify-center mx-auto text-beeyield-green">
                                         <Home className="h-8 w-8" />

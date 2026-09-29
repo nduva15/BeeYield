@@ -30,6 +30,15 @@ const STORY_IMAGES = {
   combProbe3: '/images/pollination/hive-comb-inspection-8.png',
   fieldInspection1: '/images/diseases/hive-inspection-1.png',
   fieldInspection2: '/images/diseases/hive-inspection-2.png',
+  /* ── Real Hive Photos — Our Apiary Growth ──────────── */
+  apiaryLangstrothRow: '/images/story/hives/apiary-langstroth-row.jpg',
+  yellowLangstrothCloseup: '/images/story/hives/yellow-langstroth-closeup.jpg',
+  savannahLogHiveTree: '/images/story/hives/savannah-log-hive-tree.jpg',
+  hangingLogHivesCanopy: '/images/story/hives/hanging-log-hives-canopy.jpg',
+  apiaryHiveField1: '/images/story/hives/apiary-hive-field-1.jpg',
+  apiaryHiveField2: '/images/story/hives/apiary-hive-field-2.jpg',
+  acaciaTreeLogHive: '/images/story/hives/acacia-tree-log-hive.jpg',
+  savannahHangingHive: '/images/story/hives/savannah-hanging-hive.jpg',
 };
 
 
@@ -253,8 +262,8 @@ const OurStory = () => {
       <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32 border-b border-neutral-100">
         <div className="absolute inset-0">
           <img
-            src={STORY_IMAGES.deployedHive1}
-            alt="BeeYield IoT hive deployed in Kenyan apiary with solar antenna on roof"
+            src={STORY_IMAGES.apiaryLangstrothRow}
+            alt="BeeYield Langstroth hive apiary — yellow hives on wooden stands under acacia shade in Kibwezi, Kenya"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-white/94 via-white/86 to-white/96" />
@@ -473,11 +482,11 @@ const OurStory = () => {
               Our Story <span className="text-beeyield-green">in Photos</span>
             </h2>
             <p className="text-neutral-600 text-base">
-              4 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 intelligent hive stations across Kenya.
+              5 curated 3-photo slideshows tracking our journey from early in-hive hardware experiments in Kibwezi to 22 intelligent hive stations across Kenya.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-[90rem] mx-auto">
             
             {/* Slideshow 1: Origin & Early In-Hive Probes */}
             <ThreePhotoSlideshow
@@ -603,6 +612,37 @@ const OurStory = () => {
               dark={false}
             />
 
+            {/* Slideshow 5: Our Hives — Growth Through the Years */}
+            <ThreePhotoSlideshow
+              slides={[
+                {
+                  image: STORY_IMAGES.apiaryLangstrothRow,
+                  title: "Langstroth Apiary Row",
+                  subtitle: "Yellow Langstroth hives on wooden stands under acacia shade",
+                  badge: "184 Hives",
+                  description: "Our core apiary expanded from 4 inherited hives to rows of modern Langstroth colonies — each standing on elevated stands to protect from termites and flooding."
+                },
+                {
+                  image: STORY_IMAGES.yellowLangstrothCloseup,
+                  title: "Single Langstroth Close-Up",
+                  subtitle: "Hand-built yellow hive with tin roof and wire bracing",
+                  badge: "Hand-Crafted",
+                  description: "Every hive is built locally using sustainable timber and painted yellow for thermal regulation. Wire bracing and tin roofing protect against harsh Makueni weather."
+                },
+                {
+                  image: STORY_IMAGES.hangingLogHivesCanopy,
+                  title: "Traditional Log Hives in Canopy",
+                  subtitle: "Multiple carved log hives hanging from acacia branches",
+                  badge: "Heritage Craft",
+                  description: "Traditional Kamba log hives — the same design our father used. These are still active and some of our most productive colonies for wild-harvest honey."
+                }
+              ]}
+              badge="Our Hives"
+              title="Hive Growth Story"
+              subtitle="From 4 hives to 184 — real photos"
+              dark={false}
+            />
+
           </div>
         </div>
       </section>
@@ -690,29 +730,29 @@ const OurStory = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
-                  src={STORY_IMAGES.deployedHive2}
-                  alt="IoT hive with antenna on lid"
+                  src={STORY_IMAGES.apiaryLangstrothRow}
+                  alt="Row of BeeYield Langstroth hives on wooden stands in Kibwezi apiary"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
-                  src={STORY_IMAGES.combProbe2}
-                  alt="Comb disease detection on sensor frame"
+                  src={STORY_IMAGES.yellowLangstrothCloseup}
+                  alt="Close-up of hand-built yellow Langstroth hive with tin roof"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
-                  src={STORY_IMAGES.solarGateway}
-                  alt="Solar LTE IoT gateway"
+                  src={STORY_IMAGES.savannahLogHiveTree}
+                  alt="Traditional log hive mounted in acacia tree on the Kenyan savannah"
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="rounded-3xl overflow-hidden border border-neutral-200 shadow-lg aspect-square bg-neutral-900">
                 <img
-                  src={STORY_IMAGES.apisenseCloseup1}
-                  alt="ApiSense sensor board in hive"
+                  src={STORY_IMAGES.hangingLogHivesCanopy}
+                  alt="Multiple traditional log hives hanging from tree canopy branches"
                   className="w-full h-full object-cover"
                 />
               </div>
