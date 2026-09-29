@@ -25,48 +25,7 @@ interface ServerShopCard {
   created_at: string;
 }
 
-const serverShopCardDb: Map<string, ServerShopCard> = new Map([
-  [
-    "shop_card_honey_gold_01",
-    {
-      id: "shop_card_honey_gold_01",
-      user_id: "shop_usr_grace_wanjiku_01",
-      type: "shop_honey_card",
-      provider: "BeeYield Honey Card",
-      brand: "BeeYield Pay",
-      last4: "8842",
-      cardNumberMasked: "•••• •••• •••• 8842",
-      card_holder_name: "Grace Wanjiku",
-      expiry: "09/29",
-      is_default: true,
-      status: "active",
-      balance_kes: 18500,
-      spending_limit_kes: 100000,
-      tier: "Gold Member",
-      created_at: new Date().toISOString(),
-    },
-  ],
-  [
-    "shop_card_visa_retail_02",
-    {
-      id: "shop_card_visa_retail_02",
-      user_id: "shop_usr_grace_wanjiku_01",
-      type: "card",
-      provider: "Visa",
-      brand: "Visa",
-      last4: "4242",
-      cardNumberMasked: "•••• •••• •••• 4242",
-      card_holder_name: "Grace Wanjiku",
-      expiry: "12/28",
-      is_default: false,
-      status: "active",
-      balance_kes: 45000,
-      spending_limit_kes: 250000,
-      tier: "Standard Forager",
-      created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-    },
-  ],
-]);
+const serverShopCardDb: Map<string, ServerShopCard> = new Map();
 
 export const Route = createFileRoute("/api/shop/cards")({
   server: {

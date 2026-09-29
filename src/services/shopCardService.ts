@@ -27,63 +27,28 @@ export interface ShopCard {
 const STORAGE_KEY_SHOP_CARDS = "shop_vaulted_cards";
 const STORAGE_KEY_SHOP_BALANCE = "shop_card_balance_kes";
 
-const DEFAULT_SHOP_CARDS: ShopCard[] = [
-  {
-    id: "shop_card_honey_gold_01",
-    type: "shop_honey_card",
-    provider: "BeeYield Honey Card",
-    brand: "BeeYield Pay",
-    last4: "8842",
-    cardNumberMasked: "•••• •••• •••• 8842",
-    cardNumberFull: "4242 9812 3401 8842",
-    card_holder_name: "Grace Wanjiku",
-    expiry: "09/29",
-    expiry_month: 9,
-    expiry_year: 2029,
-    cvvMasked: "•••",
-    is_default: true,
-    status: "active",
-    balance_kes: 18500,
-    spending_limit_kes: 100000,
-    tier: "Gold Member",
-    created_at: new Date().toISOString(),
-    backend_source: "supabase_shop",
-  },
-  {
-    id: "shop_card_visa_retail_02",
-    type: "card",
-    provider: "Visa",
-    brand: "Visa",
-    last4: "4242",
-    cardNumberMasked: "•••• •••• •••• 4242",
-    cardNumberFull: "4000 1234 5678 4242",
-    card_holder_name: "Grace Wanjiku",
-    expiry: "12/28",
-    expiry_month: 12,
-    expiry_year: 2028,
-    cvvMasked: "•••",
-    is_default: false,
-    status: "active",
-    balance_kes: 45000,
-    spending_limit_kes: 250000,
-    tier: "Standard Forager",
-    created_at: new Date(Date.now() - 86400000 * 15).toISOString(),
-    backend_source: "supabase_shop",
-  },
-];
+const DEFAULT_SHOP_CARDS: ShopCard[] = [];
 
 export function getLocalShopCards(): ShopCard[] {
-  if (typeof window === "undefined") return DEFAULT_SHOP_CARDS;
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SHOP_CARDS);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY_SHOP_CARDS, JSON.stringify(DEFAULT_SHOP_CARDS));
-      return DEFAULT_SHOP_CARDS;
-    }
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_SHOP_CARDS;
+    const cleaned = Array.isArray(parsed)
+      ? parsed.filter(
+          (c: any) =>
+            !c?.id?.includes("honey_gold_01") &&
+            !c?.id?.includes("visa_retail_02") &&
+            c?.card_holder_name !== "Grace Wanjiku"
+        )
+      : [];
+    if (cleaned.length !== (parsed?.length || 0)) {
+      localStorage.setItem(STORAGE_KEY_SHOP_CARDS, JSON.stringify(cleaned));
+    }
+    return cleaned;
   } catch {
-    return DEFAULT_SHOP_CARDS;
+    return [];
   }
 }
 

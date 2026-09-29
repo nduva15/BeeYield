@@ -50,75 +50,36 @@ interface ShopAuthContextType {
 const STORAGE_KEY_SHOP_USER = "shop_local_user";
 const STORAGE_KEY_SHOP_ACCOUNTS = "shop_registered_accounts";
 
-const DEMO_ACCOUNTS: Record<string, ShopCustomerProfile> = {
-  retail: {
-    id: "shop_usr_grace_wanjiku_01",
-    email: "grace.wanjiku@beeyield-shop.com",
-    full_name: "Grace Wanjiku",
-    phone: "+254 722 102 304",
-    role: "customer",
-    avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-    shipping_address: {
-      street: "Ngong Road, Kilimani Heights Apt 4B",
-      city: "Nairobi",
-      county: "Nairobi",
-      postal_code: "00100",
-    },
-    total_orders_count: 5,
-    created_at: "2026-01-15T09:00:00Z",
-  },
-  wholesale: {
-    id: "shop_usr_kenya_organics_02",
-    email: "procurement@kenya-organics.co.ke",
-    full_name: "Kenya Organics Co-operative",
-    phone: "+254 711 445 566",
-    role: "wholesale",
-    company_name: "Kenya Organics Export Ltd",
-    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
-    shipping_address: {
-      street: "Mombasa Road Inland Depot Hub 12",
-      city: "Athi River",
-      county: "Machakos",
-      postal_code: "00204",
-    },
-    total_orders_count: 14,
-    created_at: "2025-11-20T14:30:00Z",
-  },
-  manager: {
-    id: "shop_usr_timothy_store_03",
-    email: "timothy.store@beeyield.com",
-    full_name: "Timothy Nduva (Store Dispatcher)",
-    phone: "+254 712 345 678",
-    role: "store_admin",
-    avatar_url: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
-    shipping_address: {
-      street: "Kibwezi Apiary Road Stand #42",
-      city: "Kibwezi",
-      county: "Makueni",
-      postal_code: "90137",
-    },
-    total_orders_count: 28,
-    created_at: "2025-08-10T10:00:00Z",
-  },
-};
+const DEMO_ACCOUNTS: Record<string, ShopCustomerProfile> = {};
 
 const getStoredShopCustomer = (): ShopCustomerProfile | null => {
   try {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(STORAGE_KEY_SHOP_USER);
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (
+          parsed?.id?.includes("timothy_store") ||
+          parsed?.id?.includes("grace_wanjiku") ||
+          parsed?.id?.includes("kenya_organics")
+        ) {
+          localStorage.removeItem(STORAGE_KEY_SHOP_USER);
+          return null;
+        }
+        return parsed;
+      }
     }
   } catch (e) {
     console.warn("Failed to parse stored shop customer:", e);
   }
-  return DEMO_ACCOUNTS.manager;
+  return null;
 };
 
 export const defaultShopAuthContext: ShopAuthContextType = {
-  shopUser: DEMO_ACCOUNTS.manager,
+  shopUser: null,
   shopSession: null,
   loading: false,
-  isShopAuthenticated: true,
+  isShopAuthenticated: false,
   isDedicatedBackend: isDedicatedShopBackendConfigured,
   signIn: async () => ({ success: false, error: "Shop auth provider not active" }),
   signUp: async () => ({ success: false, error: "Shop auth provider not active" }),
@@ -132,12 +93,7 @@ export const defaultShopAuthContext: ShopAuthContextType = {
       }
     } catch {}
   },
-  signInDemoCustomer: (type = "retail") => {
-    const acc = DEMO_ACCOUNTS[type] || DEMO_ACCOUNTS.retail;
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_SHOP_USER, JSON.stringify(acc));
-    }
-  },
+  signInDemoCustomer: () => {},
   updateProfile: async (data: Partial<ShopCustomerProfile>) => {
     try {
       if (typeof window !== "undefined") {
@@ -242,16 +198,7 @@ export function ShopAuthProvider({ children }: { children: ReactNode }) {
     try {
       const cleanEmail = email.trim().toLowerCase();
 
-      // 1. Check if matching any Demo accounts first
-      for (const [key, demo] of Object.entries(DEMO_ACCOUNTS)) {
-        if (demo.email?.toLowerCase() === cleanEmail) {
-          signInDemoCustomer(key as "retail" | "wholesale" | "manager");
-          setLoading(false);
-          return { success: true };
-        }
-      }
-
-      // 2. Try Supabase Shop Auth
+      // 1. Try Supabase Shop Auth
       if (supabaseShop) {
         try {
           const { data, error } = await supabaseShop.auth.signInWithPassword({

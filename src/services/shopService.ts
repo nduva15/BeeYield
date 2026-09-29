@@ -1025,11 +1025,9 @@ export const getAddresses = async (): Promise<Address[]> => {
         } catch (_) {}
     } catch (_) {}
 
-    if (map.size === 0) {
-        map.set(DEFAULT_SAMPLE_ADDRESS.id, DEFAULT_SAMPLE_ADDRESS);
-    }
-
-    const list = Array.from(map.values()).sort((a, b) => (a.is_default === b.is_default ? 0 : a.is_default ? -1 : 1));
+    const list = Array.from(map.values())
+        .filter(a => a.id !== "addr_default_empty" && a.name && a.name.trim() !== "")
+        .sort((a, b) => (a.is_default === b.is_default ? 0 : a.is_default ? -1 : 1));
     return list;
 };
 
@@ -1790,26 +1788,6 @@ export const getSupportTickets = async (): Promise<SupportTicket[]> => {
             metaTickets.forEach(t => map.set(t.id, t));
         }
     } catch (_) {}
-
-    if (map.size === 0) {
-        const initialSampleTicket: SupportTicket = {
-            id: "tkt_welcome_01",
-            ticket_number: "BY-SUP-10928",
-            subject: "Welcome to BeeYield Apiary Desk",
-            category: "general",
-            message: "Direct support inquiry line initialized for your honey orders and IoT hardware deployments.",
-            status: "resolved",
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-            replies: [
-                {
-                    from: "BeeYield Support Desk",
-                    message: "Welcome! Your account is verified with Kibwezi Forest Apiary. Reach out anytime if you need assistance with orders, invoices, or IoT nodes.",
-                    created_at: new Date(Date.now() - 86000000).toISOString(),
-                },
-            ],
-        };
-        map.set(initialSampleTicket.id, initialSampleTicket);
-    }
 
     return Array.from(map.values()).sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

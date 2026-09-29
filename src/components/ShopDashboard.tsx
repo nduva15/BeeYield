@@ -18,6 +18,7 @@ import {
   SlidersHorizontal, Sparkles, Check, AlertCircle,
   LogIn, LogOut, Database, UserCheck,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useShopAuth, ShopAuthProvider, ShopAuthContext, defaultShopAuthContext } from "@/hooks/use-shop-auth";
 import ShopAuthModal from "@/components/ShopAuthModal";
@@ -96,12 +97,39 @@ function ShopDashboardInner({
     shopUser,
     isShopAuthenticated,
     signOut: shopSignOut,
-    signInDemoCustomer,
     isDedicatedBackend,
   } = useShopAuth();
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup" | "demo">("signin");
+  const [authModalTab, setAuthModalTab] = useState<"signin" | "signup">("signin");
+  const [viewsSearchQuery, setViewsSearchQuery] = useState("");
+
+  // Clean out legacy demo account or fake cards from localStorage on mount
+  useEffect(() => {
+    try {
+      const userStored = localStorage.getItem("shop_local_user");
+      if (
+        userStored &&
+        (userStored.includes("timothy_store") ||
+          userStored.includes("grace_wanjiku") ||
+          userStored.includes("kenya_organics"))
+      ) {
+        localStorage.removeItem("shop_local_user");
+      }
+      const cardsStored = localStorage.getItem("shop_vaulted_cards");
+      if (
+        cardsStored &&
+        (cardsStored.includes("honey_gold_01") ||
+          cardsStored.includes("visa_retail_02"))
+      ) {
+        localStorage.removeItem("shop_vaulted_cards");
+      }
+      const ticketsStored = localStorage.getItem("beeyield_support_tickets");
+      if (ticketsStored && ticketsStored.includes("tkt_welcome_01")) {
+        localStorage.removeItem("beeyield_support_tickets");
+      }
+    } catch {}
+  }, []);
 
   // Active customer & user references for shop operations
   const user = useMemo(() => {
@@ -116,21 +144,8 @@ function ShopDashboardInner({
       : beeyieldProfile;
   }, [shopUser, beeyieldProfile]);
 
-  // Tab State & Shop Views Dropdown
   const [activeTab, setActiveTab] = useState<TabType>(initialTab as TabType);
   const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
-  const viewDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Click outside to close Shop Views dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (viewDropdownRef.current && !viewDropdownRef.current.contains(event.target as Node)) {
-        setIsViewDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Data State
   const [loading, setLoading] = useState(true);
@@ -895,7 +910,7 @@ function ShopDashboardInner({
     }
   };
 
-  const TABS: { id: TabType; label: string; badge?: number; icon: any; description: string }[] = [
+  const TABS: { id: TabType; label: string; badge?: number; icon: any; description: string }[] = useMemo(() => [
     { id: "overview", label: "Store Overview", icon: ShoppingBag, description: "Metrics, quick tracking & featured catalog" },
     { id: "orders", label: "Orders & Tracking", badge: orders.length, icon: Truck, description: "Consignment ledger & live cold-chain telemetry" },
     { id: "products", label: "Products Catalog", badge: products.length, icon: Package, description: "Honey, equipment, hardware & merch" },
@@ -903,22 +918,168 @@ function ShopDashboardInner({
     { id: "addresses", label: "Saved Addresses", badge: addresses.length, icon: MapPin, description: "Delivery locations & dispatch points" },
     { id: "payments", label: "Payment Methods", badge: paymentMethods.length, icon: CreditCard, description: "Vaulted EMV cards & M-Pesa records" },
     { id: "wishlist", label: "Wishlist", badge: wishlist.length, icon: Heart, description: "Saved apiary products & quick move to cart" },
-    { id: "profile", label: "Customer Profile", icon: User, description: "Account info, apiary affiliation & statistics" },
-    { id: "support", label: "Help & Support", badge: supportTickets.length, icon: HelpCircle, description: "Inquiries, official responses & FAQ" },
-  ];
+    { id: "profile", label: "Customer Profile", icon: User, description: "Account info & customer statistics" },
+    { id: "support", label: "Help & Support", badge: supportTickets.length, icon: HelpCircle, description: "Inquiries & support tickets" },
+  ], [orders.length, products.length, cart.length, addresses.length, paymentMethods.length, wishlist.length, supportTickets.length]);
+
+  const shopCategories = useMemo(
+    () => [
+      {
+        title: "COMMERCE & CATALOG",
+        items: [
+          { id: "overview" as TabType, label: "Store Overview", icon: ShoppingBag, description: "Metrics, quick tracking & featured honey" },
+          { id: "products" as TabType, label: "Products Catalog", badge: products.length, icon: Package, description: "Honey, equipment, hardware & merch" },
+          { id: "checkout" as TabType, label: "Cart & Checkout", badge: cart.length, icon: ShoppingBag, description: "Review items, promo vouchers & M-Pesa push" },
+          { id: "wishlist" as TabType, label: "Saved Wishlist", badge: wishlist.length, icon: Heart, description: "Saved apiary products & quick move to cart" },
+        ],
+      },
+      {
+        title: "ORDERS & LOGISTICS",
+        items: [
+          { id: "orders" as TabType, label: "Orders & Tracking", badge: orders.length, icon: Truck, description: "Consignment ledger & live cold-chain telemetry" },
+          { id: "addresses" as TabType, label: "Delivery Addresses", badge: addresses.length, icon: MapPin, description: "Delivery locations & dispatch points" },
+          { id: "payments" as TabType, label: "Payment Methods", badge: paymentMethods.length, icon: CreditCard, description: "Vaulted EMV cards & M-Pesa records" },
+        ],
+      },
+      {
+        title: "ACCOUNT & SUPPORT",
+        items: [
+          { id: "profile" as TabType, label: "Customer Profile", icon: User, description: "Account info & customer statistics" },
+          { id: "support" as TabType, label: "Help & Support", badge: supportTickets.length, icon: HelpCircle, description: "Inquiries & support tickets" },
+        ],
+      },
+    ],
+    [products.length, cart.length, wishlist.length, orders.length, addresses.length, paymentMethods.length, supportTickets.length]
+  );
+
+  const filteredShopCategories = useMemo(() => {
+    const q = viewsSearchQuery.trim().toLowerCase();
+    if (!q) return shopCategories;
+    return shopCategories
+      .map((cat) => ({
+        ...cat,
+        items: cat.items.filter(
+          (it) =>
+            it.label.toLowerCase().includes(q) ||
+            it.description.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((cat) => cat.items.length > 0);
+  }, [shopCategories, viewsSearchQuery]);
+
+  const currentTabItem = useMemo(() => {
+    return TABS.find((t) => t.id === activeTab) || TABS[0];
+  }, [TABS, activeTab]);
+
+  const CurrentTabIcon = currentTabItem?.icon || ShoppingBag;
 
   const mainContent = (
     <div className="space-y-6">
-      {/* 1. Top Header Matching InspectionsPage */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey flex-shrink-0">
-            <ShoppingBag className="w-5 h-5" />
-          </div>
+      {/* 1. Top Header Matching BeeYield Dashboard Header with dropdown on the left */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+        {/* Left: Views Directory Dropdown & Store Branding */}
+        <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap sm:flex-nowrap">
+          {/* Shop Views Directory Dropdown - Matching BeeYield Dashboard Dropdown 1:1 */}
+          <DropdownMenu open={isViewDropdownOpen} onOpenChange={setIsViewDropdownOpen}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2 sm:gap-2.5 h-10 px-3 sm:px-3.5 bg-card border border-border hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/20 dark:hover:bg-stone-800/80 rounded-2xl transition-all group outline-none shrink-0 shadow-xs text-foreground active:scale-95 touch-manipulation cursor-pointer"
+                title="Shop Views Directory"
+                aria-label="Shop Views Directory"
+              >
+                <div className="w-6 h-6 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                  <CurrentTabIcon className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-xs sm:text-sm font-bold tracking-tight text-foreground flex items-center gap-1.5 leading-none">
+                  <span className="truncate max-w-[120px] sm:max-w-[180px] pointer-events-none select-none">
+                    {currentTabItem?.label || "Store Overview"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground group-hover:text-amber-500 group-data-[state=open]:rotate-180 transition-transform duration-200 shrink-0" />
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="start"
+              sideOffset={8}
+              className="w-[min(calc(100vw-24px),340px)] sm:w-84 max-h-[75vh] overflow-y-auto rounded-3xl border border-border p-3 shadow-2xl bg-card/98 backdrop-blur-2xl text-foreground z-50 custom-scrollbar ring-1 ring-black/5 dark:ring-white/5 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 touch-pan-y"
+            >
+              {/* Search views input */}
+              <div className="p-1 mb-2.5 border-b border-border/50">
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={viewsSearchQuery}
+                    onChange={(e) => setViewsSearchQuery(e.target.value)}
+                    placeholder="Search shop views..."
+                    aria-label="Search shop views"
+                    className="w-full bg-muted/70 border border-border rounded-xl pl-9 pr-3 py-2 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/30 transition-all"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                </div>
+              </div>
+
+              {filteredShopCategories.length === 0 ? (
+                <p className="px-3 py-4 text-xs text-muted-foreground text-center">
+                  No view matches “{viewsSearchQuery}”.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {filteredShopCategories.map((category) => (
+                    <div key={category.title} className="space-y-1">
+                      <p className="px-2.5 mb-1 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500">
+                        {category.title}
+                      </p>
+                      <div className="space-y-0.5">
+                        {category.items.map((item) => {
+                          const ItemIcon = item.icon;
+                          const isActive = activeTab === item.id;
+                          return (
+                            <DropdownMenuItem
+                              key={item.id}
+                              onSelect={() => {
+                                setIsViewDropdownOpen(false);
+                                startTransition(() => {
+                                  setActiveTab(item.id);
+                                });
+                              }}
+                              className={cn(
+                                "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs cursor-pointer transition-all touch-manipulation",
+                                isActive
+                                  ? "bg-amber-500/15 dark:bg-amber-500/20 text-amber-900 dark:text-amber-200 font-bold border border-amber-500/30 shadow-xs"
+                                  : "text-foreground hover:bg-muted/70 hover:text-amber-600 dark:hover:text-amber-400 active:bg-amber-500/10",
+                              )}
+                            >
+                              <ItemIcon className="w-4 h-4 flex-shrink-0 text-amber-600 dark:text-amber-400 pointer-events-none" />
+                              <div className="truncate flex-1 pointer-events-none select-none">
+                                <span className="font-medium">{item.label}</span>
+                                <p className="text-[10px] text-muted-foreground line-clamp-1">{item.description}</p>
+                              </div>
+                              {item.badge !== undefined && item.badge > 0 && (
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 shrink-0">
+                                  {item.badge}
+                                </span>
+                              )}
+                              {isActive && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 pointer-events-none" />
+                              )}
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-bold text-foreground">
-                Shop <span className="text-honey">Dashboard & Storefront</span>
+              <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                Shop <span className="text-honey">Storefront</span>
               </h1>
               <Badge
                 variant="outline"
@@ -928,16 +1089,34 @@ function ShopDashboardInner({
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
-              <span>Personal account store ledger & live Shopify sync</span>
+              <span>Direct apiculture orders & verified dispatch</span>
               {shopUser ? (
-                <span className="font-mono text-emerald-400 font-medium">· Store User: {shopUser.email}</span>
+                <span className="font-mono text-emerald-400 font-medium">· {shopUser.email}</span>
               ) : (
-                <span className="font-mono text-amber-500/90">· Browsing as Guest</span>
+                <span className="font-mono text-amber-500/90">· Guest Session</span>
               )}
             </p>
           </div>
         </div>
+
+        {/* Right Action Controls */}
         <div className="flex items-center gap-2 flex-wrap">
+          {/* Cart Shortcut Button with Badge */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("checkout")}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-card hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            title="Cart & Checkout"
+          >
+            <ShoppingBag className="w-4 h-4 text-honey" />
+            <span className="hidden sm:inline">Cart</span>
+            {cart.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-honey text-primary-foreground">
+                {cart.length}
+              </span>
+            )}
+          </button>
+
           {/* Shop Customer Account Bar (Separate from BeeYield Beekeeper Session) */}
           {isShopAuthenticated && shopUser ? (
             <DropdownMenu>
@@ -1017,13 +1196,25 @@ function ShopDashboardInner({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setAuthModalTab("signin");
+                setIsAuthModalOpen(true);
+              }}
+              className="px-3.5 py-2 rounded-xl bg-card border border-border hover:border-honey/60 hover:bg-honey/10 text-foreground text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <LogIn className="w-4 h-4 text-honey" />
+              <span>Customer Sign In</span>
+            </button>
+          )}
 
           <button
             type="button"
             onClick={() => void loadAllData()}
             disabled={loading}
-            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors"
+            className="p-2 rounded-xl border border-border hover:bg-card text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             title="Refresh Shop Data"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-honey" : ""}`} />
@@ -1033,7 +1224,7 @@ function ShopDashboardInner({
               setActiveTab("checkout");
               setShowCheckoutForm(true);
             }}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40 cursor-pointer"
             title="Create Order"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
@@ -1043,7 +1234,7 @@ function ShopDashboardInner({
             <button
               onClick={onClose}
               aria-label="Close"
-              className="p-2 rounded-lg border border-border hover:bg-card"
+              className="p-2 rounded-lg border border-border hover:bg-card cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -1096,189 +1287,6 @@ function ShopDashboardInner({
         ))}
       </div>
 
-      {/* 4. Subpage View Selector (Intact Dropdown & Quick-Nav) */}
-      {/* 5. SHOP VIEWS SELECTOR & NAVIGATION (UP-TO-DOWN DROPDOWN) */}
-      <div className="rounded-2xl border border-border bg-card p-3.5 sm:p-4 space-y-3 text-xs shadow-sm">
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-honey/15 border border-honey/25 flex items-center justify-center text-honey flex-shrink-0 shadow-xs">
-                <Layers className="w-4 h-4 text-honey" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-foreground text-sm">Shop Views:</span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Synced with Supabase & Shopify
-                  </span>
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Select any store module or ledger section from the dropdown menu below
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Up-to-Down Dropdown Selector Component */}
-          <div className="relative w-full" ref={viewDropdownRef}>
-            <button
-              type="button"
-              id="shop-views-dropdown-btn"
-              onClick={() => setIsViewDropdownOpen((prev) => !prev)}
-              aria-expanded={isViewDropdownOpen}
-              aria-haspopup="listbox"
-              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-background border-2 border-honey/60 hover:border-honey text-foreground font-bold text-xs shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-honey/30 cursor-pointer"
-            >
-              <div className="flex items-center gap-3 truncate">
-                {(() => {
-                  const current = TABS.find((t) => t.id === activeTab) || TABS[0];
-                  const IconComponent = current.icon;
-                  return (
-                    <>
-                      <div className="w-8 h-8 rounded-lg bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0">
-                        <IconComponent className="w-4 h-4" />
-                      </div>
-                      <div className="text-left truncate">
-                        <div className="flex items-center gap-2">
-                          <span className="text-foreground font-bold text-sm truncate">{current.label}</span>
-                          {current.badge !== undefined && (
-                            <span className="px-2 py-0.5 rounded-full bg-honey/15 text-honey text-[10px] font-bold border border-honey/20 flex-shrink-0">
-                              {current.badge}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[10px] text-muted-foreground font-normal line-clamp-1">
-                          {current.description}
-                        </p>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-[11px] text-muted-foreground font-medium hidden sm:inline">Change View</span>
-                <ChevronDown
-                  className={`w-4 h-4 text-honey transition-transform duration-200 ${
-                    isViewDropdownOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-            </button>
-
-            {/* Dropdown Menu Options (Up to Down) */}
-            {isViewDropdownOpen && (
-              <div
-                role="listbox"
-                className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-2xl border border-border bg-card/98 backdrop-blur-md shadow-2xl p-2 space-y-1 animate-in fade-in zoom-in-95 max-h-[460px] overflow-y-auto custom-scroll"
-              >
-                <div className="px-3 py-1.5 border-b border-border/50 text-[10px] uppercase font-bold tracking-wider text-muted-foreground flex items-center justify-between">
-                  <span>Shop Dashboard Views</span>
-                  <span className="text-[10px] font-normal lowercase">{TABS.length} views available</span>
-                </div>
-                {TABS.map((t) => {
-                  const TabIcon = t.icon;
-                  const isSelected = activeTab === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      role="option"
-                      aria-selected={isSelected}
-                      onClick={() => {
-                        setIsViewDropdownOpen(false);
-                        requestAnimationFrame(() => {
-                          setTimeout(() => {
-                            startTransition(() => {
-                              setActiveTab(t.id);
-                            });
-                          }, 0);
-                        });
-                      }}
-                      className={`w-full flex items-center justify-between gap-3 p-3 rounded-xl text-left transition-all text-xs cursor-pointer touch-manipulation active:scale-[0.99] ${
-                        isSelected
-                          ? "bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/40 shadow-xs"
-                          : "hover:bg-muted/60 text-foreground hover:text-honey border border-transparent"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0 pointer-events-none select-none">
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            isSelected
-                              ? "bg-emerald-500/20 text-emerald-500 border border-emerald-500/30"
-                              : "bg-muted/50 text-muted-foreground"
-                          }`}
-                        >
-                          <TabIcon className="w-4 h-4" />
-                        </div>
-                        <div className="truncate">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-xs truncate">{t.label}</span>
-                            {t.badge !== undefined && (
-                              <span
-                                className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
-                                  isSelected
-                                    ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
-                                    : "bg-muted text-muted-foreground"
-                                }`}
-                              >
-                                {t.badge}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-muted-foreground line-clamp-1">{t.description}</p>
-                        </div>
-                      </div>
-                      {isSelected && <Check className="w-4 h-4 text-emerald-500 flex-shrink-0 pointer-events-none select-none" />}
-                    </button>
-                  );
-                })}
-
-                {/* Auth Controls in Shop Views Dropdown */}
-                <div className="pt-2 mt-1 border-t border-border/60">
-                  {shopUser && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsViewDropdownOpen(false);
-                        requestAnimationFrame(() => {
-                          setTimeout(() => {
-                            startTransition(async () => {
-                              try {
-                                await shopSignOut();
-                                void loadAllData();
-                                toast.success("Signed out of Shop account");
-                              } catch (err) {
-                                console.error("Sign out error:", err);
-                              }
-                            });
-                          }, 0);
-                        });
-                      }}
-                      className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl text-left text-xs font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-all cursor-pointer touch-manipulation active:scale-[0.99]"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0 pointer-events-none select-none">
-                        <div className="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-500 flex-shrink-0">
-                          <LogOut className="w-4 h-4" />
-                        </div>
-                        <div className="truncate">
-                          <p className="font-bold text-xs text-rose-500 truncate">Sign Out &middot; Shop Account</p>
-                          <p className="text-[10px] text-muted-foreground font-normal truncate">
-                            Logged in as {shopUser.full_name || shopUser.email}
-                          </p>
-                        </div>
-                      </div>
-                      <span className="text-[10px] uppercase font-bold text-rose-500/80 px-2 py-0.5 rounded-full bg-rose-500/10 flex-shrink-0 pointer-events-none select-none">
-                        Sign Out
-                      </span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* 6. TAB CONTENT RENDERING */}
 

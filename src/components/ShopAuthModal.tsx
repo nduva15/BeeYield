@@ -59,9 +59,9 @@ export default function ShopAuthModal({
   onClose,
   defaultTab = "signin",
 }: ShopAuthModalProps) {
-  const { signIn, signUp, signInDemoCustomer, isDedicatedBackend } = useShopAuth();
+  const { signIn, signUp, isDedicatedBackend } = useShopAuth();
 
-  const [activeTab, setActiveTab] = useState<"signin" | "signup" | "demo">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">(defaultTab === "demo" ? "signin" : defaultTab);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -142,11 +142,6 @@ export default function ShopAuthModal({
     }
   };
 
-  const handleDemoLogin = (type: "retail" | "wholesale" | "manager") => {
-    signInDemoCustomer(type);
-    onClose();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md w-full bg-card/95 backdrop-blur-xl border border-border shadow-2xl p-6 sm:p-7 rounded-2xl">
@@ -179,16 +174,12 @@ export default function ShopAuthModal({
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="mt-2">
-          <TabsList className="grid grid-cols-3 bg-muted/60 p-1 rounded-xl mb-4">
+          <TabsList className="grid grid-cols-2 bg-muted/60 p-1 rounded-xl mb-4">
             <TabsTrigger value="signin" className="text-xs font-semibold rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
               Sign In
             </TabsTrigger>
             <TabsTrigger value="signup" className="text-xs font-semibold rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
               Register
-            </TabsTrigger>
-            <TabsTrigger value="demo" className="text-xs font-semibold rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-honey" />
-              Demo
             </TabsTrigger>
           </TabsList>
 
@@ -263,14 +254,6 @@ export default function ShopAuthModal({
                   className="text-honey hover:underline font-semibold"
                 >
                   Create one now
-                </button>{" "}
-                or use{" "}
-                <button
-                  type="button"
-                  onClick={() => setActiveTab("demo")}
-                  className="text-emerald-400 hover:underline font-semibold"
-                >
-                  1-Click Demo
                 </button>
               </p>
             </div>
@@ -424,80 +407,6 @@ export default function ShopAuthModal({
             </form>
           </TabsContent>
 
-          {/* TAB 3: DEMO ACCOUNTS */}
-          <TabsContent value="demo" className="space-y-3 focus:outline-none">
-            <p className="text-xs text-muted-foreground">
-              Select a pre-configured customer profile to test shop checkout, real-time tracking, saved addresses, and payments immediately:
-            </p>
-
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => handleDemoLogin("retail")}
-                className="w-full p-3 rounded-xl border border-border hover:border-honey/60 bg-background/50 hover:bg-honey/5 text-left transition-all flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-honey/10 text-honey flex items-center justify-center font-bold text-xs">
-                    GW
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-xs font-bold text-foreground">Grace Wanjiku</p>
-                      <Badge variant="outline" className="text-[9px] bg-honey/10 text-honey border-honey/30 py-0">
-                        Retail Buyer
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">grace.wanjiku@beeyield-shop.com · Nairobi</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-honey group-hover:translate-x-0.5 transition-all" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoLogin("wholesale")}
-                className="w-full p-3 rounded-xl border border-border hover:border-emerald-500/60 bg-background/50 hover:bg-emerald-500/5 text-left transition-all flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs">
-                    KO
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-xs font-bold text-foreground">Kenya Organics Co-op</p>
-                      <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30 py-0">
-                        Wholesale
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">procurement@kenya-organics.co.ke · Machakos</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoLogin("manager")}
-                className="w-full p-3 rounded-xl border border-border hover:border-purple-500/60 bg-background/50 hover:bg-purple-500/5 text-left transition-all flex items-center justify-between group"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center font-bold text-xs">
-                    TN
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-xs font-bold text-foreground">Timothy Nduva</p>
-                      <Badge variant="outline" className="text-[9px] bg-purple-500/10 text-purple-400 border-purple-500/30 py-0">
-                        Store Dispatcher
-                      </Badge>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">timothy.store@beeyield.com · Kibwezi Apiary</p>
-                  </div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
-              </button>
-            </div>
-          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>
