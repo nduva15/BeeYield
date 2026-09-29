@@ -889,8 +889,6 @@ function ShopDashboardInner({
     });
   }, [orders, orderStatusFilter, searchQuery]);
 
-  if (!isOpen && !embedded) return null;
-
   // Status Badge Tone
   const getStatusBadge = (status: string) => {
     const s = status.toLowerCase();
@@ -972,6 +970,8 @@ function ShopDashboardInner({
   }, [TABS, activeTab]);
 
   const CurrentTabIcon = currentTabItem?.icon || ShoppingBag;
+
+  if (!isOpen && !embedded) return null;
 
   const mainContent = (
     <div className="space-y-6">
