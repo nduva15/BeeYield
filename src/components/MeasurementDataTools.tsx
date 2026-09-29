@@ -1716,12 +1716,6 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
           {/* TAB 1: MY DEVICES & REGISTERED HIVES */}
           {tab === "devices" && (
             <div className="space-y-6">
-              {loading && (
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Loading registry…
-                </p>
-              )}
-
               {/* THREE DIVERGENT DEVICE CATEGORIES OVERVIEW */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
