@@ -18,6 +18,7 @@ import {
   CloudFog,
 } from "lucide-react";
 import { ApiarySite, LiveWeatherData } from "./ApiariesPage";
+import { getDynamicFallbackWeather } from "@/services/weatherService";
 
 function normalizeApiaryName(name?: string): string {
   if (!name) return "BeeYield Apiary";
@@ -105,10 +106,14 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
   const displayName = normalizeApiaryName(apiary.name);
   const displayLocation = normalizeApiaryLocation(apiary.location_name);
   const hiveCount = userKey ? getUserHivesCount(userKey, apiary.id, apiary.active_hives) : apiary.active_hives;
-  const currentCondition = weather?.conditionText || "Partly cloudy";
-  const minTemp = weather?.todayMin ?? 18;
-  const maxTemp = weather?.todayMax ?? 29;
-  const { Icon: WeatherIcon } = getWeatherMeta(weather?.weatherCode ?? 2);
+  const effectiveWeather = React.useMemo(() => {
+    return weather || getDynamicFallbackWeather(apiary.latitude, apiary.longitude);
+  }, [weather, apiary.latitude, apiary.longitude]);
+
+  const currentCondition = effectiveWeather.conditionText || "Partly cloudy";
+  const minTemp = effectiveWeather.todayMin ?? 18;
+  const maxTemp = effectiveWeather.todayMax ?? 29;
+  const { Icon: WeatherIcon } = getWeatherMeta(effectiveWeather.weatherCode ?? 2);
 
   const getGradientOffsets = (min: number, max: number) => {
     const baseMin = 14;
@@ -190,7 +195,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline gap-1.5">
                 <span className="text-3xl sm:text-4xl font-black tracking-tight text-stone-900 dark:text-stone-100">
-                  {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : "—"}
+                  {effectiveWeather.currentTemp !== undefined ? `${effectiveWeather.currentTemp}°C` : "—"}
                 </span>
                 <span className="text-xs text-stone-500 dark:text-stone-400 font-medium whitespace-nowrap">
                   ({apiary.size_acres} Acres)
@@ -203,13 +208,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           </div>
 
           <div className="flex flex-row sm:flex-col items-center sm:items-end gap-1.5 text-xs shrink-0 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
-              <Droplets className="w-3.5 h-3.5 text-blue-500 pointer-events-none select-none shrink-0" />
-              {weather?.currentHumidity !== undefined ? `${weather.currentHumidity}% Humidity` : "—"}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
-              <Wind className="w-3.5 h-3.5 text-emerald-500 pointer-events-none select-none shrink-0" />
-              {weather?.currentWind !== undefined ? `${weather.currentWind} km/h Wind` : "—"}
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
+              <Sun className="w-3.5 h-3.5 text-amber-500 pointer-events-none select-none shrink-0" />
+              Outside Hive Temp
             </span>
           </div>
         </div>
@@ -217,9 +218,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
         <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-500 dark:text-stone-400">
           <span className="flex items-center gap-1 font-medium text-emerald-700 dark:text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Open-Meteo Live API
+            {effectiveWeather.source || "Weather API Live"}
           </span>
-          <span className="font-mono">Synced: {weather?.lastUpdated || "Live"}</span>
+          <span className="font-mono">Synced: {effectiveWeather.lastUpdated || "Live"}</span>
         </div>
       </div>
 
@@ -233,7 +234,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           className="overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x"
         >
           <div className="flex items-center gap-2 min-w-full">
-            {(weather?.hourly || []).map((slot, idx) => {
+            {(effectiveWeather.hourly || []).map((slot, idx) => {
               const { Icon } = getWeatherMeta(slot.code);
               return (
                 <div
@@ -255,7 +256,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
         <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
           5-Day Forecast
         </p>
-        {(weather?.daily || []).map((dayItem, dIdx) => {
+        {(effectiveWeather.daily || []).map((dayItem, dIdx) => {
           const { Icon } = getWeatherMeta(dayItem.code);
           const { leftPct, widthPct } = getGradientOffsets(dayItem.min, dayItem.max);
 
@@ -288,6 +289,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           );
         })}
       </div>
+
 
       {/* Footer Info: Forage Flora & Action buttons */}
       <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">

@@ -1226,8 +1226,9 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                 <input
                   type="number"
                   step="0.1"
-                  value={draft.temperature_c ?? 34.8}
-                  onChange={(e) => setDraft({ ...draft, temperature_c: parseFloat(e.target.value) || 0 })}
+                  value={draft.temperature_c ?? ""}
+                  placeholder="Optional"
+                  onChange={(e) => setDraft({ ...draft, temperature_c: e.target.value === "" ? null : parseFloat(e.target.value) })}
                   className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                 />
               </label>
@@ -1240,8 +1241,9 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                   type="number"
                   min={0}
                   max={100}
-                  value={draft.humidity_pct ?? 58}
-                  onChange={(e) => setDraft({ ...draft, humidity_pct: parseInt(e.target.value, 10) || 0 })}
+                  value={draft.humidity_pct ?? ""}
+                  placeholder="Optional"
+                  onChange={(e) => setDraft({ ...draft, humidity_pct: e.target.value === "" ? null : parseInt(e.target.value, 10) })}
                   className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                 />
               </label>
@@ -1253,8 +1255,9 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                 <input
                   type="number"
                   step="0.1"
-                  value={draft.weight_kg ?? 42.5}
-                  onChange={(e) => setDraft({ ...draft, weight_kg: parseFloat(e.target.value) || 0 })}
+                  value={draft.weight_kg ?? ""}
+                  placeholder="Optional"
+                  onChange={(e) => setDraft({ ...draft, weight_kg: e.target.value === "" ? null : parseFloat(e.target.value) })}
                   className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                 />
               </label>
@@ -1566,9 +1569,9 @@ Provide: (1) Official Diagnostic assessment and confidence, (2) Frame utilizatio
                       <p><span className="text-muted-foreground">Queen seen:</span> {r.queen_seen ? "Yes" : "No"} ({r.queen_cells} cells)</p>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2 px-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
-                      <p className="flex items-center gap-1.5"><Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" /><span className="text-muted-foreground">Brood Temp:</span> <strong className="text-foreground">{r.temperature_c ?? 34.8} °C</strong></p>
-                      <p className="flex items-center gap-1.5"><Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" /><span className="text-muted-foreground">Humidity:</span> <strong className="text-foreground">{r.humidity_pct ?? 58}% RH</strong></p>
-                      <p className="flex items-center gap-1.5"><Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" /><span className="text-muted-foreground">Scale Weight:</span> <strong className="text-foreground">{r.weight_kg ?? 42.5} kg</strong></p>
+                      <p className="flex items-center gap-1.5"><Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" /><span className="text-muted-foreground">Brood Temp:</span> <strong className="text-foreground">{r.temperature_c ? `${r.temperature_c} °C` : "No Sensor"}</strong></p>
+                      <p className="flex items-center gap-1.5"><Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" /><span className="text-muted-foreground">Humidity:</span> <strong className="text-foreground">{r.humidity_pct ? `${r.humidity_pct}% RH` : "No Sensor"}</strong></p>
+                      <p className="flex items-center gap-1.5"><Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" /><span className="text-muted-foreground">Scale Weight:</span> <strong className="text-foreground">{r.weight_kg ? `${r.weight_kg} kg` : "No Scale"}</strong></p>
                       <p className="flex items-center gap-1.5"><Bug className="w-3.5 h-3.5 text-purple-500 shrink-0" /><span className="text-muted-foreground">Varroa Index:</span> <strong className="text-foreground">{r.varroa_count === 0 ? "Clean (0/300)" : `${r.varroa_count}/300`}</strong></p>
                     </div>
                     <div className="grid md:grid-cols-2 gap-3">

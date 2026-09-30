@@ -54,10 +54,14 @@ import {
   BarChart3,
   Tag,
   Camera,
+  Globe,
 } from "lucide-react";
 import { NavItem } from "./DashboardSidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useUnits } from "@/contexts/UnitContext";
+import RegionalPreferencesCard from "./RegionalPreferencesCard";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AvatarPickerDialog from "./AvatarPickerDialog";
 import { subscribeToAvatarSync, getCachedAvatar } from "@/services/avatarSyncService";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -105,12 +109,14 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 }) => {
   const { user, beeyieldUser } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+  const { tempUnitLabel, weightUnitLabel } = useUnits();
   const { theme, setTheme } = useTheme();
   const [alerts, setAlerts] = React.useState<SensorAlert[]>([]);
   const [dropdownQuery, setDropdownQuery] = React.useState("");
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const [isAvatarPickerOpen, setIsAvatarPickerOpen] = React.useState(false);
+  const [isPreferencesModalOpen, setIsPreferencesModalOpen] = React.useState(false);
   const [isAddApiaryOpen, setIsAddApiaryOpen] = React.useState(false);
   const [isAddHiveOpen, setIsAddHiveOpen] = React.useState(false);
   const [isNewRecordModalOpen, setIsNewRecordModalOpen] = React.useState(false);
@@ -645,6 +651,25 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                   </p>
                 </div>
               </DropdownMenuItem>
+
+              {/* Language, Temperature & Weight Units Modal Trigger */}
+              <DropdownMenuItem
+                onClick={() => setIsPreferencesModalOpen(true)}
+                className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
+              >
+                <div className="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                  <Globe className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-stone-900 dark:text-white text-xs">
+                    Language & Units
+                  </p>
+                  <p className="text-[10px] text-stone-500 dark:text-stone-400 truncate">
+                    {language} • {tempUnitLabel} • {weightUnitLabel}
+                  </p>
+                </div>
+              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => handleTabSelect("settings")}
                 className="w-full px-3 py-2.5 text-xs rounded-2xl cursor-pointer flex items-center gap-3 transition-all text-stone-800 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white hover:bg-amber-500/10 dark:hover:bg-amber-500/15 focus:bg-amber-500/10 dark:focus:bg-amber-500/15 group"
@@ -782,6 +807,13 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           }}
         />
       )}
+
+      {/* Quick Regional Preferences Dialog (Language, Temp Unit, Weight Unit) */}
+      <Dialog open={isPreferencesModalOpen} onOpenChange={setIsPreferencesModalOpen}>
+        <DialogContent className="sm:max-w-md p-0 bg-transparent border-none shadow-none">
+          <RegionalPreferencesCard />
+        </DialogContent>
+      </Dialog>
     </header>
   );
 };

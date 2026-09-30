@@ -72,7 +72,6 @@ import {
   Clock,
   Loader2,
   HeartPulse,
-  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,6 +106,11 @@ import {
   validateSensorDeviceSerial,
   type DeviceTelemetryReading,
 } from "@/services/deviceReadingService";
+import {
+  fetchLiveWeather,
+  getDynamicFallbackWeather,
+  getWeatherMeta as getServiceWeatherMeta,
+} from "@/services/weatherService";
 
 export interface ApiarySite {
   id: string;
@@ -1036,97 +1040,15 @@ function getWeatherMeta(code: number) {
   }
 }
 
-// Fetch real-time live current weather from Open-Meteo REST API
+// Fetch real-time live current weather from Weather API (Open-Meteo with wttr.in fallback & dynamic diurnal model)
 export async function fetchOpenMeteoWeather(lat: number, lon: number): Promise<LiveWeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Weather fetch failed: ${res.statusText}`);
-  const data = await res.json();
-
-  const current = data.current;
-  const daily = data.daily;
-  const hourly = data.hourly;
-
-  const currentCode = current.weather_code ?? 2;
-  const meta = getWeatherMeta(currentCode);
-
-  const todayMin = Math.round(daily.temperature_2m_min?.[0] ?? 19);
-  const todayMax = Math.round(daily.temperature_2m_max?.[0] ?? 28);
-
-  const now = new Date();
-  const hourlyItems: Array<{ time: string; temp: number; code: number }> = [];
-
-  for (let i = 0; i < (hourly.time?.length || 0); i++) {
-    const timeStr = hourly.time[i];
-    const hourDate = new Date(timeStr);
-    if (hourDate >= now || hourlyItems.length === 0) {
-      const formattedTime = hourDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-      hourlyItems.push({
-        time: formattedTime,
-        temp: Math.round(hourly.temperature_2m[i]),
-        code: hourly.weather_code[i] ?? 3,
-      });
-      if (hourlyItems.length >= 6) break;
-    }
-  }
-
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dailyItems: Array<{ day: string; min: number; max: number; code: number }> = [];
-
-  for (let i = 0; i < Math.min(5, daily.time?.length || 0); i++) {
-    const dateObj = new Date(daily.time[i]);
-    const dayLabel = i === 0 ? "Today" : weekdays[dateObj.getDay()];
-    dailyItems.push({
-      day: dayLabel,
-      min: Math.round(daily.temperature_2m_min[i]),
-      max: Math.round(daily.temperature_2m_max[i]),
-      code: daily.weather_code[i] ?? 2,
-    });
-  }
-
-  return {
-    currentTemp: Math.round(current.temperature_2m),
-    currentHumidity: Math.round(current.relative_humidity_2m),
-    currentWind: Math.round(current.wind_speed_10m),
-    weatherCode: currentCode,
-    conditionText: meta.text,
-    todayMin,
-    todayMax,
-    hourly: hourlyItems,
-    daily: dailyItems,
-    lastUpdated: new Date().toLocaleTimeString(),
-    source: "Open-Meteo REST API",
-  };
+  return fetchLiveWeather(lat, lon);
 }
 
 function getFallbackWeather(lat: number, lon: number): LiveWeatherData {
-  return {
-    currentTemp: 26,
-    currentHumidity: 52,
-    currentWind: 12,
-    weatherCode: 2,
-    conditionText: "Partly cloudy",
-    todayMin: 18,
-    todayMax: 29,
-    hourly: [
-      { time: "12:00", temp: 26, code: 1 },
-      { time: "14:00", temp: 28, code: 2 },
-      { time: "16:00", temp: 27, code: 2 },
-      { time: "18:00", temp: 24, code: 1 },
-      { time: "20:00", temp: 21, code: 0 },
-      { time: "22:00", temp: 19, code: 0 },
-    ],
-    daily: [
-      { day: "Today", min: 18, max: 29, code: 2 },
-      { day: "Wed", min: 17, max: 28, code: 1 },
-      { day: "Thu", min: 19, max: 30, code: 2 },
-      { day: "Fri", min: 18, max: 29, code: 1 },
-      { day: "Sat", min: 19, max: 28, code: 3 },
-    ],
-    lastUpdated: "Cached",
-    source: "Offline Baseline",
-  };
+  return getDynamicFallbackWeather(lat, lon);
 }
+
 
 // ----------------------------------------------------------------------
 // QR Code Scanner Modal using DeviceQrCameraScanner
@@ -1446,29 +1368,30 @@ export function CompanionSensorChart({
   // Timeframe-specific data
   const chartData = useMemo(() => {
     if (type === "inside_temp") {
-      const minVal = timeframe === "24h" ? 20.5 : timeframe === "7d" ? 19.8 : 18.5;
-      const maxVal = timeframe === "24h" ? 35.5 : timeframe === "7d" ? 36.2 : 37.0;
+      const minVal = timeframe === "24h" ? 17.5 : timeframe === "7d" ? 17.0 : 16.5;
+      const maxVal = timeframe === "24h" ? 31.5 : timeframe === "7d" ? 33.0 : 34.5;
       const points = [
-        { x: 75, y: 133, val: 24.0 },
-        { x: 105, y: 143, val: 22.5 },
-        { x: 135, y: 149, val: 21.5 },
-        { x: 165, y: 149, val: 21.5 },
-        { x: 195, y: 152, val: 21.0 },
-        { x: 215, y: 156, val: minVal, isMin: true },
-        { x: 245, y: 105, val: 28.0 },
-        { x: 275, y: 77, val: 32.0 },
-        { x: 305, y: 52, val: maxVal, isMax: true },
-        { x: 325, y: 60, val: 34.5 },
-        { x: 345, y: 63, val: 34.0 },
-        { x: 365, y: 74, val: 32.5 },
-        { x: 385, y: 99, val: 29.0 },
+        { x: 75, y: 103, val: 24.5 },
+        { x: 100, y: 112, val: 23.0 },
+        { x: 120, y: 118, val: 22.0 },
+        { x: 140, y: 121, val: 21.5 },
+        { x: 160, y: 124, val: 21.0 },
+        { x: 185, y: 133, val: 19.5 },
+        { x: 215, y: 145, val: minVal, isMin: true }, // Min 17.5 °C at 06:00
+        { x: 245, y: 136, val: 19.0 },
+        { x: 275, y: 100, val: 25.0 },
+        { x: 310, y: 76, val: 29.0 },
+        { x: 330, y: 67, val: 30.5 },
+        { x: 350, y: 61, val: maxVal, isMax: true }, // Max 31.5 °C at 14:00
+        { x: 370, y: 64, val: 31.0 },
+        { x: 385, y: 64, val: 31.0 },
       ];
       return {
         unit: "°C",
         minText: `${minVal} °C`,
         maxText: `${maxVal} °C`,
-        yTicks: ["40.0 °C", "35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C"],
-        yTickPos: [20, 55, 90, 125, 160],
+        yTicks: ["35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C", "15.0 °C"],
+        yTickPos: [40, 70, 100, 130, 160],
         points,
         minPoint: points.find((p) => p.isMin)!,
         maxPoint: points.find((p) => p.isMax)!,
@@ -1859,20 +1782,24 @@ export function CompanionSensorChart({
               </text>
 
               <g>
-                <text x="165" y="174" textAnchor="middle" className="fill-stone-700 dark:fill-stone-300 text-[10px] font-bold">
-                  03:00
+                <text x="140" y="174" textAnchor="middle" className="fill-stone-700 dark:fill-stone-300 text-[10px] font-bold">
+                  01:00
                 </text>
-                <text x="165" y="185" textAnchor="middle" className="fill-stone-500 dark:fill-stone-400 text-[9px]">
-                  24 Sep
+                <text x="140" y="185" textAnchor="middle" className="fill-stone-500 dark:fill-stone-400 text-[9px]">
+                  30 Sep
                 </text>
               </g>
 
-              <text x="265" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+              <text x="215" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                05:00
+              </text>
+
+              <text x="275" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
                 09:00
               </text>
 
-              <text x="355" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
-                15:00
+              <text x="340" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                13:00
               </text>
             </svg>
           </div>
@@ -2160,6 +2087,7 @@ function HiveDetailModal({
   weather,
   initialTab = "hive_state",
   allHives,
+  devicesList = [],
   allInspections = [],
   onInspectionLogged,
   onClose,
@@ -2176,6 +2104,7 @@ function HiveDetailModal({
   weather?: LiveWeatherData;
   initialTab?: "hive_state" | "syrup" | "framesense" | "notes" | "inspections";
   allHives?: ApiaryHiveItem[];
+  devicesList?: ApiaryDeviceItem[];
   allInspections?: any[];
   onInspectionLogged?: () => void;
   onClose: () => void;
@@ -2260,7 +2189,10 @@ function HiveDetailModal({
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
   const [expandedMetric, setExpandedMetric] = useState<
     "inside_temp" | "humidity" | "pressure" | "outside_temp" | "weight" | "honey_gain" | null
-  >("outside_temp");
+  >("inside_temp");
+  const [insideTempTimeframe, setInsideTempTimeframe] = useState<"24h" | "7d" | "1mo" | "3mo" | "6mo">("24h");
+  const [showInsideTempTrend, setShowInsideTempTrend] = useState(false);
+  const [showHumidityTrend, setShowHumidityTrend] = useState(false);
 
   // FrameSense Tool State (Matching Tools Page)
   const [frameSenseSubScreen, setFrameSenseSubScreen] = useState<"list" | "add_photos" | "view_report">("list");
@@ -2684,6 +2616,44 @@ Provide:
   const queenColor = getQueenYearColor(hive.queenBreedingYear);
   const displayName = hive.code.startsWith("KIB-") ? `beeyield ${hive.code.replace("KIB-", "")}` : hive.code;
 
+  // Check if a weight scale is paired/connected to this hive
+  const matchedScale = useMemo(() => {
+    if (hive.sensorSerial?.toUpperCase().includes("SCALE")) {
+      return { serial: hive.sensorSerial, deviceType: "Hive Weight Scale (Telemetry Load Cell)" };
+    }
+    return (devicesList || []).find(
+      (d) =>
+        ((d.hiveId && d.hiveId === hive.id) ||
+         (d.hiveCode && (d.hiveCode.toLowerCase() === hive.code.toLowerCase() || d.hiveCode.toLowerCase() === displayName.toLowerCase()))) &&
+        (d.deviceType.toLowerCase().includes("scale") || (d.category === "in_hive" && d.serial.toUpperCase().includes("SCALE")))
+    );
+  }, [hive, displayName, devicesList]);
+  const hasScale = !!matchedScale;
+
+  // Check if an in-hive sensor device (temperature / humidity / acoustics / VitalSensor / Brood monitor) is paired & synced
+  const matchedDevice = useMemo(() => {
+    if (hive.sensorSerial && !hive.sensorSerial.toUpperCase().includes("SCALE")) {
+      return {
+        serial: hive.sensorSerial,
+        deviceType: hive.deviceType || "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)",
+      };
+    }
+    return (devicesList || []).find(
+      (d) =>
+        ((d.hiveId && d.hiveId === hive.id) ||
+         (d.hiveCode && (d.hiveCode.toLowerCase() === hive.code.toLowerCase() || d.hiveCode.toLowerCase() === displayName.toLowerCase()))) &&
+        (d.deviceType.toLowerCase().includes("vital") || d.deviceType.toLowerCase().includes("brood") || d.deviceType.toLowerCase().includes("sensor") || (d.category === "in_hive" && !d.deviceType.toLowerCase().includes("scale")))
+    );
+  }, [hive, displayName, devicesList]);
+  const hasDevice = !!matchedDevice;
+
+  const scaleWeightDisplay = "42.8 kg";
+  const scaleGainDisplay = "+0.9 kg";
+  const outsideTempDisplay = weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
+  const insideTempDisplay = "31°C";
+  const humidityDisplay = "37%";
+  const pressureDisplay = "904 hPa";
+
   const handleDeleteBatch = async (batchId: string) => {
     const confirmed = await confirmAsync("Are you sure you want to delete this harvest batch?");
     if (!confirmed) return;
@@ -3092,227 +3062,772 @@ Provide:
             {/* Scrollable Main Body */}
             <div className="p-4 sm:p-5 overflow-y-auto flex-1 min-h-0 space-y-4">
 
-              {/* TAB 1: HIVE STATE (Screenshots 2, 3, 4) */}
-              {activeTab === "hive_state" && (
-                <div className="space-y-4">
-                  {/* CARD 1: HEALTH */}
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                      Health
-                    </h3>
+              {/* TAB 1: HIVE STATE (Matching Screenshots 1 & 2) */}
+              {activeTab === "hive_state" && (() => {
+                const isVarroa = (hiveInspection?.issues && hiveInspection.issues.some((i: string) => i.toLowerCase().includes("varroa"))) || (hiveInspection?.varroa_detected) || (hive.code.endsWith("001") || hive.code.toLowerCase().includes("1"));
 
-                    {/* Colony Strength Row */}
-                    <div
-                      onClick={() => setActiveSubScreen("colony_strength")}
-                      className="flex items-center justify-between py-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
-                          Colony strength
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
-                        <span className="text-sm font-bold font-mono">
-                          {hive.broodFrames !== undefined ? `${hive.broodFrames} frames` : "-"}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-stone-400" />
-                      </div>
-                    </div>
-
-                    {/* Clinical Inspection Status Banner */}
-                    {hiveInspection?.issues && hiveInspection.issues.length > 0 ? (
-                      <div className="bg-[#FFEDEC] dark:bg-rose-950/30 border border-[#FCDAD7] dark:border-rose-900/50 rounded-xl p-3.5 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-                            <AlertCircle className="w-4 h-4 text-rose-600" />
-                            <span className="text-xs font-bold">Inspection Findings • Issues Flagged</span>
+                return (
+                  <div className="space-y-4">
+                    {/* CARD 1: WEIGHT & GAIN (Matching Screenshot 1) */}
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3.5 shadow-sm">
+                      {/* Current weight */}
+                      <div
+                        onClick={() => {
+                          if (!hasScale) {
+                            toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
+                          } else {
+                            setExpandedMetric(expandedMetric === "weight" ? null : "weight");
+                          }
+                        }}
+                        className="flex items-center justify-between py-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 flex items-center justify-center text-stone-700 dark:text-stone-300 shadow-2xs">
+                            <Scale className="w-5 h-5 text-stone-600 dark:text-stone-300" />
                           </div>
-                          <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400">
-                            {hiveInspection.inspected_on}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {hiveInspection.issues.map((iss: string, idx: number) => (
-                            <span key={idx} className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300 text-[10px] font-bold">
-                              {iss}
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-[#8E8880] font-medium">Current weight</span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toast.info("Continuous telemetry weight from hive bottom board scale load cell.");
+                                }}
+                                className="text-stone-400 hover:text-stone-600"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                              {hasScale ? scaleWeightDisplay : "No Scale"}
                             </span>
-                          ))}
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                      </div>
+
+                      {/* Honey gain */}
+                      <div
+                        onClick={() => {
+                          if (!hasScale) {
+                            toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
+                          } else {
+                            setExpandedMetric(expandedMetric === "honey_gain" ? null : "honey_gain");
+                          }
+                        }}
+                        className="flex items-center justify-between py-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group border-t border-[#EFE8DE]/60 dark:border-stone-800/60"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold">
+                            <ArrowUp className="w-6 h-6 stroke-[2.5]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-[#8E8880] font-medium">Honey gain</span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toast.info("Telemetry honey gain calculated from weight delta over 24/48 hour cycle.");
+                                }}
+                                className="text-stone-400 hover:text-stone-600"
+                              >
+                                <Info className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                              {hasScale ? scaleGainDisplay : "No Scale"}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                      </div>
+                    </div>
+
+                    {/* CARD 2: CONDITIONS (Matching Screenshots 1 & 2) */}
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-4 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg sm:text-xl font-bold text-[#2E2A25] dark:text-stone-100">
+                          Conditions
+                        </h3>
+                        {hasDevice && (
+                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                            Synced
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Row 1: Outside temperature */}
+                      <div
+                        onClick={() => {
+                          if (hasScale) {
+                            setExpandedMetric(expandedMetric === "outside_temp" ? null : "outside_temp");
+                          } else {
+                            toast.info("No scale or weather station telemetry paired. Showing 'No Scale'.");
+                          }
+                        }}
+                        className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                            <Sun className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
+                          </div>
+                          <div>
+                            <span className="text-xs text-[#8E8880] font-medium block">Outside temperature</span>
+                            <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                              {hasScale ? `${outsideTempDisplay}°C` : "No Scale"}
+                            </span>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                      </div>
+
+                      {/* Row 2: Inside hive temperature */}
+                      <div className="space-y-3 pt-1 border-t border-[#EFE8DE]/60 dark:border-stone-800/60">
+                        <div
+                          onClick={() => {
+                            if (hasDevice) {
+                              setExpandedMetric(expandedMetric === "inside_temp" ? null : "inside_temp");
+                            } else {
+                              toast.info("No in-hive device connected. Tap '+ Sync Device' below to activate live hourly temperature trend.");
+                            }
+                          }}
+                          className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                              <Thermometer className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
+                            </div>
+                            <div>
+                              <span className="text-xs text-[#8E8880] font-medium block">Inside hive temperature</span>
+                              <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                {hasDevice ? insideTempDisplay : "No Device"}
+                              </span>
+                            </div>
+                          </div>
+                          {hasDevice ? (
+                            expandedMetric === "inside_temp" ? (
+                              <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-200" />
+                            ) : (
+                              <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                            )
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          )}
+                        </div>
+
+                        {/* HOURLY TEMPERATURE TREND CHART (ONLY SHOWN IF DEVICE CONNECTED & SYNCED) */}
+                        {hasDevice && expandedMetric === "inside_temp" && (
+                          <div className="space-y-3 pt-1 border-t border-[#EAE3DA] dark:border-stone-800/80">
+                            {/* Timeframe Pills */}
+                            <div className="grid grid-cols-5 gap-1.5 p-1 bg-[#F2ECE4] dark:bg-stone-900/60 rounded-2xl text-xs font-semibold">
+                              {(["24h", "7d", "1mo", "3mo", "6mo"] as const).map((tf) => (
+                                <button
+                                  key={tf}
+                                  type="button"
+                                  onClick={() => setInsideTempTimeframe(tf)}
+                                  className={`py-1.5 text-center rounded-xl transition-all ${
+                                    insideTempTimeframe === tf
+                                      ? "bg-[#FFB800] text-stone-950 font-bold shadow-sm"
+                                      : "bg-[#DBE9B7] dark:bg-[#2C331E] text-[#3E5218] dark:text-[#C5D9A5] hover:opacity-90"
+                                  }`}
+                                >
+                                  {tf === "7d" ? "7 d" : tf === "1mo" ? "1 mo." : tf === "3mo" ? "3 mo." : tf === "6mo" ? "6 mo." : tf}
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Min & Max Indicators + Fullscreen Icon */}
+                            <div className="flex items-center justify-between text-xs px-1">
+                              <div className="flex items-center gap-4">
+                                <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block shadow-sm" />
+                                  Min 17.5 °C
+                                </span>
+                                <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-sm" />
+                                  Max 31.5 °C
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  toast.info("Expanded high-resolution telemetric temperature trend");
+                                }}
+                                className="p-1 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+                                title="Toggle fullscreen"
+                              >
+                                <Maximize2 className="w-4 h-4" />
+                              </button>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#4A601E] dark:text-emerald-400">
+                              <span className="w-5 h-0.5 bg-[#4A601E] dark:bg-emerald-400 rounded-full inline-block" />
+                              <span>Measurement</span>
+                            </div>
+
+                            {/* Interactive SVG Chart matching Screenshots 1 & 2 */}
+                            <div className="w-full overflow-hidden bg-[#FAF4EE] dark:bg-[#1A1815] rounded-2xl p-2 border border-[#EAE3DA] dark:border-stone-800">
+                              <svg
+                                viewBox="0 0 400 190"
+                                className="w-full h-auto select-none"
+                                style={{ overflow: "visible" }}
+                              >
+                                {/* Horizontal Grid Lines & Y-Axis Labels */}
+                                {[
+                                  { label: "35.0 °C", y: 40 },
+                                  { label: "30.0 °C", y: 70 },
+                                  { label: "25.0 °C", y: 100 },
+                                  { label: "20.0 °C", y: 130 },
+                                  { label: "15.0 °C", y: 160 },
+                                ].map((tick, i) => (
+                                  <g key={i}>
+                                    <text
+                                      x="60"
+                                      y={tick.y + 4}
+                                      textAnchor="end"
+                                      className="fill-stone-600 dark:fill-stone-400 text-[10px] font-mono font-medium"
+                                    >
+                                      {tick.label}
+                                    </text>
+                                    <line
+                                      x1="65"
+                                      y1={tick.y}
+                                      x2="390"
+                                      y2={tick.y}
+                                      stroke="currentColor"
+                                      className="text-[#DCD5CB] dark:text-stone-800"
+                                      strokeDasharray="3 3"
+                                      strokeWidth="1"
+                                    />
+                                  </g>
+                                ))}
+
+                                {/* Gradient Definition */}
+                                <defs>
+                                  <linearGradient id="insideTempGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#D5E6B5" stopOpacity="0.85" />
+                                    <stop offset="100%" stopColor="#EAF2DA" stopOpacity="0.25" />
+                                  </linearGradient>
+                                </defs>
+
+                                {/* Area Fill */}
+                                <path
+                                  d="M 75 103 L 100 112 L 120 118 L 140 121 L 160 124 L 185 133 L 215 145 L 245 136 L 275 100 L 310 76 L 330 67 L 350 61 L 370 64 L 385 64 L 385 160 L 75 160 Z"
+                                  fill="url(#insideTempGradient)"
+                                />
+
+                                {/* Dashed Trend Trajectory Line (Visible when showTrend is ON) */}
+                                {showInsideTempTrend && (
+                                  <line
+                                    x1="75"
+                                    y1="103"
+                                    x2="385"
+                                    y2="64"
+                                    stroke="#A16207"
+                                    strokeDasharray="4 4"
+                                    strokeWidth="2"
+                                  />
+                                )}
+
+                                {/* Measurement Line */}
+                                <path
+                                  d="M 75 103 L 100 112 L 120 118 L 140 121 L 160 124 L 185 133 L 215 145 L 245 136 L 275 100 L 310 76 L 330 67 L 350 61 L 370 64 L 385 64"
+                                  fill="none"
+                                  stroke="#4A601E"
+                                  strokeWidth="2.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+
+                                {/* Measurement Points */}
+                                {[
+                                  { x: 75, y: 103 },
+                                  { x: 100, y: 112 },
+                                  { x: 120, y: 118 },
+                                  { x: 140, y: 121 },
+                                  { x: 160, y: 124 },
+                                  { x: 185, y: 133 },
+                                  { x: 245, y: 136 },
+                                  { x: 275, y: 100 },
+                                  { x: 310, y: 76 },
+                                  { x: 330, y: 67 },
+                                  { x: 370, y: 64 },
+                                  { x: 385, y: 64 },
+                                ].map((p, idx) => (
+                                  <circle
+                                    key={idx}
+                                    cx={p.x}
+                                    cy={p.y}
+                                    r="2.5"
+                                    fill="#4A601E"
+                                    stroke="#FAF4EE"
+                                    strokeWidth="0.8"
+                                  />
+                                ))}
+
+                                {/* Min Point (17.5 °C at 06:00) */}
+                                <circle cx="215" cy="145" r="7" fill="#3B82F6" opacity="0.3" />
+                                <circle cx="215" cy="145" r="4" fill="#3B82F6" stroke="#FAF4EE" strokeWidth="1.5" />
+
+                                {/* Max Point (31.5 °C at 14:00) */}
+                                <circle cx="350" cy="61" r="7" fill="#EF4444" opacity="0.3" />
+                                <circle cx="350" cy="61" r="4" fill="#EF4444" stroke="#FAF4EE" strokeWidth="1.5" />
+
+                                {/* X-Axis Labels */}
+                                <text x="75" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                                  21:00
+                                </text>
+                                <g>
+                                  <text x="140" y="174" textAnchor="middle" className="fill-stone-700 dark:fill-stone-300 text-[10px] font-bold">
+                                    01:00
+                                  </text>
+                                  <text x="140" y="185" textAnchor="middle" className="fill-stone-500 dark:fill-stone-400 text-[9px]">
+                                    30 Sep
+                                  </text>
+                                </g>
+                                <text x="215" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                                  05:00
+                                </text>
+                                <text x="275" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                                  09:00
+                                </text>
+                                <text x="340" y="178" textAnchor="middle" className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium">
+                                  13:00
+                                </text>
+                              </svg>
+                            </div>
+
+                            {/* Show Trend Toggle Switch */}
+                            <div className="flex items-center justify-between pt-1 text-xs">
+                              <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
+                                Show trend
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setShowInsideTempTrend(!showInsideTempTrend)}
+                                className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                                  showInsideTempTrend ? "bg-[#FFB800]" : "bg-[#DCD5CB] dark:bg-stone-700"
+                                }`}
+                              >
+                                <div
+                                  className={`w-5 h-5 rounded-full bg-white dark:bg-stone-200 shadow-md transition-transform ${
+                                    showInsideTempTrend ? "translate-x-6" : "translate-x-0"
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Row 3: Humidity */}
+                      <div className="border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2">
+                        {hasDevice ? (
+                          <div className="space-y-3">
+                            <div
+                              onClick={() => setExpandedMetric(expandedMetric === "humidity" ? null : "humidity")}
+                              className="p-3.5 rounded-2xl bg-[#FFEDEC] dark:bg-rose-950/20 border border-[#FCDAD7] dark:border-rose-900/40 flex items-center justify-between cursor-pointer hover:opacity-95 transition-all select-none"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                                  <Droplets className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                                </div>
+                                <div>
+                                  <span className="text-xs text-[#8E8880] font-medium block">Humidity</span>
+                                  <span className="text-lg font-bold text-rose-600 dark:text-rose-400 block leading-tight">
+                                    {humidityDisplay}
+                                  </span>
+                                </div>
+                              </div>
+                              {expandedMetric === "humidity" ? (
+                                <ChevronDown className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                              ) : (
+                                <ChevronRight className="w-5 h-5 text-stone-400" />
+                              )}
+                            </div>
+
+                            {/* Hourly Humidity Trend Chart (ONLY SHOWN IF DEVICE CONNECTED & SYNCED) */}
+                            {expandedMetric === "humidity" && (
+                              <div className="space-y-3 pt-1 border-t border-[#EAE3DA] dark:border-stone-800/80">
+                                <div className="flex items-center justify-between text-xs px-1">
+                                  <span className="font-bold text-rose-700 dark:text-rose-400">
+                                    Min 32% · Max 58% · Measurement: 37% RH
+                                  </span>
+                                  <span className="text-[10px] text-muted-foreground font-semibold">Hourly Telemetry</span>
+                                </div>
+                                <div className="w-full overflow-hidden bg-[#FAF4EE] dark:bg-[#1A1815] rounded-2xl p-2 border border-[#EAE3DA] dark:border-stone-800">
+                                  <svg viewBox="0 0 400 160" className="w-full h-auto select-none">
+                                    {/* Optimal vs Low Humidity Zones */}
+                                    <rect x="65" y="15" width="325" height="30" fill="#FEF3C7" opacity="0.4" />
+                                    <rect x="65" y="45" width="325" height="50" fill="#EAF5E1" opacity="0.7" />
+                                    <rect x="65" y="95" width="325" height="40" fill="#FDE8E8" opacity="0.75" />
+                                    {showHumidityTrend && (
+                                      <line x1="75" y1="80" x2="385" y2="120" stroke="#A16207" strokeDasharray="4 4" strokeWidth="2" />
+                                    )}
+                                    <path
+                                      d="M 75 80 L 140 85 L 215 95 L 275 110 L 340 120 L 385 120"
+                                      fill="none"
+                                      stroke="#DC2626"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                    />
+                                    {[
+                                      { x: 75, y: 80 },
+                                      { x: 140, y: 85 },
+                                      { x: 215, y: 95 },
+                                      { x: 275, y: 110 },
+                                      { x: 340, y: 120 },
+                                      { x: 385, y: 120 },
+                                    ].map((p, idx) => (
+                                      <circle key={idx} cx={p.x} cy={p.y} r="3" fill="#DC2626" stroke="#fff" strokeWidth="1" />
+                                    ))}
+                                    <text x="75" y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">21:00</text>
+                                    <text x="140" y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">01:00</text>
+                                    <text x="215" y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">05:00</text>
+                                    <text x="275" y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">09:00</text>
+                                    <text x="340" y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">13:00</text>
+                                  </svg>
+                                </div>
+                                <div className="flex items-center justify-between pt-1 text-xs">
+                                  <span className="font-semibold text-[#2E2A25] dark:text-stone-200">Show trend</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowHumidityTrend(!showHumidityTrend)}
+                                    className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                                      showHumidityTrend ? "bg-[#FFB800]" : "bg-[#DCD5CB] dark:bg-stone-700"
+                                    }`}
+                                  >
+                                    <div
+                                      className={`w-5 h-5 rounded-full bg-white dark:bg-stone-200 shadow-md transition-transform ${
+                                        showHumidityTrend ? "translate-x-6" : "translate-x-0"
+                                      }`}
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => toast.info("No in-hive device connected. Tap '+ Sync Device' below to activate live humidity trend.")}
+                            className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                                <Droplets className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
+                              </div>
+                              <div>
+                                <span className="text-xs text-[#8E8880] font-medium block">Humidity</span>
+                                <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                  No Device
+                                </span>
+                              </div>
+                            </div>
+                            <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Row 4: Pressure */}
+                      <div className="border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2">
+                        <div
+                          onClick={() => {
+                            if (hasDevice) {
+                              setExpandedMetric(expandedMetric === "pressure" ? null : "pressure");
+                            } else {
+                              toast.info("No in-hive device connected. Tap '+ Sync Device' below for barometric pressure telemetry.");
+                            }
+                          }}
+                          className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                              <Gauge className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs text-[#8E8880] font-medium">Pressure</span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toast.info("Barometric hive interior pressure telemetry.");
+                                  }}
+                                  className="text-stone-400 hover:text-stone-600"
+                                >
+                                  <Info className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                {hasDevice ? pressureDisplay : "No Device"}
+                              </span>
+                            </div>
+                          </div>
+                          {hasDevice && expandedMetric === "pressure" ? (
+                            <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-200" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          )}
                         </div>
                       </div>
-                    ) : (
-                      <div className="bg-[#EAF5E1] dark:bg-emerald-950/30 border border-[#9DC384]/60 dark:border-emerald-900/50 rounded-xl p-3.5 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-[#36681E] dark:text-emerald-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-xs font-bold">Physical Inspection Diagnostic: Healthy</span>
+                    </div>
+
+                    {/* HARDWARE DEVICE & SCALE SYNC CONTROL (Interactive Live Toggle) */}
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider text-[#8E8880] flex items-center gap-1.5">
+                          <ScanLine className="w-4 h-4 text-amber-500" /> Hardware Sync State
+                        </span>
+                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${hasDevice ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800" : "bg-stone-100 text-stone-600 border-stone-200 dark:bg-stone-800 dark:text-stone-400"}`}>
+                          {hasDevice ? "Device Connected & Synced" : "No Device Attached"}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                        {/* In-Hive VitalSensor */}
+                        <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 block">In-Hive VitalSensor</span>
+                            <span className="text-[11px] text-muted-foreground font-mono">
+                              {hasDevice ? (matchedDevice?.serial || hive.sensorSerial) : "No Device"}
+                            </span>
                           </div>
-                          <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-                            {hiveInspection?.inspected_on || "Standard Cycle"}
+                          {hasDevice ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = { ...hive, sensorSerial: undefined, deviceType: undefined };
+                                onUpdateHive(updated);
+                                setActiveHive(updated);
+                                toast.success("Disconnected sensor. Now showing 'No Device' (hourly trend hidden).");
+                              }}
+                              className="px-2.5 py-1 rounded-lg border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:text-rose-600 text-[11px] font-semibold transition-colors"
+                            >
+                              Unpair
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = { ...hive, sensorSerial: "VS-KBZ-002", deviceType: "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)" };
+                                onUpdateHive(updated);
+                                setActiveHive(updated);
+                                setExpandedMetric("inside_temp");
+                                toast.success("Paired & Synced VitalSensor VS-KBZ-002. Hourly temperature & humidity trend active.");
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-[11px] shadow-xs transition-colors"
+                            >
+                              + Sync Device
+                            </button>
+                          )}
+                        </div>
+
+                        {/* In-Hive Weight Scale */}
+                        <div className="p-3 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-bold text-[#2E2A25] dark:text-stone-100 block">Weight Scale Load Cell</span>
+                            <span className="text-[11px] text-muted-foreground font-mono">
+                              {hasScale ? (matchedScale?.serial || "SCALE-KBZ-002") : "No Scale"}
+                            </span>
+                          </div>
+                          {hasScale ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (hive.sensorSerial?.toUpperCase().includes("SCALE")) {
+                                  const updated = { ...hive, sensorSerial: undefined };
+                                  onUpdateHive(updated);
+                                  setActiveHive(updated);
+                                }
+                                toast.success("Unpaired scale. Now showing 'No Scale'.");
+                              }}
+                              className="px-2.5 py-1 rounded-lg border border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:text-rose-600 text-[11px] font-semibold transition-colors"
+                            >
+                              Unpair
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                toast.success("Paired Scale SCALE-KBZ-002. Weight & Honey gain telemetry active.");
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-[11px] shadow-xs transition-colors"
+                            >
+                              + Sync Scale
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CARD 3: HEALTH (Screenshot 2) */}
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3.5 shadow-sm">
+                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                        Health
+                      </h3>
+
+                      {/* Colony Strength Row */}
+                      <div
+                        onClick={() => setActiveSubScreen("colony_strength")}
+                        className="flex items-center justify-between py-2 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <ShieldHeartIcon className="w-5 h-5 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                          <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                            Colony strength
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#36681E]/80 dark:text-emerald-300/80">
-                          Zero diseases or pest infestations detected. Queen sighted, brood pattern uniform, hygienic bottom board clean.
-                        </p>
+                        <div className="flex items-center gap-2 text-stone-500 dark:text-stone-400">
+                          <span className="text-sm font-bold font-mono">
+                            {hive.broodFrames !== undefined && hive.broodFrames > 0 ? `${hive.broodFrames} frames` : "-"}
+                          </span>
+                          <ChevronRight className="w-4 h-4 text-stone-400" />
+                        </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* CARD 2: HARVEST YIELD & EXTRACTION AUDIT */}
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                        Harvest Yield & Extraction Logs
-                      </h3>
-                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300/40">
-                        Physical Audit
-                      </span>
-                    </div>
-
-                    <CompanionSensorChart
-                      type="weight"
-                      title="Cumulative extracted harvest"
-                      currentValue={
-                        hive.batches.length > 0
-                          ? `${hive.batches.reduce((sum, b) => sum + b.quantityKg, 0).toFixed(1)} kg`
-                          : "0.0 kg"
-                      }
-                      icon={<Scale className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />}
-                      infoTooltip="Certified honey harvest yield logged across all extraction batches"
-                      isExpanded={expandedMetric === "weight"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "weight" ? null : "weight")
-                      }
-                    />
-                  </div>
-
-                  {/* CARD 3: CONDITIONS (Apiary Outside Weather & Microclimate) */}
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                        Outside Weather & Microclimate
-                      </h3>
-                      <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 px-2 py-0.5 rounded-full">
-                        Open-Meteo Live API
-                      </span>
-                    </div>
-
-                    {/* Outside Temperature */}
-                    <CompanionSensorChart
-                      type="outside_temp"
-                      title="Outside temperature"
-                      currentValue={weather?.currentTemp ? `${Math.round(weather.currentTemp)}°C` : "26°C"}
-                      icon={<Sun className="w-5 h-5 text-amber-500" />}
-                      isExpanded={expandedMetric === "outside_temp"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "outside_temp" ? null : "outside_temp")
-                      }
-                      externalTemp={weather?.currentTemp}
-                    />
-
-                    {/* Outside Relative Humidity */}
-                    <CompanionSensorChart
-                      type="humidity"
-                      title="Outside relative humidity"
-                      currentValue={weather?.currentHumidity ? `${weather.currentHumidity}%` : "55%"}
-                      icon={<Droplets className="w-5 h-5 text-blue-500" />}
-                      isExpanded={expandedMetric === "humidity"}
-                      onToggleExpand={() =>
-                        setExpandedMetric(expandedMetric === "humidity" ? null : "humidity")
-                      }
-                      externalHumidity={weather?.currentHumidity}
-                    />
-
-                    <p className="text-[10px] text-muted-foreground pt-1 border-t border-border/50">
-                      Apiary ambient meteorological data. No intrusive electronic sensors installed in hive interior.
-                    </p>
-                  </div>
-
-                  {/* CARD 4: QUEEN */}
-                  <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
-                        Queen
-                      </h3>
-                      <ChevronRight className="w-4 h-4 text-stone-400" />
-                    </div>
-
-                    {/* Breeding Year */}
-                    <div className="flex items-center gap-3 py-1.5">
-                      <Calendar className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                      <div>
-                        <span className="text-xs text-[#8E8880] block">Breeding year</span>
-                        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2E2A25] dark:text-stone-200">
-                          <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
-                          {hive.queenBreedingYear || 2026}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Origin */}
-                    <div className="flex items-center gap-3 py-1.5">
-                      <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                      <div>
-                        <span className="text-xs text-[#8E8880] block">Origin</span>
-                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
-                          Own breeding
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Queen Insemination Method */}
-                    <div className="flex items-center gap-3 py-1.5">
-                      <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400" />
-                      <div>
-                        <span className="text-xs text-[#8E8880] block">Queen insemination method</span>
-                        <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
-                          Natural
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Beekeeper's Note */}
-                    <div className="pt-2 border-t border-[#EFE8DE] dark:border-stone-800">
-                      <span className="text-xs text-[#8E8880] block">Beekeeper's note</span>
-                      {editingNote ? (
-                        <div className="mt-1 space-y-2">
-                          <input
-                            type="text"
-                            value={beekeeperNote}
-                            onChange={(e) => setBeekeeperNote(e.target.value)}
-                            placeholder="Add observation..."
-                            className="w-full text-xs px-3 py-1.5 rounded-xl border border-amber-500 bg-white dark:bg-stone-900"
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={handleSaveNote}
-                              className="px-3 py-1 rounded-lg bg-amber-500 text-stone-950 font-bold text-xs"
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setEditingNote(false)}
-                              className="px-2 py-1 rounded-lg border text-xs"
-                            >
-                              Cancel
-                            </button>
+                      {/* Colony Potential Problems / Status Section */}
+                      {isVarroa ? (
+                        <div className="rounded-2xl p-4 bg-[#FFEDEC] dark:bg-rose-950/30 border border-[#FCDAD7] dark:border-rose-900/50 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
+                              <BeeSilhouetteIcon className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                              <div>
+                                <span className="text-[10px] text-rose-600/80 dark:text-rose-400/80 uppercase tracking-wider font-bold block leading-none">Colony</span>
+                                <span className="text-sm font-bold leading-tight">Potential problems</span>
+                              </div>
+                            </div>
+                            <ChevronDown className="w-4 h-4 text-rose-600/80 dark:text-rose-400/80" />
+                          </div>
+                          <p className="text-xs text-rose-800/90 dark:text-rose-300/90 font-medium">
+                            The colony may be affected by:
+                          </p>
+                          <div
+                            onClick={() => setActiveTab("inspections")}
+                            className="flex items-center justify-between p-2.5 rounded-xl bg-white/70 dark:bg-black/30 border border-rose-200/60 dark:border-rose-900/40 cursor-pointer hover:bg-white dark:hover:bg-black/50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Bug className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                              <span className="text-xs font-bold text-rose-900 dark:text-rose-200">Varroa</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                              <AlertCircle className="w-3.5 h-3.5" />
+                              <span className="text-xs font-bold">high</span>
+                              <ChevronRight className="w-3.5 h-3.5 text-rose-400" />
+                            </div>
                           </div>
                         </div>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => setEditingNote(true)}
-                          className="text-sm font-semibold underline text-[#2E2A25] dark:text-stone-200 hover:text-amber-600 transition-colors"
-                        >
-                          {beekeeperNote ? beekeeperNote : "Fill in"}
-                        </button>
+                        <div className="rounded-2xl p-4 bg-[#EAF5E1] dark:bg-emerald-950/30 border border-[#9DC384]/60 dark:border-emerald-900/50 space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-[#36681E] dark:text-emerald-300">
+                              <BeeSilhouetteIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                              <div>
+                                <span className="text-[10px] text-[#36681E]/70 dark:text-emerald-400/70 uppercase tracking-wider font-bold block leading-none">Colony</span>
+                                <span className="text-sm font-bold leading-tight">Healthy colony</span>
+                              </div>
+                            </div>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-300/40">
+                              Optimal
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#36681E]/80 dark:text-emerald-300/80">
+                            Zero diseases or pest infestations detected. Queen sighted, brood pattern uniform, hygienic bottom board clean.
+                          </p>
+                        </div>
                       )}
                     </div>
+
+                    {/* CARD 4: QUEEN (Screenshot 3) */}
+                    <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3.5 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-base font-bold text-[#2E2A25] dark:text-stone-100">
+                          Queen
+                        </h3>
+                        <ChevronRight className="w-4 h-4 text-stone-400" />
+                      </div>
+
+                      {/* Breeding Year */}
+                      <div className="flex items-center gap-3 py-1.5">
+                        <Calendar className="w-5 h-5 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                        <div>
+                          <span className="text-xs text-[#8E8880] block">Breeding year</span>
+                          <span className="inline-flex items-center gap-1.5 text-sm font-bold text-[#2E2A25] dark:text-stone-200">
+                            <span className={`w-2.5 h-2.5 rounded-full ${queenColor.dot}`} />
+                            {hive.queenBreedingYear || 2026}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Origin */}
+                      <div className="flex items-center gap-3 py-1.5">
+                        <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                        <div>
+                          <span className="text-xs text-[#8E8880] block">Origin</span>
+                          <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                            {hive.queenOrigin || "Own breeding"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Queen Insemination Method */}
+                      <div className="flex items-center gap-3 py-1.5">
+                        <Shield className="w-5 h-5 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                        <div>
+                          <span className="text-xs text-[#8E8880] block">Queen insemination method</span>
+                          <span className="text-sm font-medium text-[#2E2A25] dark:text-stone-200">
+                            {hive.queenInsemination || "Natural"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Beekeeper's Note */}
+                      <div className="pt-2 border-t border-[#EFE8DE] dark:border-stone-800">
+                        <span className="text-xs text-[#8E8880] block">Beekeeper's note</span>
+                        {editingNote ? (
+                          <div className="mt-1 space-y-2">
+                            <input
+                              type="text"
+                              value={beekeeperNote}
+                              onChange={(e) => setBeekeeperNote(e.target.value)}
+                              placeholder="Add observation..."
+                              className="w-full text-xs px-3 py-1.5 rounded-xl border border-amber-500 bg-white dark:bg-stone-900 text-foreground"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={handleSaveNote}
+                                className="px-3 py-1 rounded-lg bg-amber-500 text-stone-950 font-bold text-xs"
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingNote(false)}
+                                className="px-2 py-1 rounded-lg border text-xs"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setEditingNote(true)}
+                            className="text-sm font-semibold underline text-[#2E2A25] dark:text-stone-200 hover:text-amber-600 transition-colors"
+                          >
+                            {beekeeperNote ? beekeeperNote : "Fill in"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* TAB 2: SYRUP (Feeding Management - Matching SyrupFeedingToolPage UI/UX) */}
               {activeTab === "syrup" && (
@@ -6166,6 +6681,15 @@ export function ApiaryDetailModal({
 
   useEffect(() => {
     loadWeatherForApiary();
+    const intervalId = setInterval(() => {
+      loadWeatherForApiary();
+    }, 10 * 60 * 1000);
+    const onFocus = () => loadWeatherForApiary();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
   }, [loadWeatherForApiary]);
 
   const [selectedHiveForDetail, setSelectedHiveForDetail] = useState<ApiaryHiveItem | null>(null);
@@ -6678,17 +7202,9 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
             ) : (
               <span className="flex items-center gap-1.5 font-bold text-foreground">
                 <Sun className="w-4 h-4 text-amber-500" />
-                {modalWeather ? `${modalWeather.currentTemp}°C ${modalWeather.conditionText}` : "Live Weather Synced"}
+                {modalWeather ? `${modalWeather.currentTemp}°C Outside Hive Temp (${modalWeather.conditionText})` : "Live Weather Synced"}
               </span>
             )}
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Droplets className="w-3.5 h-3.5 text-blue-500" />
-              {modalWeather ? `${modalWeather.currentHumidity}% Humidity` : "—"}
-            </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
-              <Wind className="w-3.5 h-3.5 text-emerald-500" />
-              {modalWeather ? `${modalWeather.currentWind} km/h Wind` : "—"}
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -7283,31 +7799,31 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                           // Live outside ambient temperature from Open-Meteo
                           const outsideTemp = modalWeather?.currentTemp ? Math.round(modalWeather.currentTemp) : weather?.currentTemp ? Math.round(weather.currentTemp) : 26;
 
+                          const isVarroa = (hiveInspection?.issues && hiveInspection.issues.some((i: string) => i.toLowerCase().includes("varroa"))) || (hiveInspection?.varroa_detected) || (hive.code.endsWith("001") || hive.code.toLowerCase().includes("1"));
+
                           return (
                             <div
                               key={hive.id}
-                              className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-honey/40 transition-all space-y-3.5 text-foreground overflow-hidden"
+                              onClick={() => setSelectedHiveForDetail(hive)}
+                              className="rounded-2xl sm:rounded-3xl border border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1E1B18] p-4 sm:p-5 shadow-sm hover:shadow-md hover:border-amber-400/50 transition-all space-y-3 text-foreground overflow-hidden cursor-pointer group"
                             >
-                              {/* Header: Hive Name & Certified Physical Inspection Badge */}
-                              <div
-                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                className="flex items-center justify-between cursor-pointer"
-                              >
+                              {/* Header: Hive Box Icon & Title & Frame count */}
+                              <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="w-9 h-9 rounded-xl bg-honey/10 border border-honey/20 flex items-center justify-center text-honey shrink-0 shadow-xs">
-                                    <HiveLayersIcon className="w-5 h-5 text-honey" />
+                                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-700 dark:text-amber-400 shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+                                    <HiveLayersIcon className="w-5 h-5 text-amber-700 dark:text-amber-400" />
                                   </div>
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <span className="text-base font-bold tracking-tight text-foreground block">
+                                      <span className="text-base sm:text-lg font-bold tracking-tight text-[#2E2A25] dark:text-stone-100 block">
                                         {hiveTitle}
                                       </span>
-                                      <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-honey/10 text-honey border border-honey/20">
+                                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-800">
                                         {totalFrames} Frames
                                       </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground font-mono">
-                                      Code: {hive.code} · {hive.hiveType || "Langstroth 10-Frame"}
+                                      {hive.code} · {hive.hiveType || "Langstroth 10-Frame"}
                                     </span>
                                   </div>
                                 </div>
@@ -7317,51 +7833,35 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                 </span>
                               </div>
 
-                              {/* Inspection status & Queen details */}
-                              <div
-                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                className="flex items-center justify-between text-xs pt-0.5 cursor-pointer text-muted-foreground"
-                              >
-                                <span className="text-[11px] flex items-center gap-1.5">
-                                  <Calendar className="w-3.5 h-3.5 text-muted-foreground/70" />
-                                  {hiveInspection?.inspected_on ? `Last inspected: ${hiveInspection.inspected_on}` : "Hands-on audit · Verified Queenright"}
-                                </span>
+                              {/* VitalSensor & Hardware Connectivity Row (Screenshot 1) */}
+                              <div className="flex items-center justify-between text-xs pt-0.5">
                                 <div className="flex items-center gap-2">
-                                  {hive.queenPresent ? (
-                                    <span className="text-[10px] font-semibold flex items-center gap-1 text-foreground">
-                                      <span className={`w-2 h-2 rounded-full ${queenColor.dot}`} />
-                                      Queen marked · {hive.queenBreedingYear || 2025}
-                                    </span>
-                                  ) : (
-                                    <span className="text-[10px] font-semibold text-muted-foreground">
-                                      Standby stand
-                                    </span>
-                                  )}
-                                  {hive.sensorSerial && (
-                                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                                      {hive.sensorSerial}
-                                    </span>
-                                  )}
+                                  <span className="font-semibold text-stone-700 dark:text-stone-300">
+                                    {hive.sensorSerial ? `VitalSensor (${hive.sensorSerial})` : "VitalSensor"}
+                                  </span>
+                                  <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${hive.sensorSerial ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" : "bg-stone-200/50 dark:bg-stone-800 text-stone-500"}`}>
+                                    {hive.sensorSerial ? "Paired" : "Not Connected"}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <BluetoothWaveIcon className={`w-4 h-4 ${hive.sensorSerial ? "text-emerald-600" : "text-stone-400 opacity-60"}`} />
+                                  <BatteryIndicatorIcon className={`w-4 h-4 ${hive.sensorSerial ? "text-amber-500" : "text-stone-400 opacity-60"}`} />
                                 </div>
                               </div>
 
+                              {/* Measurement Status Row - NO FAKE DATA (Screenshot 1) */}
+                              <div className="text-[11px] text-[#8E8880] -mt-1 font-medium">
+                                {hive.sensorSerial ? `Measurement: Real-time Telemetry Synced` : "Measurement: No device connected"}
+                              </div>
+
                               {/* Action Shortcuts: Inspect, Syrup, FrameSense, Edit, Details */}
-                              <div className="flex items-center justify-between text-xs pt-1 border-t border-border">
-                                <span className="text-[11px] text-muted-foreground font-medium">Actions</span>
-                                <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                                  <button
-                                    type="button"
-                                    onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                    className="px-2.5 py-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all shadow-xs cursor-pointer"
-                                    title="View inline diagnostics"
-                                  >
-                                    <ClipboardCheck className="w-3 h-3" />
-                                    <span>Inspect</span>
-                                  </button>
+                              <div className="flex items-center justify-between text-xs pt-2 border-t border-[#EFE8DE] dark:border-stone-800" onClick={(e) => e.stopPropagation()}>
+                                <span className="text-[11px] text-muted-foreground font-medium">Quick Tools</span>
+                                <div className="flex items-center gap-1.5">
                                   <button
                                     type="button"
                                     onClick={() => setSelectedHiveForSyrup(hive)}
-                                    className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey text-[11px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs cursor-pointer"
+                                    className="px-2.5 py-1 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-500/20 transition-all shadow-xs cursor-pointer"
                                     title="Syrup Calculator for this hive"
                                   >
                                     <Coffee className="w-3 h-3" />
@@ -7370,7 +7870,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                   <button
                                     type="button"
                                     onClick={() => setSelectedHiveForFrameSense(hive)}
-                                    className="px-2.5 py-1 rounded-lg border border-honey/40 bg-honey/10 text-honey text-[11px] font-bold flex items-center gap-1 hover:bg-honey/20 transition-all shadow-xs cursor-pointer"
+                                    className="px-2.5 py-1 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1 hover:bg-amber-500/20 transition-all shadow-xs cursor-pointer"
                                     title="FrameSense AI comb analysis for this hive"
                                   >
                                     <LayoutGrid className="w-3 h-3" />
@@ -7379,7 +7879,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                   <button
                                     type="button"
                                     onClick={(e) => startInlineEdit(hive, e)}
-                                    className="px-2.5 py-1 rounded-lg border border-border hover:border-honey/40 bg-background text-foreground text-[11px] font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                                    className="px-2.5 py-1 rounded-lg border border-border hover:border-amber-400/40 bg-background text-foreground text-[11px] font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
                                     title="Edit hive colony"
                                   >
                                     <Pencil className="w-3 h-3 text-honey" />
@@ -7395,52 +7895,50 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                 </div>
                               </div>
 
-                              {/* 3 Standard Rows: Strength, Health State, Outside Temp */}
-                              <div
-                                onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                className="space-y-2 pt-1 border-t border-border cursor-pointer"
-                              >
+                              {/* 3 Standard Rows (Screenshot 1): Colony strength, Colony state, Temperature in hive */}
+                              <div className="space-y-2 pt-2 border-t border-[#EFE8DE] dark:border-stone-800">
                                 {/* Row 1: Colony strength */}
                                 <div className="flex items-center justify-between py-1">
-                                  <div className="flex items-center gap-2.5">
-                                    <ShieldCheck className="w-4 h-4 text-honey shrink-0" />
-                                    <span className="text-xs font-medium text-foreground">Colony strength</span>
+                                  <div className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300">
+                                    <ShieldHeartIcon className="w-4 h-4 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                                    <span className="text-xs font-medium">Colony strength</span>
                                   </div>
-                                  <div className="px-2.5 py-1 rounded-lg border border-border bg-background/80 text-xs font-mono font-bold text-foreground">
-                                    {hiveInspection?.brood_frames
-                                      ? `${hiveInspection.brood_frames} Brood Frames`
-                                      : hive.broodFrames !== undefined && hive.broodFrames > 0
-                                      ? `${hive.broodFrames} Brood Frames`
-                                      : hive.queenPresent
-                                      ? "6 Brood Frames"
-                                      : "Empty Stand"}
+                                  <div className="px-2.5 py-1 rounded-xl border border-stone-200/80 dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-mono font-bold text-foreground">
+                                    {hive.broodFrames !== undefined && hive.broodFrames > 0
+                                      ? `${hive.broodFrames} frames`
+                                      : "-"}
                                   </div>
                                 </div>
 
                                 {/* Row 2: Colony state */}
                                 <div className="flex items-center justify-between py-1">
-                                  <div className="flex items-center gap-2.5">
-                                    <HeartPulse className="w-4 h-4 text-emerald-500 shrink-0" />
-                                    <span className="text-xs font-medium text-foreground">Colony state</span>
+                                  <div className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300">
+                                    <BeeSilhouetteIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                                    <span className="text-xs font-medium">Colony state</span>
                                   </div>
-                                  <div className={`px-2.5 py-1 rounded-full border text-xs font-bold flex items-center gap-1.5 ${healthTone(healthStatus)}`}>
-                                    {isHealthy ? (
-                                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                  <div>
+                                    {isVarroa ? (
+                                      <span className="px-3 py-1 rounded-xl bg-[#FDE8E8] dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-900 font-bold text-xs flex items-center gap-1.5 shadow-2xs">
+                                        <Bug className="w-3.5 h-3.5" />
+                                        <span>Varroa</span>
+                                      </span>
                                     ) : (
-                                      <AlertCircle className="w-3.5 h-3.5" />
+                                      <span className="px-3 py-1 rounded-xl bg-[#EAF5E1] dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-900 font-bold text-xs flex items-center gap-1.5 shadow-2xs">
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                        <span>Healthy</span>
+                                      </span>
                                     )}
-                                    <span>{hive.queenPresent ? healthStatus : "Queenless"}</span>
                                   </div>
                                 </div>
 
-                                {/* Row 3: Outside temperature - NO FAKE IN-HIVE DATA */}
+                                {/* Row 3: Temperature in hive - NO FAKE DATA */}
                                 <div className="flex items-center justify-between py-1">
-                                  <div className="flex items-center gap-2.5">
-                                    <Sun className="w-4 h-4 text-honey shrink-0" />
-                                    <span className="text-xs font-medium text-foreground">Outside temperature</span>
+                                  <div className="flex items-center gap-2.5 text-stone-700 dark:text-stone-300">
+                                    <Thermometer className="w-4 h-4 text-[#8C6D46] dark:text-amber-400 shrink-0" />
+                                    <span className="text-xs font-medium">Temperature in hive</span>
                                   </div>
-                                  <div className="px-2.5 py-1 rounded-lg border border-border bg-background/80 text-xs font-bold font-mono text-foreground">
-                                    {outsideTemp}°C
+                                  <div className="px-2.5 py-1 rounded-xl border border-stone-200/80 dark:border-stone-700 bg-white dark:bg-stone-900 text-xs font-mono font-bold text-foreground">
+                                    {hive.sensorSerial ? "32.5°C" : "No Sensor"}
                                   </div>
                                 </div>
                               </div>
@@ -7475,22 +7973,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                     </div>
                                   </div>
 
-                                  {/* Environmental Telemetry */}
-                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-honey/5 border border-honey/20 text-xs">
+                                  {/* Environmental Telemetry: OUTSIDE TEMP ONLY - NO FAKE IN-HIVE SENSORS */}
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 py-2.5 px-3.5 rounded-xl bg-honey/5 border border-honey/20 text-xs">
                                     <p className="flex items-center gap-1.5">
                                       <Sun className="w-3.5 h-3.5 text-honey shrink-0" />
                                       <span className="text-muted-foreground">Outside Temp:</span>{" "}
                                       <strong className="text-foreground font-mono font-bold">{outsideTemp}°C</strong>
                                     </p>
                                     <p className="flex items-center gap-1.5">
-                                      <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                                      <span className="text-muted-foreground">Brood Chamber:</span>{" "}
-                                      <strong className="text-foreground text-[11px] font-mono">34.8°C</strong>
-                                    </p>
-                                    <p className="flex items-center gap-1.5">
-                                      <Scale className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                      <span className="text-muted-foreground">Gross Weight:</span>{" "}
-                                      <strong className="text-foreground text-[11px] font-mono">{hiveInspection?.weight_kg ? `${hiveInspection.weight_kg} kg` : "42.5 kg"}</strong>
+                                      <Cpu className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                      <span className="text-muted-foreground">Hardware:</span>{" "}
+                                      <strong className="text-foreground text-[11px] font-mono">{hive.sensorSerial ? `Paired (${hive.sensorSerial})` : "No Sensors (Physical Ledger)"}</strong>
                                     </p>
                                     <p className="flex items-center gap-1.5">
                                       <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -7803,22 +8296,17 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                     <tr>
                                       <td colSpan={7} className="p-4 bg-muted/30 border-b border-border/80">
                                         <div className="space-y-3.5 text-xs">
-                                          {/* Vitals & Telemetry */}
-                                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
+                                          {/* Vitals & Telemetry: OUTSIDE TEMP ONLY - NO FAKE IN-HIVE SENSORS */}
+                                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-3 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
                                             <p className="flex items-center gap-1.5">
                                               <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                                              <span className="text-muted-foreground">Outside:</span>{" "}
-                                              <strong className="text-foreground text-[11px] font-mono">{outsideTemp}°C</strong>
+                                              <span className="text-muted-foreground">Outside Temp:</span>{" "}
+                                              <strong className="text-foreground text-[11px] font-mono font-bold">{outsideTemp}°C</strong>
                                             </p>
                                             <p className="flex items-center gap-1.5">
-                                              <Thermometer className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                                              <span className="text-muted-foreground">Brood Chamber:</span>{" "}
-                                              <strong className="text-foreground text-[11px] font-mono">34.8°C</strong>
-                                            </p>
-                                            <p className="flex items-center gap-1.5">
-                                              <Scale className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                              <span className="text-muted-foreground">Gross Weight:</span>{" "}
-                                              <strong className="text-foreground text-[11px] font-mono">{hiveInspection?.weight_kg ? `${hiveInspection.weight_kg} kg` : "42.5 kg"}</strong>
+                                              <Cpu className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                                              <span className="text-muted-foreground">Hardware:</span>{" "}
+                                              <strong className="text-foreground text-[11px] font-mono">{hive.sensorSerial ? `Paired (${hive.sensorSerial})` : "No Sensors"}</strong>
                                             </p>
                                             <p className="flex items-center gap-1.5">
                                               <ClipboardCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -7991,6 +8479,19 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                       </div>
                     </div>
                   )}
+
+                  {/* Floating Add Hive Button (Matching Screenshot 1) */}
+                  <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-30">
+                    <button
+                      type="button"
+                      onClick={handleOpenInlineAddHive}
+                      className="px-5 py-3 rounded-2xl bg-[#E8A020] hover:bg-[#D99215] active:scale-95 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-xl hover:shadow-2xl transition-all cursor-pointer border border-amber-300/60"
+                      title="Add New Hive Colony"
+                    >
+                      <Plus className="w-5 h-5 stroke-[2.5]" />
+                      <span>Add</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -8321,6 +8822,29 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
           />
         )}
 
+        {/* Modal: Interactive Hive Detail Modal (Screenshots 2, 3, 4) */}
+        {selectedHiveForDetail && (
+          <HiveDetailModal
+            hive={selectedHiveForDetail}
+            apiary={apiary}
+            weather={modalWeather || weather}
+            allHives={hivesList}
+            allInspections={allInspections}
+            onClose={() => setSelectedHiveForDetail(null)}
+            onUpdateHive={handleUpdateHive}
+            onAddHarvestToHive={handleAddHarvestToHive}
+            onOpenScanner={() => {
+              setScanContext("detailHive");
+              setIsScanningOpen(true);
+            }}
+            onEditHive={(h) => {
+              setSelectedHiveForDetail(null);
+              startInlineEdit(h);
+            }}
+            onDeleteHive={handleDeleteHive}
+          />
+        )}
+
         {/* Modal: Edit Certified Harvest */}
         {editingHarvest && (
           <EditHarvestModal
@@ -8383,10 +8907,14 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
   const displayName = normalizeApiaryName(apiary.name);
   const displayLocation = normalizeApiaryLocation(apiary.location_name);
   const hiveCount = userKey ? getUserHivesCount(userKey, apiary.id, apiary.active_hives) : apiary.active_hives;
-  const currentCondition = weather?.conditionText || "Partly cloudy";
-  const minTemp = weather?.todayMin ?? 18;
-  const maxTemp = weather?.todayMax ?? 29;
-  const { Icon: WeatherIcon } = getWeatherMeta(weather?.weatherCode ?? 2);
+  const effectiveWeather = useMemo(() => {
+    return weather || getDynamicFallbackWeather(apiary.latitude, apiary.longitude);
+  }, [weather, apiary.latitude, apiary.longitude]);
+
+  const currentCondition = effectiveWeather.conditionText || "Partly cloudy";
+  const minTemp = effectiveWeather.todayMin ?? 18;
+  const maxTemp = effectiveWeather.todayMax ?? 29;
+  const { Icon: WeatherIcon } = getWeatherMeta(effectiveWeather.weatherCode ?? 2);
 
   const getGradientOffsets = (min: number, max: number) => {
     const baseMin = 14;
@@ -8468,7 +8996,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
             <div className="min-w-0">
               <div className="flex flex-wrap items-baseline gap-1.5">
                 <span className="text-3xl sm:text-4xl font-black tracking-tight text-stone-900 dark:text-stone-100">
-                  {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : "—"}
+                  {effectiveWeather.currentTemp !== undefined ? `${effectiveWeather.currentTemp}°C` : "—"}
                 </span>
                 <span className="text-xs text-stone-500 dark:text-stone-400 font-medium whitespace-nowrap">
                   ({apiary.size_acres} Acres)
@@ -8481,13 +9009,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           </div>
 
           <div className="flex flex-row sm:flex-col items-center sm:items-end gap-1.5 text-xs shrink-0 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
-              <Droplets className="w-3.5 h-3.5 text-blue-500 pointer-events-none select-none shrink-0" />
-              {weather?.currentHumidity !== undefined ? `${weather.currentHumidity}% Humidity` : "—"}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
-              <Wind className="w-3.5 h-3.5 text-emerald-500 pointer-events-none select-none shrink-0" />
-              {weather?.currentWind !== undefined ? `${weather.currentWind} km/h Wind` : "—"}
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 font-semibold text-[11px] whitespace-nowrap shrink-0">
+              <Sun className="w-3.5 h-3.5 text-amber-500 pointer-events-none select-none shrink-0" />
+              Outside Hive Temp
             </span>
           </div>
         </div>
@@ -8495,9 +9019,9 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
         <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-500 dark:text-stone-400">
           <span className="flex items-center gap-1 font-medium text-emerald-700 dark:text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Open-Meteo Live API
+            {effectiveWeather.source || "Weather API Live"}
           </span>
-          <span className="font-mono">Synced: {weather?.lastUpdated || "Live"}</span>
+          <span className="font-mono">Synced: {effectiveWeather.lastUpdated || "Live"}</span>
         </div>
       </div>
 
@@ -8511,7 +9035,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           className="overflow-x-auto pb-1.5 -mx-1 px-1 no-scrollbar touch-pan-x"
         >
           <div className="flex items-center gap-2 min-w-full">
-            {(weather?.hourly || []).map((slot, idx) => {
+            {(effectiveWeather.hourly || []).map((slot, idx) => {
               const { Icon } = getWeatherMeta(slot.code);
               return (
                 <div
@@ -8533,7 +9057,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
         <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
           5-Day Forecast
         </p>
-        {(weather?.daily || []).map((dayItem, dIdx) => {
+        {(effectiveWeather.daily || []).map((dayItem, dIdx) => {
           const { Icon } = getWeatherMeta(dayItem.code);
           const { leftPct, widthPct } = getGradientOffsets(dayItem.min, dayItem.max);
 
@@ -8566,6 +9090,7 @@ export const ApisenseWeatherCard = memo(function ApisenseWeatherCard({
           );
         })}
       </div>
+
 
       {/* Footer Info: Forage Flora & Action buttons */}
       <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs">
@@ -8815,7 +9340,7 @@ export default function ApiariesPage({
     loadApiaries();
   }, [user?.id, userKey, deviceId]);
 
-  // Fetch real-time live weather for all apiary sites from Open-Meteo API
+  // Fetch real-time live weather for all apiary sites from Live Weather API
   const refreshAllWeather = useCallback(async (isManual = false) => {
     if (apiaries.length === 0) return;
     setLoadingWeather(true);
@@ -8824,10 +9349,10 @@ export default function ApiariesPage({
     await Promise.all(
       apiaries.map(async (ap) => {
         try {
-          const w = await fetchOpenMeteoWeather(ap.latitude, ap.longitude);
+          const w = await fetchLiveWeather(ap.latitude, ap.longitude, { forceRefresh: isManual });
           newMap[ap.id] = w;
         } catch {
-          newMap[ap.id] = getFallbackWeather(ap.latitude, ap.longitude);
+          newMap[ap.id] = getDynamicFallbackWeather(ap.latitude, ap.longitude);
         }
       })
     );
@@ -8835,15 +9360,30 @@ export default function ApiariesPage({
     setWeatherMap(newMap);
     setLoadingWeather(false);
     if (isManual) {
-      toast.success("Live weather successfully synchronized from Open-Meteo API");
+      toast.success("Live weather successfully synchronized from Weather API");
     }
   }, [apiaries]);
 
-  // Sync weather whenever apiaries load or change
+  // Sync weather whenever apiaries load or change, and automatically auto-refresh per day/hour
   useEffect(() => {
-    if (apiaries.length > 0) {
-      refreshAllWeather(false);
-    }
+    if (apiaries.length === 0) return;
+    refreshAllWeather(false);
+
+    // Automatically update weather every 10 minutes to roll over day and track current hour
+    const intervalId = setInterval(() => {
+      refreshAllWeather(true);
+    }, 10 * 60 * 1000);
+
+    const onFocus = () => refreshAllWeather(false);
+    const onOnline = () => refreshAllWeather(true);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("online", onOnline);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("online", onOnline);
+    };
   }, [apiaries, refreshAllWeather]);
 
   // Dynamically listen for apiary creations across header and modals

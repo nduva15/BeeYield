@@ -105,8 +105,29 @@ function useDeleteHive() {
   });
 }
 
-function useApiaryWeatherSummary(_apiaryId?: string) {
-  return { data: { currentTemp: 26.5 } };
+function useApiaryWeatherSummary(apiaryId?: string, apiaryList: Apiary[] = []) {
+  const currentApiary = apiaryList.find((a) => a.id === apiaryId) || apiaryList[0];
+  const lat = currentApiary?.latitude ?? -2.409;
+  const lon = currentApiary?.longitude ?? 37.962;
+
+  return useQuery({
+    queryKey: ["apiary-live-weather", lat, lon],
+    queryFn: async () => {
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&timezone=auto`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Weather fetch failed");
+        const data = await res.json();
+        return {
+          currentTemp: Math.round(data.current?.temperature_2m ?? 26),
+          source: "Open-Meteo REST API",
+        };
+      } catch (err) {
+        return { currentTemp: 26, source: "Offline Baseline" };
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
 function HiveDetailView({
@@ -514,11 +535,12 @@ export default function BeeYieldHivesView({
     };
   }, [refetchHives]);
 
-  // Outside hive temperature (Ambient weather for the apiary)
+  // Outside hive temperature (Ambient weather for the apiary fetched from real Open-Meteo API)
   const { data: weatherSummary } = useApiaryWeatherSummary(
-    selectedPlace === "all" ? apiaries[0]?.id : selectedPlace
+    selectedPlace === "all" ? apiaries[0]?.id : selectedPlace,
+    apiaries
   );
-  const outsideTemp = weatherSummary?.currentTemp ?? 26.5;
+  const outsideTemp = weatherSummary?.currentTemp ?? 26;
 
   // Aggregated verified harvest metrics per hive from canonical batches & user harvests
   const harvestMetrics = useMemo(() => {
@@ -612,7 +634,7 @@ export default function BeeYieldHivesView({
 
   // Stats calculation (150 active colonies across 184 stands, 34 standby boxes, 0 IoT sensors connected)
   const stats = useMemo(() => {
-    const total = hives.length || 184;
+    const total = hives.length;
     const active = hives.filter((h) => {
       const numMatch = h.hive_code.match(/\d+/);
       const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
@@ -624,7 +646,7 @@ export default function BeeYieldHivesView({
       return s === "critical" || s === "watch" || s === "maintenance";
     }).length;
     const sensorsCount = hives.filter((h) => h.has_sensors).length;
-    return { total, active: active || 150, standby: standby || 34, critical, sensorsCount };
+    return { total, active, standby, critical, sensorsCount };
   }, [hives]);
 
   // Actions
@@ -690,9 +712,9 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
           installation_date: h.installation_date ? h.installation_date.slice(0, 10) : new Date().toISOString().slice(0, 10),
           has_sensors: !!h.has_sensors,
           notes: h.notes || "",
-          temperature_c: h.latest_temp ?? 34.8,
-          humidity_pct: h.latest_humidity ?? 58,
-          weight_kg: h.latest_weight ?? 42.5,
+          temperature_c: h.latest_temp ?? null,
+          humidity_pct: h.latest_humidity ?? null,
+          weight_kg: h.latest_weight ?? null,
         });
         setAiText("");
         setShowForm(true);
@@ -1393,14 +1415,15 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                 <div className="grid md:grid-cols-3 gap-3 pt-2">
                   <label className="text-xs space-y-1">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Thermometer className="w-3 h-3 text-rose-500" /> Baseline Brood Temp (°C)
+                      <Thermometer className="w-3 h-3 text-rose-500" /> Sensor Brood Temp (°C)
                     </span>
                     <input
                       type="number"
                       step="0.1"
-                      value={draft.temperature_c ?? 34.8}
+                      value={draft.temperature_c ?? ""}
+                      placeholder="e.g. 35.0"
                       onChange={(e) =>
-                        setDraft({ ...draft, temperature_c: parseFloat(e.target.value) || 0 })
+                        setDraft({ ...draft, temperature_c: e.target.value === "" ? null : parseFloat(e.target.value) })
                       }
                       className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                     />
@@ -1408,15 +1431,16 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
 
                   <label className="text-xs space-y-1">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Droplets className="w-3 h-3 text-blue-500" /> Relative Humidity (% RH)
+                      <Droplets className="w-3 h-3 text-blue-500" /> Sensor Humidity (% RH)
                     </span>
                     <input
                       type="number"
                       min={0}
                       max={100}
-                      value={draft.humidity_pct ?? 58}
+                      value={draft.humidity_pct ?? ""}
+                      placeholder="e.g. 60"
                       onChange={(e) =>
-                        setDraft({ ...draft, humidity_pct: parseInt(e.target.value, 10) || 0 })
+                        setDraft({ ...draft, humidity_pct: e.target.value === "" ? null : parseInt(e.target.value, 10) })
                       }
                       className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                     />
@@ -1424,14 +1448,15 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
 
                   <label className="text-xs space-y-1">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Scale className="w-3 h-3 text-amber-600" /> Gross Hive Weight (kg)
+                      <Scale className="w-3 h-3 text-amber-600" /> Sensor Hive Weight (kg)
                     </span>
                     <input
                       type="number"
                       step="0.1"
-                      value={draft.weight_kg ?? 42.5}
+                      value={draft.weight_kg ?? ""}
+                      placeholder="e.g. 42.0"
                       onChange={(e) =>
-                        setDraft({ ...draft, weight_kg: parseFloat(e.target.value) || 0 })
+                        setDraft({ ...draft, weight_kg: e.target.value === "" ? null : parseFloat(e.target.value) })
                       }
                       className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 font-bold text-foreground"
                     />
@@ -1588,6 +1613,9 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                       <span className="text-xs text-stone-600 dark:text-stone-300 font-medium">
                         {totalFrames} frames ({h.hive_type || "Langstroth"})
                       </span>
+                      <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
+                        <Sun className="w-3 h-3 text-amber-500" /> {outsideTemp}°C Outside
+                      </span>
                       {h.installation_date && (
                         <span className="text-xs text-muted-foreground">
                           {h.installation_date.slice(0, 10)}
@@ -1689,27 +1717,21 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                         </p>
                       </div>
 
-                      {/* Environmental Telemetry: OUTSIDE HIVE TEMP ONLY - NO FAKE SENSOR/WEIGHT/FRAME READINGS */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 py-2.5 px-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 text-xs">
+                      {/* Environmental Telemetry: OUTSIDE HIVE TEMP ONLY FROM WEATHER API */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 py-2.5 px-3.5 rounded-xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 text-xs">
                         <p className="flex items-center gap-1.5">
                           <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                           <span className="text-muted-foreground">Outside Hive Temp:</span>{" "}
                           <strong className="text-foreground font-mono font-bold">
                             {outsideTemp}°C
                           </strong>
+                          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">(Weather API)</span>
                         </p>
                         <p className="flex items-center gap-1.5">
                           <Radio className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                          <span className="text-muted-foreground">Hardware Devices:</span>{" "}
+                          <span className="text-muted-foreground">Hardware:</span>{" "}
                           <strong className="text-foreground text-[11px]">
-                            {h.has_sensors ? "IoT Active" : "0 Connected"}
-                          </strong>
-                        </p>
-                        <p className="flex items-center gap-1.5">
-                          <Scale className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                          <span className="text-muted-foreground">Hive Weight:</span>{" "}
-                          <strong className="text-muted-foreground text-[11px]">
-                            {h.has_sensors && h.latest_weight ? `${h.latest_weight} kg` : "No Scale Linked"}
+                            {h.has_sensors ? "IoT Active" : "No Sensors (Physical Ledger)"}
                           </strong>
                         </p>
                         <p className="flex items-center gap-1.5">

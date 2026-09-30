@@ -20,11 +20,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import AvatarPickerDialog from "@/components/beeyield/AvatarPickerDialog";
 import { PRESET_AVATARS } from "@/lib/preset-avatars";
+import RegionalPreferencesCard from "@/components/beeyield/RegionalPreferencesCard";
 
-type Tab = "profile" | "modules" | "alerting" | "security" | "billing" | "about";
+type Tab = "profile" | "preferences" | "modules" | "alerting" | "security" | "billing" | "about";
 
 const TABS: { id: Tab; label: string; icon: typeof User }[] = [
   { id: "profile", label: "Profile", icon: User },
+  { id: "preferences", label: "Language & Units", icon: Globe },
   { id: "modules", label: "Modules", icon: Blocks },
   { id: "alerting", label: "Alerting", icon: BellRing },
   { id: "security", label: "Security", icon: ShieldCheck },
@@ -738,7 +740,21 @@ export default function SettingsPage({ isOpen = true, onClose, embedded = false,
                 Sign Out
               </button>
             </div>
+
+            {/* Regional & Measurement Unit Preferences embedded in profile */}
+            <div className="pt-4 border-t border-border">
+              <RegionalPreferencesCard />
+            </div>
           </form>
+        )}
+
+        {tab === "preferences" && (
+          <div className="space-y-4">
+            <RegionalPreferencesCard
+              title="Regional & Unit Preferences"
+              subtitle="Configure your language, temperature scale (°C / °F), and weight measurement (kg / lbs) across all hive telemetry and reports."
+            />
+          </div>
         )}
 
         {tab === "modules" && (

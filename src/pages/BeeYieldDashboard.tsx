@@ -361,6 +361,7 @@ const BeeYieldDashboard: React.FC = () => {
         },
         { id: 'integrations', label: 'Integrations', icon: Puzzle },
         { id: 'support', label: 'Support', icon: LifeBuoy },
+        { id: 'preferences', label: 'Language & Units', icon: Globe },
         { id: 'settings', label: 'Settings', icon: Settings },
     ], []);
 
@@ -512,6 +513,7 @@ const BeeYieldDashboard: React.FC = () => {
             case 'meters-settings': return <MetersView onTabChange={handleTabChange} activeSubTab={activeTab} />;
             case 'integrations': return renderEmbedded(<IntegrationsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             case 'support': return renderEmbedded(<SupportPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
+            case 'preferences': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} initialTab="preferences" />);
             case 'settings': return renderEmbedded(<SettingsPage isOpen={true} onClose={() => handleTabChange('home')} embedded={true} />);
             default: return (
                 <div className="flex flex-col items-center justify-center min-h-[400px] text-center p-8 bg-muted/30 rounded-[2.5rem] border border-dashed border-primary/20">

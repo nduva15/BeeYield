@@ -18,6 +18,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HiveHealthDashboard from './lovable_ai/HiveHealthDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
+import {
+    fetchLiveWeather,
+    getDynamicFallbackWeather,
+    getWeatherMeta,
+    type LiveWeatherData,
+} from '@/services/weatherService';
 
 interface SensorHealthViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
@@ -48,103 +54,10 @@ export const CANONICAL_INSPECTION_HIVES: ColonyInspectionItem[] = [];
 export type HiveTelemetryItem = ColonyInspectionItem;
 export const DEFAULT_SENSOR_HIVES = CANONICAL_INSPECTION_HIVES;
 
-interface LiveWeatherData {
-    currentTemp: number;
-    currentHumidity: number;
-    currentWind: number;
-    weatherCode: number;
-    conditionText: string;
-    todayMin: number;
-    todayMax: number;
-    hourly: Array<{
-        time: string;
-        temp: number;
-        humidity: number;
-        code: number;
-    }>;
-    lastUpdated: string;
-}
-
-function getWeatherMeta(code: number) {
-    switch (code) {
-        case 0:
-            return { text: "Clear sky", Icon: Sun, color: "text-amber-500" };
-        case 1:
-            return { text: "Mainly clear", Icon: Sun, color: "text-amber-400" };
-        case 2:
-            return { text: "Partly cloudy", Icon: CloudSun, color: "text-amber-400" };
-        case 3:
-            return { text: "Mostly cloudy", Icon: Cloud, color: "text-slate-400" };
-        case 45:
-        case 48:
-            return { text: "Foggy conditions", Icon: CloudFog, color: "text-slate-400" };
-        case 51:
-        case 53:
-        case 55:
-            return { text: "Light drizzle", Icon: CloudDrizzle, color: "text-blue-400" };
-        case 61:
-        case 63:
-        case 65:
-            return { text: "Rain", Icon: CloudRain, color: "text-blue-500" };
-        case 80:
-        case 81:
-        case 82:
-            return { text: "Rain showers", Icon: CloudRain, color: "text-blue-500" };
-        case 95:
-        case 96:
-        case 99:
-            return { text: "Thunderstorm", Icon: CloudLightning, color: "text-purple-500" };
-        default:
-            return { text: "Partly cloudy", Icon: CloudSun, color: "text-amber-400" };
-    }
-}
-
 async function fetchOpenMeteoWeather(lat: number = -2.409, lon: number = 37.967): Promise<LiveWeatherData> {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Weather fetch failed: ${res.statusText}`);
-    const data = await res.json();
-
-    const current = data.current;
-    const daily = data.daily;
-    const hourly = data.hourly;
-
-    const currentCode = current.weather_code ?? 2;
-    const meta = getWeatherMeta(currentCode);
-
-    const todayMin = Math.round(daily.temperature_2m_min?.[0] ?? 17);
-    const todayMax = Math.round(daily.temperature_2m_max?.[0] ?? 30);
-
-    const now = new Date();
-    const hourlyItems: Array<{ time: string; temp: number; humidity: number; code: number }> = [];
-
-    for (let i = 0; i < (hourly.time?.length || 0); i++) {
-        const timeStr = hourly.time[i];
-        const hourDate = new Date(timeStr);
-        if (hourDate >= now || hourlyItems.length === 0) {
-            const formattedTime = hourDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-            hourlyItems.push({
-                time: formattedTime,
-                temp: Math.round(hourly.temperature_2m[i] * 10) / 10,
-                humidity: Math.round(hourly.relative_humidity_2m?.[i] ?? 50),
-                code: hourly.weather_code[i] ?? 2,
-            });
-            if (hourlyItems.length >= 8) break;
-        }
-    }
-
-    return {
-        currentTemp: Math.round(current.temperature_2m * 10) / 10,
-        currentHumidity: Math.round(current.relative_humidity_2m),
-        currentWind: Math.round(current.wind_speed_10m * 10) / 10,
-        weatherCode: currentCode,
-        conditionText: meta.text,
-        todayMin,
-        todayMax,
-        hourly: hourlyItems,
-        lastUpdated: new Date().toLocaleTimeString(),
-    };
+    return fetchLiveWeather(lat, lon);
 }
+
 
 const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     const { user, beeyieldUser } = useAuth();
@@ -227,7 +140,16 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
     useEffect(() => {
         loadData();
         const timer = setInterval(() => setLiveTime(new Date()), 1000);
-        return () => clearInterval(timer);
+        const weatherTimer = setInterval(() => loadData(), 10 * 60 * 1000);
+        const onFocus = () => loadData();
+        window.addEventListener('focus', onFocus);
+        window.addEventListener('online', onFocus);
+        return () => {
+            clearInterval(timer);
+            clearInterval(weatherTimer);
+            window.removeEventListener('focus', onFocus);
+            window.removeEventListener('online', onFocus);
+        };
     }, [loadData]);
 
     const filteredHives = useMemo(() => {

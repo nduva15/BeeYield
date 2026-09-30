@@ -24,6 +24,15 @@ import { toast } from 'sonner';
 import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
 import { useSensorReadings } from '@/hooks/useSensorReadings';
 import { extractSafeSensorTelemetry } from '@/lib/sensorDataSafety';
+import RegionalPreferencesCard from './RegionalPreferencesCard';
+import {
+    fetchLiveWeather,
+    getDynamicFallbackWeather,
+    getWeatherMeta,
+    type LiveWeatherData,
+    type DailyWeatherItem,
+    type HourlyWeatherItem,
+} from '@/services/weatherService';
 
 
 interface DashboardHomeViewProps {
@@ -63,151 +72,14 @@ const CANONICAL_HIVES: Hive[] = Array.from({ length: 184 }, (_, i) => ({
     created_at: "2020-01-01T08:00:00Z",
 }));
 
-interface LiveWeatherData {
-    currentTemp: number;
-    currentHumidity: number;
-    currentWind: number;
-    weatherCode: number;
-    conditionText: string;
-    todayMin: number;
-    todayMax: number;
-    hourly: Array<{
-        time: string;
-        temp: number;
-        code: number;
-    }>;
-    daily: Array<{
-        day: string;
-        min: number;
-        max: number;
-        code: number;
-    }>;
-    lastUpdated: string;
-}
-
-function getWeatherMeta(code: number) {
-    switch (code) {
-        case 0:
-            return { text: "Clear sky", Icon: Sun, color: "text-amber-500" };
-        case 1:
-            return { text: "Mainly clear", Icon: Sun, color: "text-amber-400" };
-        case 2:
-            return { text: "Partly cloudy", Icon: CloudSun, color: "text-amber-400" };
-        case 3:
-            return { text: "Mostly cloudy", Icon: Cloud, color: "text-slate-400" };
-        case 45:
-        case 48:
-            return { text: "Foggy conditions", Icon: CloudFog, color: "text-slate-400" };
-        case 51:
-        case 53:
-        case 55:
-            return { text: "Light drizzle", Icon: CloudDrizzle, color: "text-blue-400" };
-        case 61:
-        case 63:
-        case 65:
-            return { text: "Rain", Icon: CloudRain, color: "text-blue-500" };
-        case 80:
-        case 81:
-        case 82:
-            return { text: "Rain showers", Icon: CloudRain, color: "text-blue-500" };
-        case 95:
-        case 96:
-        case 99:
-            return { text: "Thunderstorm", Icon: CloudLightning, color: "text-purple-500" };
-        default:
-            return { text: "Partly cloudy", Icon: CloudSun, color: "text-amber-400" };
-    }
-}
-
 async function fetchOpenMeteoWeather(lat: number, lon: number): Promise<LiveWeatherData> {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Weather fetch failed: ${res.statusText}`);
-    const data = await res.json();
-
-    const current = data.current;
-    const daily = data.daily;
-    const hourly = data.hourly;
-
-    const currentCode = current.weather_code ?? 2;
-    const meta = getWeatherMeta(currentCode);
-
-    const todayMin = Math.round(daily.temperature_2m_min?.[0] ?? 19);
-    const todayMax = Math.round(daily.temperature_2m_max?.[0] ?? 28);
-
-    const now = new Date();
-    const hourlyItems: Array<{ time: string; temp: number; code: number }> = [];
-
-    for (let i = 0; i < (hourly.time?.length || 0); i++) {
-        const timeStr = hourly.time[i];
-        const hourDate = new Date(timeStr);
-        if (hourDate >= now || hourlyItems.length === 0) {
-            const formattedTime = hourDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-            hourlyItems.push({
-                time: formattedTime,
-                temp: Math.round(hourly.temperature_2m[i]),
-                code: hourly.weather_code[i] ?? 3,
-            });
-            if (hourlyItems.length >= 6) break;
-        }
-    }
-
-    const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const dailyItems: Array<{ day: string; min: number; max: number; code: number }> = [];
-
-    for (let d = 0; d < Math.min(5, daily.time?.length || 0); d++) {
-        const dDate = new Date(daily.time[d]);
-        const dayLabel = d === 0 ? "Today" : weekdays[dDate.getDay()];
-        dailyItems.push({
-            day: dayLabel,
-            min: Math.round(daily.temperature_2m_min[d]),
-            max: Math.round(daily.temperature_2m_max[d]),
-            code: daily.weather_code[d] ?? 2,
-        });
-    }
-
-    return {
-        currentTemp: Math.round(current.temperature_2m),
-        currentHumidity: Math.round(current.relative_humidity_2m),
-        currentWind: Math.round(current.wind_speed_10m),
-        weatherCode: currentCode,
-        conditionText: meta.text,
-        todayMin,
-        todayMax,
-        hourly: hourlyItems,
-        daily: dailyItems,
-        lastUpdated: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
+    return fetchLiveWeather(lat, lon);
 }
 
 function getFallbackWeather(lat: number, lon: number): LiveWeatherData {
-    const seed = Math.abs(Math.round((lat + lon) * 100)) % 10;
-    return {
-        currentTemp: 25 + (seed % 3),
-        currentHumidity: 52 + seed,
-        currentWind: 10,
-        weatherCode: 2,
-        conditionText: "Partly cloudy",
-        todayMin: 19,
-        todayMax: 28,
-        hourly: [
-            { time: "12:00", temp: 26, code: 2 },
-            { time: "14:00", temp: 28, code: 1 },
-            { time: "16:00", temp: 27, code: 2 },
-            { time: "18:00", temp: 24, code: 3 },
-            { time: "20:00", temp: 21, code: 3 },
-            { time: "22:00", temp: 19, code: 3 },
-        ],
-        daily: [
-            { day: "Today", min: 19, max: 28, code: 2 },
-            { day: "Tue", min: 18, max: 29, code: 1 },
-            { day: "Wed", min: 17, max: 30, code: 0 },
-            { day: "Thu", min: 18, max: 30, code: 1 },
-            { day: "Fri", min: 19, max: 29, code: 2 },
-        ],
-        lastUpdated: "Just now",
-    };
+    return getDynamicFallbackWeather(lat, lon);
 }
+
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
     return (
@@ -469,7 +341,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     const batches = userBatches;
 
 
-    // Live Weather State via Open-Meteo
+    // Live Weather State via Weather API
     const [weather, setWeather] = React.useState<LiveWeatherData | null>(null);
     const [isWeatherLoading, setIsWeatherLoading] = React.useState(false);
 
@@ -478,13 +350,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         const lon = primaryApiary?.longitude ?? 37.967;
         setIsWeatherLoading(true);
         try {
-            const data = await fetchOpenMeteoWeather(lat, lon);
+            const data = await fetchLiveWeather(lat, lon, { forceRefresh: isManual });
             setWeather(data);
             if (isManual) {
-                toast.success("Live microclimate weather synced from Open-Meteo API");
+                toast.success("Live microclimate weather synced from Weather API");
             }
         } catch {
-            setWeather(getFallbackWeather(lat, lon));
+            setWeather(getDynamicFallbackWeather(lat, lon));
         } finally {
             setIsWeatherLoading(false);
         }
@@ -492,6 +364,22 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
 
     React.useEffect(() => {
         loadWeather(false);
+
+        // Auto-refresh weather every 10 minutes to roll over day and keep exact time fresh
+        const intervalId = setInterval(() => {
+            loadWeather(true);
+        }, 10 * 60 * 1000);
+
+        const onFocus = () => loadWeather(false);
+        const onOnline = () => loadWeather(true);
+        window.addEventListener('focus', onFocus);
+        window.addEventListener('online', onOnline);
+
+        return () => {
+            clearInterval(intervalId);
+            window.removeEventListener('focus', onFocus);
+            window.removeEventListener('online', onOnline);
+        };
     }, [loadWeather]);
 
     const now = new Date();
@@ -663,8 +551,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
 
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6 mt-3.5 sm:mt-6">
-                {/* Farmer Profile Card */}
-                <div className="lg:col-span-4">
+                {/* Farmer Profile Card & Regional Preferences */}
+                <div className="lg:col-span-4 space-y-3.5 sm:space-y-6">
                     <div className={cn(glass.section, "p-3.5 sm:p-5 bg-white")}>
                         <div className="flex items-center gap-3 mb-4">
                             <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 font-black shadow-sm">
@@ -693,6 +581,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                             </button>
                         </div>
                     </div>
+
+                    {/* Regional & Measurement Unit Preferences (Language, Temp Unit, Weight Unit) */}
+                    <RegionalPreferencesCard />
                 </div>
 
                 {/* Operational Workflows */}
@@ -984,13 +875,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                         </div>
 
                                         <div className="flex flex-row sm:flex-col items-center sm:items-end gap-1.5 shrink-0 flex-wrap">
-                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-semibold text-xs shadow-xs whitespace-nowrap shrink-0">
-                                                <Droplets className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                                                {weather?.currentHumidity !== undefined ? `${weather.currentHumidity}% Humidity` : '52% Humidity'}
-                                            </span>
-                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-200 font-semibold text-xs shadow-xs whitespace-nowrap shrink-0">
-                                                <Wind className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-                                                {weather?.currentWind !== undefined ? `${weather.currentWind} km/h Wind` : '10 km/h Wind'}
+                                            <span className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-semibold text-xs shadow-xs whitespace-nowrap shrink-0">
+                                                <Sun className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                                Outside Hive Temp
                                             </span>
                                         </div>
                                     </div>

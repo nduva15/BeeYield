@@ -36,6 +36,7 @@ import { WishlistProvider } from '@/contexts/WishlistContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SettingsProvider } from '@/contexts/SettingsContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import { UnitProvider } from '@/contexts/UnitContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import Layout from '@/components/Layout'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
@@ -167,8 +168,9 @@ root.render(
                         <SettingsProvider>
                             <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
                                 <LanguageProvider>
-                                    <CartProvider>
-                                        <WishlistProvider>
+                                    <UnitProvider>
+                                        <CartProvider>
+                                            <WishlistProvider>
                                             <Toaster />
                                             <Sonner />
                                             <ScrollToTop />
@@ -243,6 +245,7 @@ root.render(
                                             </Layout>
                                         </WishlistProvider>
                                     </CartProvider>
+                                    </UnitProvider>
                                 </LanguageProvider>
                             </ThemeProvider>
                         </SettingsProvider>
