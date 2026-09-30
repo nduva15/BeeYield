@@ -7935,10 +7935,26 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id)}
-                                    className="px-2.5 py-1 rounded-lg border border-border bg-muted/60 hover:bg-muted text-foreground text-[11px] font-bold transition-all cursor-pointer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedHiveForDetail(hive);
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 shadow-2xs"
+                                    title="Open full hive telemetry screen"
                                   >
-                                    {expandedHiveId === hive.id ? "Hide" : "Details"}
+                                    <LayoutGrid className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    <span>Details</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setExpandedHiveId(expandedHiveId === hive.id ? null : hive.id);
+                                    }}
+                                    className="px-2 py-1 rounded-lg border border-border bg-muted/60 hover:bg-muted text-foreground text-[11px] font-medium transition-all cursor-pointer"
+                                    title="Toggle drawer preview"
+                                  >
+                                    {expandedHiveId === hive.id ? "Hide" : "More"}
                                   </button>
                                 </div>
                               </div>
@@ -8313,11 +8329,19 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                                       >
                                         <button
                                           type="button"
+                                          onClick={() => setSelectedHiveForDetail(hive)}
+                                          className="px-2 py-1 rounded-lg border border-amber-500/40 bg-amber-500/15 hover:bg-amber-500/25 text-amber-900 dark:text-amber-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                                          title="Open full hive details modal"
+                                        >
+                                          <LayoutGrid className="w-3 h-3 text-amber-600 dark:text-amber-400" /> Details
+                                        </button>
+                                        <button
+                                          type="button"
                                           onClick={() => setExpandedHiveId(isExpanded ? null : hive.id)}
-                                          className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                                          className="px-2 py-1 rounded-lg border border-border hover:bg-muted text-foreground text-[11px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
                                           title="Toggle inline details"
                                         >
-                                          <Eye className="w-3 h-3 text-honey" /> {isExpanded ? "Hide" : "Details"}
+                                          <Eye className="w-3 h-3 text-honey" /> {isExpanded ? "Hide" : "Drawer"}
                                         </button>
                                         <button
                                           type="button"

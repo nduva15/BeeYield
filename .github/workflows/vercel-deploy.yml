@@ -15,17 +15,19 @@ jobs:
   deploy-production:
     name: Deploy to Vercel (Production)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor != 'dependabot[bot]'
     environment: production
     steps:
       - name: Check Vercel Credentials
         id: check_credentials
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "has_token=false" >> $GITHUB_OUTPUT
-            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+            echo "::notice::Vercel credentials are not fully configured. Skipping Vercel deployment."
           else
             echo "has_token=true" >> $GITHUB_OUTPUT
           fi
@@ -60,17 +62,19 @@ jobs:
   deploy-staging:
     name: Deploy to Vercel (Staging)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push' && github.actor != 'dependabot[bot]'
     environment: staging
     steps:
       - name: Check Vercel Credentials
         id: check_credentials
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "has_token=false" >> $GITHUB_OUTPUT
-            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+            echo "::notice::Vercel credentials are not fully configured. Skipping Vercel deployment."
           else
             echo "has_token=true" >> $GITHUB_OUTPUT
           fi
@@ -105,8 +109,7 @@ jobs:
   deploy-preview:
     name: Deploy Preview (PR)
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    environment: preview
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'dependabot/')
     permissions:
       contents: read
       pull-requests: write
@@ -115,10 +118,12 @@ jobs:
         id: check_credentials
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
             echo "has_token=false" >> $GITHUB_OUTPUT
-            echo "::warning::VERCEL_TOKEN secret is not configured. Skipping Vercel deployment."
+            echo "::notice::Vercel credentials are not fully configured. Skipping Vercel preview deployment."
           else
             echo "has_token=true" >> $GITHUB_OUTPUT
           fi

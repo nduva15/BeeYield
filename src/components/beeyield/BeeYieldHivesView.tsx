@@ -43,8 +43,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { beeyieldService, Hive, IoTDevice, Apiary, HiveCreateInput } from "@/services/beeyieldService";
 import { downloadReportPdf, safeName } from "@/lib/report-pdf";
 import { setBeeYieldPendingOnboarding } from "@/lib/beeyieldOnboarding";
-import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
-import { CANONICAL_TIMOTHY_HIVES, isTimothyUser } from "@/lib/user-hives";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import FrameSenseToolPage from "../FrameSenseToolPage";
@@ -280,9 +278,9 @@ function hivePdf(
         type: "kv",
         heading: "Colony & Hive Architecture",
         rows: [
-          ["Lead Farmer / Apiarist", userName || "Timothy Nduva"],
+          ["Lead Farmer / Apiarist", userName || "Apiary Owner"],
           ["Hive Identifier", h.hive_code],
-          ["Apiary Location", apiaryName || "BeeYield Apiary in Kibwezi Kenya"],
+          ["Apiary Location", apiaryName || "—"],
           ["Colony Status", hasColony ? "Active Producing Colony" : "Standby Stand (Awaiting Swarm)"],
           ["Frame Architecture", `${frameCount} Frames (Langstroth 10 Standard)`],
           ["Hive Construction Type", h.hive_type || "Langstroth"],
@@ -413,61 +411,16 @@ export default function BeeYieldHivesView({
 
   const [devices, setDevices] = useState<IoTDevice[]>([]);
 
-  // Canonical Timothy 184 hives with 150 active colonies and 34 standby stands
-  const canonicalHives: Hive[] = useMemo(() => {
-    return CANONICAL_TIMOTHY_HIVES.map((th, idx) => {
-      const hasColony = th.hasColony ?? idx < 150;
-      return {
-        id: th.id || `hive-kib-${String(idx + 1).padStart(3, "0")}`,
-        hive_code: th.code || `KIB-${String(idx + 1).padStart(3, "0")}`,
-        name: th.name,
-        apiary_id: "apiary-kibwezi",
-        hive_type: "Langstroth",
-        bee_type: hasColony
-          ? "African Honey Bee (Apis mellifera scutellata)"
-          : "None (Standby Stand)",
-        frame_count: 10,
-        brood_frames: hasColony ? 6 : 0,
-        material: "Seasoned Timber / Pine",
-        status: hasColony ? "Active" : "Standby",
-        installation_date: "2020-09-15",
-        has_sensors: false,
-        notes: hasColony
-          ? "Active producing colony in Kibwezi ecosystem."
-          : "Standby Langstroth stand awaiting swarm colonization.",
-        latest_temp: null,
-        latest_humidity: null,
-        latest_weight: null,
-      } as any;
-    });
-  }, []);
+  
 
   useEffect(() => {
     if (hivesData && hivesData.length > 0) {
-      // Differentiate 150 active producing colonies from 34 standby uncolonized stands
-      if (hivesData.length === 184) {
-        const enriched = hivesData.map((h: any, i: number) => {
-          const num = parseInt(h.hive_code.replace(/\D/g, ""), 10) || (i + 1);
-          const hasColony = num <= 150;
-          return {
-            ...h,
-            status: hasColony ? (h.status || "Active") : "Standby",
-            has_sensors: false,
-            latest_temp: null,
-            latest_humidity: null,
-            latest_weight: null,
-          };
-        });
-        setHives(enriched);
-        localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(enriched));
-      } else {
-        setHives(hivesData);
-        localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
-      }
-    } else if (canonicalHives.length > 0) {
-      setHives(canonicalHives);
+      setHives(hivesData);
+      localStorage.setItem(HIVES_CACHE_KEY, JSON.stringify(hivesData));
+    } else {
+      setHives([]);
     }
-  }, [hivesData, canonicalHives]);
+  }, [hivesData]);
 
   useEffect(() => {
     if (apiariesData) {
@@ -582,7 +535,7 @@ export default function BeeYieldHivesView({
     };
 
     const sourceData =
-      harvestsData && harvestsData.length > 0 ? harvestsData : CANONICAL_TIMOTHY_HARVESTS;
+      harvestsData && harvestsData.length > 0 ? harvestsData : [];
 
     sourceData.forEach(addHarvestToMap);
     return map;
@@ -635,11 +588,7 @@ export default function BeeYieldHivesView({
   // Stats calculation (150 active colonies across 184 stands, 34 standby boxes, 0 IoT sensors connected)
   const stats = useMemo(() => {
     const total = hives.length;
-    const active = hives.filter((h) => {
-      const numMatch = h.hive_code.match(/\d+/);
-      const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
-      return (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
-    }).length;
+    const active = hives.filter((h) => (h.status || "").toLowerCase() === "active").length;
     const standby = Math.max(0, total - active);
     const critical = hives.filter((h) => {
       const s = (h.status || "").toLowerCase();
@@ -1577,12 +1526,13 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
             {filteredHives.map((h) => {
               const numMatch = h.hive_code.match(/\d+/);
               const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
-              const hasColony = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
+              const hasColony = (h.status || "").toLowerCase() === "active";
               const totalFrames = h.frame_count || 10;
               const apiaryName =
                 h.apiary?.name ||
                 apiaries.find((a) => a.id === h.apiary_id)?.name ||
-                "BeeYield Apiary in Kibwezi Kenya";
+                (h as any).apiary_name ||
+                "Registered Apiary";
               const harvest =
                 harvestMetrics[h.hive_code] ||
                 harvestMetrics[`KIB-${String(hiveNum).padStart(3, "0")}`] ||

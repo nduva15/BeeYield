@@ -153,7 +153,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
   return batches;
 }
 
-const DEFAULT_HARVESTS: Harvest[] = CANONICAL_TIMOTHY_HARVESTS;
+const DEFAULT_HARVESTS: Harvest[] = [];
 
 const EMPTY_HARVEST = {
   harvested_on: new Date().toISOString().slice(0, 10),
@@ -192,27 +192,27 @@ function harvestPdf(r: Harvest) {
       title: `Honey Harvest Extraction Certificate • ${r.hive_label}`,
       subtitle: `Batch ${r.batch} • ${r.honey_type} • ${r.quality_grade}`,
       meta: [
-        { label: "Producer / Beekeeper", value: r.beekeeper || "Timothy Nduva" },
+        { label: "Producer / Beekeeper", value: r.beekeeper || "Apiary Owner" },
         { label: "Date of Extraction", value: r.harvested_on },
         { label: "Hive Identifier", value: r.hive_label },
         { label: "Batch Lot Number", value: r.batch },
-        { label: "Apiary Location", value: r.location || "BeeYield Apiary in Kibwezi Kenya" },
+        { label: "Apiary Location", value: r.location || "—" },
         { label: "Net Volume Extracted", value: `${r.quantity_kg} kg` },
         { label: "Frames Harvested", value: `${r.frames_harvested} frames` },
         { label: "Refractometer Moisture", value: `${r.moisture_pct}%` },
         { label: "Color Classification", value: r.color_grade },
         { label: "Official Quality Standard", value: r.quality_grade },
         { label: "Traceability QR Hash", value: r.traceability_code },
-        { label: "Ambient Extraction Weather", value: r.weather || "28 °C, dry harvest" },
+        { label: "Ambient Extraction Weather", value: r.weather || "—" },
         { label: "Fair Trade Beekeeper Value", value: `KES ${(r.quantity_kg * 1000).toLocaleString()}` },
-        { label: "Cumulative Certified Yield", value: "843.0 kg KEBS Certified" },
+        
       ],
       sections: [
         {
           type: "kv",
           heading: "Commercial Compliance & Laboratory Specifications",
           rows: [
-            ["Certified Apiarist", "Timothy Nduva (Lead Beekeeper)"],
+            ["Certified Apiarist", r.beekeeper || "Certified Beekeeper"],
             ["Moisture Content (Max 20%)", `${r.moisture_pct}% (${r.moisture_pct <= 18 ? "Compliant - Export Grade A" : "Standard Raw"})`],
             ["Sucrose Content (Max 5g/100g)", "< 1.8g / 100g (Pure Blossom Verified)"],
             ["HMF (Hydroxymethylfurfural)", "< 10 mg/kg (Zero heat damage)"],
@@ -291,27 +291,19 @@ export default function HarvestsPage({
         }
       } catch { /* ignore */ }
 
-      // 3. Deduplicate strictly by batch code and ID to guarantee exactly 843.0 kg and 423 batches
+      // Deduplicate strictly by batch code and ID
       const seenBatchKeys = new Set<string>();
-      const canonicalDeduplicated: Harvest[] = [];
+      const deduplicated: Harvest[] = [];
 
       userCustomBatches.forEach((b) => {
         const k = getNormalizedHarvestKey(b);
         if (!seenBatchKeys.has(k)) {
           seenBatchKeys.add(k);
-          canonicalDeduplicated.push(b);
+          deduplicated.push(b);
         }
       });
 
-      DEFAULT_HARVESTS.forEach((d) => {
-        const k = getNormalizedHarvestKey(d);
-        if (!seenBatchKeys.has(k)) {
-          seenBatchKeys.add(k);
-          canonicalDeduplicated.push(d);
-        }
-      });
-
-      setRows(canonicalDeduplicated);
+      setRows(deduplicated);
     } catch {
       setRows(DEFAULT_HARVESTS);
     } finally {
@@ -666,22 +658,22 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-honey/20 text-foreground border border-honey/30">
                 <User className="w-3.5 h-3.5 text-honey" />
-                Timothy Nduva • Master Beekeeper
+                Certified Beekeeper
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                 <Award className="w-3 h-3 text-emerald-500" />
-                KEBS Certified 843 kg
+                KEBS Traceability Certified
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-muted text-muted-foreground border border-border">
                 <MapPin className="w-3 h-3 text-honey" />
-                Kibwezi, Makueni County
+                Apiary Extraction Ledger
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black font-display text-foreground tracking-tight">
               Harvest Batches & Production Ledger
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-              Cryptographically verified batch extractions across <strong className="text-foreground">184 managed Langstroth hives</strong>. Cumulative extraction total: <strong className="text-honey font-bold">843.0 kg</strong> export-grade raw honey.
+              Recorded batch extractions across managed colonies. Total recorded yield: <strong className="text-honey font-bold">{stats.totalKg.toFixed(1)} kg</strong> raw honey.
             </p>
           </div>
 
@@ -711,11 +703,11 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
         <div className="mt-5 pt-4 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Certified Total</span>
-            <p className="font-bold text-base font-display text-honey">843.0 kg</p>
+            <p className="font-bold text-base font-display text-honey">{stats.totalKg.toFixed(1)} kg</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Managed Hives</span>
-            <p className="font-bold text-base font-display text-foreground">184 Hives</p>
+            <p className="font-bold text-base font-display text-foreground">{stats.count} Batches</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Standard Batch</span>
@@ -1234,14 +1226,14 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
               <div>
                 <h2 className="text-base font-bold font-display text-foreground flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-honey" /> Batches Harvested Per Hive (Timothy Nduva Stand)
+                  <Layers className="w-4 h-4 text-honey" /> Batches Harvested Per Hive
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  Individual production telemetry across all 184 active Langstroth hives in Kibwezi, Makueni County.
+                  Individual production telemetry across all 184 active Langstroth hives in Apiary Extraction Ledger.
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-honey/15 text-honey border border-honey/30 self-start sm:self-auto">
-                184 Managed Stands • 843 kg
+                {hivesSummary.length} Stands • {stats.totalKg.toFixed(1)} kg
               </span>
             </div>
 
@@ -1299,7 +1291,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 <BarChart3 className="w-4 h-4 text-honey" /> 7-Year Production Record (2020–2026)
               </h2>
               <p className="text-xs text-muted-foreground">
-                Historical batch progression for Timothy Nduva summing to exactly 843.0 kg export-certified raw honey.
+                Historical batch progression by season.
               </p>
             </div>
 
@@ -1345,10 +1337,10 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   <tr className="bg-honey/10 font-bold">
                     <td className="py-3 px-3 text-foreground">Cumulative Total</td>
                     <td className="py-3 px-3 text-foreground">Multi-Origin Acacia & Forest</td>
-                    <td className="py-3 px-3 font-mono">425 extraction lots</td>
-                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">843.0 kg</td>
+                    <td className="py-3 px-3 font-mono">{stats.count} extraction lots</td>
+                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">{stats.totalKg.toFixed(1)} kg</td>
                     <td className="py-3 px-3 text-emerald-600 dark:text-emerald-400">100% KEBS Certified</td>
-                    <td className="py-3 px-3 text-right text-muted-foreground">Timothy Nduva</td>
+                    <td className="py-3 px-3 text-right text-muted-foreground">Verified Ledger</td>
                   </tr>
                 </tbody>
               </table>
