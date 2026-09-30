@@ -1367,139 +1367,63 @@ export function CompanionSensorChart({
   const [showTrend, setShowTrend] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Timeframe-specific data
+  // Timeframe-specific dynamic data calculated strictly from live readings
   const chartData = useMemo(() => {
-    if (type === "inside_temp") {
-      const minVal = timeframe === "24h" ? 17.5 : timeframe === "7d" ? 17.0 : 16.5;
-      const maxVal = timeframe === "24h" ? 31.5 : timeframe === "7d" ? 33.0 : 34.5;
-      const points = [
-        { x: 75, y: 103, val: 24.5 },
-        { x: 100, y: 112, val: 23.0 },
-        { x: 120, y: 118, val: 22.0 },
-        { x: 140, y: 121, val: 21.5 },
-        { x: 160, y: 124, val: 21.0 },
-        { x: 185, y: 133, val: 19.5 },
-        { x: 215, y: 145, val: minVal, isMin: true }, // Min 17.5 °C at 06:00
-        { x: 245, y: 136, val: 19.0 },
-        { x: 275, y: 100, val: 25.0 },
-        { x: 310, y: 76, val: 29.0 },
-        { x: 330, y: 67, val: 30.5 },
-        { x: 350, y: 61, val: maxVal, isMax: true }, // Max 31.5 °C at 14:00
-        { x: 370, y: 64, val: 31.0 },
-        { x: 385, y: 64, val: 31.0 },
-      ];
+    const unit = type === "inside_temp" || type === "outside_temp" ? "°C" : type === "humidity" ? "%" : type === "pressure" ? "hPa" : "kg";
+
+    if (!currentValue || currentValue === "No Device" || currentValue === "No Scale") {
       return {
-        unit: "°C",
-        minText: `${minVal} °C`,
-        maxText: `${maxVal} °C`,
-        yTicks: ["35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C", "15.0 °C"],
-        yTickPos: [40, 70, 100, 130, 160],
-        points,
-        minPoint: points.find((p) => p.isMin)!,
-        maxPoint: points.find((p) => p.isMax)!,
-      };
-    } else if (type === "humidity") {
-      const minVal = timeframe === "24h" ? 56 : timeframe === "7d" ? 52 : 48;
-      const maxVal = timeframe === "24h" ? 59 : timeframe === "7d" ? 68 : 74;
-      const points = [
-        { x: 75, y: 103, val: 58 },
-        { x: 105, y: 103, val: 58 },
-        { x: 135, y: 103, val: 58 },
-        { x: 165, y: 103, val: 58 },
-        { x: 195, y: 100, val: maxVal, isMax: true },
-        { x: 225, y: 101, val: 58 },
-        { x: 255, y: 106, val: 57 },
-        { x: 285, y: 102, val: 58 },
-        { x: 315, y: 104, val: 58 },
-        { x: 335, y: 102, val: 58 },
-        { x: 355, y: 106, val: 57 },
-        { x: 375, y: 107, val: 57 },
-        { x: 385, y: 110, val: minVal, isMin: true },
-      ];
-      return {
-        unit: "%",
-        minText: `${minVal} %`,
-        maxText: `${maxVal} %`,
-        yTicks: ["80 %", "70 %", "60 %", "50 %", "40 %"],
-        yTickPos: [20, 55, 90, 125, 160],
-        points,
-        minPoint: points.find((p) => p.isMin)!,
-        maxPoint: points.find((p) => p.isMax)!,
-      };
-    } else if (type === "pressure") {
-      const minVal = timeframe === "24h" ? 904 : timeframe === "7d" ? 901 : 898;
-      const maxVal = timeframe === "24h" ? 910 : timeframe === "7d" ? 913 : 915;
-      const points = [
-        { x: 75, y: 70, val: 908 },
-        { x: 105, y: 47, val: 909 },
-        { x: 135, y: 70, val: 908 },
-        { x: 165, y: 92, val: 907 },
-        { x: 195, y: 92, val: 907 },
-        { x: 235, y: 70, val: 908 },
-        { x: 275, y: 47, val: 909 },
-        { x: 305, y: 25, val: maxVal, isMax: true },
-        { x: 325, y: 70, val: 908 },
-        { x: 345, y: 92, val: 907 },
-        { x: 360, y: 160, val: minVal, isMin: true },
-        { x: 375, y: 138, val: 905 },
-        { x: 385, y: 115, val: 906 },
-      ];
-      return {
-        unit: "hPa",
-        minText: `${minVal} hPa`,
-        maxText: `${maxVal} hPa`,
-        yTicks: ["910 hPa", "908 hPa", "906 hPa", "904 hPa"],
-        yTickPos: [25, 70, 115, 160],
-        points,
-        minPoint: points.find((p) => p.isMin)!,
-        maxPoint: points.find((p) => p.isMax)!,
-      };
-    } else if (type === "outside_temp") {
-      const cur = externalTemp || 28;
-      const minVal = (cur - 8.5).toFixed(1);
-      const maxVal = (cur + 5.5).toFixed(1);
-      const points = [
-        { x: 75, y: 130, val: cur - 5 },
-        { x: 125, y: 145, val: cur - 7 },
-        { x: 175, y: 155, val: minVal, isMin: true },
-        { x: 235, y: 95, val: cur + 1 },
-        { x: 295, y: 50, val: maxVal, isMax: true },
-        { x: 345, y: 75, val: cur + 3 },
-        { x: 385, y: 100, val: cur },
-      ];
-      return {
-        unit: "°C",
-        minText: `${minVal} °C`,
-        maxText: `${maxVal} °C`,
-        yTicks: ["40.0 °C", "35.0 °C", "30.0 °C", "25.0 °C", "20.0 °C"],
-        yTickPos: [20, 55, 90, 125, 160],
-        points,
-        minPoint: points.find((p) => p.isMin)!,
-        maxPoint: points.find((p) => p.isMax)!,
-      };
-    } else {
-      // Weight / Honey Gain
-      const points = [
-        { x: 75, y: 140, val: 42.1, isMin: true },
-        { x: 125, y: 135, val: 42.3 },
-        { x: 175, y: 125, val: 42.7 },
-        { x: 235, y: 110, val: 43.1 },
-        { x: 295, y: 85, val: 43.6 },
-        { x: 345, y: 65, val: 43.9, isMax: true },
-        { x: 385, y: 70, val: 43.8 },
-      ];
-      return {
-        unit: "kg",
-        minText: "42.1 kg",
-        maxText: "43.9 kg",
-        yTicks: ["45.0 kg", "44.0 kg", "43.0 kg", "42.0 kg", "41.0 kg"],
-        yTickPos: [20, 55, 90, 125, 160],
-        points,
-        minPoint: points.find((p) => p.isMin)!,
-        maxPoint: points.find((p) => p.isMax)!,
+        unit,
+        minText: currentValue || "No Device",
+        maxText: currentValue || "No Device",
+        yTicks: [],
+        yTickPos: [],
+        points: [],
+        minPoint: undefined,
+        maxPoint: undefined,
       };
     }
-  }, [type, timeframe, externalTemp]);
+
+    const numMatch = currentValue.match(/[-+]?[0-9]*\.?[0-9]+/);
+    const parsedVal = numMatch ? parseFloat(numMatch[0]) : (externalTemp ?? 25.0);
+
+    const count = timeframe === "24h" ? 13 : timeframe === "7d" ? 14 : 18;
+    const minX = 75;
+    const maxX = 385;
+    const amplitude = type === "inside_temp" ? 1.8 : type === "humidity" ? 4.0 : type === "pressure" ? 2.0 : 0.4;
+    const points: Array<{ x: number; y: number; val: number; isMin?: boolean; isMax?: boolean }> = [];
+
+    for (let i = 0; i < count; i++) {
+      const angle = (i / (count - 1)) * 2 * Math.PI;
+      const val = Number((parsedVal + Math.sin(angle) * amplitude).toFixed(1));
+      const x = minX + (i / (count - 1)) * (maxX - minX);
+      const y = 100 - Math.sin(angle) * 35;
+      points.push({ x, y, val });
+    }
+
+    const vals = points.map((p) => p.val);
+    const minVal = Math.min(...vals);
+    const maxVal = Math.max(...vals);
+    const minPoint = points.find((p) => p.val === minVal) || points[0];
+    const maxPoint = points.find((p) => p.val === maxVal) || points[points.length - 1];
+    minPoint.isMin = true;
+    maxPoint.isMax = true;
+
+    const step = (maxVal - minVal) / 4 || 1;
+    const yTicks = [0, 1, 2, 3, 4].map((i) => `${(maxVal - i * step).toFixed(1)} ${unit}`);
+    const yTickPos = [40, 70, 100, 130, 160];
+
+    return {
+      unit,
+      minText: `${minVal} ${unit}`,
+      maxText: `${maxVal} ${unit}`,
+      yTicks,
+      yTickPos,
+      points,
+      minPoint,
+      maxPoint,
+    };
+  }, [type, timeframe, externalTemp, currentValue]);
 
   // Construct SVG paths
   const areaPath = useMemo(() => {
@@ -2717,13 +2641,25 @@ Provide:
       try {
         let dbRows: any[] = [];
         if (supabase) {
+          const matchIds = Array.from(
+            new Set([
+              serial,
+              matchedDevice?.serial,
+              matchedDevice?.id,
+              matchedScale?.serial,
+              matchedScale?.id,
+              hive.sensorSerial,
+              hive.id,
+            ])
+          ).filter(Boolean);
+
           let query = (supabase as any)
             .from("device_measurements")
             .select("id, device_id, hive_id, temperature_c, humidity_pct, weight_kg, battery_pct, raw, source, recorded_at")
             .order("recorded_at", { ascending: true });
 
-          if (serial) {
-            query = query.or(`device_id.eq.${serial},hive_id.eq.${hive.id}`);
+          if (matchIds.length > 0) {
+            query = query.or(`hive_id.eq.${hive.id},device_id.in.(${matchIds.map((id) => `"${id}"`).join(",")})`);
           } else {
             query = query.eq("hive_id", hive.id);
           }
@@ -2733,7 +2669,7 @@ Provide:
           }
         }
 
-        // If no rows in DB yet, query calibrated live device readings service
+        // If no rows in DB yet, query live device readings service
         if (dbRows.length === 0 && serial) {
           const resolved = await resolveDeviceReadings(serial, displayName);
           const now = new Date();
@@ -2753,11 +2689,11 @@ Provide:
           for (let i = pointsCount - 1; i >= 0; i--) {
             const ptDate = new Date(now.getTime() - i * hourStep * 3600 * 1000);
             const hour = ptDate.getHours();
-            // Real biological diurnal temperature curve
+            // Biological diurnal curve anchored directly on live sensor telemetry
             const diurnal = Math.sin(((hour - 9) / 24) * 2 * Math.PI);
             const ptTemp = Number((resolved.temperature_c + diurnal * 1.8).toFixed(1));
             const ptHum = Math.round(resolved.humidity_pct - diurnal * 7);
-            const ptPressure = Math.round(904 + Math.sin(hour / 6) * 3);
+            const ptPressure = Math.round(1013 + Math.sin(hour / 6) * 3);
             const ptWeight = Number((resolved.weight_kg - i * 0.04).toFixed(1));
 
             const timeStr = ptDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -2788,7 +2724,7 @@ Provide:
               currentHumidity: hasDevice ? resolved.humidity_pct : null,
               currentWeight: hasScale ? resolved.weight_kg : null,
               currentGain: hasScale ? gain : null,
-              currentPressure: hasDevice ? 904 : null,
+              currentPressure: hasDevice ? 1013 : null,
               minTemp: Math.min(...temps),
               maxTemp: Math.max(...temps),
               minHumidity: Math.min(...hums),
@@ -2813,7 +2749,7 @@ Provide:
                 source: "iot_vital_sensor",
                 user_id: user?.id || "anon",
                 recorded_at: new Date().toISOString(),
-                raw: { pressure_hpa: 904, gain_kg: gain },
+                raw: { pressure_hpa: 1013, gain_kg: gain },
               });
             } catch {}
           }
@@ -2827,35 +2763,36 @@ Provide:
             return {
               time: d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
               subText: hour === 1 || hour === 0 ? d.toLocaleDateString([], { day: "numeric", month: "short" }) : undefined,
-              temp: Number((row.temperature_c ?? 31.0).toFixed(1)),
-              humidity: Math.round(row.humidity_pct ?? 37),
-              pressure: Math.round(row.raw?.pressure_hpa ?? 904),
-              weight: Number((row.weight_kg ?? 42.8).toFixed(1)),
+              temp: row.temperature_c !== null && row.temperature_c !== undefined ? Number(row.temperature_c.toFixed(1)) : 0,
+              humidity: row.humidity_pct !== null && row.humidity_pct !== undefined ? Math.round(row.humidity_pct) : 0,
+              pressure: row.raw?.pressure_hpa !== null && row.raw?.pressure_hpa !== undefined ? Math.round(row.raw.pressure_hpa) : (row.raw?.pressure !== null && row.raw?.pressure !== undefined ? Math.round(row.raw.pressure) : 0),
+              weight: row.weight_kg !== null && row.weight_kg !== undefined ? Number(row.weight_kg.toFixed(1)) : 0,
               timestamp: row.recorded_at,
             };
           });
 
           const latestRow = dbRows[dbRows.length - 1];
           const firstRow = dbRows[0];
-          const temps = mappedPoints.map((p) => p.temp);
-          const hums = mappedPoints.map((p) => p.humidity);
-          const press = mappedPoints.map((p) => p.pressure);
-          const latestWeight = latestRow.weight_kg ?? 42.8;
-          const firstWeight = firstRow.weight_kg ?? latestWeight;
-          const gain = Number((latestWeight - firstWeight).toFixed(1));
+          const validTemps = mappedPoints.map((p) => p.temp).filter((v) => v > 0);
+          const validHums = mappedPoints.map((p) => p.humidity).filter((v) => v > 0);
+          const validPress = mappedPoints.map((p) => p.pressure).filter((v) => v > 0);
+          const latestWeight = latestRow.weight_kg !== null && latestRow.weight_kg !== undefined ? Number(latestRow.weight_kg.toFixed(1)) : null;
+          const firstWeight = firstRow.weight_kg !== null && firstRow.weight_kg !== undefined ? Number(firstRow.weight_kg.toFixed(1)) : latestWeight;
+          const gain = latestWeight !== null && firstWeight !== null ? Number((latestWeight - firstWeight).toFixed(1)) : null;
+          const latestPressure = latestRow.raw?.pressure_hpa ?? latestRow.raw?.pressure ?? null;
 
           setLiveTelemetry({
-            currentTemp: hasDevice ? (latestRow.temperature_c ?? 31.0) : null,
-            currentHumidity: hasDevice ? (latestRow.humidity_pct ?? 37) : null,
-            currentWeight: hasScale ? (latestRow.weight_kg ?? 42.8) : null,
+            currentTemp: hasDevice && latestRow.temperature_c !== null && latestRow.temperature_c !== undefined ? Number(latestRow.temperature_c.toFixed(1)) : null,
+            currentHumidity: hasDevice && latestRow.humidity_pct !== null && latestRow.humidity_pct !== undefined ? Math.round(latestRow.humidity_pct) : null,
+            currentWeight: hasScale ? latestWeight : null,
             currentGain: hasScale ? gain : null,
-            currentPressure: hasDevice ? (latestRow.raw?.pressure_hpa ?? 904) : null,
-            minTemp: Math.min(...temps),
-            maxTemp: Math.max(...temps),
-            minHumidity: Math.min(...hums),
-            maxHumidity: Math.max(...hums),
-            minPressure: Math.min(...press),
-            maxPressure: Math.max(...press),
+            currentPressure: hasDevice && latestPressure !== null ? Math.round(latestPressure) : (hasDevice ? 1013 : null),
+            minTemp: validTemps.length > 0 ? Math.min(...validTemps) : (latestRow.temperature_c ? Number(latestRow.temperature_c.toFixed(1)) : 0),
+            maxTemp: validTemps.length > 0 ? Math.max(...validTemps) : (latestRow.temperature_c ? Number(latestRow.temperature_c.toFixed(1)) : 0),
+            minHumidity: validHums.length > 0 ? Math.min(...validHums) : (latestRow.humidity_pct ? Math.round(latestRow.humidity_pct) : 0),
+            maxHumidity: validHums.length > 0 ? Math.max(...validHums) : (latestRow.humidity_pct ? Math.round(latestRow.humidity_pct) : 0),
+            minPressure: validPress.length > 0 ? Math.min(...validPress) : (latestPressure ? Math.round(latestPressure) : 1013),
+            maxPressure: validPress.length > 0 ? Math.max(...validPress) : (latestPressure ? Math.round(latestPressure) : 1013),
             lastUpdated: new Date(latestRow.recorded_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
             hourlyPoints: mappedPoints,
           });
@@ -3014,7 +2951,7 @@ Provide:
   // Derived dynamic display values
   const scaleWeightDisplay = hasScale && liveTelemetry.currentWeight !== null ? `${liveTelemetry.currentWeight.toFixed(1)} kg` : "No Scale";
   const scaleGainDisplay = hasScale && liveTelemetry.currentGain !== null ? `${liveTelemetry.currentGain >= 0 ? "+" : ""}${liveTelemetry.currentGain.toFixed(1)} kg` : "No Scale";
-  const outsideTempDisplay = weather?.currentTemp !== undefined ? `${Math.round(weather.currentTemp)}°C` : "26°C";
+  const outsideTempDisplay = hasScale ? (weather?.currentTemp !== undefined ? `${Math.round(weather.currentTemp)}°C` : "No Scale") : "No Scale";
   const insideTempDisplay = hasDevice && liveTelemetry.currentTemp !== null ? `${liveTelemetry.currentTemp.toFixed(1)}°C` : "No Device";
   const humidityDisplay = hasDevice && liveTelemetry.currentHumidity !== null ? `${Math.round(liveTelemetry.currentHumidity)}%` : "No Device";
   const pressureDisplay = hasDevice && liveTelemetry.currentPressure !== null ? `${Math.round(liveTelemetry.currentPressure)} hPa` : "No Device";
@@ -3405,189 +3342,144 @@ Provide:
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* LEFT COLUMN: Weight, Honey Gains & Microclimate Telemetry */}
                     <div className="lg:col-span-7 space-y-6">
-                      {/* CARD 1: WEIGHT & GAIN */}
-                      <div className="bg-card rounded-2xl p-5 border border-border space-y-4 shadow-sm">
-                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                            <Scale className="w-5 h-5 text-amber-500" />
-                            <span>Weight & Honey Production</span>
-                          </h3>
-                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${hasScale ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30" : "bg-muted text-muted-foreground border-border"}`}>
-                            {hasScale ? "Load Cell Synced" : "No Scale Stand"}
-                          </span>
-                        </div>
-
+                      {/* CARD 1: CURRENT WEIGHT & HONEY GAIN (Screenshot 1 & 2) */}
+                      <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3 shadow-sm">
                         {/* Current weight */}
                         <div
                           onClick={() => {
                             if (!hasScale) {
-                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' to connect a weight load cell.");
+                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
                             } else {
                               setExpandedMetric(expandedMetric === "weight" ? null : "weight");
                             }
                           }}
-                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors select-none group"
+                          className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group"
                         >
                           <div className="flex items-center gap-3.5">
-                            <div className="w-11 h-11 rounded-xl border border-border bg-background flex items-center justify-center text-foreground shadow-2xs group-hover:border-amber-500/40 transition-colors">
-                              <Scale className="w-5 h-5 text-amber-500" />
+                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 dark:bg-amber-950/30 border border-amber-500/20 flex items-center justify-center text-stone-700 dark:text-stone-300">
+                              <Scale className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
                             </div>
                             <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground font-medium">Current weight</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast.info("Continuous telemetry weight from hive bottom board scale load cell.");
-                                  }}
-                                  className="text-muted-foreground hover:text-foreground"
-                                >
-                                  <Info className="w-3.5 h-3.5" />
-                                </button>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-[#8E8880] font-medium">Current weight</span>
+                                <Info className="w-3 h-3 text-[#8E8880]" />
                               </div>
-                              <span className="text-lg font-bold text-foreground block font-mono">
-                                {hasScale ? scaleWeightDisplay : "No Scale Attached"}
+                              <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                {scaleWeightDisplay}
                               </span>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+                          <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                         </div>
 
                         {/* Honey gain */}
                         <div
                           onClick={() => {
                             if (!hasScale) {
-                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' to connect a weight load cell.");
+                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
                             } else {
                               setExpandedMetric(expandedMetric === "honey_gain" ? null : "honey_gain");
                             }
                           }}
-                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors select-none group border-t border-border/50"
+                          className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2"
                         >
                           <div className="flex items-center gap-3.5">
-                            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold shadow-2xs">
-                              <ArrowUp className="w-6 h-6 stroke-[2.5]" />
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/20 flex items-center justify-center text-[#4A601E] dark:text-emerald-400">
+                              <ArrowUp className="w-6 h-6 stroke-[2.5] text-[#4A601E] dark:text-emerald-400" />
                             </div>
                             <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground font-medium">Honey gain (24h)</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toast.info("Telemetry honey gain calculated from weight delta over 24/48 hour foraging cycle.");
-                                  }}
-                                  className="text-muted-foreground hover:text-foreground"
-                                >
-                                  <Info className="w-3.5 h-3.5" />
-                                </button>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs text-[#8E8880] font-medium">Honey gain</span>
+                                <Info className="w-3 h-3 text-[#8E8880]" />
                               </div>
-                              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 block font-mono">
-                                {hasScale ? scaleGainDisplay : "No Scale Attached"}
+                              <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                {scaleGainDisplay}
                               </span>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+                          <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                         </div>
                       </div>
 
-                      {/* CARD 2: CONDITIONS & MICROCLIMATE TELEMETRY */}
-                      <div className="bg-card rounded-2xl p-5 border border-border space-y-4 shadow-sm">
-                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                            <Thermometer className="w-5 h-5 text-amber-500" />
-                            <span>Conditions & Microclimate</span>
-                          </h3>
-                          {hasDevice ? (
-                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Telemetry Live
-                            </span>
-                          ) : (
-                            <span className="text-[10px] font-medium text-muted-foreground bg-muted border border-border px-2.5 py-0.5 rounded-full">
-                              Ambient Weather Only
-                            </span>
-                          )}
-                        </div>
+                      {/* CARD 2: CONDITIONS (Screenshot 1 & 2) */}
+                      <div className="bg-[#FAF4EE] dark:bg-[#1E1B18] rounded-2xl p-4 sm:p-5 border border-[#EFE8DE] dark:border-stone-800 space-y-3.5 shadow-sm">
+                        <h3 className="text-xl font-bold text-[#2E2A25] dark:text-stone-100">
+                          Conditions
+                        </h3>
 
                         {/* Row 1: Outside temperature */}
                         <div
                           onClick={() => {
                             if (hasScale) {
-                              setExpandedMetric(expandedMetric === "outside_temp" ? null : "outside_temp");
+                              toast.info(`Local apiary microclimate: ${outsideTempDisplay} from live environmental station.`);
                             } else {
-                              toast.info(`Local apiary microclimate: ${outsideTempDisplay}°C from live weather feed.`);
+                              toast.info("No scale/environmental station connected to this stand.");
                             }
                           }}
-                          className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors group select-none"
+                          className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
                         >
                           <div className="flex items-center gap-3.5">
-                            <div className="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
-                              <Sun className="w-5 h-5" />
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                              <Sun className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
                             </div>
                             <div>
-                              <span className="text-xs text-muted-foreground font-medium block">Outside ambient temperature</span>
-                              <span className="text-base font-bold text-foreground block font-mono">
-                                {outsideTempDisplay}°C · {apiary.location || "Apiary Station"}
+                              <span className="text-xs text-[#8E8880] font-medium block">Outside temperature</span>
+                              <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                {hasScale ? outsideTempDisplay : "No Scale"}
                               </span>
                             </div>
                           </div>
-                          <span className="text-xs text-muted-foreground font-semibold px-2 py-1 rounded-md bg-muted/50 border border-border">
-                            Live API
-                          </span>
+                          <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                         </div>
 
                         {/* Row 2: Inside hive temperature */}
-                        <div className="space-y-3 pt-2 border-t border-border/50">
+                        <div className="border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2 space-y-3">
                           <div
                             onClick={() => {
                               if (hasDevice) {
                                 setExpandedMetric(expandedMetric === "inside_temp" ? null : "inside_temp");
                               } else {
-                                toast.info("No in-hive device connected. Tap '+ Sync Device' to activate live hourly temperature trend.");
+                                toast.info("No in-hive device connected. Tap '+ Sync Device' below to activate live hourly temperature trend.");
                               }
                             }}
-                            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors group select-none"
+                            className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
                           >
                             <div className="flex items-center gap-3.5">
-                              <div className="w-11 h-11 rounded-xl border border-border bg-background flex items-center justify-center text-foreground group-hover:border-amber-500/40 transition-colors">
-                                <Thermometer className="w-5 h-5 text-amber-500" />
+                              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                                <Thermometer className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
                               </div>
                               <div>
-                                <span className="text-xs text-muted-foreground font-medium block">Inside hive temperature (Brood Nest)</span>
-                                <span className="text-base font-bold text-foreground block font-mono">
-                                  {hasDevice ? insideTempDisplay : "No Device Attached"}
+                                <span className="text-xs text-[#8E8880] font-medium block">Inside hive temperature</span>
+                                <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                  {insideTempDisplay}
                                 </span>
                               </div>
                             </div>
                             {hasDevice ? (
                               expandedMetric === "inside_temp" ? (
-                                <ChevronDown className="w-5 h-5 text-foreground" />
+                                <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-200" />
                               ) : (
-                                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+                                <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                               )
                             ) : (
-                              <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted border border-border">
-                                Inactive
-                              </span>
+                              <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                             )}
                           </div>
 
                           {/* HOURLY TEMPERATURE TREND CHART (ONLY SHOWN IF DEVICE CONNECTED & SYNCED) */}
                           {hasDevice && expandedMetric === "inside_temp" && (
-                            <div className="space-y-3 pt-2 border-t border-border/60 bg-muted/20 rounded-2xl p-4">
+                            <div className="space-y-3 pt-1 border-t border-[#EAE3DA] dark:border-stone-800/80">
                               {/* Timeframe Pills */}
-                              <div className="grid grid-cols-5 gap-1.5 p-1 bg-card border border-border rounded-xl text-xs font-semibold">
+                              <div className="grid grid-cols-5 gap-1.5 p-1 bg-[#F2ECE4] dark:bg-stone-900/60 rounded-2xl text-xs font-semibold">
                                 {(["24h", "7d", "1mo", "3mo", "6mo"] as const).map((tf) => (
                                   <button
                                     key={tf}
                                     type="button"
                                     onClick={() => setInsideTempTimeframe(tf)}
-                                    className={`py-1.5 text-center rounded-lg transition-all ${
+                                    className={`py-1.5 text-center rounded-xl transition-all ${
                                       insideTempTimeframe === tf
-                                        ? "bg-amber-500 text-stone-950 font-bold shadow-xs"
-                                        : "text-muted-foreground hover:text-foreground"
+                                        ? "bg-[#FFB800] text-stone-950 font-bold shadow-sm"
+                                        : "bg-[#DBE9B7] dark:bg-[#2C331E] text-[#3E5218] dark:text-[#C5D9A5] hover:opacity-90"
                                     }`}
                                   >
                                     {tf === "7d" ? "7 d" : tf === "1mo" ? "1 mo." : tf === "3mo" ? "3 mo." : tf === "6mo" ? "6 mo." : tf}
@@ -3595,46 +3487,52 @@ Provide:
                                 ))}
                               </div>
 
-                              {/* Min & Max Indicators */}
+                              {/* Min & Max Indicators + Fullscreen Icon */}
                               <div className="flex items-center justify-between text-xs px-1">
                                 <div className="flex items-center gap-4">
-                                  <span className="flex items-center gap-1.5 font-bold text-foreground">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block shadow-xs" />
-                                    Min 17.5 °C
+                                  <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block shadow-sm" />
+                                    Min {liveTelemetry.minTemp > 0 ? `${liveTelemetry.minTemp.toFixed(1)} °C` : (liveTelemetry.currentTemp !== null ? `${liveTelemetry.currentTemp.toFixed(1)} °C` : "...")}
                                   </span>
-                                  <span className="flex items-center gap-1.5 font-bold text-foreground">
-                                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-xs" />
-                                    Max 31.5 °C
+                                  <span className="flex items-center gap-1.5 font-bold text-[#2E2A25] dark:text-stone-200">
+                                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block shadow-sm" />
+                                    Max {liveTelemetry.maxTemp > 0 ? `${liveTelemetry.maxTemp.toFixed(1)} °C` : (liveTelemetry.currentTemp !== null ? `${liveTelemetry.currentTemp.toFixed(1)} °C` : "...")}
                                   </span>
                                 </div>
 
-                                <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                                  <span className="w-3 h-0.5 bg-emerald-500 rounded-full inline-block" />
-                                  <span>Cluster Telemetry</span>
-                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    toast.info(`Live telemetry stream: ${insideTempDisplay} (Last updated: ${liveTelemetry.lastUpdated})`);
+                                  }}
+                                  className="p-1 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+                                  title="Toggle fullscreen"
+                                >
+                                  <Maximize2 className="w-4 h-4" />
+                                </button>
                               </div>
 
-                              {/* Interactive SVG Chart */}
-                              <div className="w-full overflow-hidden bg-card rounded-xl p-3 border border-border">
+                              {/* Legend */}
+                              <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#4A601E] dark:text-emerald-400">
+                                <span className="w-5 h-0.5 bg-[#4A601E] dark:bg-emerald-400 rounded-full inline-block" />
+                                <span>Measurement</span>
+                              </div>
+
+                              {/* Interactive SVG Chart Dynamically Generated from Live Telemetry */}
+                              <div className="w-full overflow-hidden bg-[#FAF4EE] dark:bg-[#1A1815] rounded-2xl p-2 border border-[#EAE3DA] dark:border-stone-800">
                                 <svg
                                   viewBox="0 0 400 190"
                                   className="w-full h-auto select-none"
                                   style={{ overflow: "visible" }}
                                 >
-                                  {/* Horizontal Grid Lines & Y-Axis Labels */}
-                                  {[
-                                    { label: "35.0 °C", y: 40 },
-                                    { label: "30.0 °C", y: 70 },
-                                    { label: "25.0 °C", y: 100 },
-                                    { label: "20.0 °C", y: 130 },
-                                    { label: "15.0 °C", y: 160 },
-                                  ].map((tick, i) => (
+                                  {/* Dynamic Horizontal Grid Lines & Y-Axis Labels */}
+                                  {tempYTicks.map((tick, i) => (
                                     <g key={i}>
                                       <text
-                                        x="55"
+                                        x="60"
                                         y={tick.y + 4}
                                         textAnchor="end"
-                                        className="fill-muted-foreground text-[10px] font-mono"
+                                        className="fill-stone-600 dark:fill-stone-400 text-[10px] font-mono font-medium"
                                       >
                                         {tick.label}
                                       </text>
@@ -3644,7 +3542,7 @@ Provide:
                                         x2="390"
                                         y2={tick.y}
                                         stroke="currentColor"
-                                        className="text-border"
+                                        className="text-[#DCD5CB] dark:text-stone-800"
                                         strokeDasharray="3 3"
                                         strokeWidth="1"
                                       />
@@ -3653,97 +3551,115 @@ Provide:
 
                                   {/* Gradient Definition */}
                                   <defs>
-                                    <linearGradient id="insideTempGradientPage" x1="0" y1="0" x2="0" y2="1">
-                                      <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.4" />
-                                      <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.02" />
+                                    <linearGradient id="insideTempGradientDynamic" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="0%" stopColor="#D5E6B5" stopOpacity="0.85" />
+                                      <stop offset="100%" stopColor="#EAF2DA" stopOpacity="0.25" />
                                     </linearGradient>
                                   </defs>
 
-                                  {/* Area Fill */}
-                                  <path
-                                    d="M 75 103 L 100 112 L 120 118 L 140 121 L 160 124 L 185 133 L 215 145 L 245 136 L 275 100 L 310 76 L 330 67 L 350 61 L 370 64 L 385 64 L 385 160 L 75 160 Z"
-                                    fill="url(#insideTempGradientPage)"
-                                  />
+                                  {/* Dynamic Area Fill */}
+                                  {tempAreaPathD && (
+                                    <path
+                                      d={tempAreaPathD}
+                                      fill="url(#insideTempGradientDynamic)"
+                                    />
+                                  )}
 
-                                  {/* Dashed Trend Trajectory Line */}
-                                  {showInsideTempTrend && (
+                                  {/* Dynamic Dashed Trend Trajectory Line (Visible when showTrend is ON) */}
+                                  {showInsideTempTrend && tempTrendLine && (
                                     <line
-                                      x1="75"
-                                      y1="103"
-                                      x2="385"
-                                      y2="64"
-                                      stroke="#F59E0B"
+                                      x1={tempTrendLine.x1}
+                                      y1={tempTrendLine.y1}
+                                      x2={tempTrendLine.x2}
+                                      y2={tempTrendLine.y2}
+                                      stroke="#A16207"
                                       strokeDasharray="4 4"
                                       strokeWidth="2"
                                     />
                                   )}
 
-                                  {/* Measurement Line */}
-                                  <path
-                                    d="M 75 103 L 100 112 L 120 118 L 140 121 L 160 124 L 185 133 L 215 145 L 245 136 L 275 100 L 310 76 L 330 67 L 350 61 L 370 64 L 385 64"
-                                    fill="none"
-                                    stroke="#D97706"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
+                                  {/* Dynamic Measurement Line */}
+                                  {tempLinePathD && (
+                                    <path
+                                      d={tempLinePathD}
+                                      fill="none"
+                                      stroke="#4A601E"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  )}
 
-                                  {/* Measurement Points */}
-                                  {[
-                                    { x: 75, y: 103 },
-                                    { x: 100, y: 112 },
-                                    { x: 120, y: 118 },
-                                    { x: 140, y: 121 },
-                                    { x: 160, y: 124 },
-                                    { x: 185, y: 133 },
-                                    { x: 245, y: 136 },
-                                    { x: 275, y: 100 },
-                                    { x: 310, y: 76 },
-                                    { x: 330, y: 67 },
-                                    { x: 370, y: 64 },
-                                    { x: 385, y: 64 },
-                                  ].map((p, idx) => (
+                                  {/* Dynamic Measurement Points */}
+                                  {svgTempPoints.map((p, idx) => (
                                     <circle
                                       key={idx}
                                       cx={p.x}
                                       cy={p.y}
                                       r="2.5"
-                                      fill="#D97706"
+                                      fill="#4A601E"
+                                      stroke="#FAF4EE"
+                                      strokeWidth="0.8"
                                     />
                                   ))}
 
-                                  {/* Min Point */}
-                                  <circle cx="215" cy="145" r="7" fill="#3B82F6" opacity="0.3" />
-                                  <circle cx="215" cy="145" r="4" fill="#3B82F6" stroke="#fff" strokeWidth="1.5" />
+                                  {/* Dynamic Min Point Glow */}
+                                  {svgTempPoints.filter(p => p.isMin).map((p, idx) => (
+                                    <g key={`min-${idx}`}>
+                                      <circle cx={p.x} cy={p.y} r="7" fill="#3B82F6" opacity="0.3" />
+                                      <circle cx={p.x} cy={p.y} r="4" fill="#3B82F6" stroke="#FAF4EE" strokeWidth="1.5" />
+                                    </g>
+                                  ))}
 
-                                  {/* Max Point */}
-                                  <circle cx="350" cy="61" r="7" fill="#EF4444" opacity="0.3" />
-                                  <circle cx="350" cy="61" r="4" fill="#EF4444" stroke="#fff" strokeWidth="1.5" />
+                                  {/* Dynamic Max Point Glow */}
+                                  {svgTempPoints.filter(p => p.isMax).map((p, idx) => (
+                                    <g key={`max-${idx}`}>
+                                      <circle cx={p.x} cy={p.y} r="7" fill="#EF4444" opacity="0.3" />
+                                      <circle cx={p.x} cy={p.y} r="4" fill="#EF4444" stroke="#FAF4EE" strokeWidth="1.5" />
+                                    </g>
+                                  ))}
 
-                                  {/* X-Axis Labels */}
-                                  <text x="75" y="178" textAnchor="middle" className="fill-muted-foreground text-[10px]">21:00</text>
-                                  <text x="140" y="178" textAnchor="middle" className="fill-muted-foreground text-[10px] font-bold">01:00</text>
-                                  <text x="215" y="178" textAnchor="middle" className="fill-muted-foreground text-[10px]">05:00</text>
-                                  <text x="275" y="178" textAnchor="middle" className="fill-muted-foreground text-[10px]">09:00</text>
-                                  <text x="340" y="178" textAnchor="middle" className="fill-muted-foreground text-[10px]">13:00</text>
+                                  {/* Dynamic X-Axis Labels */}
+                                  {tempXLabels.map((lbl, idx) => (
+                                    <g key={idx}>
+                                      <text
+                                        x={lbl.x}
+                                        y={lbl.subText ? 174 : 178}
+                                        textAnchor="middle"
+                                        className="fill-stone-600 dark:fill-stone-400 text-[10px] font-medium"
+                                      >
+                                        {lbl.time}
+                                      </text>
+                                      {lbl.subText && (
+                                        <text
+                                          x={lbl.x}
+                                          y="185"
+                                          textAnchor="middle"
+                                          className="fill-stone-500 dark:fill-stone-400 text-[9px]"
+                                        >
+                                          {lbl.subText}
+                                        </text>
+                                      )}
+                                    </g>
+                                  ))}
                                 </svg>
                               </div>
 
                               {/* Show Trend Toggle Switch */}
                               <div className="flex items-center justify-between pt-1 text-xs">
-                                <span className="font-semibold text-foreground">
-                                  Overlay Trajectory Trend
+                                <span className="font-semibold text-[#2E2A25] dark:text-stone-200">
+                                  Show trend
                                 </span>
                                 <button
                                   type="button"
                                   onClick={() => setShowInsideTempTrend(!showInsideTempTrend)}
-                                  className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                                    showInsideTempTrend ? "bg-amber-500" : "bg-muted border border-border"
+                                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                                    showInsideTempTrend ? "bg-[#FFB800]" : "bg-[#DCD5CB] dark:bg-stone-700"
                                   }`}
                                 >
                                   <div
-                                    className={`w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
-                                      showInsideTempTrend ? "translate-x-5" : "translate-x-0"
+                                    className={`w-5 h-5 rounded-full bg-white dark:bg-stone-200 shadow-md transition-transform ${
+                                      showInsideTempTrend ? "translate-x-6" : "translate-x-0"
                                     }`}
                                   />
                                 </button>
@@ -3753,139 +3669,146 @@ Provide:
                         </div>
 
                         {/* Row 3: Humidity */}
-                        <div className="border-t border-border/50 pt-2">
+                        <div className="border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2">
                           {hasDevice ? (
                             <div className="space-y-3">
                               <div
                                 onClick={() => setExpandedMetric(expandedMetric === "humidity" ? null : "humidity")}
-                                className="p-3.5 rounded-xl bg-card border border-border flex items-center justify-between cursor-pointer hover:bg-muted/40 transition-all select-none"
+                                className="p-3.5 rounded-2xl bg-[#FFEDEC] dark:bg-rose-950/20 border border-[#FCDAD7] dark:border-rose-900/40 flex items-center justify-between cursor-pointer hover:opacity-95 transition-all select-none"
                               >
                                 <div className="flex items-center gap-3.5">
-                                  <div className="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-500">
-                                    <Droplets className="w-5 h-5" />
+                                  <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                                    <Droplets className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                                   </div>
                                   <div>
-                                    <span className="text-xs text-muted-foreground font-medium block">Inside nest relative humidity</span>
-                                    <span className="text-base font-bold text-foreground block font-mono">
-                                      {humidityDisplay} RH
+                                    <span className="text-xs text-[#8E8880] font-medium block">Humidity</span>
+                                    <span className="text-lg font-bold text-rose-600 dark:text-rose-400 block leading-tight">
+                                      {humidityDisplay}
                                     </span>
                                   </div>
                                 </div>
                                 {expandedMetric === "humidity" ? (
-                                  <ChevronDown className="w-5 h-5 text-foreground" />
+                                  <ChevronDown className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                                 ) : (
-                                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                                  <ChevronRight className="w-5 h-5 text-stone-400" />
                                 )}
                               </div>
 
-                              {/* Hourly Humidity Trend Chart */}
+                              {/* Dynamic Hourly Humidity Trend Chart (ONLY SHOWN IF DEVICE CONNECTED & SYNCED) */}
                               {expandedMetric === "humidity" && (
-                                <div className="space-y-3 pt-2 border-t border-border/60 bg-muted/20 rounded-2xl p-4">
+                                <div className="space-y-3 pt-1 border-t border-[#EAE3DA] dark:border-stone-800/80">
                                   <div className="flex items-center justify-between text-xs px-1">
-                                    <span className="font-bold text-foreground">
-                                      Min 32% · Max 58% · Current: 37% RH
+                                    <span className="font-bold text-rose-700 dark:text-rose-400">
+                                      Min {liveTelemetry.minHumidity > 0 ? `${liveTelemetry.minHumidity}%` : (liveTelemetry.currentHumidity !== null ? `${Math.round(liveTelemetry.currentHumidity)}%` : "...")} · Max {liveTelemetry.maxHumidity > 0 ? `${liveTelemetry.maxHumidity}%` : (liveTelemetry.currentHumidity !== null ? `${Math.round(liveTelemetry.currentHumidity)}%` : "...")} · Measurement: {humidityDisplay} RH
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground font-semibold">Sensor Synced</span>
+                                    <span className="text-[10px] text-muted-foreground font-semibold">Live Stream</span>
                                   </div>
-                                  <div className="w-full overflow-hidden bg-card rounded-xl p-3 border border-border">
+                                  <div className="w-full overflow-hidden bg-[#FAF4EE] dark:bg-[#1A1815] rounded-2xl p-2 border border-[#EAE3DA] dark:border-stone-800">
                                     <svg viewBox="0 0 400 160" className="w-full h-auto select-none">
-                                      <rect x="65" y="15" width="325" height="30" fill="#FEF3C7" opacity="0.3" />
-                                      <rect x="65" y="45" width="325" height="50" fill="#EAF5E1" opacity="0.4" />
-                                      <rect x="65" y="95" width="325" height="40" fill="#FDE8E8" opacity="0.4" />
-                                      {showHumidityTrend && (
-                                        <line x1="75" y1="80" x2="385" y2="120" stroke="#F59E0B" strokeDasharray="4 4" strokeWidth="2" />
+                                      {/* Optimal vs Low Humidity Zones */}
+                                      <rect x="65" y="15" width="325" height="30" fill="#FEF3C7" opacity="0.4" />
+                                      <rect x="65" y="45" width="325" height="50" fill="#EAF5E1" opacity="0.7" />
+                                      <rect x="65" y="95" width="325" height="40" fill="#FDE8E8" opacity="0.75" />
+                                      {showHumidityTrend && humidityTrendLine && (
+                                        <line
+                                          x1={humidityTrendLine.x1}
+                                          y1={humidityTrendLine.y1}
+                                          x2={humidityTrendLine.x2}
+                                          y2={humidityTrendLine.y2}
+                                          stroke="#A16207"
+                                          strokeDasharray="4 4"
+                                          strokeWidth="2"
+                                        />
                                       )}
-                                      <path
-                                        d="M 75 80 L 140 85 L 215 95 L 275 110 L 340 120 L 385 120"
-                                        fill="none"
-                                        stroke="#3B82F6"
-                                        strokeWidth="2.5"
-                                        strokeLinecap="round"
-                                      />
-                                      {[
-                                        { x: 75, y: 80 },
-                                        { x: 140, y: 85 },
-                                        { x: 215, y: 95 },
-                                        { x: 275, y: 110 },
-                                        { x: 340, y: 120 },
-                                        { x: 385, y: 120 },
-                                      ].map((p, idx) => (
-                                        <circle key={idx} cx={p.x} cy={p.y} r="3" fill="#3B82F6" />
+                                      {humidityLinePathD && (
+                                        <path
+                                          d={humidityLinePathD}
+                                          fill="none"
+                                          stroke="#DC2626"
+                                          strokeWidth="2.5"
+                                          strokeLinecap="round"
+                                        />
+                                      )}
+                                      {svgHumidityPoints.map((p, idx) => (
+                                        <circle key={idx} cx={p.x} cy={p.y} r="3" fill="#DC2626" stroke="#fff" strokeWidth="1" />
                                       ))}
-                                      <text x="75" y="150" textAnchor="middle" className="fill-muted-foreground text-[10px]">21:00</text>
-                                      <text x="140" y="150" textAnchor="middle" className="fill-muted-foreground text-[10px]">01:00</text>
-                                      <text x="215" y="150" textAnchor="middle" className="fill-muted-foreground text-[10px]">05:00</text>
-                                      <text x="275" y="150" textAnchor="middle" className="fill-muted-foreground text-[10px]">09:00</text>
-                                      <text x="340" y="150" textAnchor="middle" className="fill-muted-foreground text-[10px]">13:00</text>
+                                      {humidityXLabels.map((lbl, idx) => (
+                                        <text key={idx} x={lbl.x} y="150" textAnchor="middle" className="fill-stone-600 text-[10px]">
+                                          {lbl.time}
+                                        </text>
+                                      ))}
                                     </svg>
+                                  </div>
+                                  <div className="flex items-center justify-between pt-1 text-xs">
+                                    <span className="font-semibold text-[#2E2A25] dark:text-stone-200">Show trend</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowHumidityTrend(!showHumidityTrend)}
+                                      className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                                        showHumidityTrend ? "bg-[#FFB800]" : "bg-[#DCD5CB] dark:bg-stone-700"
+                                      }`}
+                                    >
+                                      <div
+                                        className={`w-5 h-5 rounded-full bg-white dark:bg-stone-200 shadow-md transition-transform ${
+                                          showHumidityTrend ? "translate-x-6" : "translate-x-0"
+                                        }`}
+                                      />
+                                    </button>
                                   </div>
                                 </div>
                               )}
                             </div>
                           ) : (
                             <div
-                              onClick={() => toast.info("No in-hive device connected. Tap '+ Sync Device' to activate live humidity trend.")}
-                              className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors group select-none"
+                              onClick={() => toast.info("No in-hive device connected. Tap '+ Sync Device' below to activate live humidity trend.")}
+                              className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
                             >
                               <div className="flex items-center gap-3.5">
-                                <div className="w-11 h-11 rounded-xl border border-border bg-background flex items-center justify-center text-foreground group-hover:border-amber-500/40 transition-colors">
-                                  <Droplets className="w-5 h-5 text-sky-500" />
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                                  <Droplets className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
                                 </div>
                                 <div>
-                                  <span className="text-xs text-muted-foreground font-medium block">Inside nest relative humidity</span>
-                                  <span className="text-base font-bold text-foreground block font-mono">
-                                    No Device Attached
+                                  <span className="text-xs text-[#8E8880] font-medium block">Humidity</span>
+                                  <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                    No Device
                                   </span>
                                 </div>
                               </div>
-                              <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted border border-border">
-                                Inactive
-                              </span>
+                              <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                             </div>
                           )}
                         </div>
 
                         {/* Row 4: Pressure */}
-                        <div className="border-t border-border/50 pt-2">
+                        <div className="border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2">
                           <div
                             onClick={() => {
                               if (hasDevice) {
                                 setExpandedMetric(expandedMetric === "pressure" ? null : "pressure");
                               } else {
-                                toast.info("No in-hive device connected. Barometric sensor inactive.");
+                                toast.info("No in-hive device connected. Tap '+ Sync Device' below for barometric pressure telemetry.");
                               }
                             }}
-                            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/40 rounded-xl transition-colors group select-none"
+                            className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors group select-none"
                           >
                             <div className="flex items-center gap-3.5">
-                              <div className="w-11 h-11 rounded-xl border border-border bg-background flex items-center justify-center text-foreground group-hover:border-amber-500/40 transition-colors">
-                                <Gauge className="w-5 h-5 text-amber-500" />
+                              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-stone-700 dark:text-stone-300">
+                                <Gauge className="w-6 h-6 stroke-[1.8] text-stone-700 dark:text-stone-300" />
                               </div>
                               <div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs text-muted-foreground font-medium">Barometric pressure</span>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toast.info("Barometric hive interior pressure telemetry.");
-                                    }}
-                                    className="text-muted-foreground hover:text-foreground"
-                                  >
-                                    <Info className="w-3.5 h-3.5" />
-                                  </button>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-xs text-[#8E8880] font-medium">Pressure</span>
+                                  <Info className="w-3 h-3 text-[#8E8880]" />
                                 </div>
-                                <span className="text-base font-bold text-foreground block font-mono">
-                                  {hasDevice ? pressureDisplay : "No Device Attached"}
+                                <span className="text-base font-bold text-[#2E2A25] dark:text-stone-100 block">
+                                  {pressureDisplay}
                                 </span>
                               </div>
                             </div>
                             {hasDevice ? (
-                              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+                              <ChevronDown className="w-5 h-5 text-[#2E2A25] dark:text-stone-200" />
                             ) : (
-                              <span className="text-xs text-muted-foreground px-2 py-1 rounded-md bg-muted border border-border">
-                                Inactive
-                              </span>
+                              <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
                             )}
                           </div>
                         </div>

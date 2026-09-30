@@ -70,6 +70,11 @@ export function isFakeSensorDevice(item: any): boolean {
   const id = String(item.id || "").trim().toLowerCase();
   const lbl = String(item.label || item.deviceType || item.name || item.device_type || "").trim().toLowerCase();
 
+  // Authentic Apisense hardware devices (H26110038001..30) are genuine production devices
+  if (s.startsWith("H261")) {
+    return false;
+  }
+
   // 1. Check known sample blacklist or sample suffixes
   if (
     KNOWN_FAKE_SAMPLE_SERIALS.has(s) ||

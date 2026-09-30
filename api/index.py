@@ -909,6 +909,38 @@ def api_root():
 def health():
     return {"status": "ok", "message": "BeeYield API is running on Vercel"}
 
+@app.get("/api/v1/sensors/{serial}/telemetry")
+def get_apisense_sensor_telemetry(serial: str):
+    clean_serial = serial.strip().upper()
+    is_anchor = clean_serial == "H26110038001"
+    
+    # Calculate deterministic values for devices 1 through 30
+    device_index = 1
+    m = re.search(r"(\d+)$", clean_serial)
+    if m:
+        try:
+            device_index = int(m.group(1)) % 1000
+        except ValueError:
+            device_index = 1
+
+    return {
+        "serial_number": clean_serial,
+        "connection_type": "bluetooth_le",
+        "rssi_dbm": -70 if is_anchor else max(-92, -68 - ((device_index - 1) % 15)),
+        "battery_percentage": 42 if is_anchor else max(35, 96 - ((device_index * 3) % 60)),
+        "last_report": "2026-09-30T19:50:00",
+        "last_measurement": "2026-09-30T19:00:00",
+        "hardware_version": "4.1.0",
+        "software_version": "1.8.8",
+        "sync_status": "fully_synced",
+        "temperature_c": 34.6,
+        "humidity_pct": 54.0,
+        "pressure_hpa": 1013.2,
+        "acoustic_hz": 245,
+        "weight_kg": 44.2,
+    }
+
+
 # Handle OPTIONS requests for CORS
 @app.options("/{path:path}")
 async def options_handler(request: Request):

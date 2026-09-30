@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
-import { extractCleanSerial, validateSensorDeviceSerial } from "@/services/deviceReadingService";
 import { generateSensorUuid } from "@/services/sensorSyncService";
+import ApisenseSyncDashboard from "@/components/beeyield/ApisenseSyncDashboard";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
 type Hive = {
@@ -1926,7 +1926,12 @@ export default function MeasurementDataTools({ isOpen, onClose, embedded = false
           {tab === "usb" && <UsbPanel onIngest={ingestSerialLine} />}
 
           {/* TAB 3: BLUETOOTH */}
-          {tab === "bluetooth" && <BluetoothPanel onPaired={pairBluetooth} />}
+          {tab === "bluetooth" && (
+            <div className="space-y-6">
+              <ApisenseSyncDashboard onSelectHive={(code) => setSelHive(code)} />
+              <BluetoothPanel onPaired={pairBluetooth} />
+            </div>
+          )}
 
           {/* TAB 4: ONLINE TELEMETRY */}
           {tab === "online" && (

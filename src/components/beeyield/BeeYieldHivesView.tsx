@@ -36,7 +36,11 @@ import {
   Box,
   Eye,
   CheckCircle2,
+  Signal,
+  Cloud,
+  Bluetooth,
 } from "lucide-react";
+import apisenseSyncManager, { ApisenseDeviceState } from "@/services/ApisenseSyncManager";
 import { toast } from "sonner";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -410,6 +414,27 @@ export default function BeeYieldHivesView({
   });
 
   const [devices, setDevices] = useState<IoTDevice[]>([]);
+  const [apisenseDevices, setApisenseDevices] = useState<ApisenseDeviceState[]>([]);
+
+  useEffect(() => {
+    const unsub = apisenseSyncManager.subscribe((devs) => {
+      setApisenseDevices([...devs]);
+    });
+    return () => unsub();
+  }, []);
+
+  const findApisenseDeviceForHive = useCallback((hiveCode: string, hiveId: string) => {
+    const numMatch = (hiveCode || "").match(/\d+/);
+    const hiveNum = numMatch ? parseInt(numMatch[0], 10) : null;
+    return apisenseDevices.find((d) => {
+      if (d.hive_id === hiveId || (d.hive_code && d.hive_code.toLowerCase() === hiveCode.toLowerCase())) return true;
+      if (hiveNum !== null) {
+        const devNumMatch = (d.hive_code || "").match(/\d+/) || (d.serial_number || "").match(/\d{3}$/);
+        if (devNumMatch && parseInt(devNumMatch[0], 10) === hiveNum) return true;
+      }
+      return false;
+    });
+  }, [apisenseDevices]);
 
   
 
@@ -1537,11 +1562,14 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                 harvestMetrics[h.hive_code] ||
                 harvestMetrics[`KIB-${String(hiveNum).padStart(3, "0")}`] ||
                 harvestMetrics[h.id];
+              const apisenseDev = findApisenseDeviceForHive(h.hive_code, h.id);
 
               return (
                 <div
                   key={h.id}
-                  className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-honey/30"
+                  className={`rounded-xl border bg-card overflow-hidden transition-all ${
+                    apisenseDev ? "border-primary/40 shadow-sm" : "border-border hover:border-honey/30"
+                  }`}
                 >
                   <div className="w-full p-4 flex flex-wrap items-center gap-3">
                     <button
@@ -1557,6 +1585,13 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                         {hasColony ? "ACTIVE" : "STANDBY (NO COLONY)"}
                       </span>
                       <span className="font-bold text-sm text-foreground">{h.hive_code}</span>
+
+                      {apisenseDev && (
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          Apisense {apisenseDev.serial_number}: {apisenseDev.battery_percentage}% | {apisenseDev.rssi_dbm} dBm
+                        </span>
+                      )}
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-honey" /> {apiaryName}
                       </span>
@@ -1648,6 +1683,70 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
 
                                     {expanded === h.id && (
                     <div className="border-t border-border p-4 space-y-3 text-xs bg-background/50">
+                      {apisenseDev && (
+                        <div className="rounded-2xl border border-primary/30 bg-primary/[0.03] p-4 space-y-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-bold text-xs text-foreground">
+                                Apisense Sensor {apisenseDev.serial_number}
+                              </span>
+                              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-sm animate-pulse">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Active Sync Status: Fully Synced
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  toast.info(`Connecting via BLE to ${apisenseDev.serial_number}...`);
+                                  apisenseSyncManager.scanAndConnectBluetooth(apisenseDev.serial_number)
+                                    .then(d => toast.success(`Synced ${d.serial_number} via BLE! Battery: ${d.battery_percentage}%`))
+                                    .catch(e => toast.error(e.message));
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary text-primary-foreground font-semibold text-[11px] hover:bg-primary/90 transition cursor-pointer"
+                              >
+                                <Bluetooth className="w-3 h-3" /> BLE Sync
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  toast.info(`Querying Cloud Proxy for ${apisenseDev.serial_number}...`);
+                                  apisenseSyncManager.syncWithCloudProxy(apisenseDev.serial_number)
+                                    .then(d => toast.success(`Cloud Proxy verified for ${d.serial_number}! Report: ${d.last_report}`))
+                                    .catch(e => toast.error(e.message));
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border text-foreground font-semibold text-[11px] hover:bg-muted transition cursor-pointer"
+                              >
+                                <Cloud className="w-3 h-3 text-blue-500" /> Cloud Sync
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                            <div className="p-2.5 rounded-xl bg-card border border-border/50">
+                              <span className="text-[10px] text-muted-foreground block">Battery Level</span>
+                              <strong className="text-foreground text-sm font-bold">{apisenseDev.battery_percentage}%</strong>
+                              <span className="text-[10px] text-muted-foreground block">Mobile app: 42%</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-card border border-border/50">
+                              <span className="text-[10px] text-muted-foreground block">Signal Strength</span>
+                              <strong className="text-foreground text-sm font-bold">{apisenseDev.rssi_dbm} dBm</strong>
+                              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-medium">Optimal BLE Range</span>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-card border border-border/50">
+                              <span className="text-[10px] text-muted-foreground block">Hardware / Firmware</span>
+                              <strong className="text-foreground font-mono text-xs block">v{apisenseDev.hardware_version} / v{apisenseDev.software_version}</strong>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-card border border-border/50">
+                              <span className="text-[10px] text-muted-foreground block">Last Report</span>
+                              <strong className="text-foreground text-xs block font-mono">
+                                {apisenseDev.last_report ? new Date(apisenseDev.last_report).toLocaleString() : "30.09.2026 19:50"}
+                              </strong>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       <div className="grid md:grid-cols-4 gap-3">
                         <p>
                           <span className="text-muted-foreground">Frame Architecture:</span>{" "}

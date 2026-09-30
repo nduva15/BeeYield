@@ -9,7 +9,7 @@ from app.api.api_v1.endpoints import (
     admin_extended, meters, beeyield, pollination, inspections, reports, harvests, tasks,
     settings, payments, labels, bluetooth, measurements,
     requests, image_analysis, acoustic, routing, forage, ai, integrations, usb_hub, reference_library,
-    yield_forecast
+    yield_forecast, sensors
 )
 
 
@@ -61,6 +61,8 @@ api_router.include_router(inspections.router, prefix="/beeyield/inspections", ta
 
 # IoT endpoint
 api_router.include_router(iot.router, prefix="/iot", tags=["IoT"])
+api_router.include_router(sensors.router, prefix="/sensors", tags=["Sensors"])
+api_router.include_router(sensors.router, prefix="/beeyield/sensors", tags=["Sensors"])
 
 # Measurements (time-series, disease radar, land metrics)
 api_router.include_router(measurements.router, prefix="/measurements", tags=["Measurements"])
