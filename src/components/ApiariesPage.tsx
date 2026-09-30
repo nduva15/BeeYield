@@ -172,6 +172,7 @@ export interface ApiaryDeviceItem {
   deviceType: string;
   serial: string;
   hiveId?: string;
+  hive_id?: string;
   hiveCode?: string;
   status: DeviceStatus;
   lastSync?: string;
@@ -2625,7 +2626,7 @@ Provide:
     }
     return (devicesList || []).find(
       (d) =>
-        ((d.hiveId && d.hiveId === hive.id) ||
+        (((d.hiveId || d.hive_id) && (d.hiveId === hive.id || d.hive_id === hive.id)) ||
          (d.hiveCode && (d.hiveCode.toLowerCase() === hive.code.toLowerCase() || d.hiveCode.toLowerCase() === displayName.toLowerCase()))) &&
         (d.deviceType.toLowerCase().includes("scale") || (d.category === "in_hive" && d.serial.toUpperCase().includes("SCALE")))
     );
@@ -2642,7 +2643,7 @@ Provide:
     }
     return (devicesList || []).find(
       (d) =>
-        ((d.hiveId && d.hiveId === hive.id) ||
+        (((d.hiveId || d.hive_id) && (d.hiveId === hive.id || d.hive_id === hive.id)) ||
          (d.hiveCode && (d.hiveCode.toLowerCase() === hive.code.toLowerCase() || d.hiveCode.toLowerCase() === displayName.toLowerCase()))) &&
         (d.deviceType.toLowerCase().includes("vital") || d.deviceType.toLowerCase().includes("brood") || d.deviceType.toLowerCase().includes("sensor") || (d.category === "in_hive" && !d.deviceType.toLowerCase().includes("scale")))
     );
