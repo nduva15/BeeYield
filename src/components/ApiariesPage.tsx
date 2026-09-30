@@ -171,6 +171,7 @@ export interface ApiaryDeviceItem {
   category: DeviceCategory;
   deviceType: string;
   serial: string;
+  hiveId?: string;
   hiveCode?: string;
   status: DeviceStatus;
   lastSync?: string;
@@ -2595,7 +2596,8 @@ Provide:
       module: "inspection",
       recordId: newNote.id,
       action: "create",
-      data: { ...newNote, type: "hive_observation_note" },
+      deviceId: hive.sensorSerial || hive.id,
+      data: { ...newNote, type: "hive_observation_note", deviceId: hive.sensorSerial || hive.id },
     });
 
     toast.success("Observation note saved to hive history");
