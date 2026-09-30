@@ -2816,7 +2816,7 @@ Provide:
       isMounted = false;
       window.removeEventListener("beeyield_sensor_readings_updated", handleUpdate);
     };
-  }, [hasDevice, hasScale, matchedDevice, matchedScale, hive.id, hive.sensorSerial, displayName, insideTempTimeframe]);
+  }, [hasDevice, hasScale, matchedDevice, matchedScale, hive.id, hive.sensorSerial, displayName, insideTempTimeframe, user?.id]);
 
   // Dynamic SVG Temperature Coordinates from Real Live Points
   const svgTempPoints = useMemo(() => {

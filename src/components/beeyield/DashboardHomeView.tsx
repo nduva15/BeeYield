@@ -23,7 +23,6 @@ import { toast } from 'sonner';
 import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
 import { useSensorReadings } from '@/hooks/useSensorReadings';
 import { extractSafeSensorTelemetry } from '@/lib/sensorDataSafety';
-import RegionalPreferencesCard from './RegionalPreferencesCard';
 import {
     fetchLiveWeather,
     getDynamicFallbackWeather,
@@ -92,7 +91,9 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     const inspectionsQuery = useInspections();
 
     const sensorReadingsQuery = useSensorReadings();
-    const readings = propReadings && propReadings.length > 0 ? propReadings : (sensorReadingsQuery.data || []);
+    const readings = React.useMemo(() => {
+        return propReadings && propReadings.length > 0 ? propReadings : (sensorReadingsQuery.data || []);
+    }, [propReadings, sensorReadingsQuery.data]);
 
     const handleInsightAction = React.useCallback((actionType: string) => {
         switch (actionType) {
@@ -488,9 +489,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                             </button>
                         </div>
                     </div>
-
-                    {/* Regional & Measurement Unit Preferences (Language, Temp Unit, Weight Unit) */}
-                    <RegionalPreferencesCard />
                 </div>
 
                 {/* Operational Workflows */}

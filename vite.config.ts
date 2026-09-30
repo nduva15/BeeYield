@@ -13,7 +13,7 @@ function apisenseSensorPlugin() {
         name: 'apisense-sensor-middleware',
         configureServer(server: any) {
             server.middlewares.use((req: any, res: any, next: any) => {
-                const match = req.url && req.url.match(/^\/api\/v1\/sensors\/([^\/\?]+)\/telemetry/);
+                const match = req.url && req.url.match(/^\/api\/v1\/sensors\/([^/?]+)\/telemetry/);
                 if (match && req.method === 'GET') {
                     const serial = decodeURIComponent(match[1]).trim().toUpperCase();
                     const isH261 = serial.startsWith('H261');

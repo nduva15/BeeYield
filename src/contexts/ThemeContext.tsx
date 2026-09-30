@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react"
 import { beeyieldService } from "@/services/beeyieldService"
 
 export type ThemeMode = "light" | "dark" | "sunlight";
@@ -43,21 +43,25 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         window.localStorage.setItem(storageKey, theme);
     }, [theme]);
 
-    const setTheme = (next: ThemeMode) => {
+    const setTheme = useCallback((next: ThemeMode) => {
         setThemeState(next);
         void beeyieldService.updateUserMetadata({ theme: next });
-    };
+    }, []);
 
-    const toggleSunlightMode = () => {
-        setTheme(theme === "sunlight" ? "light" : "sunlight");
-    };
+    const toggleSunlightMode = useCallback(() => {
+        setThemeState((prev) => {
+            const next = prev === "sunlight" ? "light" : "sunlight";
+            void beeyieldService.updateUserMetadata({ theme: next });
+            return next;
+        });
+    }, []);
 
     const value = useMemo(() => ({
         theme,
         setTheme,
         isSunlightMode: theme === "sunlight",
         toggleSunlightMode
-    }), [theme]);
+    }), [theme, setTheme, toggleSunlightMode]);
 
     return (
         <ThemeContext.Provider value={value}>

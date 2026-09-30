@@ -732,7 +732,7 @@ export default function YieldProjection({
       setIsLoadingHistory(false);
       setIsLoadingHives(false);
     }
-  }, [user, profile, selectedHiveId]);
+  }, [user, selectedHiveId]);
 
   useEffect(() => {
     if (isOpen || embedded) {
