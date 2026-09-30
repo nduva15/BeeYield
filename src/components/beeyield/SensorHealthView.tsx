@@ -452,10 +452,10 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                 <ActionableInsightsPanel
                     inputs={{
                         hiveCode: selectedHive?.code || 'Colony Matrix',
-                        temperature_c: weather?.currentTemp ?? 34.8,
-                        humidity_pct: weather?.currentHumidity ?? 58,
-                        bloom_stage_pct: 80,
-                        forager_flight_index: 85
+                        temperature_c: weather?.currentTemp ?? null,
+                        humidity_pct: null,
+                        bloom_stage_pct: null,
+                        forager_flight_index: null
                     }}
                     onActionClick={(actionType) => {
                         if (actionType === 'inspect') onTabChange('inspections');

@@ -5312,7 +5312,55 @@ Provide:
               )}
             </div>
 
+            {/* Bottom Navigation Bar (Screenshots 1 & 2) */}
+            <div className="shrink-0 border-t border-[#EFE8DE] dark:border-stone-800 bg-[#FAF4EE] dark:bg-[#1C1917] px-4 py-2.5 flex items-center justify-around z-20">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab("hive_state");
+                  setActiveSubScreen("main");
+                }}
+                className={`flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl transition-all cursor-pointer ${
+                  activeTab === "hive_state" && activeSubScreen === "main"
+                    ? "bg-[#F2ECE4] dark:bg-stone-800 text-[#2E2A25] dark:text-stone-100 font-bold shadow-xs"
+                    : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-300"
+                }`}
+              >
+                <LayoutGrid className="w-5 h-5" />
+                <span className="text-[11px] font-semibold leading-tight">Details</span>
+              </button>
 
+              <button
+                type="button"
+                onClick={() => toast.info(`All alert notifications clear for ${displayName}.`)}
+                className="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-all cursor-pointer"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="text-[11px] font-semibold leading-tight">Notifications</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowMenu(true)}
+                className="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-all cursor-pointer"
+              >
+                <div className="w-5 h-5 rounded-full border-[1.5px] border-stone-600 dark:border-stone-400 flex items-center justify-center">
+                  <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight">Add...</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => toast.info(`BeeYield AI Assistant is active for ${displayName}. Telemetry & colony models synchronized.`)}
+                className="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl text-stone-500 hover:text-stone-800 dark:hover:text-stone-300 transition-all cursor-pointer"
+              >
+                <div className="w-5 h-5 rounded-full border-[1.5px] border-amber-500 flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight">Your assistant</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -8829,6 +8877,7 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
             apiary={apiary}
             weather={modalWeather || weather}
             allHives={hivesList}
+            devicesList={devicesList}
             allInspections={allInspections}
             onClose={() => setSelectedHiveForDetail(null)}
             onUpdateHive={handleUpdateHive}

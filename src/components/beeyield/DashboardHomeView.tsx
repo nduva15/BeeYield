@@ -1,5 +1,4 @@
-import { CANONICAL_TIMOTHY_HARVESTS, getNormalizedHarvestKey } from '@/data/canonicalHarvests';
-import { isTimothyUser } from '@/lib/user-hives';
+import { getNormalizedHarvestKey } from '@/data/canonicalHarvests';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -42,35 +41,7 @@ interface DashboardHomeViewProps {
     onTabChange: (tab: string, message?: string, action?: string) => void;
 }
 
-// Canonical Timothy Nduva Inspection Apiary & Hive Defaults
-const CANONICAL_KIBWEZI_APIARY: Apiary = {
-    id: "apiary-kibwezi",
-    name: "BeeYield Apiary in Kibwezi Kenya",
-    location_name: "Kibwezi, Makueni, Kenya",
-    county: "Makueni",
-    region: "Kibwezi East",
-    latitude: -2.409,
-    longitude: 37.967,
-    type: "Commercial Apiary",
-    status: "active",
-    hive_count: 184,
-    expected_hives: 184,
-    size_acres: 18,
-    forage_type: "Acacia Tortilis, Desert Date & Citrus Blossom",
-    notes: "Lead Beekeeper: Timothy Nduva. 184 active Langstroth hives in Kibwezi ecosystem.",
-};
 
-const CANONICAL_HIVES: Hive[] = Array.from({ length: 184 }, (_, i) => ({
-    id: `hive-kib-${String(i + 1).padStart(3, '0')}`,
-    hive_code: `KIB-${String(i + 1).padStart(3, '0')}`,
-    name: `KIB-${String(i + 1).padStart(3, '0')} (Langstroth 10)`,
-    apiary_id: "apiary-kibwezi",
-    status: "ACTIVE",
-    health_status: "Good",
-    hive_type: "Langstroth",
-    frame_count: 10,
-    created_at: "2020-01-01T08:00:00Z",
-}));
 
 async function fetchOpenMeteoWeather(lat: number, lon: number): Promise<LiveWeatherData> {
     return fetchLiveWeather(lat, lon);
@@ -145,17 +116,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
 
 
     const userMetadata = React.useMemo(() => (user as any)?.user_metadata || {}, [user]);
-    const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Timothy Nduva');
+    const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Apiary Beekeeper');
 
     const loadedApiaries = React.useMemo(() => {
         const raw = (Array.isArray(apiaries) && apiaries.length > 0) ? apiaries : apiariesQuery.data;
         if (Array.isArray(raw) && raw.length > 0) return raw;
-        const isTim = isTimothyUser(user, (user as any)?.profile) ||
-                      (user?.email || '').toLowerCase().includes('timothy') || 
-                      (user?.email || '').toLowerCase().includes('nduva') || 
-                      !user?.id;
-        return isTim ? [CANONICAL_KIBWEZI_APIARY] : [];
-    }, [apiaries, apiariesQuery.data, user]);
+        return [];
+    }, [apiaries, apiariesQuery.data]);
 
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(loadedApiaries[0]?.id);
     const primaryApiary = loadedApiaries.find((a) => a.id === selectedApiaryId) || loadedApiaries[0];
@@ -170,12 +137,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                 if (Array.isArray(parsed) && parsed.length > 0) return parsed;
             }
         } catch {}
-        const isTim = isTimothyUser(user, (user as any)?.profile) ||
-                      (user?.email || '').toLowerCase().includes('timothy') || 
-                      (user?.email || '').toLowerCase().includes('nduva') || 
-                      !user?.id;
-        return isTim ? CANONICAL_HIVES : [];
-    }, [hivesQuery.data, user]);
+        return [];
+    }, [hivesQuery.data]);
 
     const getHivesForApiary = React.useCallback((apiary: Apiary) => {
         let matched = loadedHives.filter(
@@ -188,78 +151,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
             matched = loadedHives;
         }
 
-        if (matched.length === 0) {
-            const isKibwezi = (apiary.location_name || '').toLowerCase().includes('kibwezi') || 
-                              (apiary.name || '').toLowerCase().includes('kibwezi') || 
-                              (apiary.name || '').toLowerCase().includes('beeyield');
-            const isTim = isTimothyUser(user, (user as any)?.profile) ||
-                          (user?.email || '').toLowerCase().includes('timothy') || 
-                          (user?.email || '').toLowerCase().includes('nduva') || 
-                          !user?.id;
-            if (isKibwezi || isTim) {
-                matched = CANONICAL_HIVES;
-            }
-        }
-
         return matched;
-    }, [loadedHives, loadedApiaries.length, user]);
+    }, [loadedHives, loadedApiaries.length]);
 
-    const isTimothy = React.useMemo(() => {
-        return (
-            isTimothyUser(user, (user as any)?.profile) ||
-            (user?.email || '').toLowerCase().includes('timothy') || 
-            (user?.email || '').toLowerCase().includes('nduva') || 
-            (userMetadata?.full_name || '').toLowerCase().includes('timothy') ||
-            (userMetadata?.first_name || '').toLowerCase().includes('timothy') ||
-            primaryApiary?.name?.toLowerCase().includes('kibwezi') ||
-            primaryApiary?.name?.toLowerCase().includes('beeyield') ||
-            loadedHives.length === 184 ||
-            !user?.id
-        );
-    }, [user, userMetadata, primaryApiary?.name, loadedHives.length]);
+    
 
     const userHarvests = React.useMemo(() => {
         const raw = harvestsQuery.data || [];
-
-        if (isTimothy) {
-            const seen = new Set<string>();
-            const deduped: Harvest[] = [];
-
-            // 1. Any user-logged custom harvests from raw take precedence
-            const customFromRaw = raw.filter((h: any) => 
-                String(h.id || '').startsWith('usr-') || 
-                String(h.id || '').startsWith('custom-')
-            );
-            for (const h of customFromRaw) {
-                const code = getNormalizedHarvestKey(h);
-                if (code && !seen.has(code)) {
-                    seen.add(code);
-                    deduped.push(h);
-                }
-            }
-
-            // 2. Authoritative canonical 423 harvest batches (843.0 kg)
-            for (const ch of CANONICAL_TIMOTHY_HARVESTS) {
-                const code = getNormalizedHarvestKey(ch);
-                if (code && !seen.has(code)) {
-                    seen.add(code);
-                    deduped.push(ch);
-                }
-            }
-
-            // 3. Any additional entries from raw
-            for (const h of raw) {
-                const code = getNormalizedHarvestKey(h);
-                if (code && !seen.has(code)) {
-                    seen.add(code);
-                    deduped.push(h);
-                }
-            }
-
-            return deduped;
-        }
-
-        // Non-Timothy authenticated user
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
         for (const h of raw) {
@@ -284,44 +182,13 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         }
 
         return deduped;
-    }, [harvestsQuery.data, isTimothy, user?.id, loadedHives]);
+    }, [harvestsQuery.data, user?.id, loadedHives]);
 
     const userBatches = React.useMemo(() => {
         const raw = batchesQuery.data || [];
-
-        if (isTimothy) {
-            const seen = new Set<string>();
-            const deduped: BatchView[] = [];
-
-            // Synchronized 1:1 with userHarvests guaranteeing 423 verified batches
-            for (const h of userHarvests) {
-                const code = getNormalizedHarvestKey(h);
-                if (code && !seen.has(code)) {
-                    seen.add(code);
-                    deduped.push({
-                        id: h.id,
-                        batch_code: h.batch_code || (h as any).batch || code,
-                        honey_type: h.honey_type || 'Early Spring Acacia Blossom',
-                        harvest_date: h.harvest_date || (h as any).harvested_on || '',
-                        quantity_kg: Number(h.quantity_kg ?? (h as any).weight_kg ?? 2.0),
-                        weight_kg: Number(h.quantity_kg ?? (h as any).weight_kg ?? 2.0),
-                        color_grade: (h as any).color_grade || 'Extra Light Amber',
-                        quality_grade: (h as any).quality_grade || 'Export Grade A (<18% moisture)',
-                        moisture_pct: (h as any).moisture_pct || 16.8,
-                        verification_status: 'verified',
-                        blockchain_verified: true,
-                        apiary_name: (h as any).apiary_name || (h as any).location || 'BeeYield Apiary in Kibwezi Kenya',
-                        farmer_name: (h as any).beekeeper || 'Timothy Nduva',
-                    } as any);
-                }
-            }
-            return deduped;
-        }
-
-        const source = raw.length > 0 ? raw : [];
         const seen = new Set<string>();
         const deduped: BatchView[] = [];
-        for (const b of source) {
+        for (const b of raw) {
             const code = getNormalizedHarvestKey(b);
             if (code && !seen.has(code)) {
                 seen.add(code);
@@ -335,7 +202,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         }
 
         return deduped;
-    }, [batchesQuery.data, userHarvests, isTimothy, user?.id]);
+    }, [batchesQuery.data, userHarvests, user?.id]);
 
     const harvests = userHarvests;
     const batches = userBatches;
@@ -390,17 +257,17 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     // Real production stats from user-logged records
     const productionSummary = React.useMemo(() => {
         const rawHarvestedKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_kg ?? (h as any).weight_kg ?? 0) || 0), 0);
-        const totalHarvestedKg = isTimothy ? Math.max(843.0, rawHarvestedKg) : rawHarvestedKg;
+        const totalHarvestedKg = rawHarvestedKg;
         const leftForBeesKg = userHarvests.reduce((sum, h) => sum + (Number(h.quantity_left_for_bees_kg) || 0), 0);
         const rawVerified = userBatches.filter(b => b.verification_status === 'verified' || b.blockchain_verified).length;
-        const verifiedBatches = isTimothy ? (rawVerified > 0 ? rawVerified : userBatches.length) : rawVerified;
+        const verifiedBatches = rawVerified;
 
         return {
             totalHarvestedKg,
             leftForBeesKg,
             verifiedBatches,
         };
-    }, [userBatches, userHarvests, isTimothy]);
+    }, [userBatches, userHarvests]);
 
     const { Icon: WeatherIcon } = getWeatherMeta(weather?.weatherCode ?? 2);
     const minTemp = weather?.todayMin ?? 19;
@@ -506,15 +373,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         const latestReading = Array.isArray(readings) && readings.length > 0 ? readings[0] : null;
         const safe = extractSafeSensorTelemetry(latestReading);
         return {
-            hiveCode: primaryApiary?.name || 'BeeYield Apiary in Kibwezi',
-            temperature_c: safe.temperature.value ?? (weather ? weather.currentTemp : 26.5),
-            humidity_pct: safe.humidity.value ?? (weather ? weather.currentHumidity : 55),
-            weight_kg: safe.weight.value,
-            weight_delta_24h: safe.weight.value ? 1.9 : null,
-            acoustic_hz: safe.acoustics.peakHz,
-            acoustic_db: safe.acoustics.dbLevel,
-            bloom_stage_pct: 68,
-            forager_flight_index: weather && weather.currentWind > 25 ? 32 : 84,
+            hiveCode: primaryApiary?.name || 'Managed Apiary',
+            temperature_c: safe.temperature.value ?? (weather ? weather.currentTemp : null),
+            humidity_pct: safe.humidity.value ?? null,
+            weight_kg: safe.weight.value ?? null,
+            weight_delta_24h: null,
+            acoustic_hz: safe.acoustics.peakHz ?? null,
+            acoustic_db: safe.acoustics.dbLevel ?? null,
+            bloom_stage_pct: null,
+            forager_flight_index: null,
         };
     }, [readings, weather, primaryApiary?.name]);
 
@@ -560,15 +427,15 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                             </div>
                             <div>
                                 <h3 className="text-base font-bold text-foreground">{fullName}</h3>
-                                <p className="text-xs text-muted-foreground">Certified Organic Beekeeper • Kibwezi</p>
+                                <p className="text-xs text-muted-foreground">{primaryApiary?.notes || (primaryApiary ? `Apiary Station • ${primaryApiary.location_name || primaryApiary.name}` : "Beekeeper")}</p>
                             </div>
                         </div>
 
                         <div className="bg-neutral-50 border border-neutral-200/90 rounded-xl p-4">
-                            <Row label="Apiary Location" value={primaryApiary?.location_name || 'Kibwezi, Makueni, Kenya'} />
+                            <Row label="Apiary Location" value={primaryApiary?.location_name || (primaryApiary ? primaryApiary.name : '—')} />
                             <Row label="Managed Colonies" value={`${loadedHives.length} Langstroth Hives`} />
                             <Row label="Biosecurity Status" value={<span className="text-emerald-600 font-bold flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 inline" /> Optimal</span>} />
-                            <Row label="Primary Flora" value={primaryApiary?.forage_type || 'Acacia & Desert Date'} />
+                            <Row label="Primary Flora" value={primaryApiary?.forage_type || '—'} />
                         </div>
                         <div className="mt-4 flex gap-2">
                             <button onClick={() => onTabChange('inspections')} className={cn(glass.btnSecondary, "flex-1 justify-center gap-2 bg-white hover:bg-neutral-50")}>
@@ -804,11 +671,11 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                         Open-Meteo Live API Weather
                                     </div>
                                     <h3 className="text-base sm:text-xl md:text-2xl font-black tracking-tight text-neutral-900 flex items-center gap-2 truncate">
-                                        {primaryApiary?.name || (user ? 'Local Apiary' : 'BeeYield Apiary in Kibwezi Kenya')} Microclimate
+                                        {primaryApiary?.name || (user ? 'Local Apiary' : 'Apiary Station')} Microclimate
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
                                         <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                        <span className="truncate">Kibwezi, Makueni County (-2.409°S, 37.967°E)</span>
+                                        <span className="truncate">{primaryApiary?.location_name || (primaryApiary?.latitude != null ? `${primaryApiary.latitude.toFixed(3)}°, ${primaryApiary.longitude.toFixed(3)}°` : 'Apiary Coordinates')}</span>
                                     </p>
                                 </div>
 
@@ -862,14 +729,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                             <div className="min-w-0">
                                                 <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
                                                     <span className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-neutral-900">
-                                                        {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : '28°C'}
+                                                        {weather?.currentTemp !== undefined ? `${weather.currentTemp}°C` : '—'}
                                                     </span>
                                                     <span className="text-[11px] sm:text-xs font-bold text-neutral-500 whitespace-nowrap">
-                                                        Range: {minTemp}° – {maxTemp}°
+                                                        Range: {weather?.todayMin !== undefined ? `${weather.todayMin}°` : '—'} – {weather?.todayMax !== undefined ? `${weather.todayMax}°` : '—'}
                                                     </span>
                                                 </div>
                                                 <p className="text-xs sm:text-sm font-bold text-neutral-800 flex items-center gap-1.5 mt-0.5 truncate">
-                                                    {weather?.conditionText || 'Clear sky'}
+                                                    {weather?.conditionText || (isWeatherLoading ? 'Syncing...' : 'Weather data unavailable')}
                                                 </p>
                                             </div>
                                         </div>
@@ -975,8 +842,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                 <div className="lg:col-span-12">
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                         {[
-                            { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || 'BeeYield Apiary in Kibwezi Kenya' },
-                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: isTimothy ? '150 Active Colonies • 34 Standby Stands' : `${loadedHives.length} Langstroth hives` },
+                            { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || (loadedApiaries.length > 0 ? 'Active Station' : 'No apiaries registered') },
+                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: `${loadedHives.length} Langstroth hives` },
                             { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${userHarvests.length} harvest logs recorded` },
                             { label: 'Batches', value: userBatches.length, icon: Binary, hint: userBatches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (
@@ -1145,10 +1012,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                     className="bg-white border border-neutral-200/90 rounded-xl p-3 cursor-pointer hover:border-amber-300 hover:bg-neutral-50 transition-all shadow-xs group"
                                 >
                                     <div className="font-black text-[11px] tracking-tight text-neutral-900 truncate group-hover:text-amber-700 transition-colors">
-                                        {h.hive_code} (Langstroth 10)
+                                        {h.hive_code || h.name || 'Colony'} {h.hive_type ? `(${h.hive_type})` : ''}
                                     </div>
                                     <div className="text-[10px] text-emerald-600 font-semibold truncate flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3 inline" /> Queen Marked • Active
+                                        <ShieldCheck className="w-3 h-3 inline" /> {h.health_status || "Active"}
                                     </div>
                                 </div>
                             ))}

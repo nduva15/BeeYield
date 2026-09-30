@@ -27,7 +27,7 @@ export const DashboardFooter: React.FC<DashboardFooterProps> = ({
                             Live Telemetry Gateway
                         </div>
                         <p className="text-[11px] text-muted-foreground truncate">
-                            Kibwezi Apiary Centre, Makueni County • Encrypted
+                            Apiary Telemetry Gateway • Encrypted
                         </p>
                     </div>
                 </div>
@@ -42,7 +42,7 @@ export const DashboardFooter: React.FC<DashboardFooterProps> = ({
                     </div>
                     <div className="flex items-center gap-1.5 bg-muted/30 px-3 py-1.5 rounded-xl border border-border/60">
                         <Award className="w-4 h-4 text-[#F4D03F]" />
-                        <span className="font-semibold text-foreground">KEBS Certified 843kg</span>
+                        <span className="font-semibold text-foreground">KEBS Certified Quality</span>
                     </div>
                 </div>
             </div>
