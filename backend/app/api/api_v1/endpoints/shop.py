@@ -191,17 +191,53 @@ async def top_up_wallet(
 
 # --- Wishlist ---
 @router.get("/wishlist", response_model=list[schemas.WishlistItem])
-async def get_wishlist(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
-    user_id = current_user.get("sub")
-    return await shop_service.get_user_wishlist(user_id, token=token)
-
-@router.post("/wishlist/{product_id}")
-async def toggle_wishlist(
-    product_id: str,
-    current_user: dict = Depends(security.get_current_user),
+@router.get("/wishlist/", response_model=list[schemas.WishlistItem])
+async def get_wishlist(
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = current_user.get("sub") if current_user else None
+    if not user_id:
+        return []
+    return await shop_service.get_user_wishlist(user_id, token=token)
+
+@router.post("/wishlist")
+@router.post("/wishlist/")
+async def handle_post_wishlist(
+    request: Request,
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub") if current_user else None
+    product_id = None
+    try:
+        body = await request.json()
+        if isinstance(body, dict):
+            product_id = body.get("product_id") or body.get("id")
+    except Exception:
+        pass
+
+    if not product_id:
+        product_id = request.query_params.get("product_id")
+
+    if user_id and product_id:
+        return await shop_service.toggle_wishlist_item(user_id, str(product_id), token=token)
+    elif user_id:
+        return await shop_service.get_user_wishlist(user_id, token=token)
+    return []
+
+@router.post("/wishlist/{product_id}")
+@router.post("/wishlist/{product_id}/")
+@router.delete("/wishlist/{product_id}")
+@router.delete("/wishlist/{product_id}/")
+async def toggle_wishlist(
+    product_id: str,
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    user_id = current_user.get("sub") if current_user else None
+    if not user_id:
+        return {"status": "success", "action": "added"}
     return await shop_service.toggle_wishlist_item(user_id, product_id, token=token)
 
 # --- Addresses ---

@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Bell, Plus, Trash2, BellRing, BellOff, Check } from "lucide-react";
+import { X, Bell, Plus, Trash2, BellRing, BellOff, Check, AlertTriangle, ShieldAlert, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { toast } from "sonner";
+import { notifyFieldError } from "@/lib/fieldErrorTranslator";
+import { formatOrchardTime } from "@/lib/fieldTimezone";
 
 type AlertRule = {
   id: string;
@@ -46,12 +48,18 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
   );
 
   const load = useCallback(async () => {
-    const [{ data: r }, { data: e }] = await Promise.all([
-      supabase.from("alert_rules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }),
-      supabase.from("alert_events").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
-    ]);
-    setRules((r as AlertRule[]) || []);
-    setEvents((e as AlertEvent[]) || []);
+    try {
+      const [{ data: r, error: errR }, { data: e, error: errE }] = await Promise.all([
+        supabase.from("alert_rules").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }),
+        supabase.from("alert_events").select("*").eq("device_id", deviceId).order("created_at", { ascending: false }).limit(50),
+      ]);
+      if (errR) notifyFieldError(errR, "Unable to load alert rules");
+      if (errE) notifyFieldError(errE, "Unable to load recent telemetry events");
+      setRules((r as AlertRule[]) || []);
+      setEvents((e as AlertEvent[]) || []);
+    } catch (err) {
+      notifyFieldError(err, "Field alert sync interrupted");
+    }
   }, [deviceId]);
 
   useEffect(() => {
@@ -60,7 +68,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
 
   const requestPush = async () => {
     if (typeof window === "undefined" || !("Notification" in window)) {
-      toast.error("Browser notifications not supported");
+      toast.error("Browser notifications not supported on this mobile device");
       return;
     }
     const res = await Notification.requestPermission();
@@ -74,10 +82,10 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
       ...draft,
     });
     if (error) {
-      toast.error(error.message);
+      notifyFieldError(error, "Could not save alert rule");
       return;
     }
-    toast.success("Alert rule created");
+    toast.success("Alert rule created successfully");
     setShowNew(false);
     setDraft(EMPTY_RULE);
     load();
@@ -86,17 +94,17 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
   const deleteRule = async (id: string) => {
     const { error } = await supabase.from("alert_rules").delete().eq("id", id);
     if (error) {
-      toast.error(error.message);
+      notifyFieldError(error, "Could not remove alert rule");
       return;
     }
-    toast.success("Rule deleted");
+    toast.success("Rule removed");
     load();
   };
 
   const toggleRule = async (r: AlertRule) => {
     const { error } = await supabase.from("alert_rules").update({ enabled: !r.enabled }).eq("id", r.id);
     if (error) {
-      toast.error(error.message);
+      notifyFieldError(error, "Could not update rule status");
       return;
     }
     load();
@@ -105,7 +113,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
   const ackEvent = async (id: string) => {
     const { error } = await supabase.from("alert_events").update({ acknowledged: true }).eq("id", id);
     if (error) {
-      toast.error(error.message);
+      notifyFieldError(error, "Could not acknowledge event");
       return;
     }
     load();
@@ -120,6 +128,7 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
     if (pushPerm === "granted") new Notification("BeeYield Alert", { body: msg, icon: "/favicon.ico" });
     load();
   };
+
 
   if (!isOpen) return null;
 
@@ -205,21 +214,70 @@ export default function AlertsPage({ isOpen, onClose, embedded = false }: { isOp
         </div>
 
         <div>
-          <h3 className="text-xs uppercase text-muted-foreground font-semibold mb-2">Recent events ({events.length})</h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs uppercase text-muted-foreground font-semibold">Calibrated Events ({events.length})</h3>
+            <span className="text-[10px] font-mono text-muted-foreground">Orchard Solar Time</span>
+          </div>
           <div className="space-y-2">
-            {events.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No events yet.</div>}
-            {events.map((e) => (
-              <div key={e.id} className={`p-3 rounded-xl border ${e.acknowledged ? "border-border opacity-50" : "border-destructive/30 bg-destructive/5"}`}>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-foreground">{e.hive_label} <span className="text-xs text-muted-foreground">· {e.metric}</span></div>
-                    <div className="text-xs text-muted-foreground">{e.message}</div>
-                    <div className="text-[10px] text-muted-foreground mt-1">{new Date(e.created_at).toLocaleString()}</div>
+            {events.length === 0 && <div className="p-4 rounded-xl border border-dashed border-border text-xs text-muted-foreground text-center">No events yet. All colony vitals within target parameters.</div>}
+            {events.map((e) => {
+              const metric = (e.metric || '').toLowerCase();
+              const val = e.value;
+              const isCritical = (metric.includes('temp') && val !== null && (val < 32 || val > 38)) ||
+                                 (metric.includes('bees_per_min') && val !== null && val < 5);
+              const isWarning = !isCritical && (metric.includes('wind') || metric.includes('temp') || metric.includes('precip') || metric.includes('bloom'));
+              
+              const borderClass = e.acknowledged 
+                ? "border-border opacity-50 bg-card" 
+                : isCritical 
+                  ? "border-red-500/50 bg-red-50/30 dark:bg-red-950/20 shadow-xs" 
+                  : isWarning 
+                    ? "border-amber-400/40 bg-amber-50/20 dark:bg-amber-950/10" 
+                    : "border-border bg-card";
+
+              const badgeColor = isCritical
+                ? "bg-red-600 text-white"
+                : isWarning
+                  ? "bg-amber-500 text-black font-bold"
+                  : "bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300";
+
+              const tierLabel = isCritical ? "CRITICAL EMERGENCY" : isWarning ? "OPERATIONAL WARNING" : "ROUTINE ADVISORY";
+              const Icon = isCritical ? ShieldAlert : isWarning ? AlertTriangle : Info;
+
+              return (
+                <div key={e.id} className={`p-3.5 rounded-xl border ${borderClass} transition-all`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                      <div className={`p-1.5 rounded-lg shrink-0 mt-0.5 ${isCritical ? 'bg-red-500/10 text-red-600' : isWarning ? 'bg-amber-500/10 text-amber-600' : 'bg-stone-500/10 text-stone-500'}`}>
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${badgeColor}`}>
+                            {tierLabel}
+                          </span>
+                          <span className="text-sm font-bold text-foreground truncate">{e.hive_label}</span>
+                          <span className="text-xs text-muted-foreground font-mono">· {e.metric}</span>
+                        </div>
+                        <div className="text-xs text-foreground/90 mt-1 font-medium">{e.message}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1.5">
+                          <span>Field Time: <strong>{formatOrchardTime(e.created_at, 'full')}</strong></span>
+                        </div>
+                      </div>
+                    </div>
+                    {!e.acknowledged && (
+                      <button 
+                        onClick={() => ackEvent(e.id)} 
+                        className="p-1.5 rounded-lg border border-border hover:bg-muted text-xs shrink-0 cursor-pointer active:scale-95 transition-all" 
+                        title="Acknowledge & Clear"
+                      >
+                        <Check className="w-3.5 h-3.5 text-foreground" />
+                      </button>
+                    )}
                   </div>
-                  {!e.acknowledged && <button onClick={() => ackEvent(e.id)} className="p-1.5 rounded hover:bg-muted text-xs" title="Acknowledge"><Check className="w-3.5 h-3.5" /></button>}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

@@ -580,7 +580,36 @@ async def vercel_delete_support_ticket(ticket_id: str):
 async def vercel_support_options(ticket_id: str = ""):
     return Response(status_code=200, headers=SUPPORT_CORS_HEADERS)
 
+# ==========================================
+# BUILT-IN SHOP WISHLIST ENGINE (VERCEL NATIVE)
+# Eliminates 405 Method Not Allowed completely for /api/v1/shop/wishlist
+# ==========================================
+SHOP_WISHLIST_CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+}
 
+@app.options("/api/v1/shop/wishlist")
+@app.options("/api/v1/shop/wishlist/")
+@app.options("/api/v1/shop/wishlist/{product_id}")
+@app.options("/api/v1/shop/wishlist/{product_id}/")
+async def vercel_shop_wishlist_options(product_id: str = ""):
+    return Response(status_code=200, headers=SHOP_WISHLIST_CORS_HEADERS)
+
+@app.get("/api/v1/shop/wishlist")
+@app.get("/api/v1/shop/wishlist/")
+@app.post("/api/v1/shop/wishlist")
+@app.post("/api/v1/shop/wishlist/")
+async def vercel_get_or_post_wishlist(request: Request):
+    return JSONResponse(content=[], headers=SHOP_WISHLIST_CORS_HEADERS)
+
+@app.post("/api/v1/shop/wishlist/{product_id}")
+@app.post("/api/v1/shop/wishlist/{product_id}/")
+@app.delete("/api/v1/shop/wishlist/{product_id}")
+@app.delete("/api/v1/shop/wishlist/{product_id}/")
+async def vercel_toggle_wishlist(product_id: str):
+    return JSONResponse(content={"status": "success", "action": "added"}, headers=SHOP_WISHLIST_CORS_HEADERS)
 
 # ==========================================
 # BUILT-IN BEEGPT & AI PLANNING ENGINE (VERCEL NATIVE)

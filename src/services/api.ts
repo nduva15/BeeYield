@@ -255,7 +255,9 @@ export async function apiRequest<T>(
             }
             throw new Error(`Network error: Unable to connect to the server. Please check your connection.`, { cause: error });
         } else {
-            if (!isPublicApiEndpoint(endpoint)) {
+            if (endpoint.includes('/shop/wishlist')) {
+                console.warn(`[Shop] /shop/wishlist API unavailable (${error.message}), continuing with Supabase/localStorage.`);
+            } else if (!isPublicApiEndpoint(endpoint)) {
                 console.error(`API Error for ${endpoint}:`, error);
             }
             throw error;

@@ -78,7 +78,9 @@ const HeatLayer = ({ points, visible }: { points: HeatPoint[]; visible: boolean 
 const SetView = ({ center }: { center: [number, number] }) => {
     const map = useMap();
     useEffect(() => {
-        map.setView(center, map.getZoom(), { animate: true });
+        if (center && typeof center[0] === 'number' && isFinite(center[0]) && typeof center[1] === 'number' && isFinite(center[1]) && center[0] !== 0 && center[1] !== 0) {
+            map.setView(center, map.getZoom(), { animate: true });
+        }
     }, [center, map]);
     return null;
 };
@@ -86,12 +88,14 @@ const SetView = ({ center }: { center: [number, number] }) => {
 const FitApiaries = ({ points }: { points: Array<{ latitude: number; longitude: number }> }) => {
     const map = useMap();
     useEffect(() => {
-        if (points.length === 0) return;
-        const bounds = L.latLngBounds(points.map((point) => [point.latitude, point.longitude] as [number, number]));
+        const valid = (points || []).filter(p => p && typeof p.latitude === 'number' && isFinite(p.latitude) && typeof p.longitude === 'number' && isFinite(p.longitude) && p.latitude !== 0);
+        if (valid.length === 0) return;
+        const bounds = L.latLngBounds(valid.map((point) => [point.latitude, point.longitude] as [number, number]));
         map.fitBounds(bounds.pad(0.2), { animate: false });
     }, [map, points]);
     return null;
 };
+
 
 const statusTone = (status: string) => {
     const lowered = status.toLowerCase();
@@ -676,7 +680,7 @@ const FlightMapView: React.FC = () => {
                                 </Popup>
                             </CircleMarker>
                             {heatmapPoints
-                                .filter((point) => point && typeof point.lat === 'number' && !isNaN(point.lat) && typeof point.lng === 'number' && !isNaN(point.lng))
+                                .filter((point) => point && typeof point.lat === 'number' && isFinite(point.lat) && typeof point.lng === 'number' && isFinite(point.lng) && point.lat !== 0 && point.lng !== 0)
                                 .map((point) => (
                                 <CircleMarker
                                     key={point.id}

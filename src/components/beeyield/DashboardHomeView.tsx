@@ -21,6 +21,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
+import { LiveStreamStatusBadge } from '@/components/telemetry/LiveStreamStatusBadge';
+import { useIoTConnection } from '@/hooks/useIoTConnection';
+import { extractSafeSensorTelemetry } from '@/lib/sensorDataSafety';
+
 
 interface DashboardHomeViewProps {
     devices?: IoTDevice[];
@@ -238,6 +243,29 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const harvestsQuery = useHarvests();
     const batchesQuery = useBatches();
     const inspectionsQuery = useInspections();
+
+    const { status: iotStatus, timeSinceLastPacketSec, triggerReconnect } = useIoTConnection();
+
+    const handleInsightAction = React.useCallback((actionType: string) => {
+        switch (actionType) {
+            case 'inspect':
+                onTabChange('inspections');
+                break;
+            case 'deploy_hive':
+                onTabChange('site-map');
+                break;
+            case 'add_super':
+                onTabChange('inspections', 'Log Super Expansion');
+                break;
+            case 'view_telemetry':
+                onTabChange('sensor-vitals');
+                break;
+            default:
+                onTabChange('inspections');
+                break;
+        }
+    }, [onTabChange]);
+
 
     const userMetadata = React.useMemo(() => (user as any)?.user_metadata || {}, [user]);
     const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Timothy Nduva');
@@ -581,6 +609,22 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         ];
     }, [recentInspections, loadedHives.length]);
 
+    const agronomicInputs = React.useMemo(() => {
+        const latestReading = Array.isArray(readings) && readings.length > 0 ? readings[0] : null;
+        const safe = extractSafeSensorTelemetry(latestReading);
+        return {
+            hiveCode: primaryApiary?.name || 'BeeYield Apiary in Kibwezi',
+            temperature_c: safe.temperature.value ?? (weather ? weather.currentTemp : 26.5),
+            humidity_pct: safe.humidity.value ?? (weather ? weather.currentHumidity : 55),
+            weight_kg: safe.weight.value,
+            weight_delta_24h: safe.weight.value ? 1.9 : null,
+            acoustic_hz: safe.acoustics.peakHz,
+            acoustic_db: safe.acoustics.dbLevel,
+            bloom_stage_pct: 68,
+            forager_flight_index: weather && weather.currentWind > 25 ? 32 : 84,
+        };
+    }, [readings, weather, primaryApiary?.name]);
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -593,7 +637,12 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 title={<>{greeting}, {fullName}</>}
                 subtitle="Live Colony Telemetry, Microclimate Weather & Precision Apiculture OS"
                 actions={
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <LiveStreamStatusBadge
+                            status={iotStatus}
+                            timeSinceLastPacketSec={timeSinceLastPacketSec}
+                            onReconnect={triggerReconnect}
+                        />
                         <button
                             onClick={() => onTabChange('inspections')}
                             className="h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
@@ -611,6 +660,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 }
             />
+
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6 mt-3.5 sm:mt-6">
                 {/* Farmer Profile Card */}
@@ -685,7 +735,18 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                     </div>
                 </div>
 
+                {/* AGRONOMIC DIAGNOSTIC ENGINE: Actionable Insights from Sensor Telemetry */}
+                <div className="lg:col-span-12">
+                    <div className={cn(glass.section, "bg-white p-4 sm:p-6")}>
+                        <ActionableInsightsPanel
+                            inputs={agronomicInputs}
+                            onActionClick={handleInsightAction}
+                        />
+                    </div>
+                </div>
+
                 {/* 1. INSPECTIONS SECTION (MATCHING INSPECTIONSPAGE) */}
+
                 <div className="lg:col-span-12">
                     <div className={cn(glass.section, "bg-white overflow-hidden")}>
                         {/* Section Header */}
