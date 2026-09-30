@@ -22,8 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ActionableInsightsPanel } from '@/components/telemetry/ActionableInsightsPanel';
-import { LiveStreamStatusBadge } from '@/components/telemetry/LiveStreamStatusBadge';
-import { useIoTConnection } from '@/hooks/useIoTConnection';
+import { useSensorReadings } from '@/hooks/useSensorReadings';
 import { extractSafeSensorTelemetry } from '@/lib/sensorDataSafety';
 
 
@@ -221,7 +220,12 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 
 
 
-const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) => {
+const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
+    onTabChange,
+    readings: propReadings = [],
+    devices = [],
+    apiaries = [],
+}) => {
     const { user } = useAuth();
     React.useEffect(() => {
         try {
@@ -244,7 +248,8 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const batchesQuery = useBatches();
     const inspectionsQuery = useInspections();
 
-    const { status: iotStatus, timeSinceLastPacketSec, triggerReconnect } = useIoTConnection();
+    const sensorReadingsQuery = useSensorReadings();
+    const readings = propReadings && propReadings.length > 0 ? propReadings : (sensorReadingsQuery.data || []);
 
     const handleInsightAction = React.useCallback((actionType: string) => {
         switch (actionType) {
@@ -271,14 +276,14 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
     const fullName = userMetadata.first_name || userMetadata.full_name || (user as any)?.email?.split('@')[0] || (user ? 'Apiary Owner' : 'Timothy Nduva');
 
     const loadedApiaries = React.useMemo(() => {
-        const raw = apiariesQuery.data;
+        const raw = (Array.isArray(apiaries) && apiaries.length > 0) ? apiaries : apiariesQuery.data;
         if (Array.isArray(raw) && raw.length > 0) return raw;
         const isTim = isTimothyUser(user, (user as any)?.profile) ||
                       (user?.email || '').toLowerCase().includes('timothy') || 
                       (user?.email || '').toLowerCase().includes('nduva') || 
                       !user?.id;
         return isTim ? [CANONICAL_KIBWEZI_APIARY] : [];
-    }, [apiariesQuery.data, user]);
+    }, [apiaries, apiariesQuery.data, user]);
 
     const [selectedApiaryId, setSelectedApiaryId] = useSelectedApiary(loadedApiaries[0]?.id);
     const primaryApiary = loadedApiaries.find((a) => a.id === selectedApiaryId) || loadedApiaries[0];
@@ -304,7 +309,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
         let matched = loadedHives.filter(
             (h: Hive) => h.apiary_id === apiary.id || 
                          (h.apiary_name && h.apiary_name.toLowerCase() === apiary.name.toLowerCase()) || 
-                         (h.apiary && h.apiary.toLowerCase() === apiary.name.toLowerCase())
+                         (h.apiary?.name && h.apiary.name.toLowerCase() === apiary.name.toLowerCase())
         );
 
         if (matched.length === 0 && (loadedApiaries.length === 1 || !apiary.id)) {
@@ -397,7 +402,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
             const userHiveIds = new Set(loadedHives.map(hive => hive.id));
             const userHiveCodes = new Set(loadedHives.map(hive => (hive.hive_code || '').toLowerCase()));
             return deduped.filter(h => {
-                if (h.user_id && h.user_id === user.id) return true;
+                if ((h as any).user_id && (h as any).user_id === user.id) return true;
                 if ((h as any).farmer_id && (h as any).farmer_id === user.id) return true;
                 if (h.hive_id && userHiveIds.has(h.hive_id)) return true;
                 const hCode = String((h as any).hive_label || (h as any).hive_code || '').toLowerCase();
@@ -433,7 +438,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                         moisture_pct: (h as any).moisture_pct || 16.8,
                         verification_status: 'verified',
                         blockchain_verified: true,
-                        apiary_name: h.apiary_name || (h as any).location || 'BeeYield Apiary in Kibwezi Kenya',
+                        apiary_name: (h as any).apiary_name || (h as any).location || 'BeeYield Apiary in Kibwezi Kenya',
                         farmer_name: (h as any).beekeeper || 'Timothy Nduva',
                     } as any);
                 }
@@ -638,11 +643,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                 subtitle="Live Colony Telemetry, Microclimate Weather & Precision Apiculture OS"
                 actions={
                     <div className="flex flex-wrap items-center gap-2">
-                        <LiveStreamStatusBadge
-                            status={iotStatus}
-                            timeSinceLastPacketSec={timeSinceLastPacketSec}
-                            onReconnect={triggerReconnect}
-                        />
                         <button
                             onClick={() => onTabChange('inspections')}
                             className="h-9 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transition-all border border-emerald-500/40"
@@ -1296,10 +1296,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({ onTabChange }) =>
                                     >
                                         <div>
                                             <div className="font-black text-[11px] tracking-tight text-neutral-900">{b.batch_code || b.id}</div>
-                                            <div className="text-[10px] text-neutral-500">{b.honey_type || b.floral_source || 'Raw Honey'}</div>
+                                            <div className="text-[10px] text-neutral-500">{b.honey_type || (b as any).floral_source || 'Raw Honey'}</div>
                                         </div>
                                         <span className="text-xs font-bold text-amber-700">
-                                            {Number(b.total_weight_kg ?? b.quantity_kg ?? 0).toFixed(1)} KG
+                                            {Number((b as any).total_weight_kg ?? b.quantity_kg ?? 0).toFixed(1)} KG
                                         </span>
                                     </div>
                                 ))

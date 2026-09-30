@@ -29,7 +29,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const storageKey = "beeyield_theme_v1";
     const [theme, setThemeState] = useState<ThemeMode>(() => {
         const saved = window.localStorage.getItem(storageKey);
-        if (saved === "sunlight") return "sunlight";
+        if (saved === "sunlight") {
+            window.localStorage.setItem(storageKey, "light");
+            return "light";
+        }
         return saved === "dark" ? "dark" : "light";
     });
 

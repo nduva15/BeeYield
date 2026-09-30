@@ -75,7 +75,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import AddApiaryModal from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
 import NewRecordModal from "./NewRecordModal";
-import { SunlightModeToggle } from "./SunlightModeToggle";
 import { FieldTimezoneIndicator } from "@/components/telemetry/FieldTimezoneIndicator";
 
 
@@ -439,14 +438,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         {/* Field Orchard Solar Timezone */}
         <div className="hidden lg:block">
           <FieldTimezoneIndicator />
-        </div>
-
-        {/* Sunlight High-Contrast Mode for Field Use */}
-        <div className="hidden sm:block">
-          <SunlightModeToggle variant="pill" />
-        </div>
-        <div className="sm:hidden">
-          <SunlightModeToggle variant="icon" />
         </div>
 
         {/* Quick Action: New Record Button (Pops out New Record Modal with Add Hives and Add Apiary forms) */}
