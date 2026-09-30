@@ -2546,7 +2546,7 @@ Provide:
   // Check if a weight scale is paired/connected to this hive
   const matchedScale = useMemo(() => {
     if (hive.sensorSerial?.toUpperCase().includes("SCALE")) {
-      return { serial: hive.sensorSerial, deviceType: "Hive Weight Scale (Telemetry Load Cell)" };
+      return { id: hive.sensorSerial || hive.id, serial: hive.sensorSerial, deviceType: "Hive Weight Scale (Telemetry Load Cell)" };
     }
     return (devicesList || []).find(
       (d) =>
@@ -2561,6 +2561,7 @@ Provide:
   const matchedDevice = useMemo(() => {
     if (hive.sensorSerial && !hive.sensorSerial.toUpperCase().includes("SCALE")) {
       return {
+        id: hive.sensorSerial || hive.id,
         serial: hive.sensorSerial,
         deviceType: hive.deviceType || "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)",
       };

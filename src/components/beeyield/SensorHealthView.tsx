@@ -419,7 +419,7 @@ const SensorHealthView: React.FC<SensorHealthViewProps> = ({ onTabChange }) => {
                                 <YAxis yAxisId="temp" domain={[15, 35]} axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 11, fontWeight: 600 }} dx={-8} unit="°C" />
                                 <Tooltip
                                     contentStyle={{ background: 'white', border: '1px solid #E5E7EB', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                                    formatter={(val: any, name: string) => [
+                                    formatter={(val: any, name: any) => [
                                         name === 'temp' ? `${val} °C` : `${val} %`,
                                         name === 'temp' ? 'Ambient Temperature' : 'Relative Humidity'
                                     ]}

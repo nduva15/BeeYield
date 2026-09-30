@@ -713,7 +713,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                     </h3>
                                     <p className="text-xs text-neutral-500 font-medium flex items-center gap-1">
                                         <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                                        <span className="truncate">{primaryApiary?.location_name || (primaryApiary?.latitude != null ? `${primaryApiary.latitude.toFixed(3)}°, ${primaryApiary.longitude.toFixed(3)}°` : 'Apiary Coordinates')}</span>
+                                        <span className="truncate">{primaryApiary?.location_name || (primaryApiary?.latitude != null && primaryApiary?.longitude != null ? `${primaryApiary.latitude.toFixed(3)}°, ${primaryApiary.longitude.toFixed(3)}°` : 'Apiary Coordinates')}</span>
                                     </p>
                                 </div>
 
@@ -1050,10 +1050,10 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                     className="bg-white border border-neutral-200/90 rounded-xl p-3 cursor-pointer hover:border-amber-300 hover:bg-neutral-50 transition-all shadow-xs group"
                                 >
                                     <div className="font-black text-[11px] tracking-tight text-neutral-900 truncate group-hover:text-amber-700 transition-colors">
-                                        {h.hive_code || h.name || 'Colony'} {h.hive_type ? `(${h.hive_type})` : ''}
+                                        {h.hive_code || (h as any).name || 'Colony'} {h.hive_type ? `(${h.hive_type})` : ''}
                                     </div>
                                     <div className="text-[10px] text-emerald-600 font-semibold truncate flex items-center gap-1">
-                                        <ShieldCheck className="w-3 h-3 inline" /> {h.health_status || "Active"}
+                                        <ShieldCheck className="w-3 h-3 inline" /> {(h as any).health_status || "Active"}
                                     </div>
                                 </div>
                             ))}

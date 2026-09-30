@@ -1804,7 +1804,7 @@ export default function YieldProjection({
                     <YAxis tickLine={false} axisLine={false} fontSize={9} />
                     <Tooltip
                       contentStyle={{ background: "white", borderRadius: "10px", fontSize: "11px" }}
-                      formatter={(val: any, name: string) => [
+                      formatter={(val: any, name: any) => [
                         `${val} kg`,
                         name === "cum" ? "Total Honey on Scale" : "Daily Inflow",
                       ]}
