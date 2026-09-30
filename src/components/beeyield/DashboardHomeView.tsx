@@ -99,14 +99,21 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
             case 'inspect':
                 onTabChange('inspections');
                 break;
+            case 'treatment':
+                onTabChange('bee-diseases');
+                break;
+            case 'charge_battery':
+            case 'view_telemetry':
+                onTabChange('sensor-vitals');
+                break;
+            case 'scale_inspection':
+                onTabChange('inspections', 'Verify Hive Scale & Food Reserves');
+                break;
             case 'deploy_hive':
                 onTabChange('site-map');
                 break;
             case 'add_super':
                 onTabChange('inspections', 'Log Super Expansion');
-                break;
-            case 'view_telemetry':
-                onTabChange('sensor-vitals');
                 break;
             default:
                 onTabChange('inspections');
@@ -370,20 +377,53 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     }, [recentInspections, loadedHives.length]);
 
     const agronomicInputs = React.useMemo(() => {
+        // Detect if user has any active connected IoT devices (scales, VitalSensors, disease/brood monitors)
+        const hasConnectedDevice = Array.isArray(devices) && devices.length > 0;
+        const activeDevice = hasConnectedDevice ? (devices.find(d => d.status === 'active') || devices[0]) : null;
+
         const latestReading = Array.isArray(readings) && readings.length > 0 ? readings[0] : null;
         const safe = extractSafeSensorTelemetry(latestReading);
+
+        // Calculate 24h weight delta if readings are present
+        let weightDelta24h: number | null = null;
+        if (Array.isArray(readings) && readings.length >= 2) {
+            const currentW = (readings[0] as any)?.weight_kg ?? (readings[0] as any)?.weight ?? null;
+            const prevW = (readings[readings.length - 1] as any)?.weight_kg ?? (readings[readings.length - 1] as any)?.weight ?? null;
+            if (typeof currentW === 'number' && typeof prevW === 'number') {
+                weightDelta24h = currentW - prevW;
+            }
+        }
+
+        // Check for Varroa Mite detection from connected disease detectors or recent inspection records
+        const varroaInspection = recentInspections.find(i => {
+            const count = Number(i.varroa_count ?? i.varroa_mite_count ?? 0);
+            const notes = String(i.notes || '').toLowerCase();
+            return count > 2 || notes.includes('varroa');
+        });
+        const highestVarroaCount = varroaInspection 
+            ? Number(varroaInspection.varroa_count ?? varroaInspection.varroa_mite_count ?? 3)
+            : null;
+        const hasVarroaIssue = !!varroaInspection;
+
+        // Extract battery level from connected device or telemetry payload
+        const batteryPct = safe.battery.value ?? (activeDevice ? activeDevice.battery_level : null);
+
         return {
             hiveCode: primaryApiary?.name || 'Managed Apiary',
-            temperature_c: safe.temperature.value ?? (weather ? weather.currentTemp : null),
-            humidity_pct: safe.humidity.value ?? null,
-            weight_kg: safe.weight.value ?? null,
-            weight_delta_24h: null,
-            acoustic_hz: safe.acoustics.peakHz ?? null,
-            acoustic_db: safe.acoustics.dbLevel ?? null,
+            hasConnectedDevice,
+            temperature_c: hasConnectedDevice ? (safe.temperature.value ?? null) : null,
+            humidity_pct: hasConnectedDevice ? (safe.humidity.value ?? null) : null,
+            weight_kg: hasConnectedDevice ? (safe.weight.value ?? null) : null,
+            weight_delta_24h: weightDelta24h,
+            acoustic_hz: hasConnectedDevice ? (safe.acoustics.peakHz ?? null) : null,
+            acoustic_db: hasConnectedDevice ? (safe.acoustics.dbLevel ?? null) : null,
+            battery_pct: batteryPct,
+            varroa_count: highestVarroaCount,
+            varroa_detected: hasVarroaIssue,
             bloom_stage_pct: null,
             forager_flight_index: null,
         };
-    }, [readings, weather, primaryApiary?.name]);
+    }, [readings, devices, recentInspections, primaryApiary?.name]);
 
     return (
         <motion.div
