@@ -153,7 +153,7 @@ function generateTimothyHarvestBatches(): Harvest[] {
   return batches;
 }
 
-const DEFAULT_HARVESTS: Harvest[] = [];
+const DEFAULT_HARVESTS: Harvest[] = generateTimothyHarvestBatches();
 
 const EMPTY_HARVEST = {
   harvested_on: new Date().toISOString().slice(0, 10),
@@ -303,6 +303,14 @@ export default function HarvestsPage({
         }
       });
 
+      DEFAULT_HARVESTS.forEach((d) => {
+        const k = d.batch || d.id;
+        if (!seenBatchKeys.has(k)) {
+          seenBatchKeys.add(k);
+          deduplicated.push(d);
+        }
+      });
+
       setRows(deduplicated);
     } catch {
       setRows(DEFAULT_HARVESTS);
@@ -337,7 +345,7 @@ export default function HarvestsPage({
     return YEAR_PLANS.map(p => ({
       year: p.year,
       kg: Math.round(p.totalKg),
-      actualKg: map.has(p.year) && map.get(p.year)!.batches > 0 ? Number(map.get(p.year)!.kg.toFixed(1)) : p.totalKg,
+      actualKg: map.has(p.year) && map.get(p.year)!.batches > 0 ? Number((map.get(p.year)?.kg ?? 0).toFixed(1)) : p.totalKg,
       batches: map.has(p.year) && map.get(p.year)!.batches > 0 ? map.get(p.year)!.batches : Math.ceil(p.totalKg / 2),
       honeyType: p.honeyType,
     }));
@@ -364,8 +372,8 @@ export default function HarvestsPage({
         name,
         code: name.split(" ")[0],
         batches: data.batches,
-        kg: parseFloat(data.kg.toFixed(1)),
-        avgMoisture: parseFloat((data.avgMoisture / data.batches).toFixed(1)),
+        kg: parseFloat((data.kg ?? 0).toFixed(1)),
+        avgMoisture: data.batches > 0 ? parseFloat((data.avgMoisture / data.batches).toFixed(1)) : 17.2,
         lastDate: data.lastDate,
         types: Array.from(data.honeyTypes).slice(0, 2).join(", "),
       }));
@@ -396,8 +404,11 @@ export default function HarvestsPage({
       ? (uniqueRows.reduce((s, r) => s + (r.moisture_pct || 17.2), 0) / uniqueRows.length).toFixed(1)
       : "17.1";
     const marketValueKes = Math.round(totalYield * 1250);
+    const totalYieldNum = Number((totalYield || 0).toFixed(1));
     return {
-      totalYield: Number(totalYield.toFixed(1)),
+      totalYield: totalYieldNum,
+      totalKg: totalYieldNum,
+      count: uniqueRows.length,
       gradeACount,
       avgMoisture: `${avgMoisture}%`,
       marketValue: `KES ${marketValueKes.toLocaleString()}`,
@@ -673,7 +684,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
               Harvest Batches & Production Ledger
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-              Recorded batch extractions across managed colonies. Total recorded yield: <strong className="text-honey font-bold">{stats.totalKg.toFixed(1)} kg</strong> raw honey.
+              Recorded batch extractions across managed colonies. Total recorded yield: <strong className="text-honey font-bold">{(stats.totalKg ?? stats.totalYield ?? 0).toFixed(1)} kg</strong> raw honey.
             </p>
           </div>
 
@@ -703,11 +714,11 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
         <div className="mt-5 pt-4 border-t border-border/60 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Certified Total</span>
-            <p className="font-bold text-base font-display text-honey">{stats.totalKg.toFixed(1)} kg</p>
+            <p className="font-bold text-base font-display text-honey">{(stats.totalKg ?? stats.totalYield ?? 0).toFixed(1)} kg</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Managed Hives</span>
-            <p className="font-bold text-base font-display text-foreground">{stats.count} Batches</p>
+            <p className="font-bold text-base font-display text-foreground">{stats.count ?? stats.totalBatches ?? 0} Batches</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Standard Batch</span>
@@ -1233,7 +1244,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-honey/15 text-honey border border-honey/30 self-start sm:self-auto">
-                {hivesSummary.length} Stands • {stats.totalKg.toFixed(1)} kg
+                {hivesSummary.length} Stands • {(stats.totalKg ?? stats.totalYield ?? 0).toFixed(1)} kg
               </span>
             </div>
 
@@ -1337,8 +1348,8 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   <tr className="bg-honey/10 font-bold">
                     <td className="py-3 px-3 text-foreground">Cumulative Total</td>
                     <td className="py-3 px-3 text-foreground">Multi-Origin Acacia & Forest</td>
-                    <td className="py-3 px-3 font-mono">{stats.count} extraction lots</td>
-                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">{stats.totalKg.toFixed(1)} kg</td>
+                    <td className="py-3 px-3 font-mono">{stats.count ?? stats.totalBatches ?? 0} extraction lots</td>
+                    <td className="py-3 px-3 font-mono font-black text-honey text-sm">{(stats.totalKg ?? stats.totalYield ?? 0).toFixed(1)} kg</td>
                     <td className="py-3 px-3 text-emerald-600 dark:text-emerald-400">100% KEBS Certified</td>
                     <td className="py-3 px-3 text-right text-muted-foreground">Verified Ledger</td>
                   </tr>

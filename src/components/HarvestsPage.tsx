@@ -365,8 +365,11 @@ export default function HarvestsPage({
       ? (uniqueRows.reduce((s, r) => s + (r.moisture_pct || 17.2), 0) / uniqueRows.length).toFixed(1)
       : "17.1";
     const marketValueKes = Math.round(totalYield * 1000);
+    const totalYieldNum = Number((totalYield || 0).toFixed(1));
     return {
-      totalYield: Number(totalYield.toFixed(1)),
+      totalYield: totalYieldNum,
+      totalKg: totalYieldNum,
+      count: uniqueRows.length,
       gradeACount,
       avgMoisture: `${avgMoisture}%`,
       marketValue: `KES ${marketValueKes.toLocaleString()}`,
