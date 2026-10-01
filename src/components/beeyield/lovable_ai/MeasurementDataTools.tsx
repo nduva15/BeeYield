@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { AddApiaryModal } from "@/components/AddApiaryModal";
 import { AddHiveModal } from "@/components/AddHiveModal";
 import { generateSensorUuid } from "@/services/sensorSyncService";
+import { validateSensorDeviceSerial } from "@/services/deviceReadingService";
 import ApisenseSyncDashboard from "@/components/beeyield/ApisenseSyncDashboard";
 
 type Apiary = { id: string; name: string; add_mode: string; latitude: number | null; longitude: number | null };
