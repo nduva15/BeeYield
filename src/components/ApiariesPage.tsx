@@ -227,6 +227,7 @@ export interface ApiaryHiveItem {
   colonyStrength?: string;
   colonyAvailability?: string;
   sensorSerial?: string;
+  scaleSerial?: string;
   deviceCategory?: DeviceCategory;
   deviceType?: string;
   batches: HiveHarvestBatch[];
@@ -290,6 +291,9 @@ export function healthTone(h: string) {
   if (h === "Healthy") return "text-emerald-500 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
   if (h === "Watch") return "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/30";
   if (h === "At risk") return "text-orange-500 dark:text-orange-400 bg-orange-500/10 border-orange-500/30";
+  if (h === "Standby" || h === "Uninspected" || h === "Pending Inspection" || h === "No Data") {
+    return "text-stone-500 dark:text-stone-400 bg-stone-500/10 border-stone-500/30";
+  }
   return "text-rose-500 dark:text-rose-400 bg-rose-500/10 border-rose-500/30";
 }
 
@@ -873,107 +877,12 @@ export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
 ];
 
 
-// Helper to generate verified harvest batches matching Timothy Nduva's 423 ledger batches
-function getCanonicalBatchesForHive(hiveIndex: number): HiveHarvestBatch[] {
-  const result: HiveHarvestBatch[] = [];
-  const pad = String(hiveIndex + 1).padStart(3, "0");
-  const code = `KIB-${pad}`;
-
-  // 2026: 30 batches (hives 1..30)
-  if (hiveIndex < 30) {
-    result.push({
-      id: `batch-${code}-2026`,
-      batchCode: `BEE-20260103-${pad}`,
-      date: "2026-01-03",
-      quantityKg: 2.0,
-      honeyType: "Early Spring Acacia Blossom",
-      moisturePct: 16.8,
-    });
-  }
-
-  // 2025: 150 batches (hives 1..150)
-  if (hiveIndex < 150) {
-    result.push({
-      id: `batch-${code}-2025`,
-      batchCode: `BEE-20250615-${pad}`,
-      date: "2025-06-15",
-      quantityKg: 2.0,
-      honeyType: "Forest Multifloral",
-      moisturePct: 16.9,
-    });
-  }
-
-  // 2024: 125 batches (hives 1..125)
-  if (hiveIndex < 125) {
-    result.push({
-      id: `batch-${code}-2024`,
-      batchCode: `BEE-20240615-${pad}`,
-      date: "2024-06-15",
-      quantityKg: 2.0,
-      honeyType: "Wildflower & Acacia",
-      moisturePct: 17.0,
-    });
-  }
-
-  // 2023: 53 batches (hives 1..53)
-  if (hiveIndex < 53) {
-    result.push({
-      id: `batch-${code}-2023`,
-      batchCode: `BEE-20230615-${pad}`,
-      date: "2023-06-15",
-      quantityKg: hiveIndex === 52 ? 1.0 : 2.0,
-      honeyType: "Wildflower",
-      moisturePct: 16.8,
-    });
-  }
-
-  // 2022: 28 batches (hives 1..28)
-  if (hiveIndex < 28) {
-    result.push({
-      id: `batch-${code}-2022`,
-      batchCode: `BEE-20220615-${pad}`,
-      date: "2022-06-15",
-      quantityKg: hiveIndex === 27 ? 1.0 : 2.0,
-      honeyType: "Forest Acacia",
-      moisturePct: 17.5,
-    });
-  }
-
-  // 2021: 30 batches (hives 1..30)
-  if (hiveIndex < 30) {
-    result.push({
-      id: `batch-${code}-2021`,
-      batchCode: `BEE-20210615-${pad}`,
-      date: "2021-06-15",
-      quantityKg: 2.0,
-      honeyType: "Wildflower",
-      moisturePct: 17.1,
-    });
-  }
-
-  // 2020: 7 batches (hives 1..7)
-  if (hiveIndex < 7) {
-    result.push({
-      id: `batch-${code}-2020`,
-      batchCode: `BEE-20200615-${pad}`,
-      date: "2020-06-15",
-      quantityKg: hiveIndex === 6 ? 1.0 : 2.0,
-      honeyType: "Wildflower Pioneer",
-      moisturePct: 17.4,
-    });
-  }
-
-  return result;
-}
-
 // Initial Hives with Queen Details and Harvest Batches
 // Differentiates 150 active producing colonies from 34 standby/empty stands (KIB-151..184)
+// Strictly real data only - no synthetic brood frames, breeding years, or generated harvest batches
 export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
   const code = `KIB-${String(i + 1).padStart(3, "0")}`;
   const hasColony = i < 150;
-  const breedingYear = hasColony ? (i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025) : 0;
-  const isSpecial = hasColony && (i % 12 === 0);
-  const batches = getCanonicalBatchesForHive(i);
 
   return {
     id: `hive-kib-${String(i + 1).padStart(3, "0")}`,
@@ -981,29 +890,13 @@ export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 18
     name: `${code} (Langstroth 10)`,
     hiveType: "Langstroth 10-Frame",
     queenPresent: hasColony,
-    queenBreedingYear: breedingYear,
-    queenStatus: hasColony
-      ? (isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)")
-      : "No Queen (Standby Box)",
-    broodFrames: hasColony ? 6 : 0,
-    honeyFrames: hasColony ? 4 : 0,
-    colonyStrength: hasColony
-      ? (i < 30
-          ? "Strong (8–10 Frames Brood & Bees)"
-          : i % 4 === 0
-          ? "Strong (8–10 Frames Brood & Bees)"
-          : i % 7 === 0
-          ? "Moderate (5–7 Frames)"
-          : "Strong (8–10 Frames Brood & Bees)")
-      : "Empty Stand (Awaiting Swarm / Colonization)",
-    colonyAvailability: hasColony
-      ? (i < 30
-          ? "Active Early Spring Production & Pollination"
-          : i % 5 === 0
-          ? "Available for Pollination Contracts"
-          : "Dedicated Honey Production")
-      : "Standby Stand (Unoccupied)",
-    batches,
+    queenBreedingYear: undefined,
+    queenStatus: hasColony ? "Active Colony" : "No Queen (Standby Box)",
+    broodFrames: undefined,
+    honeyFrames: undefined,
+    colonyStrength: undefined,
+    colonyAvailability: hasColony ? "Dedicated Honey Production" : "Standby Stand (Unoccupied)",
+    batches: [],
   };
 });
 
@@ -1765,6 +1658,7 @@ function PairVitalSensorModal({
   hiveCode,
   hiveName,
   currentSerial,
+  targetType = "sensor",
   onClose,
   onPair,
 }: {
@@ -1772,20 +1666,22 @@ function PairVitalSensorModal({
   hiveCode: string;
   hiveName: string;
   currentSerial?: string;
+  targetType?: "sensor" | "scale";
   onClose: () => void;
   onPair: (serial: string, deviceType: string) => void;
 }) {
-  const [deviceType, setDeviceType] = useState<string>("Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)");
+  const isScale = targetType === "scale";
+  const defaultDeviceType = isScale
+    ? "Apisense Pro Scale 150kg (Continuous Honey Yield Telemetry)"
+    : "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)";
+  const [deviceType, setDeviceType] = useState<string>(defaultDeviceType);
   const [serial, setSerial] = useState(currentSerial || "");
   const [showCamera, setShowCamera] = useState(false);
-  const [scannedReading, setScannedReading] = useState<DeviceTelemetryReading | null>(null);
 
   useEffect(() => {
-    if (currentSerial) {
-      setSerial(currentSerial);
-      void resolveDeviceReadings(currentSerial, hiveName).then(setScannedReading);
-    }
-  }, [currentSerial, hiveName]);
+    setDeviceType(isScale ? "Apisense Pro Scale 150kg (Continuous Honey Yield Telemetry)" : "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)");
+    setSerial(currentSerial || "");
+  }, [isScale, currentSerial]);
 
   // Escape key dismiss
   useEffect(() => {
@@ -1797,13 +1693,6 @@ function PairVitalSensorModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  const handleSelectSerial = async (selectedCode: string) => {
-    const clean = extractCleanSerial(selectedCode);
-    setSerial(clean);
-    const reading = await resolveDeviceReadings(clean, hiveName);
-    setScannedReading(reading);
-  };
-
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
@@ -1811,12 +1700,12 @@ function PairVitalSensorModal({
     e.preventDefault();
     const final = serial.trim().toUpperCase();
     if (!final) {
-      toast.error("Please enter or scan a sensor serial");
+      toast.error(`Please enter or scan a ${isScale ? "scale" : "sensor"} serial number`);
       return;
     }
     const check = validateSensorDeviceSerial(final, "in_hive");
     if (!check.isValid) {
-      toast.error(check.error || "Cannot pair sensor: hardware serial does not match an In-Hive sensor.");
+      toast.error(check.error || `Cannot pair hardware: serial format is invalid.`);
       return;
     }
     onPair(final, deviceType);
@@ -1839,10 +1728,11 @@ function PairVitalSensorModal({
             </div>
             <div>
               <h3 className="font-bold text-base text-foreground leading-tight">
-                Pair VitalSensor Hardware
+                {isScale ? "Pair Weight Scale Load Cell" : "Pair VitalSensor Hardware"}
               </h3>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Mount hardware node to <strong className="text-amber-700 dark:text-amber-400">{hiveName}</strong> ({hiveCode})
+                {isScale ? "Mount scale load cell under " : "Mount hardware node to "}
+                <strong className="text-amber-700 dark:text-amber-400">{hiveName}</strong> ({hiveCode})
               </p>
             </div>
           </div>
@@ -1858,14 +1748,12 @@ function PairVitalSensorModal({
         {showCamera ? (
           <div className="space-y-3">
             <DeviceQrCameraScanner
-              title="Align VitalSensor QR code"
-              helperText="Point camera at QR code on sensor waterproof casing"
-              onScanSuccess={async (decoded) => {
+              title={isScale ? "Align Scale Barcode / QR Code" : "Align VitalSensor QR code"}
+              helperText={isScale ? "Point camera at QR code on scale stand or load cell casing" : "Point camera at QR code on sensor waterproof casing"}
+              onScanSuccess={(decoded) => {
                 const cleaned = extractCleanSerial(decoded);
                 setSerial(cleaned);
                 setShowCamera(false);
-                const reading = await resolveDeviceReadings(cleaned, hiveName);
-                setScannedReading(reading);
                 toast.success(`Scanned hardware code: ${cleaned}`);
               }}
               onCancel={() => setShowCamera(false)}
@@ -1873,21 +1761,6 @@ function PairVitalSensorModal({
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-            {scannedReading && (
-              <RecentDeviceReadingsView
-                reading={scannedReading}
-                targetHiveName={hiveName}
-                onConfirmApply={() => {
-                  onPair(scannedReading.serial, deviceType);
-                  onClose();
-                }}
-                onRescan={() => {
-                  setScannedReading(null);
-                  setShowCamera(true);
-                }}
-                showApplyButton={false}
-              />
-            )}
             <div className="space-y-1.5">
               <label className="font-bold text-foreground block">
                 Hardware Device Model
@@ -1897,22 +1770,35 @@ function PairVitalSensorModal({
                 onChange={(e) => setDeviceType(e.target.value)}
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
               >
-                <option value="Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)">
-                  Apisense VitalSensor v2.4 (Cluster Temp & Acoustics)
-                </option>
-                <option value="Apisense Pro Scale 150kg (Continuous Honey Yield Telemetry)">
-                  Apisense Pro Scale 150kg (Telemetry Load Cell)
-                </option>
-                <option value="ApiSense VarroaSense Acoustic AI (Pathogen & Swarm Detection)">
-                  ApiSense VarroaSense Acoustic AI (Optical/Acoustic)
-                </option>
+                {isScale ? (
+                  <>
+                    <option value="Apisense Pro Scale 150kg (Continuous Honey Yield Telemetry)">
+                      Apisense Pro Scale 150kg (Telemetry Load Cell)
+                    </option>
+                    <option value="Intelligent Hives Digital Hive Scale 200kg">
+                      Intelligent Hives Digital Hive Scale 200kg
+                    </option>
+                  </>
+                ) : (
+                  <>
+                    <option value="Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)">
+                      Apisense VitalSensor v2.4 (Cluster Temp & Acoustics)
+                    </option>
+                    <option value="Intelligent Hives Brood Monitor BM-300">
+                      Intelligent Hives Brood Monitor BM-300
+                    </option>
+                    <option value="ApiSense VarroaSense Acoustic AI (Pathogen & Swarm Detection)">
+                      ApiSense VarroaSense Acoustic AI (Optical/Acoustic)
+                    </option>
+                  </>
+                )}
               </select>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="font-bold text-foreground">
-                  VitalSensor Serial / QR Code *
+                  {isScale ? "Scale Serial / Barcode *" : "VitalSensor Serial / QR Code *"}
                 </label>
                 <button
                   type="button"
@@ -1934,7 +1820,7 @@ function PairVitalSensorModal({
                   required
                   value={serial}
                   onChange={(e) => setSerial(e.target.value.toUpperCase())}
-                  placeholder="e.g. VS-KBZ-002 or SENSOR-9824"
+                  placeholder={isScale ? "e.g. SENS-SCL-104928 or SCALE-KBZ-042" : "e.g. SENS-INP-104928 or VS-KBZ-042"}
                   className="w-full bg-background border border-border rounded-xl px-3 py-2 font-mono text-xs font-bold uppercase focus:outline-none focus:ring-1 focus:ring-amber-500 pr-9"
                 />
                 <button
@@ -1951,7 +1837,9 @@ function PairVitalSensorModal({
                 </button>
               </div>
               <p className="text-[10px] text-muted-foreground">
-                Found on the waterproof casing label or QR barcode sticker.
+                {isScale
+                  ? "Found on the scale load cell base casing or QR barcode sticker."
+                  : "Found on the waterproof casing label or QR barcode sticker."}
               </p>
             </div>
 
@@ -1968,11 +1856,11 @@ function PairVitalSensorModal({
                   }`}
                 >
                   <p className="font-bold flex items-center gap-1.5">
-                    {val.isValid ? "✓ In-Hive Hardware Verified" : "⚠ Invalid or Mismatched Serial"}
+                    {val.isValid ? (isScale ? "✓ Weight Scale Hardware Verified" : "✓ In-Hive Hardware Verified") : "⚠ Invalid or Mismatched Serial"}
                   </p>
                   <p className="text-[11px] mt-0.5 opacity-90">
                     {val.isValid
-                      ? `Valid sensor format recognized (${val.cleanSerial}). Ready to pair.`
+                      ? `Valid hardware serial format recognized (${val.cleanSerial}). Ready to connect.`
                       : val.error}
                   </p>
                 </div>
@@ -1993,7 +1881,7 @@ function PairVitalSensorModal({
                 className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
-                Confirm & Pair Sensor
+                {isScale ? "Confirm & Pair Scale" : "Confirm & Pair Sensor"}
               </button>
             </div>
           </form>
@@ -2111,6 +1999,16 @@ function HiveDetailModal({
   const [beekeeperNote, setBeekeeperNote] = useState(hive.queenStatus || "");
   const [showMenu, setShowMenu] = useState(false);
   const [showPairVitalSensorModal, setShowPairVitalSensorModal] = useState(false);
+  const [pairModalTarget, setPairModalTarget] = useState<"sensor" | "scale">("sensor");
+
+  // Prevent and purge legacy mock serials from previous auto-sync issues
+  useEffect(() => {
+    if (hive.sensorSerial === "VS-KBZ-002" || hive.sensorSerial === "SCALE-KBZ-002") {
+      const cleaned = { ...hive, sensorSerial: undefined, deviceType: undefined };
+      setActiveHive(cleaned);
+      onUpdateHive(cleaned);
+    }
+  }, [hive.sensorSerial]);
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);
   const [expandedMetric, setExpandedMetric] = useState<
@@ -2670,89 +2568,24 @@ Provide:
           }
         }
 
-        // If no rows in DB yet, query live device readings service
+        // If no rows in DB yet, do not fabricate fake telemetry
         if (dbRows.length === 0 && serial) {
-          const resolved = await resolveDeviceReadings(serial, displayName);
-          const now = new Date();
-          const generatedPoints: Array<{
-            time: string;
-            subText?: string;
-            temp: number;
-            humidity: number;
-            pressure: number;
-            weight: number;
-            timestamp: string;
-          }> = [];
-
-          const pointsCount = insideTempTimeframe === "24h" ? 13 : insideTempTimeframe === "7d" ? 14 : 18;
-          const hourStep = insideTempTimeframe === "24h" ? 2 : insideTempTimeframe === "7d" ? 12 : 24;
-
-          for (let i = pointsCount - 1; i >= 0; i--) {
-            const ptDate = new Date(now.getTime() - i * hourStep * 3600 * 1000);
-            const hour = ptDate.getHours();
-            // Biological diurnal curve anchored directly on live sensor telemetry
-            const diurnal = Math.sin(((hour - 9) / 24) * 2 * Math.PI);
-            const ptTemp = Number((resolved.temperature_c + diurnal * 1.8).toFixed(1));
-            const ptHum = Math.round(resolved.humidity_pct - diurnal * 7);
-            const ptPressure = Math.round(1013 + Math.sin(hour / 6) * 3);
-            const ptWeight = Number((resolved.weight_kg - i * 0.04).toFixed(1));
-
-            const timeStr = ptDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-            const isFirstOfDay = hour <= hourStep;
-            const dateStr = ptDate.toLocaleDateString([], { day: "numeric", month: "short" });
-
-            generatedPoints.push({
-              time: timeStr,
-              subText: isFirstOfDay ? dateStr : undefined,
-              temp: ptTemp,
-              humidity: ptHum,
-              pressure: ptPressure,
-              weight: ptWeight,
-              timestamp: ptDate.toISOString(),
-            });
-          }
-
-          const temps = generatedPoints.map((p) => p.temp);
-          const hums = generatedPoints.map((p) => p.humidity);
-          const press = generatedPoints.map((p) => p.pressure);
-          const latest = generatedPoints[generatedPoints.length - 1];
-          const first = generatedPoints[0];
-          const gain = Number((latest.weight - first.weight).toFixed(1));
-
           if (isMounted) {
             setLiveTelemetry({
-              currentTemp: hasDevice ? resolved.temperature_c : null,
-              currentHumidity: hasDevice ? resolved.humidity_pct : null,
-              currentWeight: hasScale ? resolved.weight_kg : null,
-              currentGain: hasScale ? gain : null,
-              currentPressure: hasDevice ? 1013 : null,
-              minTemp: Math.min(...temps),
-              maxTemp: Math.max(...temps),
-              minHumidity: Math.min(...hums),
-              maxHumidity: Math.max(...hums),
-              minPressure: Math.min(...press),
-              maxPressure: Math.max(...press),
-              lastUpdated: resolved.timestamp || "Live stream",
-              hourlyPoints: generatedPoints,
+              currentTemp: null,
+              currentHumidity: null,
+              currentWeight: null,
+              currentGain: null,
+              currentPressure: null,
+              minTemp: 0,
+              maxTemp: 0,
+              minHumidity: 0,
+              maxHumidity: 0,
+              minPressure: 0,
+              maxPressure: 0,
+              lastUpdated: "Waiting for sensor stream...",
+              hourlyPoints: [],
             });
-          }
-
-          // Persist the latest live reading to Supabase device_measurements table
-          if (supabase && serial) {
-            try {
-              await (supabase as any).from("device_measurements").insert({
-                device_id: serial,
-                hive_id: hive.id,
-                temperature_c: resolved.temperature_c,
-                humidity_pct: resolved.humidity_pct,
-                weight_kg: resolved.weight_kg,
-                battery_pct: resolved.battery_pct,
-                source: "iot_vital_sensor",
-                user_id: user?.id || "anon",
-                recorded_at: new Date().toISOString(),
-                raw: { pressure_hpa: 1013, gain_kg: gain },
-              });
-            } catch {}
           }
           return;
         }
@@ -3960,10 +3793,7 @@ Provide:
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const updated = { ...hive, sensorSerial: "VS-KBZ-002", deviceType: "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)" };
-                                  onUpdateHive(updated);
-                                  setActiveHive(updated);
-                                  toast.success(`Paired VitalSensor to ${displayName}. Continuous acoustic Varroa detection is now online.`);
+                                  onOpenScanner();
                                 }}
                                 className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors"
                               >

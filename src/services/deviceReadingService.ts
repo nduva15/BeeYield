@@ -471,48 +471,28 @@ export async function resolveDeviceReadings(
     } catch {}
   }
 
-  // Consistent calibrated hardware telemetry based on serial hash
-  // Brood temp target: 34.8 to 35.4 C
-  const tempOffset = ((seed % 7) - 3) * 0.1;
-  const temp = category === "in_land" ? 28.4 + ((seed % 10) * 0.2) : 35.1 + tempOffset;
-
-  // Humidity target: 54 to 62%
-  const humOffset = (seed % 9) - 4;
-  const hum = category === "in_land" ? 46 + humOffset : 57 + humOffset;
-
-  // Hive mass target: 41.5 to 44.5 kg
-  const weightOffset = ((seed % 15) - 7) * 0.2;
-  const weight = category === "in_land" ? 0 : 43.0 + weightOffset;
-
-  // Battery: 92 to 100%
-  const battery = 94 + (seed % 7);
-
-  // Acoustic frequency: 236 to 244 Hz
-  const acoustic = 238 + (seed % 7);
-
-  // Varroa count: 0 to 2
-  const varroa = isDisease ? (seed % 3) : (seed % 2);
-
+  // Strictly real telemetry only: if no database record or local sensor packet exists yet,
+  // return pending status with zeroed telemetry rather than synthetic numbers.
   return {
     serial,
     deviceName,
     category,
-    timestamp: "Just now (Live Stream)",
-    temperature_c: Number(temp.toFixed(1)),
-    humidity_pct: Math.round(hum),
-    weight_kg: Number(weight.toFixed(1)),
-    battery_pct: battery,
-    acoustic_hz: acoustic,
-    varroa_count: varroa,
+    timestamp: "Pending First Sensor Reading",
+    temperature_c: 0,
+    humidity_pct: 0,
+    weight_kg: 0,
+    battery_pct: 100,
+    acoustic_hz: 0,
+    varroa_count: 0,
     asian_hornet_count: 0,
-    signal_dbm: -64 - (seed % 15),
+    signal_dbm: 0,
     link_type: category === "in_land" ? "cellular" : "lorawan",
-    status: "optimal",
-    healthScore: 93,
-    tempStatus: category === "in_land" ? "Ambient Apiary Microclimate" : "Optimal Brood Core (34.5°C – 35.5°C)",
-    humidityStatus: category === "in_land" ? "Relative Ambient Saturation" : "Colony Regulated (50% – 65%)",
-    acousticStatus: "Queen Right (235 – 245 Hz)",
-    isRealTime: true,
+    status: "active",
+    healthScore: 0,
+    tempStatus: "No Readings Received",
+    humidityStatus: "No Readings Received",
+    acousticStatus: "No Readings Received",
+    isRealTime: false,
     hiveName: targetHiveName,
   };
 }

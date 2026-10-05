@@ -188,8 +188,8 @@ export default function HiveHealthDashboard({ isOpen, onClose, embedded = false 
                       apiary: normalizeApiaryName(h.apiary || h.apiary_name),
                       hasSensor: Boolean(h.hasSensor || h.sensorSerial),
                       sensorSerial: h.sensorSerial,
-                      colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : "Strong (8–10 Frames Brood & Bees)"),
-                      colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+                      colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : undefined),
+                      colonyAvailability: h.colonyAvailability || undefined,
                     });
                   }
                 });

@@ -1,4 +1,5 @@
 import { streamBeeGpt } from "@/lib/beegpt-stream";
+import { getCebaTelemetryContext, buildCebaContextPrompt, CebaTelemetryContext } from "@/lib/ceba-intelligence";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Send,
@@ -60,7 +61,7 @@ import { useVoiceInput } from "@/hooks/use-voice-input";
 import { supabase } from "@/integrations/supabase/client";
 import ChatHistory, { type Conversation } from "@/components/ChatHistory";
 import AboutModal from "@/components/AboutModal";
-import MessageActions from "@/components/MessageActions";
+import MessageActions from "./MessageActions";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import BeeDiseasesPage from "@/components/BeeDiseasesPage";
 import PollinationCharts from "@/components/PollinationCharts";
@@ -118,17 +119,17 @@ type Message = {
 };
 
 const SUGGESTIONS = [
-  "What are all types of honey bees and their subspecies?",
+  "What is the current activity and status of my hives?",
+  "Show my harvest records, honey yields, and certified batches",
+  "What is the outside weather for each hive and foraging flight viability?",
+  "Show IoT sensor data and telemetry for my synced Apisense devices",
   "Explain Varroa destructor — lifecycle, damage, and all treatment options",
   "Compare all 300 plus honey varieties and their medicinal properties",
-  "What causes Colony Collapse Disorder and what are the solutions?",
   "Precision pollination data — which crops need bees and economic value?",
   "List every bee disease with cause, symptoms, and cure",
-  "What are world records related to bees, honey, and hives?",
+  "What causes Colony Collapse Disorder and what are the solutions?",
   "Explain bee venom therapy and apitherapy research",
   "How does the waggle dance work and what did Karl von Frisch discover?",
-  "What are the latest research findings on bee cognition and intelligence?",
-  "Which bee species are endangered and why?",
   "Compare all hive types: Langstroth, Warré, Flow Hive, Top-Bar and more",
 ];
 
@@ -139,6 +140,7 @@ async function streamBeeyield(
   audioBase64: string | null,
   audioType: string | null,
   promptVariant: string,
+  telemetryContext: CebaTelemetryContext | undefined,
   onDelta: (text: string) => void,
   onDone: () => void,
   onError: (err: string) => void,
@@ -161,12 +163,15 @@ async function streamBeeyield(
   if (!resp.ok) {
     try {
       const lastMsg = [...messages].reverse().find(m => m.role === 'user');
-      const userPrompt = typeof lastMsg?.content === 'string' ? lastMsg.content : "BeeYield AI analysis";
-      await streamBeeGpt(userPrompt, (delta) => onDelta(delta));
+      const userPrompt = typeof lastMsg?.content === 'string' ? lastMsg.content : "Ceba AI analysis";
+      await streamBeeGpt(userPrompt, (delta) => onDelta(delta), {
+        variant: promptVariant as any,
+        telemetryContext,
+      });
       onDone();
       return;
     } catch {
-      onError("BeeGPT service is temporarily reconnecting. Please retry.");
+      onError("Ceba AI service is temporarily reconnecting. Please retry.");
       return;
     }
   }
@@ -382,7 +387,7 @@ export default function Index() {
         saveMessage(conversationId, "assistant", aiMsgContent);
       }
 
-      toast.success(`BeeYield AI synchronized scan intelligence from ${scanResult.scanData.hiveCode}!`, {
+      toast.success(`Ceba AI synchronized scan intelligence from ${scanResult.scanData.hiveCode}!`, {
         description: `${scanResult.scanData.scanTitle} · Risk: ${scanResult.riskLevel.toUpperCase()}`,
       });
     };
@@ -488,9 +493,20 @@ export default function Index() {
         recentScans.map(s => `• ${s.scanData.scanTitle} on Hive ${s.scanData.hiveCode} (${s.scanData.timestamp}): ${s.aiDiagnosis.slice(0, 180)}...`).join("\n")
       : "";
 
+    let telemetryContext: CebaTelemetryContext | undefined;
+    let telemetryPrompt = "";
+    try {
+      telemetryContext = await getCebaTelemetryContext();
+      telemetryPrompt = `\n\n${buildCebaContextPrompt(telemetryContext)}`;
+    } catch (e) {
+      console.warn("Failed to get Ceba telemetry context:", e);
+    }
+
+    const combinedExtra = `${scanContextPrompt}${telemetryPrompt}`;
+
     const history = newMessages.map((m, idx) => {
-      if (idx === newMessages.length - 1 && scanContextPrompt) {
-        return { role: m.role, content: `${m.content}${scanContextPrompt}` };
+      if (idx === newMessages.length - 1 && combinedExtra) {
+        return { role: m.role, content: `${m.content}${combinedExtra}` };
       }
       return { role: m.role, content: m.content };
     });
@@ -504,6 +520,7 @@ export default function Index() {
         audioBase64,
         audioType,
         promptVariant,
+        telemetryContext,
         (chunk) => {
           assistantContent += chunk;
           setMessages((p) => {
@@ -538,7 +555,7 @@ export default function Index() {
         },
       );
     } catch {
-      toast.error("Failed to connect to Beeyield AI");
+      toast.error("Failed to connect to Ceba AI");
       setIsLoading(false);
     }
   };
@@ -797,13 +814,13 @@ export default function Index() {
               <History className="w-4 h-4 pointer-events-none" />
               <span className="text-xs font-medium pointer-events-none select-none">History</span>
             </button>
-            <img src={beeyieldLogo} alt="Beeyield" className="h-9 w-auto" />
+            <img src={beeyieldLogo} alt="Ceba AI" className="h-9 w-auto" />
             <div className="hidden sm:block">
               <div className="font-display font-bold text-foreground text-base leading-tight">
-                Beeyield AI
+                Ceba AI
               </div>
               <div className="text-xs text-muted-foreground">
-                The World's Most Comprehensive Bee Knowledge System
+                Live Hive Activity, Harvest Batches, Weather & IoT Sensor Intelligence
               </div>
             </div>
           </div>
@@ -842,13 +859,13 @@ export default function Index() {
               <button
                 onClick={() => {
                   const text = messages
-                    .map((m) => `${m.role === "user" ? "You" : "Beeyield AI"}: ${m.content}`)
+                    .map((m) => `${m.role === "user" ? "You" : "Ceba AI"}: ${m.content}`)
                     .join("\n\n");
                   const blob = new Blob([text], { type: "text/plain" });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
-                  a.download = `beeyield-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+                  a.download = `ceba-chat-${new Date().toISOString().slice(0, 10)}.txt`;
                   a.click();
                   URL.revokeObjectURL(url);
                   toast.success("Chat exported");
@@ -861,7 +878,7 @@ export default function Index() {
             )}
             <div
               className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] font-semibold text-amber-800 dark:text-amber-300 select-none cursor-help"
-              title="BeeYield AI is synchronized with every field scan across FrameSense, acoustic analysis, notes, and sensors"
+              title="Ceba AI is synchronized with every field scan across FrameSense, acoustic analysis, notes, and sensors"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               <span>AI Scan Sync: Active</span>
@@ -898,14 +915,13 @@ export default function Index() {
         <div className="flex-1 overflow-y-auto custom-scroll px-4 py-6 space-y-6">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center animate-fade-in max-w-3xl mx-auto w-full">
-              <img src={beeyieldLogo} alt="Beeyield" className="h-16 w-auto mb-4 opacity-90" />
+              <img src={beeyieldLogo} alt="Ceba AI" className="h-16 w-auto mb-4 opacity-90" />
               <h1 className="font-display text-3xl font-bold text-honey mb-2">
-                Welcome to Beeyield AI
+                Welcome to Ceba AI
               </h1>
               <p className="text-muted-foreground max-w-xl mb-4 text-sm leading-relaxed">
-                The world's most comprehensive bee knowledge system. Powered by an extensive dataset
-                covering every bee species, honey variety, disease, treatment, pollination science,
-                and global industry research. Ask anything.
+                Your precision apicultural copilot for live hive activity, honey harvest records,
+                traceable batches, outside weather for every hive location, and real-time IoT sensor telemetry.
               </p>
 
               <button
@@ -945,7 +961,7 @@ export default function Index() {
             >
               {msg.role === "assistant" && (
                 <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-background border border-border shadow-sm">
-                  <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
+                  <img src={beeyieldLogo} alt="Ceba AI" className="w-6 h-6 object-contain" />
                 </div>
               )}
               <div className="flex flex-col gap-1 max-w-[80%]">
@@ -986,7 +1002,7 @@ export default function Index() {
           {isLoading && messages[messages.length - 1]?.role === "user" && (
             <div className="flex gap-3 justify-start max-w-4xl mx-auto w-full">
               <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-background border border-border flex items-center justify-center shadow-sm">
-                <img src={beeyieldLogo} alt="Beeyield AI" className="w-6 h-6 object-contain" />
+                <img src={beeyieldLogo} alt="Ceba AI" className="w-6 h-6 object-contain" />
               </div>
               <div className="chat-assistant px-4 py-3 flex items-center gap-1">
                 <span className="typing-dot w-2 h-2 rounded-full bg-primary inline-block" />
@@ -1082,7 +1098,7 @@ export default function Index() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Beeyield AI anything about bees, honey, diseases, pollination, research..."
+              placeholder="Ask Ceba AI anything about hives activity, harvest batches, outside weather, IoT sensors, bees..."
               className="flex-1 bg-muted border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all resize-none min-h-[48px] max-h-[140px]"
               rows={1}
               disabled={isLoading}
@@ -1144,7 +1160,7 @@ export default function Index() {
 
           <div className="text-center text-xs text-muted-foreground mt-2 max-w-4xl mx-auto space-y-1">
             <p>
-              Beeyield AI — Specialized exclusively in bees, honey, apiculture, and pollination
+              Ceba AI — Real-Time Hive Activity, Harvest Batches, Weather & IoT Sensor Intelligence
               science
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] text-muted-foreground/80">

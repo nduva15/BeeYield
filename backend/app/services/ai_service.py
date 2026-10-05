@@ -232,7 +232,7 @@ class AIService:
         
         if is_simple:
             simple_prompt = (
-                f"You are BeeYield AI. Provide a helpful, professional response. "
+                f"You are Ceba AI, the authoritative apicultural intelligence assistant of BeeYield and Cebas. Provide a helpful, professional response. "
                 f"Your response MUST contain at least 2 distinct paragraphs. "
                 f"Message: '{message}'\n\nContext:\n{knowledge_context[:2000]}"
             )

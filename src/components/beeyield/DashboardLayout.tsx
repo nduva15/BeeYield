@@ -71,7 +71,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             items: [
                 { id: 'home', label: "Dashboard Home", icon: Home, onClick: () => onTabChange('home') },
                 { id: 'beeyield', label: "Hives & Colonies", icon: Hexagon, onClick: () => onTabChange('beeyield') },
-                { id: 'assistant', label: "BeeYield AI", icon: Hexagon, onClick: () => onTabChange('assistant') },
+                { id: 'assistant', label: "Ceba AI", icon: Hexagon, onClick: () => onTabChange('assistant') },
                 { id: 'apiaries-weather', label: "Apiaries & Live Weather", icon: Compass, onClick: () => onTabChange('apiaries-weather') },
                 { id: 'hive-health', label: "Hive Health Dashboard", icon: HeartPulse, onClick: () => onTabChange('hive-health') },
                 { id: 'inspections', label: "Inspections & Diagnostics", icon: ClipboardList, onClick: () => onTabChange('inspections') },

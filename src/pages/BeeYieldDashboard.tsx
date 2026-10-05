@@ -260,7 +260,7 @@ const BeeYieldDashboard: React.FC = () => {
 
     const navItems: NavItem[] = React.useMemo(() => [
         { id: 'home', label: 'Home', icon: Home },
-        { id: 'assistant', label: 'BeeYield AI', icon: Hexagon },
+        { id: 'assistant', label: 'Ceba AI', icon: Hexagon },
         {
             id: 'precision-pollination-folder',
             label: 'Pollination',

@@ -191,7 +191,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         items: [
           { id: "home", label: "Dashboard Home", icon: Home },
           { id: "beeyield", label: "Hives & Colonies", icon: Hexagon },
-          { id: "assistant", label: "BeeYield AI", icon: Hexagon },
+          { id: "assistant", label: "Ceba AI", icon: Hexagon },
           { id: "apiaries-weather", label: "Apiaries & Live Weather", icon: Compass },
           { id: "hive-health", label: "Hive Health Dashboard", icon: HeartPulse },
           { id: "inspections", label: "Inspections & Diagnostics", icon: ClipboardList },
@@ -342,8 +342,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <button
               type="button"
               className="flex items-center gap-2 sm:gap-2.5 h-10 px-3 sm:px-3.5 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group outline-none shrink-0 shadow-xs text-stone-900 dark:text-white active:scale-95 touch-manipulation cursor-pointer"
-              title="BeeYield AI Tools & Views Directory"
-              aria-label="BeeYield AI Tools & Views Directory"
+              title="Ceba AI Tools & Views Directory"
+              aria-label="Ceba AI Tools & Views Directory"
             >
               <div className="w-6 h-6 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
                 <CurrentIcon className="w-3.5 h-3.5" />

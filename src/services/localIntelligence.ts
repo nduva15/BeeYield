@@ -1,8 +1,14 @@
 /**
- * Local Intelligence — Minimal fallback when cloud services are unreachable
+ * Local Intelligence — Autonomous Ceba AI Apicultural Engine when cloud services are offline
  */
+import { generateClientAutonomousBeeAnalysis } from "@/lib/beegpt-stream";
+
 export const localIntelligence = {
-    async chat(message: string): Promise<string> {
-        return `I'm currently unable to reach the BeeYield cloud service. Please check your internet connection and try again.\n\nIn the meantime, here's a quick tip: Regular hive inspections every 7-10 days during the active season are crucial for detecting issues early.\n\nYour question was: "${message}"`;
+  async chat(message: string): Promise<string> {
+    try {
+      return generateClientAutonomousBeeAnalysis(message);
+    } catch {
+      return `### 🐝 Ceba AI Offline Intelligence\n\nRegular hive inspections every 7–10 days during the active season are vital for detecting queen status, swarming signs, and brood viability.\n\nYour query was: "${message}"`;
     }
+  },
 };

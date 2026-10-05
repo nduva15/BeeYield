@@ -150,8 +150,6 @@ const KIBWEZI_DEVICE_MAP: Record<string, { serial: string; hasSensor: boolean }>
 export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }, (_, i) => {
   const code = `KIB-${String(i + 1).padStart(3, "0")}`;
   const hasColony = i < 150;
-  const breedingYear = hasColony ? (i % 6 === 0 ? 2024 : i % 11 === 0 ? 2023 : 2025) : undefined;
-  const isSpecial = hasColony && (i % 12 === 0);
   const dev = KIBWEZI_DEVICE_MAP[code];
 
   return {
@@ -166,27 +164,11 @@ export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }
     apiary: CANONICAL_APIARY_NAME,
     hasSensor: Boolean(dev?.hasSensor),
     sensorSerial: dev?.serial,
-    colonyStrength: hasColony
-      ? (i < 30
-          ? "Strong (8–10 Frames Brood & Bees)"
-          : i % 4 === 0
-          ? "Strong (8–10 Frames Brood & Bees)"
-          : i % 7 === 0
-          ? "Moderate (5–7 Frames)"
-          : "Strong (8–10 Frames Brood & Bees)")
-      : "Empty Stand (Awaiting Swarm / Colonization)",
-    colonyAvailability: hasColony
-      ? (i < 30
-          ? "Active Early Spring Production & Pollination"
-          : i % 5 === 0
-          ? "Available for Pollination Contracts"
-          : "Dedicated Honey Production")
-      : "Standby Stand (Unoccupied)",
-    queenBreedingYear: breedingYear,
-    queenStatus: hasColony
-      ? (isSpecial ? "Active Laying Queen (Young, Marked)" : "Active Laying Queen (Marked)")
-      : "No Queen (Standby Box)",
-    max_brood_frames: hasColony ? 10 : 0,
+    colonyStrength: undefined,
+    colonyAvailability: hasColony ? "Dedicated Honey Production" : "Standby Stand (Unoccupied)",
+    queenBreedingYear: undefined,
+    queenStatus: hasColony ? "Active Colony" : "No Queen (Standby Box)",
+    max_brood_frames: undefined,
     frame_count: 10,
   };
 });
@@ -266,8 +248,8 @@ export function resolveUserHives(
                   apiary: normalizeApiaryName(h.apiary || h.apiary_name),
                   hasSensor: Boolean(h.hasSensor || h.sensorSerial),
                   sensorSerial: h.sensorSerial,
-                  colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : "Strong (8–10 Frames Brood & Bees)"),
-                  colonyAvailability: h.colonyAvailability || "Dedicated Honey Production",
+                  colonyStrength: h.colonyStrength || (h.broodFrames ? `${h.broodFrames} Frames Brood` : undefined),
+                  colonyAvailability: h.colonyAvailability || undefined,
                 });
               });
             }
@@ -294,70 +276,12 @@ export interface HiveHealthRecordSeed {
   weight_kg?: number;
   notes?: string;
   colony_strength?: string;
-  colony_availability?: string;
+  colonyAvailability?: string;
   inspector?: string;
   sensor_serial?: string;
 }
 
-export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [
-  {
-    id: "rec_kib_001_01",
-    hive_name: "KIB-001 (Langstroth 10)",
-    record_type: "inspection",
-    recorded_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-    health_index: 94,
-    varroa_count: 1,
-    colony_strength: "Strong (8–10 Frames Brood & Bees)",
-    colony_availability: "Dedicated Honey Production",
-    notes: "Vigorous queen laying pattern observed. 8 solid brood frames, capped honey supers optimal. Physical apiary inspection verified.",
-    inspector: "Timothy Nduva",
-  },
-  {
-    id: "rec_kib_002_01",
-    hive_name: "KIB-002 (Langstroth 10)",
-    record_type: "inspection",
-    recorded_at: new Date(Date.now() - 86400000 * 4).toISOString(),
-    health_index: 91,
-    varroa_count: 2,
-    colony_strength: "Strong (8–10 Frames Brood & Bees)",
-    colony_availability: "Dedicated Honey Production",
-    notes: "Solid honey storage. Calm temperament, hygienic bottom board inspected clean. Manual physical check.",
-    inspector: "Timothy Nduva",
-  },
-  {
-    id: "rec_kib_003_01",
-    hive_name: "KIB-003 (Langstroth 10)",
-    record_type: "inspection",
-    recorded_at: new Date(Date.now() - 86400000 * 6).toISOString(),
-    health_index: 88,
-    varroa_count: 3,
-    colony_strength: "Moderate (5–7 Frames)",
-    colony_availability: "Dedicated Honey Production",
-    notes: "Steady foraging observed. 10-frame physical inspection confirms healthy worker brood and comb extension.",
-    inspector: "Timothy Nduva",
-  },
-  {
-    id: "rec_kib_004_01",
-    hive_name: "KIB-004 (Langstroth 10)",
-    record_type: "inspection",
-    recorded_at: new Date(Date.now() - 86400000 * 8).toISOString(),
-    health_index: 96,
-    varroa_count: 0,
-    colony_strength: "Very Strong / Swarm-Prone (>10 Frames)",
-    colony_availability: "Available for Pollination Contracts",
-    notes: "Prime commercial pollination condition. Drone cells controlled, swarm management completed.",
-    inspector: "Timothy Nduva",
-  },
-  {
-    id: "rec_kib_005_01",
-    hive_name: "KIB-005 (Langstroth 10)",
-    record_type: "acoustic",
-    recorded_at: new Date(Date.now() - 86400000 * 10).toISOString(),
-    health_index: 92,
-    notes: "Mobile audio audit: 245 Hz fundamental queen piping and cluster harmony recorded via smartphone microphone.",
-    inspector: "Timothy Nduva",
-  },
-];
+export const TIMOTHY_DEFAULT_HEALTH_RECORDS: HiveHealthRecordSeed[] = [];
 
 /**
  * Resolve apiaries for a user.

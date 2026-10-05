@@ -22,7 +22,7 @@ export interface QuickAccessView {
 }
 
 export const QUICK_ACCESS_VIEWS: QuickAccessView[] = [
-  { id: 'assistant', label: 'BeeYield AI', icon: Hexagon, sub: 'Talk to the hive' },
+  { id: 'assistant', label: 'Ceba AI', icon: Hexagon, sub: 'Talk to the hive' },
   { id: 'bloom-tracking', label: 'Bloom Tracking', icon: Thermometer, sub: 'Phenology data' },
   { id: 'moa-view', label: 'MOA View', icon: Layers, sub: 'Multi-objective sync' },
   { id: 'places', label: 'Apiaries', icon: MapPin, sub: 'Manage locations' },
