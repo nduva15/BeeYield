@@ -5,7 +5,7 @@ Math logic and analytics aggregation moved to `beeyield_core.PollinationEngine`.
 Python handles asynchronous DB orchestration and schema validation.
 """
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 import uuid
 from app.db.supabase_db import db_select, db_insert, db_update, db_delete
 from app.schemas.pollination import (
@@ -58,7 +58,7 @@ class PollinationService:
         try:
             canonical = None
             if crop_name:
-                canonical = self._ALLOWED_CROPS_SET.get(str(crop_name).strip().lower())
+                canonical = self._ALLOWED_CROPS_SET.get(crop_name.strip().lower())
             filters = {"crop_name": canonical} if canonical else {}
             data = await db_select('crop_pollination_requirements', filters=filters, token=token)
             allowed = self._ALLOWED_CROPS_SET
@@ -66,10 +66,10 @@ class PollinationService:
             ordered = sorted(
                 filtered,
                 key=lambda item: self._ALLOWED_CROPS.index(
-                    allowed.get(str(item.get("crop_name", "")).strip().lower())
+                    allowed.get(str(item.get("crop_name", "")).strip().lower(), self._ALLOWED_CROPS[0])
                 ),
             )
-            return [CropPollinationRequirements(**item) for item in ordered]
+            return [CropPollinationRequirements.model_validate(item) for item in ordered]
         except Exception:
             return []
     
@@ -127,16 +127,22 @@ class PollinationService:
         res = await db_insert('pollination_contracts', payload, token=token)
         if res.get("success"):
             data = res.get("data")
-            return PollinationContract(**data[0]) if isinstance(data, list) else PollinationContract(**data)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                return PollinationContract.model_validate(data[0])
+            elif isinstance(data, dict):
+                return PollinationContract.model_validate(data)
         return None
 
     async def update_contract(self, contract_id: str, contract_data: PollinationContractUpdate, token: Optional[str] = None) -> Optional[PollinationContract]:
         payload = contract_data.model_dump(exclude_unset=True)
-        payload["updated_at"] = datetime.utcnow().isoformat()
+        payload["updated_at"] = datetime.now(timezone.utc).isoformat()
         res = await db_update('pollination_contracts', payload, {"id": contract_id}, token=token)
         if res.get("success"):
             data = res.get("data")
-            return PollinationContract(**data[0]) if isinstance(data, list) else PollinationContract(**data)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                return PollinationContract.model_validate(data[0])
+            elif isinstance(data, dict):
+                return PollinationContract.model_validate(data)
         return None
 
     async def delete_contract(self, contract_id: str, token: Optional[str] = None) -> bool:
@@ -175,7 +181,10 @@ class PollinationService:
             }, token=token)
 
             data = res.get("data")
-            return HiveAssignment(**data[0]) if isinstance(data, list) else HiveAssignment(**data)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                return HiveAssignment.model_validate(data[0])
+            elif isinstance(data, dict):
+                return HiveAssignment.model_validate(data)
         return None
 
     async def remove_hive_assignment(self, assignment_id: str, removal_date: date, token: Optional[str] = None) -> bool:
@@ -208,7 +217,10 @@ class PollinationService:
         res = await db_update('hive_assignments', payload, {"id": assignment_id}, token=token)
         if res.get("success"):
             data = res.get("data")
-            return HiveAssignment(**data[0]) if isinstance(data, list) else HiveAssignment(**data)
+            if isinstance(data, list) and data and isinstance(data[0], dict):
+                return HiveAssignment.model_validate(data[0])
+            elif isinstance(data, dict):
+                return HiveAssignment.model_validate(data)
         return None
 
     async def get_hive_sensor_data(self, contract_id: Optional[str] = None, token: Optional[str] = None) -> List[HiveSensorData]:
@@ -318,7 +330,7 @@ class PollinationService:
                 total_hives=item.get('total_hives', 0),
                 available_hives=item.get('available_hives', 0),
                 user_id=item.get('user_id'),
-                created_at=item.get('created_at'),
+                created_at=item.get('created_at') or datetime.now(timezone.utc),
                 updated_at=item.get('updated_at')
             ))
         return results
@@ -339,7 +351,7 @@ class PollinationService:
                 total_hives=item.get('total_hives', 0),
                 available_hives=item.get('available_hives', 0),
                 user_id=item.get('user_id'),
-                created_at=item.get('created_at'),
+                created_at=item.get('created_at') or datetime.now(timezone.utc),
                 updated_at=item.get('updated_at')
             )
         return None

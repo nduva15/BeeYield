@@ -185,12 +185,16 @@ const BeeYieldDashboard: React.FC = () => {
         return null;
     }, [authLoading, loading, effectiveUser, hasCompletedOnboarding, apiaries.length, hives.length, devices.length]);
 
+    const [, startTabTransition] = React.useTransition();
+
     const handleTabChange = (tab: string, message?: string, action?: string) => {
         if (tab === 'assistant' && message) {
             setAiInitialMessage(message);
         }
         setViewParams({ message, action });
-        setActiveTab(tab);
+        startTabTransition(() => {
+            setActiveTab(tab);
+        });
     };
 
     const handleLogout = async () => {

@@ -11,8 +11,15 @@ interface FirstStepsBannerProps {
 
 const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
     const { showGuides, setShowGuides } = useSettings();
+    const [, startTransition] = React.useTransition();
 
     if (!showGuides) return null;
+
+    const handleActionClick = (tab: string) => {
+        startTransition(() => {
+            onTabChange(tab);
+        });
+    };
 
     return (
         <motion.div
@@ -55,8 +62,8 @@ const FirstStepsBanner: React.FC<FirstStepsBannerProps> = ({ onTabChange }) => {
                     ].map((link) => (
                         <button
                             key={link.tab}
-                            onClick={() => onTabChange(link.tab)}
-                            className="group flex items-center gap-2 px-3 py-2 bg-muted/20 hover:bg-[#F4D03F]/10 border border-border/ hover:border-border/ rounded-lg transition-all text-muted-foreground/90 hover:text-foreground"
+                            onClick={() => handleActionClick(link.tab)}
+                            className="group flex items-center gap-2 px-3 py-2 bg-muted/20 hover:bg-[#F4D03F]/10 border border-border/ hover:border-border/ rounded-lg transition-all text-muted-foreground/90 hover:text-foreground cursor-pointer"
                         >
                             <link.icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-[#F4D03F] transition-colors" />
                             <span className="text-[12px] font-medium">{link.label}</span>

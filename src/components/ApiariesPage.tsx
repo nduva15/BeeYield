@@ -111,6 +111,7 @@ import {
   getDynamicFallbackWeather,
   getWeatherMeta as getServiceWeatherMeta,
 } from "@/services/weatherService";
+import ApisenseHarvestWeightCard from "@/components/beeyield/ApisenseHarvestWeightCard";
 
 export interface ApiarySite {
   id: string;
@@ -215,7 +216,7 @@ export interface ApiaryHiveItem {
   name: string;
   hiveType: string;
   queenPresent: boolean;
-  queenBreedingYear: number;
+  queenBreedingYear?: number;
   queenStatus: string;
   broodFrames?: number;
   maxBroodFrames?: number;
@@ -2443,8 +2444,9 @@ Provide:
 
   // Check if a weight scale is paired/connected to this hive
   const matchedScale = useMemo(() => {
-    if (hive.sensorSerial?.toUpperCase().includes("SCALE")) {
-      return { id: hive.sensorSerial || hive.id, serial: hive.sensorSerial, deviceType: "Hive Weight Scale (Telemetry Load Cell)" };
+    if (hive.sensorSerial?.toUpperCase().includes("SCALE") || (hive as any).scaleSerial) {
+      const scaleId = (hive as any).scaleSerial || hive.sensorSerial;
+      return { id: scaleId || hive.id, serial: scaleId, deviceType: "Hive Weight Scale (Telemetry Load Cell)" };
     }
     return (devicesList || []).find(
       (d) =>
@@ -3181,11 +3183,7 @@ Provide:
                         {/* Current weight */}
                         <div
                           onClick={() => {
-                            if (!hasScale) {
-                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
-                            } else {
-                              setExpandedMetric(expandedMetric === "weight" ? null : "weight");
-                            }
+                            setExpandedMetric(expandedMetric === "weight" ? null : "weight");
                           }}
                           className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group"
                         >
@@ -3203,17 +3201,17 @@ Provide:
                               </span>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          {expandedMetric === "weight" ? (
+                            <ChevronDown className="w-5 h-5 text-stone-700 dark:text-stone-200 transition-colors" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          )}
                         </div>
 
                         {/* Honey gain */}
                         <div
                           onClick={() => {
-                            if (!hasScale) {
-                              toast.info("No scale connected to this hive stand. Tap '+ Sync Scale' below to connect a weight load cell.");
-                            } else {
-                              setExpandedMetric(expandedMetric === "honey_gain" ? null : "honey_gain");
-                            }
+                            setExpandedMetric(expandedMetric === "honey_gain" || expandedMetric === "weight" ? null : "weight");
                           }}
                           className="flex items-center justify-between py-1 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl px-2 -mx-2 transition-colors select-none group border-t border-[#EFE8DE]/60 dark:border-stone-800/60 pt-2"
                         >
@@ -3231,8 +3229,29 @@ Provide:
                               </span>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          {expandedMetric === "weight" || expandedMetric === "honey_gain" ? (
+                            <ChevronDown className="w-5 h-5 text-stone-700 dark:text-stone-200 transition-colors" />
+                          ) : (
+                            <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-amber-600 transition-colors" />
+                          )}
                         </div>
+
+                        {/* EXPANDED WEIGHT & HARVEST RECORDS CARD */}
+                        {(expandedMetric === "weight" || expandedMetric === "honey_gain") && (
+                          <div className="pt-2 border-t border-[#EFE8DE]/80 dark:border-stone-800">
+                            <ApisenseHarvestWeightCard
+                              apiaryId={apiary?.id}
+                              apiaryName={apiary?.name}
+                              hiveId={hive?.id}
+                              hiveCode={hive?.code || (hive as any)?.hive_code || "KIB-001"}
+                              isExpandedInHiveWeight={true}
+                              onNavigateToHive={(code) => {
+                                const found = (allHives || []).find((h: any) => h.code === code || (h as any).hive_code === code);
+                                if (found) setActiveHive(found);
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       {/* CARD 2: CONDITIONS (Screenshot 1 & 2) */}
@@ -3688,11 +3707,19 @@ Provide:
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const updated = { ...hive, sensorSerial: "VS-KBZ-002", deviceType: "Apisense VitalSensor v2.4 (Brood Cluster Temp & Acoustics)" };
-                                  onUpdateHive(updated);
-                                  setActiveHive(updated);
-                                  setExpandedMetric("inside_temp");
-                                  toast.success("Paired & Synced VitalSensor VS-KBZ-002. Hourly telemetry & Varroa scanning active.");
+                                  if (onOpenScanner) {
+                                    onOpenScanner();
+                                  } else {
+                                    const serial = window.prompt("Enter Apisense Sentinel device serial (e.g. H26110038001):");
+                                    if (serial && serial.trim()) {
+                                      const clean = serial.trim().toUpperCase();
+                                      const updated = { ...hive, sensorSerial: clean, deviceType: "Apisense Sentinel In-Hive Node" };
+                                      onUpdateHive(updated);
+                                      setActiveHive(updated);
+                                      setExpandedMetric("inside_temp");
+                                      toast.success(`Paired device ${clean}. Telemetry active.`);
+                                    }
+                                  }
                                 }}
                                 className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-xs transition-colors flex items-center gap-1"
                               >
@@ -3706,18 +3733,19 @@ Provide:
                             <div className="space-y-0.5">
                               <span className="font-bold text-foreground block">Weight Scale Load Cell</span>
                               <span className="text-[11px] text-muted-foreground font-mono">
-                                {hasScale ? (matchedScale?.serial || "SCALE-KBZ-002") : "No scale paired"}
+                                {hasScale ? (matchedScale?.serial || (hive as any).scaleSerial || "Scale Stand Connected") : "No scale paired"}
                               </span>
                             </div>
                             {hasScale ? (
                               <button
                                 type="button"
                                 onClick={() => {
+                                  const updated = { ...hive, scaleSerial: undefined };
                                   if (hive.sensorSerial?.toUpperCase().includes("SCALE")) {
-                                    const updated = { ...hive, sensorSerial: undefined };
-                                    onUpdateHive(updated);
-                                    setActiveHive(updated);
+                                    updated.sensorSerial = undefined;
                                   }
+                                  onUpdateHive(updated);
+                                  setActiveHive(updated);
                                   toast.success("Unpaired scale stand.");
                                 }}
                                 className="px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-rose-500/10 hover:text-rose-600 hover:border-rose-500/30 text-muted-foreground text-xs font-semibold transition-colors"
@@ -3728,7 +3756,15 @@ Provide:
                               <button
                                 type="button"
                                 onClick={() => {
-                                  toast.success("Paired Scale SCALE-KBZ-002. Weight & Honey gain telemetry active.");
+                                  const scaleSerial = window.prompt("Enter scale stand serial (e.g. SCALE-001):");
+                                  if (scaleSerial && scaleSerial.trim()) {
+                                    const clean = scaleSerial.trim().toUpperCase();
+                                    const updated = { ...hive, scaleSerial: clean };
+                                    onUpdateHive(updated);
+                                    setActiveHive(updated);
+                                    setExpandedMetric("weight");
+                                    toast.success(`Paired scale stand ${clean}.`);
+                                  }
                                 }}
                                 className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold text-xs shadow-xs transition-colors flex items-center gap-1"
                               >

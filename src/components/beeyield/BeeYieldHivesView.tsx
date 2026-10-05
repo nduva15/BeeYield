@@ -290,7 +290,7 @@ function hivePdf(
           ["Hive Construction Type", h.hive_type || "Langstroth"],
           ["Bee Subspecies", hasColony ? (h.bee_type || "African Honey Bee (Apis mellifera scutellata)") : "None (Standby Stand)"],
           ["Hive Material", h.material || "Seasoned Timber / Wood"],
-          ["Installation Date", h.installation_date || "2020-09-15"],
+          ["Installation Date", h.installation_date || "2025-12-15"],
           ["Outside Hive Temp", `${outsideTemp ?? 26.5} °C (Apiary Ambient)`],
           ["IoT Telemetry Hardware", h.has_sensors ? "IoT Active & Streaming" : "None Connected (Physical Ledger)"],
           ["Gross Scale Weight", h.has_sensors && h.latest_weight ? `${h.latest_weight} kg` : "No Scale Attached (Physical Ledger)"],

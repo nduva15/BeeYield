@@ -181,7 +181,7 @@ class PollinationApiary(PollinationApiaryBase):
     """Full pollination apiary with ID and timestamps"""
     id: str
     user_id: Optional[str] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     
     class Config:

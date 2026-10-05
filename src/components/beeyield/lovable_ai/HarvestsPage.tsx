@@ -494,7 +494,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
 - **Moisture Evaluation:** ${draft.moisture_pct}% moisture content is ${draft.moisture_pct <= 18 ? "fully compliant with international export criteria (<18%) and KEBS standard" : "standard grade"}.
 - **Enzyme Preservation:** Cold extraction below 35 °C maintains active glucose oxidase, invertase, and natural bio-compounds.
 - **Asset Valuation:** Lot recognized at **KES ${(draft.quantity_kg * 1250).toLocaleString()}** (${draft.quantity_kg} kg @ KES 1,250/kg).
-- **Apiary Heritage:** Part of Timothy Nduva's 843.0 kg historical certified honey yield (2020-2026).`);
+- **Apiary Heritage:** Part of Timothy Nduva's 843.0 kg historical certified honey yield (Dec 2025–2026).`);
       toast.info("Offline harvest assessment loaded");
     } finally {
       setAiLoading(false);
@@ -768,7 +768,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
             }`}
           >
             <CalendarDays className="w-3.5 h-3.5" />
-            Annual Seasons (2020–2026)
+            Annual Seasons (Dec 2025–2026)
           </button>
         </div>
 
@@ -1299,7 +1299,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
           <div className="rounded-xl border border-border bg-card p-5 space-y-4">
             <div>
               <h2 className="text-base font-bold font-display text-foreground flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-honey" /> 7-Year Production Record (2020–2026)
+                <BarChart3 className="w-4 h-4 text-honey" /> Production Records (Dec 2025–2026)
               </h2>
               <p className="text-xs text-muted-foreground">
                 Historical batch progression by season.

@@ -122,7 +122,7 @@ interface YearMilestone {
 
 const TIMELINE: YearMilestone[] = [
   {
-    year: "2020",
+    year: "Dec 2025",
     title: "Humble Beginnings",
     subtitle: "4 hives, ¼ acre, and a dream",
     image: "/images/story/2020-humble-beginnings.jpg",
@@ -511,7 +511,7 @@ export default function About() {
           </FadeIn>
           <FadeIn delay={100}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
-              <Heart className="w-4 h-4" /> Established 2020 • Kibwezi &amp; Makueni, Kenya
+              <Heart className="w-4 h-4" /> Established Dec 2025 • Kibwezi &amp; Makueni, Kenya
             </div>
           </FadeIn>
           <FadeIn delay={200}>
@@ -538,7 +538,7 @@ export default function About() {
                 <MapPin className="w-4 h-4" /> Kibwezi &amp; Makueni, Kenya
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" /> Est. 2020
+                <Calendar className="w-4 h-4" /> Est. Dec 2025
               </span>
               <span className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" /> Timothy • Agatha • Carole
@@ -1374,7 +1374,7 @@ export default function About() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {[
-                    { year: "2020", hives: "4 → 20", honey: "40", land: "¼ acre", trees: "—" },
+                    { year: "Dec 2025", hives: "4 → 20", honey: "40", land: "¼ acre", trees: "—" },
                     { year: "2021", hives: "35", honey: "70", land: "1.25 acres", trees: "76" },
                     { year: "2022", hives: "45", honey: "95", land: "2.5 acres", trees: "—" },
                     { year: "2023", hives: "75", honey: "150", land: "3.5 acres", trees: "113" },

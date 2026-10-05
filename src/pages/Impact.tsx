@@ -218,11 +218,11 @@ const Impact = () => {
 
       doc.setFontSize(13);
       doc.setTextColor(15, 23, 42);
-      doc.text('7. Our Growth & Operational Journey (2020–2026)', 14, yPos);
+      doc.text('7. Our Growth & Operational Journey (Dec 2025–2026)', 14, yPos);
       yPos += 7;
 
       const milestones = [
-        '• 2020: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
+        '• December 2025: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
         '• 2021–2023: Scaled to 75 hives, planted first 113 indigenous trees, initiated pollination trials.',
         '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established BeeYield traceability.',
         '• 2026 (The Tech Year): 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
