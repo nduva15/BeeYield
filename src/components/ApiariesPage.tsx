@@ -3245,6 +3245,8 @@ Provide:
                               hiveId={hive?.id}
                               hiveCode={hive?.code || (hive as any)?.hive_code || "KIB-001"}
                               isExpandedInHiveWeight={true}
+                              hasScale={hasScale}
+                              hasDevice={hasDevice}
                               onNavigateToHive={(code) => {
                                 const found = (allHives || []).find((h: any) => h.code === code || (h as any).hive_code === code);
                                 if (found) setActiveHive(found);

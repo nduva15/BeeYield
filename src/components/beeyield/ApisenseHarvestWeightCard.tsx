@@ -66,6 +66,8 @@ interface ApisenseHarvestWeightCardProps {
   hiveId?: string;
   hiveCode?: string;
   isExpandedInHiveWeight?: boolean;
+  hasScale?: boolean;
+  hasDevice?: boolean;
   onConfirmHarvest?: (batch: {
     hiveCode: string;
     quantityKg: number;
@@ -83,6 +85,8 @@ export const ApisenseHarvestWeightCard: React.FC<ApisenseHarvestWeightCardProps>
   hiveId,
   hiveCode = "KIB-007",
   isExpandedInHiveWeight = false,
+  hasScale = false,
+  hasDevice = false,
   onConfirmHarvest,
   onNavigateToHive,
 }) => {
@@ -244,45 +248,47 @@ export const ApisenseHarvestWeightCard: React.FC<ApisenseHarvestWeightCardProps>
 
   return (
     <div className="space-y-4">
-      {/* 1. HONEY RIPENING BANNER (Screenshot 1) */}
-      <div className="bg-[#EAF5FC] dark:bg-[#132738] rounded-2xl p-4 sm:p-5 border border-[#D0E8F8] dark:border-[#1E3A52] space-y-3 shadow-sm transition-all">
-        <div className="flex items-center gap-2 text-[#3B5A75] dark:text-[#8BB4D6] text-xs font-semibold">
-          <HoneycombIcon className="w-4 h-4 text-[#0B72B9] dark:text-[#38BDF8]" />
-          <span>
-            {currentData.isCurrent
-              ? `Honey is ripening · ${currentData.readyHivesCount} of ${currentData.ripeningHivesCount} monitored hives ready`
-              : `Historical Season · All ${currentData.readyHivesCount} monitored hives harvested`}
-          </span>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="text-base sm:text-lg font-bold text-[#1C2C3D] dark:text-[#E2EFF8] tracking-tight">
-            {currentData.isCurrent && !is2026Confirmed
-              ? "Don't take it yet - the honey is still drying"
-              : "Honey extraction verified & completed for this cycle"}
-          </h4>
-
-          {/* Ripening Progress Bar */}
-          <div className="w-full bg-[#CBE4F7] dark:bg-[#1E3A52] h-2 sm:h-2.5 rounded-full overflow-hidden">
-            <div
-              className="bg-[#0B72B9] dark:bg-[#38BDF8] h-full rounded-full transition-all duration-500 ease-out"
-              style={{
-                width: currentData.isCurrent ? (is2026Confirmed ? "100%" : "72%") : "100%",
-              }}
-            />
+      {/* 1. HONEY RIPENING BANNER (Screenshot 1) - Only shown when connected scale/device telemetry is active */}
+      {(hasScale || hasDevice) && (
+        <div className="bg-[#EAF5FC] dark:bg-[#132738] rounded-2xl p-4 sm:p-5 border border-[#D0E8F8] dark:border-[#1E3A52] space-y-3 shadow-sm transition-all">
+          <div className="flex items-center gap-2 text-[#3B5A75] dark:text-[#8BB4D6] text-xs font-semibold">
+            <HoneycombIcon className="w-4 h-4 text-[#0B72B9] dark:text-[#38BDF8]" />
+            <span>
+              {currentData.isCurrent
+                ? `Honey is ripening · ${currentData.readyHivesCount} of ${currentData.ripeningHivesCount} monitored hives ready`
+                : `Historical Season · All ${currentData.readyHivesCount} monitored hives harvested`}
+            </span>
           </div>
 
-          <p className="text-center text-xs font-semibold text-[#3B5A75] dark:text-[#8BB4D6]">
-            {currentData.isCurrent ? (is2026Confirmed ? "ready for harvest" : "ripening") : "harvest completed"}
+          <div className="space-y-2">
+            <h4 className="text-base sm:text-lg font-bold text-[#1C2C3D] dark:text-[#E2EFF8] tracking-tight">
+              {currentData.isCurrent && !is2026Confirmed
+                ? "Don't take it yet - the honey is still drying"
+                : "Honey extraction verified & completed for this cycle"}
+            </h4>
+
+            {/* Ripening Progress Bar */}
+            <div className="w-full bg-[#CBE4F7] dark:bg-[#1E3A52] h-2 sm:h-2.5 rounded-full overflow-hidden">
+              <div
+                className="bg-[#0B72B9] dark:bg-[#38BDF8] h-full rounded-full transition-all duration-500 ease-out"
+                style={{
+                  width: currentData.isCurrent ? (is2026Confirmed ? "100%" : "72%") : "100%",
+                }}
+              />
+            </div>
+
+            <p className="text-center text-xs font-semibold text-[#3B5A75] dark:text-[#8BB4D6]">
+              {currentData.isCurrent ? (is2026Confirmed ? "ready for harvest" : "ripening") : "harvest completed"}
+            </p>
+          </div>
+
+          <p className="text-[11px] text-[#476785] dark:text-[#7D9FBD] pt-1 border-t border-[#D0E8F8]/60 dark:border-[#1E3A52]/60">
+            {currentData.isCurrent
+              ? "Apisense scale telemetry tracks daily nectar intake (+1.8 kg) and nighttime water evaporation (drying). Ready to extract once weight plateaus and moisture stabilizes <18%."
+              : `Certified extraction records from Season ${currentData.year}. Verified against Apisense telemetry scales and refractometer logs.`}
           </p>
         </div>
-
-        <p className="text-[11px] text-[#476785] dark:text-[#7D9FBD] pt-1 border-t border-[#D0E8F8]/60 dark:border-[#1E3A52]/60">
-          {currentData.isCurrent
-            ? "Apisense scale telemetry tracks daily nectar intake (+1.8 kg) and nighttime water evaporation (drying). Ready to extract once weight plateaus and moisture stabilizes <18%."
-            : `Certified extraction records from Season ${currentData.year}. Verified against Apisense telemetry scales and refractometer logs.`}
-        </p>
-      </div>
+      )}
 
       {/* 2. SEASON SELECTOR DROPDOWN (Screenshot 2: "Season 2026 - in progress ⌵") */}
       <div className="relative">
