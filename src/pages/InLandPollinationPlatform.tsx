@@ -8,7 +8,7 @@ import {
   BarChart3, Signal, Play, Globe, Wifi,
   CheckCircle, Shield, MapPin, Search,
   Sparkles, Layers, Volume2, Zap, BookOpen,
-  Calculator, Thermometer
+  Calculator, Thermometer, TrendingUp, Flower2, Sprout, CheckCircle2, Scale
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -524,6 +524,149 @@ const InLandPollination = () => {
                           <p className="text-beeyield-green/90 text-sm leading-relaxed font-medium">{row.benefit}</p>
                       </motion.div>
                   ))}
+              </div>
+          </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          IN-LAND HIVES PER ACRE (HPA) VALIDATION & GROUND-TRUTH
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-28 bg-white border-b border-neutral-200/80 relative overflow-hidden">
+          <div className="container mx-auto px-4 max-w-6xl">
+              <div className="text-center max-w-3xl mx-auto mb-16">
+                  <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
+                      Field Ground-Truth
+                  </Badge>
+                  <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-neutral-900 mb-6">
+                      Closing the Loop: <span className="text-beeyield-green">In-Land HPA Verification</span>
+                  </h2>
+                  <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
+                  <p className="text-neutral-600 text-base md:text-lg leading-relaxed">
+                      Deploying calibrated hives per acre is only half the battle. Our <strong>In-Land Platform (PLIP)</strong> places acoustic ground nodes right in the crop canopy to verify that worker bees are actively visiting flowers across every single tree, eliminating orchard cold-spots in real time.
+                  </p>
+              </div>
+
+              {/* 4 In-Land HPA Validation Pillars */}
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                  <div className="p-7 rounded-3xl bg-neutral-50 border border-neutral-100 flex flex-col justify-between hover:border-beeyield-green/30 transition-all group">
+                      <div>
+                          <div className="w-12 h-12 rounded-2xl bg-beeyield-green/10 text-beeyield-green flex items-center justify-center mb-6 group-hover:bg-beeyield-green group-hover:text-white transition-colors">
+                              <Signal className="w-6 h-6" />
+                          </div>
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Pillar 1</span>
+                          <h4 className="text-lg font-bold text-neutral-900 mb-2">Acoustic Visit Counting</h4>
+                          <p className="text-xs text-neutral-500 leading-relaxed font-medium">
+                              Canopy microphones isolate bee wingbeat frequencies (180–240 Hz) from ambient orchard noise, logging exact visits per flower per hour (benchmark: &gt;15 visits/flower/hr).
+                          </p>
+                      </div>
+                      <div className="mt-5 pt-3 border-t border-neutral-200/60 text-[11px] font-bold text-emerald-700">
+                          Direct Stigma Touch Metrics
+                      </div>
+                  </div>
+
+                  <div className="p-7 rounded-3xl bg-neutral-50 border border-neutral-100 flex flex-col justify-between hover:border-amber-400/40 transition-all group">
+                      <div>
+                          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center mb-6 group-hover:bg-amber-400 group-hover:text-neutral-900 transition-colors">
+                              <MapPin className="w-6 h-6" />
+                          </div>
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Pillar 2</span>
+                          <h4 className="text-lg font-bold text-neutral-900 mb-2">Cold-Spot Eradication</h4>
+                          <p className="text-xs text-neutral-500 leading-relaxed font-medium">
+                              Bees prefer foraging within 250m of their stands. Our spatial mapping identifies orchard sectors with visitation deficits and prompts mobile hive redistributions across the block.
+                          </p>
+                      </div>
+                      <div className="mt-5 pt-3 border-t border-neutral-200/60 text-[11px] font-bold text-amber-700">
+                          100% Uniform Canopy Coverage
+                      </div>
+                  </div>
+
+                  <div className="p-7 rounded-3xl bg-neutral-50 border border-neutral-100 flex flex-col justify-between hover:border-blue-400/40 transition-all group">
+                      <div>
+                          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                              <Flower2 className="w-6 h-6" />
+                          </div>
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Pillar 3</span>
+                          <h4 className="text-lg font-bold text-neutral-900 mb-2">Anthesis Phasing</h4>
+                          <p className="text-xs text-neutral-500 leading-relaxed font-medium">
+                              Hive density ramps up in synchrony with flowering: 1.0 hive/acre at 10% bloom, peaking at 3.0+ hives/acre during 75% anthesis, and tapering off before petal drop to prevent colony hunger.
+                          </p>
+                      </div>
+                      <div className="mt-5 pt-3 border-t border-neutral-200/60 text-[11px] font-bold text-blue-700">
+                          Biomass Protection Phase
+                      </div>
+                  </div>
+
+                  <div className="p-7 rounded-3xl bg-neutral-50 border border-neutral-100 flex flex-col justify-between hover:border-purple-400/40 transition-all group">
+                      <div>
+                          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-6 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                              <Activity className="w-6 h-6" />
+                          </div>
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Pillar 4</span>
+                          <h4 className="text-lg font-bold text-neutral-900 mb-2">Flight-Hour Gating</h4>
+                          <p className="text-xs text-neutral-500 leading-relaxed font-medium">
+                              Combines Open-Meteo degree-days, solar radiance, and wind speeds (&lt;18 km/h) to calculate real effective flight hours per acre, ensuring pollination quotas are achieved before sunset.
+                          </p>
+                      </div>
+                      <div className="mt-5 pt-3 border-t border-neutral-200/60 text-[11px] font-bold text-purple-700">
+                          Weather-Calibrated Quotas
+                      </div>
+                  </div>
+              </div>
+
+              {/* ── Visual Closed-Loop Pipeline Banner ── */}
+              <div className="bg-neutral-950 text-white rounded-3xl p-8 sm:p-10 border border-neutral-800 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+                          <div>
+                              <Badge className="bg-beeyield-green/20 text-beeyield-green border-none text-[10px] font-bold px-3 py-1 mb-2">
+                                  Closed-Loop Architecture
+                              </Badge>
+                              <h3 className="text-2xl font-bold tracking-tight text-white">
+                                  How In-Hive &amp; In-Land Sensors Co-Calculate HPA
+                              </h3>
+                          </div>
+                          <Button asChild className="h-11 px-6 bg-beeyield-green text-neutral-950 hover:bg-emerald-400 font-bold text-xs rounded-xl">
+                              <Link to="/precision-pollination">
+                                  Explore In-Hive Sensors <ArrowRight className="ml-2 h-4 w-4" />
+                              </Link>
+                          </Button>
+                      </div>
+
+                      <div className="grid md:grid-cols-4 gap-4 text-center">
+                          <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                              <div className="text-xs font-bold text-beeyield-green uppercase tracking-wider mb-1">Step 1: In-Hive</div>
+                              <div className="text-sm font-bold text-white mb-2">Frame Strength Verification</div>
+                              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                  Brood core (34.8°C) and scales confirm colony is Queen-right with &ge;14 effective frames/acre.
+                              </p>
+                          </div>
+
+                          <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                              <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Step 2: In-Land</div>
+                              <div className="text-sm font-bold text-white mb-2">Canopy Visit Auditing</div>
+                              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                  Acoustic sensors measure flower landing rates across blocks, validating if 2.0–4.5 HPA is delivering target visits.
+                              </p>
+                          </div>
+
+                          <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                              <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Step 3: Algorithm</div>
+                              <div className="text-sm font-bold text-white mb-2">Dynamic Re-Distribution</div>
+                              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                  If canopy visits drop in remote orchard corners, mobile hives are repositioned to eliminate cold spots.
+                              </p>
+                          </div>
+
+                          <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
+                              <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Step 4: Outcome</div>
+                              <div className="text-sm font-bold text-white mb-2">9%–18%+ Certified Yield</div>
+                              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                  Maximum fruitlet set, uniform export fruit geometry, and complete colony health protection.
+                              </p>
+                          </div>
+                      </div>
+                  </div>
               </div>
           </div>
       </section>

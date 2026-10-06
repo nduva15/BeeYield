@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Quote, ArrowRight, BookOpen, ChevronDown, ChevronLeft, ChevronRight, CheckCircle, CheckCircle2, Zap,
-  Calculator, Shield, Cpu, Mic, LayoutDashboard, Radio, Scale, Activity, Sparkles, Play, Pause
+  Calculator, Shield, Cpu, Mic, LayoutDashboard, Radio, Scale, Activity, Sparkles, Play, Pause,
+  Thermometer, BarChart3, Flower2, Sprout, TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -318,10 +319,261 @@ const FeatureShowcaseSection = () => {
   );
 };
 
+/* ── In-Hive Hives Per Acre Model Component ────────────────────────── */
+const HPA_CROP_BENCHMARKS = [
+  {
+    crop: "Avocado (Hass / Fuerte)",
+    badge: "Export Tree Crop",
+    hivesPerAcre: "2.5 - 3.5",
+    targetFPA: "24 - 36",
+    anthesisWindow: "10% to 85% Bloom",
+    yieldLift: "+18% to +35%",
+    foragerRequirement: "High Forager Density",
+    pollenChallenge: "Complex dichogamy (Type A female morning / Type B male afternoon) requires dense forager saturation during brief overlapping flower opening windows.",
+    telemetryMarker: "Brood chamber thermal core maintained at 34.8°C ensures early morning flight mobilization matching delicate female flower opening.",
+  },
+  {
+    crop: "Macadamia",
+    badge: "High-Density Nut Crop",
+    hivesPerAcre: "3.0 - 4.5",
+    targetFPA: "28 - 42",
+    anthesisWindow: "Raceme Anthesis Flush",
+    yieldLift: "+20% to +42%",
+    foragerRequirement: "Ultra-High Forager Density",
+    pollenChallenge: "100–300 individual florets per raceme with heavy self-incompatibility; dense bee coverage is required within 48 hours to prevent premature nutlet drop.",
+    telemetryMarker: "Continuous under-hive load-cell scales record rapid hourly weight spikes confirming active floral pollen collection from dense racemes.",
+  },
+  {
+    crop: "Mango (Apple / Ngowe / Tommy)",
+    badge: "Commercial Fruit Orchard",
+    hivesPerAcre: "2.0 - 3.0",
+    targetFPA: "18 - 26",
+    anthesisWindow: "Panicle Emergence to 80%",
+    yieldLift: "+15% to +28%",
+    foragerRequirement: "Moderate-High Density",
+    pollenChallenge: "Hermaphrodite blossoms require swift pollen transfer to achieve Grade-A export symmetry, uniform fruit shoulder filling, and reduced post-anthesis drop.",
+    telemetryMarker: "Acoustic audits monitor flight hum at 180–220 Hz to verify aggressive foraging while ensuring colonies don't enter pre-swarm clustering.",
+  },
+  {
+    crop: "Watermelon & Cucurbits",
+    badge: "Open-Field Horticultural",
+    hivesPerAcre: "1.5 - 2.5",
+    targetFPA: "14 - 22",
+    anthesisWindow: "First Staminate & Pistillate",
+    yieldLift: "+25% to +50%",
+    foragerRequirement: "Morning Peak Synchronization",
+    pollenChallenge: "Female flowers remain receptive for only 4–5 hours in the morning. Each stigma requires 10 to 15 bee visits to ensure full seed set and prevent misshapen fruit.",
+    telemetryMarker: "Internal activity and humidity sensors trigger real-time flight window confirmation between 07:00 AM and 11:30 AM before daytime heat closes stigmas.",
+  },
+  {
+    crop: "Coffee (Arabica / Robusta)",
+    badge: "Highland Cash Crop",
+    hivesPerAcre: "1.5 - 2.0",
+    targetFPA: "12 - 18",
+    anthesisWindow: "3-Day Post-Rain Flush",
+    yieldLift: "+12% to +22%",
+    foragerRequirement: "Flash Mobilization",
+    pollenChallenge: "Coffee blooms simultaneously for only 48 to 72 hours after first seasonal rains; peak colony workforce must be on-site and primed immediately.",
+    telemetryMarker: "Under-hive weight curves capture the instant nectar surge when bloom opens, allowing growers to verify pollination timing down to the hour.",
+  },
+];
+
+const InHiveHivesPerAcreSection = () => {
+  const [selectedCropIdx, setSelectedCropIdx] = useState(0);
+  const activeCrop = HPA_CROP_BENCHMARKS[selectedCropIdx];
+
+  return (
+    <section className="py-28 bg-gradient-to-b from-neutral-50 via-white to-neutral-50 relative overflow-hidden border-b border-neutral-200/70">
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-[0.03] pointer-events-none" />
+      <div className="container mx-auto px-4 relative z-10 max-w-6xl">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <Badge className="bg-emerald-500/10 text-emerald-800 border-emerald-200 mb-4 px-5 py-2 font-semibold text-[10px] uppercase tracking-wider rounded-full">
+            Proprietary Agronomic Model
+          </Badge>
+          <h2 className="text-3xl lg:text-5xl font-bold tracking-tight text-neutral-900 mb-6">
+            Our In-Hive Model: <span className="text-beeyield-green">Calibrating Hives per Acre</span>
+          </h2>
+          <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
+          <p className="text-neutral-600 text-base md:text-lg leading-relaxed">
+            Traditional beekeeping counts wooden boxes. BeeYield measures <strong>actual biological pollination workforce</strong>. Our proprietary Hives per Acre (HPA) algorithm combines in-hive telemetry with crop canopy requirements to guarantee optimal flower visit saturation.
+          </p>
+        </div>
+
+        {/* ── Interactive Crop Selector ── */}
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
+          {HPA_CROP_BENCHMARKS.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => setSelectedCropIdx(idx)}
+              className={`px-5 py-3 rounded-2xl font-bold text-xs transition-all duration-300 flex items-center gap-2 ${
+                idx === selectedCropIdx
+                  ? "bg-neutral-900 text-beeyield-green shadow-lg shadow-neutral-900/10 border-neutral-900 scale-105"
+                  : "bg-white text-neutral-600 border border-neutral-200 hover:border-beeyield-green/40 hover:bg-neutral-50"
+              }`}
+            >
+              <Flower2 className={`h-4 w-4 ${idx === selectedCropIdx ? "text-beeyield-green" : "text-neutral-400"}`} />
+              <span>{item.crop.split(" ")[0]}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* ── Active Crop Specification Card ── */}
+        <motion.div
+          key={selectedCropIdx}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="bg-white rounded-3xl p-8 sm:p-12 border border-neutral-200/90 shadow-xl mb-16"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-neutral-100">
+            <div>
+              <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 mb-2 px-3 py-1 text-[10px] font-bold">
+                {activeCrop.badge}
+              </Badge>
+              <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900">{activeCrop.crop}</h3>
+            </div>
+            <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100">
+              <TrendingUp className="h-5 w-5 text-emerald-600" />
+              <span className="text-xs font-bold text-emerald-800">Verified Yield Lift: {activeCrop.yieldLift}</span>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="p-5 rounded-2xl bg-neutral-50/80 border border-neutral-100">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Recommended Density</span>
+              <div className="text-2xl font-black text-neutral-900 flex items-baseline gap-1">
+                {activeCrop.hivesPerAcre}
+                <span className="text-xs font-semibold text-neutral-500">hives / acre</span>
+              </div>
+              <span className="text-[11px] text-neutral-500 mt-1 block">Calibrated for canopy volume</span>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-neutral-50/80 border border-neutral-100">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Target Effective Frames</span>
+              <div className="text-2xl font-black text-beeyield-green flex items-baseline gap-1">
+                {activeCrop.targetFPA}
+                <span className="text-xs font-semibold text-neutral-500">frames / acre</span>
+              </div>
+              <span className="text-[11px] text-neutral-500 mt-1 block">Active brood & forager workforce</span>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-neutral-50/80 border border-neutral-100">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Deployment Window</span>
+              <div className="text-lg font-bold text-neutral-900">
+                {activeCrop.anthesisWindow}
+              </div>
+              <span className="text-[11px] text-neutral-500 mt-1 block">Synchronized with flowering</span>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-neutral-50/80 border border-neutral-100">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-1">Forager Requirement</span>
+              <div className="text-lg font-bold text-neutral-900">
+                {activeCrop.foragerRequirement}
+              </div>
+              <span className="text-[11px] text-neutral-500 mt-1 block">Zero box-drop guesswork</span>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 pt-6 border-t border-neutral-100">
+            <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-100/80">
+              <div className="flex items-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider text-amber-800">
+                <Flower2 className="h-4 w-4" />
+                <span>Floral Biology & Agronomic Challenge</span>
+              </div>
+              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
+                {activeCrop.pollenChallenge}
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100/80">
+              <div className="flex items-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider text-emerald-800">
+                <Cpu className="h-4 w-4" />
+                <span>In-Hive Telemetry Validation Trigger</span>
+              </div>
+              <p className="text-xs text-neutral-700 leading-relaxed font-medium">
+                {activeCrop.telemetryMarker}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── 3 In-Hive Biometric Pillars of our HPA Model ── */}
+        <div className="grid md:grid-cols-3 gap-6 mb-12">
+          <div className="p-8 rounded-3xl bg-white border border-neutral-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-red-500/10 text-red-600 flex items-center justify-center mb-6">
+                <Thermometer className="h-6 w-6" />
+              </div>
+              <h4 className="text-lg font-bold text-neutral-900 mb-2">1. Brood Core Homeostasis</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-medium mb-4">
+                Internal telemetry maintains 34.8°C ± 0.5°C in the core brood chamber. A stable thermal core confirms an active queen and ongoing forager nursery replacement during rigorous orchard foraging cycles.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-neutral-100 text-[11px] font-bold text-red-700">
+              Guarantees Queen Viability
+            </div>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-white border border-neutral-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6">
+                <Scale className="h-6 w-6" />
+              </div>
+              <h4 className="text-lg font-bold text-neutral-900 mb-2">2. Sub-Gram Scale Telemetry</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-medium mb-4">
+                Under-hive load-cell scales track net diurnal weight gain down to 5 grams. A steady weight curve proves bees are vigorously collecting nectar/pollen; a flat curve warns that bloom is ending.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-neutral-100 text-[11px] font-bold text-emerald-700">
+              Direct Proof of Floral Influx
+            </div>
+          </div>
+
+          <div className="p-8 rounded-3xl bg-white border border-neutral-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center mb-6">
+                <Mic className="h-6 w-6" />
+              </div>
+              <h4 className="text-lg font-bold text-neutral-900 mb-2">3. Acoustic Flight Profiling</h4>
+              <p className="text-xs text-neutral-500 leading-relaxed font-medium mb-4">
+                Acoustic sensors continuously analyze frequency spectrums (180–220 Hz for foraging, 250–290 Hz for pre-swarm agitation). This prevents colonies from swarming away during critical anthesis periods.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-neutral-100 text-[11px] font-bold text-blue-700">
+              Early Swarm & Stress Detection
+            </div>
+          </div>
+        </div>
+
+        {/* ── Why 2 Strong Hives Beat 4 Weak Hives Callout ── */}
+        <div className="p-8 rounded-3xl bg-neutral-900 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+          <div className="space-y-2 max-w-2xl">
+            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none text-[10px] font-bold px-3 py-1">
+              Agronomic Efficiency Rule
+            </Badge>
+            <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              Why 2 Strong Hives Always Beat 4 Weak Hives
+            </h4>
+            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+              In a 4-frame colony, up to 70% of bees are trapped inside warming the brood. In a certified 10-frame colony, over 65% of the population acts as surplus foragers visiting thousands of blossoms per hour. That’s why our model prices by <strong>verified frames per acre</strong>, saving growers up to 30% in rental costs while delivering superior fruit set.
+            </p>
+          </div>
+          <Button asChild className="shrink-0 h-12 px-8 bg-beeyield-green text-neutral-950 hover:bg-emerald-400 font-bold text-xs rounded-2xl">
+            <Link to="/pollination-request">
+              Calculate Your Orchard HPA <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 
 const PrecisionPollination = () => {
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
+
 
       {/* ═══════════════════════════════════════════════════════════════
           HERO SECTION
@@ -536,6 +788,12 @@ const PrecisionPollination = () => {
               </div>
           </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          IN-HIVE HIVES PER ACRE (HPA) MODEL DEEP DIVE
+      ═══════════════════════════════════════════════════════════════ */}
+      <InHiveHivesPerAcreSection />
+
 
       {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID MAP
