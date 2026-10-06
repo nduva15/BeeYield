@@ -698,7 +698,7 @@ When users ask about any BeeYield page, provide the exact details from that page
 About Page (beeyield.com/about):
 - Title: "Our Legacy"
 - Hero: "From a single humble apiary to a nationwide Smart Hive Network — reimagining the future of honey."
-- Badge: "Established December 2025 - Kibwezi Farm"
+- Badge: "Established December 2020 - Kibwezi Farm (BeeYield as an IoT company was officially founded July 2026)"
 - 184+ Intelligent Hive Units Currently Online.
 - Origin Story: "4 HIVES TO 184." — What started as a modest 4-hive experimental apiary in the sun-drenched plains of Kibwezi has bloomed into a movement. Changed by necessity, we evolved from manual visual checks to a sophisticated Intelligent Monitoring Hub.
 - Heritage: Preserving the traditional wisdom of Kenyan beekeeping while injecting modern precision.
@@ -714,7 +714,7 @@ About Page (beeyield.com/about):
 Our Story Page (beeyield.com/ourstory):
 - Title: "The Story of BeeYield"
 - Subtitle: "Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and a mission to improve pollination for a sustainable future."
-- Origin: "A Family Mission, a Technological Spark" — In December 2025, Timothy Nduva founded BeeYield with 4 traditional log hives inherited from his father in rural Kibwezi, Kenya. With a drive for technological innovation, Timothy began experimenting with precision sensors inside beehives on the family land.
+- Origin: "A Family Mission, a Technological Spark" — In December 2020, Timothy Nduva began BeeYield with 4 traditional log hives inherited from his father in rural Kibwezi, Kenya. Later, in July 2026, BeeYield was officially founded as an IoT company, combining precision sensors, acoustic telemetry, and sustainable pollination across Kenya.
 - Family: Timothy's sisters, Agatha and Carole, brought their own unique skills — ranging from web development and product design to IoT research. Together, the siblings transformed a small family apiary into a platform for technological advancement and agricultural impact.
 - Started with just half an acre and four hives, quickly became a family mission to empower farmers, advance pollination.
 - Growth Stats: 184+ Beehives (from 4 to 184), 1M+ Bee Colonies (thriving), 2,500+ Trees Planted (restoring the ecosystem), 105 and counting acres pollinated (client farmlands served), over 2,000 data points daily and growing.

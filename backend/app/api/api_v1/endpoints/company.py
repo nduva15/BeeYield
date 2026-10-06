@@ -131,7 +131,8 @@ async def get_company_story(token: Optional[str] = Depends(get_token)):
             {"id": "ms-2", "year": 2021, "title": "First 50 Hives", "description": "Expanded to 50 hives and began serving local farmers.", "milestone_type": "growth", "display_order": 2, "is_active": True, "created_at": "2024-01-01T00:00:00Z"},
             {"id": "ms-3", "year": 2022, "title": "Blockchain Traceability", "description": "Launched blockchain-based honey traceability system.", "milestone_type": "technology", "display_order": 3, "is_active": True, "created_at": "2024-01-01T00:00:00Z"},
             {"id": "ms-4", "year": 2023, "title": "Pollination Services", "description": "Started precision pollination services for commercial farms.", "milestone_type": "expansion", "display_order": 4, "is_active": True, "created_at": "2024-01-01T00:00:00Z"},
-            {"id": "ms-5", "year": 2024, "title": "184 Hives & Growing", "description": "Reached 184 hives and 5-acre fenced apiary.", "milestone_type": "milestone", "display_order": 5, "is_active": True, "created_at": "2024-01-01T00:00:00Z"}
+            {"id": "ms-5", "year": 2024, "title": "184 Hives & Growing", "description": "Reached 184 hives and 5-acre fenced apiary.", "milestone_type": "milestone", "display_order": 5, "is_active": True, "created_at": "2024-01-01T00:00:00Z"},
+            {"id": "ms-6", "year": 2026, "title": "IoT Company Founded", "description": "Officially founded as an IoT company in July 2026, deploying 22 smart stations and precision pollination.", "milestone_type": "founding", "display_order": 6, "is_active": True, "created_at": "2026-07-01T00:00:00Z"}
         ]
     
     return schemas.CompanyStory(

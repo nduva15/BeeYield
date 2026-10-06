@@ -4,7 +4,8 @@ export const TRACEABILITY_MISSING = "Missing backend data";
 
 export const BEEYIELD_TRACEABILITY_STORY = {
   founder: "Timothy Nduva",
-  foundingYear: "December 2025",
+  foundingYear: "December 2020",
+  iotFoundingDate: "July 2026",
   foundingHives: 4,
   currentHives: 284,
   apiaryFootprint: "5-acre apiary",

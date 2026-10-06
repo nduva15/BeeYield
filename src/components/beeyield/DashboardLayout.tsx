@@ -14,7 +14,7 @@ import {
     Home, Compass, Hexagon, Heart, ClipboardList, CheckSquare, AudioLines, Bug, MapPin,
     Calculator, Layers, Package, BarChart3, Target, Flower2, Sprout,
     Plane, HeartPulse, Info, Download, Plug, Cpu, LifeBuoy,
-    Settings, LogIn, LogOut, Tag, FileBarChart, Navigation
+    Settings, LogIn, LogOut, Tag, FileBarChart, Navigation, Camera
 } from 'lucide-react';
 
 export type DeviceMode = 'auto' | 'phone' | 'pad' | 'laptop';
@@ -104,7 +104,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 { id: 'bloom-phenology', label: "Bloom Phenology", icon: Sprout, onClick: () => onTabChange('bloom-phenology') },
                 { id: 'flight-tracker', label: "Bee Flight & Activity Tracker", icon: Plane, onClick: () => onTabChange('flight-tracker') },
                 { id: 'flight-map', label: "Flight Map (Live Aerial Range)", icon: Navigation, onClick: () => onTabChange('flight-map') },
-                { id: 'vpm-counter', label: "Quick Activity Counter", icon: Plane, onClick: () => onTabChange('vpm-counter') },
+                { id: 'vpm-counter', label: "Activity Counter (IoT Synced)", icon: Camera, onClick: () => onTabChange('vpm-counter') },
                 { id: 'bfh-forecast', label: "Bee Activity Forecaster", icon: BarChart3, onClick: () => onTabChange('bfh-forecast') },
                 { id: 'florage-page', label: "Florage Database", icon: Sprout, onClick: () => onTabChange('florage-page') },
                 { id: 'forage-zones', label: "Forage Zones & Floral Resources", icon: Flower2, onClick: () => onTabChange('forage-zones') },

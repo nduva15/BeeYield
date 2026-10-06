@@ -592,7 +592,7 @@ export default function BlogsPage() {
                 className="rounded-full border-border hover:bg-muted font-bold h-12 px-8"
                 asChild
               >
-                <Link to="/about">Read Our Story (Dec 2025–2026)</Link>
+                <Link to="/about">Read Our Story (Dec 2020–2026)</Link>
               </Button>
             </div>
           </section>

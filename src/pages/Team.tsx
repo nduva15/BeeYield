@@ -61,7 +61,7 @@ const Team = () => {
             src: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
             title: "Ancestral Acacia Canopy Apiary",
             subtitle: "Mature acacia tree with traditional log hives in canopy",
-            badge: "Kibwezi Roots • Dec 2025",
+            badge: "Kibwezi Roots • Dec 2020",
             location: "Kibwezi, Makueni County",
             description: "Where our journey started: 4 traditional log hives received from our father, suspended high in the branches of savannah acacia trees safe from ground pests and sun."
         },
@@ -120,7 +120,7 @@ const Team = () => {
             title: "The Kibwezi Acacia Canopy",
             role: "Family Apiary Origins",
             badge: "Ancestral Heritage",
-            desc: "The sacred acacia trees where BeeYield's first four hives were hung in December 2025. These mature canopies continue to house thriving colonies today."
+            desc: "The sacred acacia trees where BeeYield's first four hives were hung in December 2020. These mature canopies continue to house thriving colonies today."
         },
         {
             image: "/images/team/beekeeper-field-inspection.jpg",
@@ -491,7 +491,7 @@ const Team = () => {
                             </h2>
                             <div className="space-y-4 text-neutral-600 text-sm leading-relaxed">
                                 <p>
-                                    In <strong className="text-neutral-900">December 2025</strong>, <strong className="text-neutral-900">Timothy Nduva</strong> founded BeeYield with 4 traditional log hives inherited from his father in Kibwezi, Makueni County. What began as a quarter-acre family inheritance became the crucible for a modern agricultural mission.
+                                    In <strong className="text-neutral-900">December 2020</strong>, <strong className="text-neutral-900">Timothy Nduva</strong> founded BeeYield with 4 traditional log hives inherited from his father in Kibwezi, Makueni County. What began as a quarter-acre family inheritance became the crucible for a modern agricultural mission, leading to BeeYield officially being founded as an IoT company in <strong className="text-neutral-900">July 2026</strong>.
                                 </p>
                                 <p>
                                     As Timothy studied Finance & Marketing and later IT at Strathmore University, he saved his salary to fund the apiary. In <strong className="text-neutral-900">2022</strong>, his sisters <strong className="text-neutral-900">Agatha</strong> (Distributed Systems & Security) and <strong className="text-neutral-900">Carole</strong> (Operations & Scalability) joined the journey — uniting three distinct skill sets under one banner.
