@@ -471,7 +471,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <button
-              className="relative h-10 w-10 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl flex items-center justify-center transition-all group shadow-xs shrink-0 active:scale-95"
+              type="button"
+              className="relative h-10 w-10 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl flex items-center justify-center transition-colors group shadow-xs shrink-0 touch-manipulation transform-gpu"
               aria-label="View Alerts & Notifications"
               title="View Alerts & Notifications"
             >
@@ -484,7 +485,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <DropdownMenuContent
             align="end"
             sideOffset={8}
-            className="w-80 sm:w-96 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-3 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-2xl text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            className="w-80 sm:w-96 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-3 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-md text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
           >
             <div className="px-4 py-3 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-orange-500/10 rounded-2xl mb-2.5 border border-amber-500/25 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -546,7 +548,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <button
-              className="flex items-center gap-2 sm:gap-2.5 h-10 pl-1.5 pr-2.5 sm:pr-3 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-all group shadow-xs shrink-0 focus:outline-none focus:ring-2 focus:ring-amber-500/30 active:scale-95"
+              type="button"
+              className="flex items-center gap-2 sm:gap-2.5 h-10 pl-1.5 pr-2.5 sm:pr-3 bg-white/90 dark:bg-stone-900/90 border border-stone-200/90 dark:border-stone-800 hover:border-amber-400 dark:hover:border-amber-500/50 hover:bg-amber-50/50 dark:hover:bg-stone-800/80 rounded-2xl transition-colors group shadow-xs shrink-0 focus:outline-none focus:ring-2 focus:ring-amber-500/30 touch-manipulation transform-gpu"
               aria-label="User profile and account settings"
             >
               <div className="relative">
@@ -575,7 +578,8 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <DropdownMenuContent
             align="end"
             sideOffset={8}
-            className="w-72 sm:w-80 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-2.5 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-2xl text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            className="w-72 sm:w-80 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-2.5 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-md text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
           >
             {/* User Identity Header Card */}
             <div className="p-3 mb-2 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 dark:border-amber-500/15">

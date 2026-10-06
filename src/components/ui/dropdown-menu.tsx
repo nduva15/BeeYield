@@ -58,11 +58,19 @@ DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayNam
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, onCloseAutoFocus, ...props }, ref) => (
+>(({ className, sideOffset = 4, onCloseAutoFocus, onOpenAutoFocus, ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
+      onOpenAutoFocus={(e) => {
+        if (onOpenAutoFocus) {
+          onOpenAutoFocus(e);
+        } else {
+          // Prevent synchronous layout/reflow during pointer event
+          e.preventDefault();
+        }
+      }}
       onCloseAutoFocus={(e) => {
         if (onCloseAutoFocus) {
           onCloseAutoFocus(e);
