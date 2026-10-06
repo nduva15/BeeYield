@@ -214,7 +214,7 @@ const TIMELINE: YearMilestone[] = [
       { label: "Honey to Date", value: "988 kg" },
     ],
     highlights: [
-      "July 2026: BeeYield officially founded as an IoT company — uniting intelligent sensors, acoustic AI, and precision pollination",
+      "July 2026: BeeYield officially founded as an IoT precision pollination company — uniting intelligent sensors, acoustic AI, and precision pollination",
       "June 12th: Official partnership with Apisense.io (Poland) — their Global Field Partner Program for disease detection IoT",
       "Received 20 in-hive devices, 1 in-land device, and 2 weight sensors from Apisense",
       "June 23rd: Partnership with Intelligent Hives (Poland) — first precision pollination in-land device and weight scale",
@@ -249,7 +249,7 @@ const GROWTH_BY_YEAR = [
   { year: "2023", hives: "75", honey: "150 kg", land: "3.5 acres", trees: "113", milestone: "Linear doubling, Timothy graduated Strathmore & saved salary" },
   { year: "2024", hives: "105+", honey: "210 kg", land: "5 acres", trees: "250+", milestone: "Acquired beeyield.com, fully fenced 5 acres, professional harvesting" },
   { year: "2025", hives: "150+", honey: "240 kg", land: "5 acres", trees: "800+", milestone: "Pesticide crisis, Timothy quit job, pivot to pollination, 40 partner farmers" },
-  { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "1,500+", milestone: "BeeYield officially founded as an IoT company (July 2026). 22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
+  { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "1,500+", milestone: "BeeYield officially founded as an IoT precision pollination company (July 2026). 22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
 ];
 
 const OurStory = () => {
@@ -347,14 +347,14 @@ const OurStory = () => {
             <div className="space-y-6">
               <Badge variant="outline" className="mb-2">
                 <Home className="mr-2 h-3 w-3" />
-                Kibwezi, Kenya • Dec 2020 Origin (IoT Co. July 2026)
+                Kibwezi, Kenya • Dec 2020 Origin (IoT Precision Pollination Co. July 2026)
               </Badge>
               <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
                 A Family Mission, a Technological Spark
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>
-                  In December 2020, <strong className="text-foreground">Timothy Nduva</strong> began BeeYield in rural Kibwezi, Kenya. With 4 traditional log hives inherited from his father and a passion for technological innovation, Timothy began experimenting with precision sensors inside beehives on the family land. BeeYield was later officially founded as an IoT company in July 2026.
+                  In December 2020, <strong className="text-foreground">Timothy Nduva</strong> began BeeYield in rural Kibwezi, Kenya. With 4 traditional log hives inherited from his father and a passion for technological innovation, Timothy began experimenting with precision sensors inside beehives on the family land. BeeYield was later officially founded as an IoT precision pollination company in July 2026.
                 </p>
                 <p>
                   BeeYield was built together with Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>. Combining software engineering, product architecture, and IoT research, the siblings transformed a small family apiary into a precision pollination engine.

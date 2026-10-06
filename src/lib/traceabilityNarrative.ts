@@ -54,7 +54,7 @@ export const buildDeepTraceabilityStory = (traceData: TraceResponse | null): str
     ? String(traceData?.story_content)
     : hasTraceValue(traceData?.farmer?.story)
       ? String(traceData?.farmer?.story)
-      : `${BEEYIELD_TRACEABILITY_STORY.founder} started BeeYield in ${BEEYIELD_TRACEABILITY_STORY.foundingYear} with ${BEEYIELD_TRACEABILITY_STORY.foundingHives} hives and a mission to build a transparent, conservation-led honey business in Kibwezi.`;
+      : `${BEEYIELD_TRACEABILITY_STORY.founder} started BeeYield in ${BEEYIELD_TRACEABILITY_STORY.foundingYear} with ${BEEYIELD_TRACEABILITY_STORY.foundingHives} hives in Kibwezi, and officially founded BeeYield as an IoT precision pollination company in ${BEEYIELD_TRACEABILITY_STORY.iotFoundingDate}.`;
 
   const growthStory = `From ${BEEYIELD_TRACEABILITY_STORY.foundingHives} hives, BeeYield has grown to ${BEEYIELD_TRACEABILITY_STORY.currentHives} hives across a ${BEEYIELD_TRACEABILITY_STORY.apiaryFootprint}, while maintaining an ethical harvest model and investing in long-term pollinator resilience.`;
 

@@ -491,7 +491,7 @@ const Team = () => {
                             </h2>
                             <div className="space-y-4 text-neutral-600 text-sm leading-relaxed">
                                 <p>
-                                    In <strong className="text-neutral-900">December 2020</strong>, <strong className="text-neutral-900">Timothy Nduva</strong> founded BeeYield with 4 traditional log hives inherited from his father in Kibwezi, Makueni County. What began as a quarter-acre family inheritance became the crucible for a modern agricultural mission, leading to BeeYield officially being founded as an IoT company in <strong className="text-neutral-900">July 2026</strong>.
+                                    In <strong className="text-neutral-900">December 2020</strong>, <strong className="text-neutral-900">Timothy Nduva</strong> founded BeeYield with 4 traditional log hives inherited from his father in Kibwezi, Makueni County. What began as a quarter-acre family inheritance became the crucible for a modern agricultural mission, leading to BeeYield officially being founded as an IoT precision pollination company in <strong className="text-neutral-900">July 2026</strong>.
                                 </p>
                                 <p>
                                     As Timothy studied Finance & Marketing and later IT at Strathmore University, he saved his salary to fund the apiary. In <strong className="text-neutral-900">2022</strong>, his sisters <strong className="text-neutral-900">Agatha</strong> (Distributed Systems & Security) and <strong className="text-neutral-900">Carole</strong> (Operations & Scalability) joined the journey — uniting three distinct skill sets under one banner.

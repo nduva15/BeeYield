@@ -282,7 +282,7 @@ const TIMELINE: YearMilestone[] = [
       { label: "Honey to Date", value: "988 kg" },
     ],
     highlights: [
-      "July 2026: BeeYield officially founded as an IoT company — uniting intelligent sensors, acoustic bio-analytics, and precision pollination",
+      "July 2026: BeeYield officially founded as an IoT precision pollination company — uniting intelligent sensors, acoustic bio-analytics, and precision pollination",
       "June 12th: Official partnership with Apisense.io (Poland) — their Global Field Partner Program for disease detection IoT",
       "Received 20 in-hive devices, 1 in-land device, and 2 weight sensors from Apisense",
       "June 23rd: Partnership with Intelligent Hives (Poland) — first precision pollination in-land device and weight scale",
@@ -512,7 +512,7 @@ export default function About() {
           </FadeIn>
           <FadeIn delay={100}>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
-              <Heart className="w-4 h-4" /> Established Dec 2020 • IoT Co. Founded July 2026 • Kibwezi &amp; Makueni, Kenya
+              <Heart className="w-4 h-4" /> Established Dec 2020 • IoT Precision Pollination Co. Founded July 2026 • Kibwezi &amp; Makueni, Kenya
             </div>
           </FadeIn>
           <FadeIn delay={200}>
@@ -539,7 +539,7 @@ export default function About() {
                 <MapPin className="w-4 h-4" /> Kibwezi &amp; Makueni, Kenya
               </span>
               <span className="flex items-center gap-1.5">
-                <Calendar className="w-4 h-4" /> Est. Dec 2020 (IoT Co. July 2026)
+                <Calendar className="w-4 h-4" /> Est. Dec 2020 (IoT Precision Pollination Co. July 2026)
               </span>
               <span className="flex items-center gap-1.5">
                 <Users className="w-4 h-4" /> Timothy • Agatha • Carole

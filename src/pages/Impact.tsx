@@ -225,7 +225,7 @@ const Impact = () => {
         '• December 2020: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
         '• 2021–2023: Scaled to 75 hives, planted first 113 indigenous trees, initiated pollination trials.',
         '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established BeeYield traceability.',
-        '• 2026 (The Tech Year): BeeYield officially founded as an IoT company in July 2026. 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
+        '• 2026 (The Tech Year): BeeYield officially founded as an IoT precision pollination company in July 2026. 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
       ];
 
       doc.setFontSize(9);
