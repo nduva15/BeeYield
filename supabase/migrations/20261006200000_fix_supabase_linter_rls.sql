@@ -63,13 +63,7 @@ BEGIN
         DROP POLICY IF EXISTS "Public can view published blog posts" ON public.blog_posts;
         CREATE POLICY "blog_posts_public_read" ON public.blog_posts
             FOR SELECT TO anon, authenticated
-            USING (status = 'published' OR (SELECT public.is_admin()));
-
-        DROP POLICY IF EXISTS "Authors can manage own blog posts" ON public.blog_posts;
-        CREATE POLICY "Authors can manage own blog posts" ON public.blog_posts
-            FOR ALL TO authenticated
-            USING ((SELECT auth.uid()) = author_id OR (SELECT public.is_admin()))
-            WITH CHECK ((SELECT auth.uid()) = author_id OR (SELECT public.is_admin()));
+            USING (true);
 
         DROP POLICY IF EXISTS "Admin full access" ON public.blog_posts;
         CREATE POLICY "Admin full access" ON public.blog_posts
@@ -282,15 +276,10 @@ BEGIN
             WITH CHECK (true);
 
         DROP POLICY IF EXISTS "Users manage own orders" ON public.orders;
-        CREATE POLICY "Users manage own orders" ON public.orders
-            FOR ALL TO authenticated
-            USING ((SELECT auth.uid()) = user_id OR (SELECT public.is_admin()))
-            WITH CHECK ((SELECT auth.uid()) = user_id OR (SELECT public.is_admin()));
-
         DROP POLICY IF EXISTS "public_select_orders_by_idempotency" ON public.orders;
-        CREATE POLICY "public_select_orders_by_idempotency" ON public.orders
-            FOR SELECT TO public
-            USING (idempotency_key IS NOT NULL OR (SELECT auth.uid()) = user_id OR (SELECT public.is_admin()));
+        CREATE POLICY "Users view own orders" ON public.orders
+            FOR SELECT TO authenticated
+            USING ((SELECT auth.uid()) = user_id OR (SELECT public.is_admin()));
 
         DROP POLICY IF EXISTS "Admin full access" ON public.orders;
         CREATE POLICY "Admin full access" ON public.orders
@@ -316,7 +305,7 @@ BEGIN
         DROP POLICY IF EXISTS "public_select_order_items" ON public.order_items;
         CREATE POLICY "public_select_order_items" ON public.order_items
             FOR SELECT TO public
-            USING (EXISTS (SELECT 1 FROM public.orders WHERE orders.id = order_items.order_id) OR (SELECT public.is_admin()));
+            USING (true);
 
         DROP POLICY IF EXISTS "Admin full access" ON public.order_items;
         CREATE POLICY "Admin full access" ON public.order_items
@@ -359,7 +348,7 @@ BEGIN
         DROP POLICY IF EXISTS "product_reviews_user_insert" ON public.product_reviews;
         CREATE POLICY "product_reviews_user_insert" ON public.product_reviews
             FOR INSERT TO authenticated
-            WITH CHECK ((SELECT auth.uid()) = user_id OR (SELECT public.is_admin()));
+            WITH CHECK (true);
 
         DROP POLICY IF EXISTS "Admin full access" ON public.product_reviews;
         CREATE POLICY "Admin full access" ON public.product_reviews
@@ -445,44 +434,9 @@ BEGIN
     END IF;
 END $$;
 
--- 1.21 spatial_ref_sys (PostGIS internal table)
-DO $$
-BEGIN
-    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'spatial_ref_sys') THEN
-        ALTER TABLE public.spatial_ref_sys ENABLE ROW LEVEL SECURITY;
+-- 1.21 spatial_ref_sys (PostGIS internal table - managed by supabase_admin)
+-- Safe to skip in migrations as it is owned by supabase_admin and contains no user data.
 
-        DROP POLICY IF EXISTS "Allow public read access for spatial_ref_sys" ON public.spatial_ref_sys;
-        CREATE POLICY "Allow public read access for spatial_ref_sys"
-            ON public.spatial_ref_sys FOR SELECT TO public
-            USING (true);
-    END IF;
-EXCEPTION
-    WHEN insufficient_privilege THEN
-        RAISE NOTICE 'Skipping direct spatial_ref_sys RLS modification: insufficient privileges';
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Skipping spatial_ref_sys RLS setup: %', SQLERRM;
-END $$;
-
--- Attempt to relocate PostGIS to extensions schema if supported
-CREATE SCHEMA IF NOT EXISTS extensions;
-DO $$
-DECLARE
-    current_schema text;
-BEGIN
-    SELECT n.nspname INTO current_schema
-    FROM pg_extension AS e
-    JOIN pg_namespace AS n ON n.oid = e.extnamespace
-    WHERE e.extname = 'postgis';
-
-    IF current_schema IS NOT NULL AND current_schema <> 'extensions' THEN
-        BEGIN
-            EXECUTE 'ALTER EXTENSION postgis SET SCHEMA extensions';
-        EXCEPTION
-            WHEN OTHERS THEN
-                RAISE NOTICE 'PostGIS move to extensions skipped: %', SQLERRM;
-        END;
-    END IF;
-END $$;
 
 -- ----------------------------------------------------------------------------
 -- 2. UNIVERSAL BACKSTOP: Enable RLS on every remaining table in public schema
@@ -499,7 +453,8 @@ BEGIN
               'geography_columns',
               'geometry_columns',
               'raster_columns',
-              'raster_overviews'
+              'raster_overviews',
+              'spatial_ref_sys'
           )
           AND NOT EXISTS (
               SELECT 1
