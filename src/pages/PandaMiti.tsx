@@ -176,9 +176,9 @@ export default function PandaMitiPage() {
               <span className="text-[11px] text-muted-foreground">Flowers Needing Bees</span>
             </div>
             <div className="flex flex-col items-center justify-center p-3 bg-card rounded-2xl border border-border/50 text-center shadow-sm">
-              <ShieldCheck className="w-5 h-5 text-emerald-500 mb-1" />
-              <span className="font-bold text-foreground">GPS Telemetry</span>
-              <span className="text-[11px] text-muted-foreground">Youth Beekeeper Tracked</span>
+              <Sprout className="w-5 h-5 text-emerald-500 mb-1" />
+              <span className="font-bold text-foreground">Ecosystem Restoration</span>
+              <span className="text-[11px] text-muted-foreground">Youth Beekeeper Nurtured</span>
             </div>
           </div>
         </div>
@@ -191,8 +191,7 @@ export default function PandaMitiPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                  <Sprout className="w-4 h-4 text-emerald-500" /> Live Kibwezi Reforestation
-                  Telemetry
+                  <Sprout className="w-4 h-4 text-emerald-500" /> Live Kibwezi Ecosystem Restoration
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-black text-foreground mt-1">
                   Planting Progress: {planted.toLocaleString()} of {target.toLocaleString()}{" "}
@@ -227,7 +226,7 @@ export default function PandaMitiPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 pt-4 border-t border-border/50">
               <div className="p-3.5 rounded-2xl bg-background/80 border border-border/50 text-center">
                 <p className="text-[11px] font-semibold text-muted-foreground">
-                  Planted &amp; GPS-Tagged
+                  Trees Planting for Ecosystem Restoration
                 </p>
                 <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
                   {planted.toLocaleString()}
@@ -470,7 +469,7 @@ export default function PandaMitiPage() {
                 Pledge or Sponsor Seedlings in Kibwezi
               </h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-                Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry
+                Every seedling is nurtured by local youth beekeepers for ecosystem restoration
                 to guarantee survival and perennial blossom.
               </p>
               <div className="inline-flex flex-wrap justify-center gap-2 pt-1 text-xs">
@@ -488,7 +487,7 @@ export default function PandaMitiPage() {
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
                 <h4 className="font-bold text-foreground text-lg">Pledge Registered!</h4>
                 <p className="text-xs text-muted-foreground">
-                  Our Kibwezi field coordinator will email you with your seedling GPS certificate,
+                  Our Kibwezi field coordinator will email you with your seedling planting certificate,
                   planting corridor location, and bee impact report.
                 </p>
                 <Button

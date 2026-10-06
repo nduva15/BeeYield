@@ -2,7 +2,7 @@
 # checkov:skip=CKV_DOCKER_2:Healthcheck is defined in final stage
 # checkov:skip=CKV_DOCKER_3:Multi-stage build uses official patched alpine bases
 # Multi-stage build for BeeYield Frontend
-FROM node:22-alpine AS deps
+FROM node:lts-alpine AS deps
 
 RUN apk upgrade --no-cache
 
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
 
 # Builder stage
-FROM node:22-alpine AS builder
+FROM node:lts-alpine AS builder
 
 RUN apk upgrade --no-cache
 
@@ -66,7 +66,7 @@ RUN VITE_SUPABASE_URL="${VITE_SUPABASE_URL}" \
     pnpm run build
 
 # Production stage with latest stable patched nginx alpine image
-FROM nginx:1.27-alpine
+FROM nginx:stable-alpine-slim
 
 # Patch all OS-level CVEs (openssl, libxml2, libpng, musl, zlib, nghttp2)
 RUN apk upgrade --no-cache

@@ -485,7 +485,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <DropdownMenuContent
             align="end"
             sideOffset={8}
-            onOpenAutoFocus={(e) => e.preventDefault()}
             className="w-80 sm:w-96 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-3 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-md text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
           >
             <div className="px-4 py-3 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-orange-500/10 rounded-2xl mb-2.5 border border-amber-500/25 flex items-center justify-between">
@@ -578,7 +577,6 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           <DropdownMenuContent
             align="end"
             sideOffset={8}
-            onOpenAutoFocus={(e) => e.preventDefault()}
             className="w-72 sm:w-80 rounded-3xl border border-stone-200/90 dark:border-stone-800 p-2.5 shadow-2xl bg-white/98 dark:bg-[#181512]/98 backdrop-blur-md text-stone-900 dark:text-stone-100 z-50 animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 ring-1 ring-black/5 dark:ring-white/5"
           >
             {/* User Identity Header Card */}

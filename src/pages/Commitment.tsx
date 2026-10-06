@@ -236,14 +236,14 @@ const CommitmentPage = () => {
                   Our flagship ecological restoration initiative restores degraded semi-arid landscapes by propagating 45,000 drought-resilient indigenous trees—including Acacia, Mukau, Moringa, and Baobab. This active reforestation recharges groundwater aquifers, cools microclimates over hives, and eliminates seasonal forage famine for African honeybees.
                 </p>
                 <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 text-xs sm:text-sm italic">
-                  “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
+                  “Every seedling is nurtured by local youth beekeepers for ecosystem restoration to guarantee survival and perennial blossom.”
                 </div>
               </div>
 
               <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-emerald-200 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
-                    <Sprout className="w-4 h-4 text-emerald-600" /> Planting Telemetry
+                    <Sprout className="w-4 h-4 text-emerald-600" /> Planting Progress
                   </span>
                   <Badge variant="outline" className="border-emerald-500/40 text-emerald-800 bg-emerald-500/10 font-bold text-[11px]">
                     2,500 / 45,000 (5.6%)

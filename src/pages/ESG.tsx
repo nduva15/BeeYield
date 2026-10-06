@@ -538,7 +538,7 @@ const ESG = () => {
                   As our primary Environmental stewardship initiative, Panda Miti (<em>"Plant Trees"</em>) restores degraded semi-arid landscapes in Kibwezi, Makueni County. By planting drought-resilient indigenous trees (Acacia, Mukau, Moringa, Baobab), we replenish aquifers, eliminate seasonal bee famine, and create perpetual floral nectar corridors.
                 </p>
                 <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-emerald-200/90 text-xs sm:text-sm italic">
-                  “Every seedling is nurtured by local youth beekeepers and mapped with GPS telemetry to guarantee survival and perennial blossom.”
+                  “Every seedling is nurtured by local youth beekeepers for ecosystem restoration to guarantee survival and perennial blossom.”
                 </div>
               </div>
 
@@ -583,7 +583,7 @@ const ESG = () => {
                   🌸 1 Tree = ~5,000 Blossoms Pollinated
                 </span>
                 <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/20">
-                  📍 Verified GPS Telemetry
+                  🌱 Ecosystem Restoration
                 </span>
               </div>
               <Button asChild size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold rounded-full px-6 shadow-lg shadow-emerald-500/20">

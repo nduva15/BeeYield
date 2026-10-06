@@ -234,7 +234,7 @@ export const PandaMitiSection: React.FC<PandaMitiSectionProps> = ({
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-border/60">
             <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
               <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
-              <span>Every tree in Kibwezi is geo-monitored and maintained with local beekeeping partners.</span>
+              <span>Every tree in Kibwezi is planted for ecosystem restoration and maintained with local beekeeping partners.</span>
             </div>
             <div className="flex items-center gap-3 w-full sm:w-auto">
               <Button asChild className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20">
