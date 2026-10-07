@@ -61,6 +61,12 @@ export interface Product {
     review_count: number;
     is_active: boolean;
     variants: ProductVariant[];
+    floral_source?: string;
+    origin_region?: string;
+    batch_code?: string;
+    hive_code?: string;
+    traceability_features?: string[];
+    purity_guarantee?: string;
 }
 
 export interface CheckoutOrder {

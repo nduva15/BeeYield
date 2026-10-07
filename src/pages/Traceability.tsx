@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award, ClipboardList,
   CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock as LockIcon, FileDown, Wheat, TreePine, Scale, Cpu,
+  Link2, Check, ArrowRight, Building2, Store, Truck, Layers, FileCheck, Sparkles, AlertTriangle, ShieldAlert, FileText, CheckCircle, Eye, Clock, Microscope, Download, ExternalLink, HelpCircle, ChevronRight, BookOpen, FileSpreadsheet, ArrowLeftRight, ChevronDown, CheckCircle as CheckIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
@@ -58,6 +59,9 @@ const Traceability = () => {
   const [companyStory, setCompanyStory] = useState<CompanyStory | null>(null);
   const [companyStats, setCompanyStats] = useState<CompanyStat[]>([]);
   const [esgMetrics, setEsgMetrics] = useState<ESGMetric[]>([]);
+  const [selectedStakeholder, setSelectedStakeholder] = useState<"all" | "beekeepers" | "exporters" | "importers" | "packers">("all");
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeResourceCategory, setActiveResourceCategory] = useState<"all" | "templates" | "protocols" | "guides">("all");
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -307,6 +311,237 @@ const Traceability = () => {
     { icon: Leaf, label: "Field Condition Logging", description: "Real-time weather, flora, and colony health data captured where the work actually happens" },
   ];
 
+  const stakeholderBenefits = [
+    {
+      id: "beekeepers",
+      title: "Beekeepers",
+      badge: "Apiary Origins",
+      tagline: "Verify Identity & Command Premium Value",
+      headline: "Verify your identity, location, and hives. Become a trusted supplier worldwide.",
+      icon: Users,
+      accent: "text-amber-800 bg-amber-100 border-amber-200",
+      points: [
+        "Cryptographic proof of registered beekeeper identity and hive ownership",
+        "Field-locked GPS logging verifying authentic Kenyan flora provenance",
+        "Direct visibility and fair-trade recognition without predatory middleman discounting",
+        "Digital harvest weigh-in records ensuring complete payment transparency",
+      ],
+      quote: "Transform traditional apiculture into a globally verified, premium export brand.",
+    },
+    {
+      id: "exporters",
+      title: "Exporters",
+      badge: "Global Trade",
+      tagline: "De-Risk Procurement & Homogenization",
+      headline: "Combine testing and traceability to manage the authenticity risk of the honey you are purchasing and track the blending of batches.",
+      icon: Scale,
+      accent: "text-emerald-800 bg-emerald-100 border-emerald-200",
+      points: [
+        "Pre-purchase laboratory test verification to prevent buying adulterated stock",
+        "Cryptographic blend tracking to record exact multi-lot blending proportions",
+        "Audit-ready blockchain logbooks that speed up international customs clearance",
+        "Zero-risk compliance with EU, US FDA, and Middle Eastern import regulations",
+      ],
+      quote: "Scale export volumes with bulletproof batch provenance and blend accountability.",
+    },
+    {
+      id: "importers",
+      title: "Importers",
+      badge: "Cross-Border Assurance",
+      tagline: "Pre-Clear Lots Before Capital Deployment",
+      headline: "Manage risk by checking the authenticity of batches before importing them and manage your suppliers.",
+      icon: ShieldCheck,
+      accent: "text-blue-800 bg-blue-100 border-blue-200",
+      points: [
+        "Verify batch authenticity, moisture, and NMR purity before shipping containers",
+        "Manage global suppliers with transparent historical quality scorecards",
+        "Eliminate expensive border detentions, laboratory re-tests, and port rejections",
+        "Ensure complete adherence to food safety standards and traceability mandates",
+      ],
+      quote: "Never gamble on imported honey purity. Inspect certified lab proofs in real time.",
+    },
+    {
+      id: "packers",
+      title: "Packers & Retailers",
+      badge: "Brand & Shelf Integrity",
+      tagline: "Inspire Unshakeable Consumer Loyalty",
+      headline: "Visualise the full honey journey from hive to jar for confidence in your products and build consumer trust.",
+      icon: Box,
+      accent: "text-orange-800 bg-orange-100 border-orange-200",
+      points: [
+        "On-jar interactive QR codes that show consumers the genuine hive-to-jar journey",
+        "Shield your private-label and retail brands from global honey fraud scandals",
+        "Differentiate on store shelves with verifiable raw, monofloral, and ethical claims",
+        "Strengthen ESG credentials with verified 50/50 conservation and farmer support",
+      ],
+      quote: "Give modern shoppers transparent proof that commands trust and shelf velocity.",
+    },
+  ];
+
+  const beeyieldTraceKeyFeatures = [
+    {
+      icon: LockIcon,
+      title: "Secure Blockchain Solution",
+      tag: "Immutable Ledger",
+      description: "Decentralized, tamper-evident cryptographic architecture. Once harvest data, GPS coordinates, and lab results are written to the blockchain, they cannot be modified, deleted, or falsified.",
+    },
+    {
+      icon: Eye,
+      title: "Visibility of Data for Appropriate Stakeholders",
+      tag: "Granular Access",
+      description: "Customized data visibility for each participant. Beekeepers, quality auditors, exporters, port customs authorities, retailers, and end-consumers each view verified data relevant to their role.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Integrates with Intertek’s ATIC Services",
+      tag: "ATIC Standards",
+      description: "Built to integrate seamlessly with global ATIC (Assurance, Testing, Inspection, and Certification) services, including Intertek's honey authenticity and food safety protocols for gold-standard compliance.",
+    },
+    {
+      icon: MapPin,
+      title: "Local Support Available Where Needed",
+      tag: "Field Extension",
+      description: "Dedicated regional apiculture officers, field agronomists, and local technical teams present across harvesting areas to assist beekeepers, calibrate scales, and verify physical hive sites.",
+    },
+    {
+      icon: Zap,
+      title: "Immediate & 24/7 Access to Data",
+      tag: "Real-Time 24/7",
+      description: "Continuous real-time access to batch authenticity data via mobile camera QR scanning, web verifier portal, and enterprise REST/GraphQL APIs with zero downtime.",
+    },
+  ];
+
+  const beeyieldTraceBenefits = [
+    {
+      title: "Protect Your Brand with a 360° Approach",
+      subtitle: "Comprehensive Security & Transparency",
+      description: "Unite physical tamper-evident seals, field IoT telemetry, accredited laboratory assays, and blockchain ledgers to safeguard your brand from adulteration risks and counterfeiting.",
+      icon: Shield,
+    },
+    {
+      title: "End-to-End Visibility of the Supply Chain",
+      subtitle: "Unbroken Chain of Custody",
+      description: "Monitor every critical milestone from remote acacia apiaries through processing, blending, testing, export transit, packaging, and final retail delivery.",
+      icon: Globe,
+    },
+    {
+      title: "Manage Risk by Checking Authenticity",
+      subtitle: "Proactive Risk Mitigation",
+      description: "Detect adulterants, unauthorized syrups (C4/C3), high moisture, or low-quality dilution early before batches are blended, containerized, or distributed to markets.",
+      icon: Scale,
+    },
+    {
+      title: "Build Reputation and Consumer Trust",
+      subtitle: "Customer Brand Equity",
+      description: "Turn transparency into your strongest competitive edge. Consumers scan on-jar QR codes to explore the genuine origin, beekeeper story, and lab certification of their specific jar.",
+      icon: Award,
+    },
+    {
+      title: "One-Stop Shop for Authenticity Risk",
+      subtitle: "ATIC & Honey Services Synergy",
+      description: "Supports other Intertek honey services to provide a true one-stop shop for managing authenticity risk with blockchain traceability, auditing, testing, and field inspections.",
+      icon: Layers,
+    },
+  ];
+
+  const lowCostResources = [
+    {
+      id: "logbook",
+      category: "templates",
+      title: "Digital Apiary Harvest Logbook",
+      format: "Spreadsheet & Printable PDF",
+      description: "A free, standardized field sheet for smallholders to log GPS coordinates, colony health, harvest weight, and moisture percentage without expensive hardware.",
+      badge: "Free Template",
+      downloadText: "Download Field Template",
+      href: "/beeyield",
+      type: "Template",
+      icon: FileSpreadsheet,
+    },
+    {
+      id: "sop",
+      category: "protocols",
+      title: "One-Step-Forward / One-Step-Backward SOP",
+      format: "Standard Operating Procedure",
+      description: "Step-by-step framework detailing how collection centers and processors capture data one step forward to buyers and one step backward to apiary suppliers.",
+      badge: "Operational SOP",
+      downloadText: "View SOP Protocol",
+      href: "/beeyield",
+      type: "Protocol",
+      icon: ArrowLeftRight,
+    },
+    {
+      id: "isolation",
+      category: "protocols",
+      title: "Village-Level Rapid Problem Isolation Protocol",
+      format: "Quality Control Checklist",
+      description: "Action plan to isolate contaminated or off-spec batches back to the exact distant village and individual hive within minutes to protect entire bulk containers.",
+      badge: "Quality Control",
+      downloadText: "Download Isolation Plan",
+      href: "/beeyield",
+      type: "Protocol",
+      icon: AlertTriangle,
+    },
+    {
+      id: "coding",
+      category: "guides",
+      title: "Standard Batch Identification & QR Coding Guide",
+      format: "Implementation Guide",
+      description: "Practical guide to setting up human-readable lot IDs and printable QR seals using free tools to achieve retailer-grade jar traceability at low cost.",
+      badge: "Implementation Guide",
+      downloadText: "Read Coding Guide",
+      href: "/beeyield",
+      type: "Guide",
+      icon: QrCode,
+    },
+    {
+      id: "economics",
+      category: "guides",
+      title: "Honey Fraud Economics: Spot Testing vs. Traceability",
+      format: "Whitepaper & Decision Matrix",
+      description: "Cost-benefit comparison demonstrating why continuous blockchain traceability is vastly more reliable and cost-effective than recurring spot lab tests alone.",
+      badge: "Industry Whitepaper",
+      downloadText: "Explore Whitepaper",
+      href: "/learn",
+      type: "Whitepaper",
+      icon: BookOpen,
+    },
+    {
+      id: "api",
+      category: "guides",
+      title: "BeeYield Open Traceability API Quickstart",
+      format: "Developer Documentation",
+      description: "Lightweight REST API endpoints to push harvest records directly to the BeeYield Trace blockchain ledger from any existing inventory management software.",
+      badge: "Developer API",
+      downloadText: "API Documentation",
+      href: "/beeyield",
+      type: "Integration",
+      icon: Cpu,
+    },
+  ];
+
+  const honeyTraceabilityFaqs = [
+    {
+      q: "What is a honey traceability system?",
+      a: "A honey traceability system is a documented framework that tracks the movement of honey throughout the supply chain from beekeeper to consumer. It relies on data collected and stored by each participant in the chain, with each actor recording data one step forward (processors, traders, customers) and one step backward (suppliers) through all stages of production, processing, and distribution.",
+    },
+    {
+      q: "How does BeeYield Trace isolate problems in the supply chain?",
+      a: "Because each batch is tied to field-level records, if a quality problem is detected in honey collected from a distant village, the system immediately pinpoints where the issue originated, which apiary was involved, and who must be contacted to correct it before the product reaches consumers or is blended into larger batches.",
+    },
+    {
+      q: "Why is a traceability system better than spot testing alone for combating honey fraud?",
+      a: "Honey spot testing (such as NMR spectroscopy or C3/C4 isotope testing) is very expensive and not wholly foolproof on its own, especially when adulterators use sophisticated designer syrups. A robust, blockchain-backed traceability system proves authentic provenance at every touchpoint, establishing an unbroken chain of custody that spot testing alone cannot provide.",
+    },
+    {
+      q: "How does BeeYield Trace integrate with Intertek's ATIC services?",
+      a: "BeeYield Trace is designed to connect with Intertek's ATIC (Assurance, Testing, Inspection, and Certification) services. This allows accredited laboratory test reports, sanitary inspections, and export compliance documents to be bound directly to the blockchain batch record.",
+    },
+    {
+      q: "Can smallholder beekeepers implement this system at low cost?",
+      a: "Yes. BeeYield Trace is specifically architected to support low-cost field entry. Smallholder beekeepers and aggregators can use paper-based or low-bandwidth mobile logbooks that sync with the blockchain, providing enterprise-grade traceability without high capital expense.",
+    },
+  ];
+
   const growthMilestone = companyStory?.milestones?.find((milestone) => /hives/i.test(milestone.title) || /hives/i.test(milestone.description));
   const treeMetric = companyStats.find((stat) => /tree/i.test(stat.stat_key) || /tree/i.test(stat.stat_label));
   const carbonMetric = companyStats.find((stat) => /carbon|co2|climate/i.test(stat.stat_key) || /carbon|co2|climate/i.test(stat.stat_label));
@@ -324,28 +559,50 @@ const Traceability = () => {
   return (
     <BeeYieldPageShell className="bg-background">
       <SEO 
-        title="Verify Honey Origin & Purity | BeeYield Traceability"
-        description="Verify the journey and purity of your BeeYield honey jar with tamper-proof batch verification, hive GPS origin, and harvest inspection records."
-        keywords="honey traceability, verify honey purity, BeeYield, Kenyan honey origin, food safety Kenya, blockchain honey, Kibwezi honey records"
+        title="BeeYield Trace | Blockchain Honey Traceability & Verification System"
+        description="BeeYield Trace is a blockchain-based honey traceability system tracking pure honey from hive to jar. Combat honey fraud, verify origin, swiftly isolate batch problems, and access low-cost apiculture traceability resources."
+        keywords="honey traceability, honey traceability system, blockchain honey, BeeYield Trace, combat honey fraud, honey authenticity, one step forward one step backward, isolate honey batch problems, verify honey purity, Kenya honey origin, honey supply chain visibility, Intertek ATIC honey"
         url="/traceability"
         image="/og-image.png"
         schema={{
           "@context": "https://schema.org",
-          "@type": "HowTo",
-          "name": "How to Trace Your Honey Jar",
-          "description": "Follow these steps to verify the authenticity and origin of your BeeYield honey using our BeeYield system.",
-          "step": [
+          "@graph": [
             {
-              "@type": "HowToStep",
-              "text": "Locate the unique batch code on your honey jar label."
+              "@type": "WebPage",
+              "@id": "https://beeyield.co.ke/traceability#webpage",
+              "url": "https://beeyield.co.ke/traceability",
+              "name": "BeeYield Trace | Blockchain Honey Traceability & Verification System",
+              "description": "End-to-end blockchain traceability platform for the honey industry tracking honey from hive to jar."
             },
             {
-              "@type": "HowToStep",
-              "text": "Enter the code into the search field on this page or scan the QR code."
+              "@type": "HowTo",
+              "name": "How to Trace Your Honey Jar with BeeYield Trace",
+              "description": "Follow these simple steps to verify the authenticity, origin, and purity of your honey jar on the blockchain.",
+              "step": [
+                {
+                  "@type": "HowToStep",
+                  "text": "Locate the unique batch code on your honey jar label (e.g., BEE-2026-01-0420)."
+                },
+                {
+                  "@type": "HowToStep",
+                  "text": "Enter the code into the search field or use your smartphone camera to scan the QR seal."
+                },
+                {
+                  "@type": "HowToStep",
+                  "text": "Inspect the verified harvest data, GPS apiary coordinates, moisture levels, and blockchain audit trail."
+                }
+              ]
             },
             {
-              "@type": "HowToStep",
-              "text": "Review the verified harvest data, including hive location and moisture levels."
+              "@type": "FAQPage",
+              "mainEntity": honeyTraceabilityFaqs.map((faq) => ({
+                "@type": "Question",
+                "name": faq.q,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": faq.a
+                }
+              }))
             }
           ]
         }}
@@ -363,8 +620,9 @@ const Traceability = () => {
               alt="BeeYield Logo"
               className="h-24 md:h-36 w-auto mb-12 drop-shadow-2xl"
             />
-            <Badge className="mb-6 bg-amber-500/10 text-amber-700 border-amber-200 px-5 py-2 font-semibold text-[10px] rounded-full backdrop-blur-sm">
-              Official Origin & Authenticity Verification
+            <Badge className="mb-6 bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full backdrop-blur-sm inline-flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              BeeYield Trace • Blockchain Honey Provenance
             </Badge>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -381,7 +639,7 @@ const Traceability = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
             >
-              Audit the complete lifecycle of your BeeYield honey jar. Enter your batch code or scan the QR seal to verify GPS apiary origins, forage flora, colony health, and certified harvest records.
+              Audit the complete lifecycle of your honey jar with <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> — our blockchain-based traceability solution tracking honey from hive to jar. Enter your batch code or scan the QR seal to inspect GPS apiary origins, laboratory test results, and certified harvest records.
             </motion.p>
 
             {/* Stats Bar */}
@@ -392,9 +650,10 @@ const Traceability = () => {
               className="flex flex-wrap items-center justify-center gap-4 md:gap-6"
             >
               {[
-                { value: "100%", label: "GPS-Verified" },
-                { value: "Real-Time", label: "Field Tracking" },
-                { value: "Audit-Ready", label: "Compliance" },
+                { value: "100%", label: "GPS-Verified Origin" },
+                { value: "Blockchain", label: "Immutable Ledger" },
+                { value: "24/7", label: "Traceability & Access" },
+                { value: "ATIC-Ready", label: "Quality & Compliance" },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -647,8 +906,8 @@ const Traceability = () => {
                       <ShieldCheck className="mr-1.5 h-4 w-4" /> {textOrMissing(traceData?.verification_status, "Verification pending")}
                     </Badge>
 
-                    <h2 className="text-3xl font-black text-neutral-900 tracking-tight">Traceability Report</h2>
-                    <p className="text-neutral-600 font-medium">Batch: <span className="text-[#1B9157] font-bold">{traceData?.batch_code}</span></p>
+                    <h2 className="text-3xl font-black text-neutral-900 tracking-tight">BeeYield Trace Report</h2>
+                    <p className="text-neutral-600 font-medium">Batch: <span className="text-[#1B9157] font-bold">{traceData?.batch_code}</span> • <span className="text-amber-700 font-bold text-xs uppercase tracking-wider">Blockchain Verified</span></p>
                   </div>
 
                   {/* Mission Story Section */}
@@ -1429,10 +1688,689 @@ const Traceability = () => {
         </div>
       </div>
 
-      {/* ─── SUBTITLE & BLURB ─── */}
+      {/* ─── SECTION 1: THE HONEY CRISIS & BEEYIELD TRACE BLOCKCHAIN ─── */}
       <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-24">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+              Global Honey Authenticity Challenge
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              End-to-End Traceability for the <br />
+              <span className="text-beeyield-green">Honey Industry</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Honey is valued by consumers around the world as a high-quality natural product that uniquely reflects the environment it’s produced in. However, honey is one of the most frequently adulterated food products worldwide.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-12">
+            {/* The Authenticity Challenge Card */}
+            <div className="bg-[#FFF9F5] border border-orange-200/80 rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden flex flex-col justify-between shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200/30 rounded-bl-[100px] pointer-events-none" />
+              <div>
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-orange-100 border border-orange-200 rounded-full text-orange-800 text-xs font-bold mb-6">
+                  <ShieldAlert className="h-4 w-4 text-orange-600" />
+                  The Growing Challenge
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
+                  Combating Non-Authentic Honey
+                </h3>
+                <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
+                  Ensuring the quality and authenticity of honey is a growing challenge for the global food industry. Non-authentic honey regularly appears throughout the supply chain due to blending low-quality batches or the addition of additives such as syrups, colours, and flavours.
+                </p>
+                <div className="space-y-3.5 mb-8">
+                  {[
+                    "Blending low-quality batches to disguise product origin and quality",
+                    "Addition of additives such as cheap industrial syrups (corn, rice, beet)",
+                    "Artificial colours, chemical clarifying agents, and synthetic flavours",
+                    "Expensive, slow spot testing that fails to detect sophisticated syrup blends",
+                  ].map((risk, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="h-5 w-5 rounded-full bg-orange-200 text-orange-800 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold">
+                        ✕
+                      </div>
+                      <span className="text-sm text-neutral-700 font-medium">{risk}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-4 bg-white/80 rounded-2xl border border-orange-200/60 text-xs text-neutral-600 font-medium italic">
+                The global honey sector suffers from massive brand erosion, customs rejections, and regulatory penalties due to adulteration.
+              </div>
+            </div>
+
+            {/* The BeeYield Trace Blockchain Solution Card */}
+            <div className="bg-[#F0F7F0] border border-emerald-200/80 rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden flex flex-col justify-between shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200/40 rounded-bl-[100px] pointer-events-none" />
+              <div>
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-100 border border-emerald-300 rounded-full text-emerald-800 text-xs font-bold mb-6">
+                  <LockIcon className="h-3.5 w-3.5 text-emerald-700" />
+                  BeeYield Trace • Blockchain Solution
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
+                  Cryptographic Traceability From Hive to Jar
+                </h3>
+                <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
+                  <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> is a blockchain-based traceability solution that combines our years of industry expertise to track honey from hive to jar.
+                </p>
+                <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
+                  Our BeeYield Trace platform provides visibility at each step in your supply chain, so you have confidence in your products’ origin, safety, and compliance.
+                </p>
+                <div className="space-y-3.5 mb-8">
+                  {[
+                    "Decentralized, tamper-evident blockchain ledger recording every harvest event",
+                    "GPS beekeeper verification connecting each jar to verified rural apiaries",
+                    "Full custody tracking through extraction, bulk aggregation, testing, and bottling",
+                    "Integrates with Intertek ATIC testing standards for verifiable authenticity",
+                  ].map((feature, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="h-5 w-5 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="h-3.5 w-3.5 text-emerald-800" />
+                      </div>
+                      <span className="text-sm text-neutral-800 font-semibold">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="p-4 bg-white/80 rounded-2xl border border-emerald-200/80 text-xs text-emerald-800 font-semibold flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-beeyield-green shrink-0" />
+                <span>Complete confidence in origin, safety, and compliance at every touchpoint.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 2: WHAT IS A HONEY TRACEABILITY SYSTEM? ("ONE STEP FORWARD, ONE STEP BACKWARD") ─── */}
+      <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <Layers className="h-3.5 w-3.5 text-beeyield-green" />
+              Documented Supply Chain Framework
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              What is a Honey <span className="text-beeyield-green">Traceability System?</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-700 leading-relaxed max-w-3xl mx-auto font-medium">
+              A honey traceability system is a documented framework that tracks the movement of honey throughout the chain from beekeeper to consumer.
+            </p>
+          </div>
+
+          {/* Principle Card: One Step Forward, One Step Backward */}
+          <div className="max-w-5xl mx-auto bg-white rounded-[2.5rem] border border-neutral-200/80 p-8 sm:p-12 shadow-sm mb-12">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 pb-8 border-b border-neutral-100">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-emerald-50 text-beeyield-green flex items-center justify-center shrink-0">
+                  <ArrowLeftRight className="h-7 w-7" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-neutral-900 tracking-tight">The "One Step Forward, One Step Backward" Chain</h3>
+                  <p className="text-sm text-neutral-500 font-medium">Standardized data collection stored by every participant</p>
+                </div>
+              </div>
+              <Badge className="bg-amber-100 text-amber-800 border-amber-200 font-bold px-4 py-1.5 rounded-full text-xs">
+                Global Best Practice
+              </Badge>
+            </div>
+
+            <p className="text-base sm:text-lg text-neutral-700 leading-relaxed font-medium mb-8">
+              The system relies on data being collected and stored by each participant in the chain. Each actor will have data one step forward in the chain, and one step backward in the chain, through all stages of production, processing, and distribution. It identifies where honey comes from (suppliers) and where it goes next (processors, traders, customers).
+            </p>
+
+            {/* Visual Process Flow */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+              <div className="p-5 bg-neutral-50 rounded-2xl border border-neutral-100 text-center relative group">
+                <div className="h-10 w-10 mx-auto rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm mb-3">
+                  01
+                </div>
+                <h4 className="font-bold text-neutral-900 text-sm mb-1">Apiary Producers</h4>
+                <p className="text-xs text-neutral-500 font-medium">Step Backward: Hive & Flora Origin<br />Step Forward: Primary Collector</p>
+              </div>
+
+              <div className="p-5 bg-neutral-50 rounded-2xl border border-neutral-100 text-center relative group">
+                <div className="h-10 w-10 mx-auto rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm mb-3">
+                  02
+                </div>
+                <h4 className="font-bold text-neutral-900 text-sm mb-1">Collection Centers</h4>
+                <p className="text-xs text-neutral-500 font-medium">Step Backward: Village Beekeepers<br />Step Forward: Central Processor</p>
+              </div>
+
+              <div className="p-5 bg-neutral-50 rounded-2xl border border-neutral-100 text-center relative group">
+                <div className="h-10 w-10 mx-auto rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm mb-3">
+                  03
+                </div>
+                <h4 className="font-bold text-neutral-900 text-sm mb-1">Processing & Packaging</h4>
+                <p className="text-xs text-neutral-500 font-medium">Step Backward: Consolidated Batches<br />Step Forward: Exporters & Retailers</p>
+              </div>
+
+              <div className="p-5 bg-neutral-50 rounded-2xl border border-neutral-100 text-center relative group">
+                <div className="h-10 w-10 mx-auto rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm mb-3">
+                  04
+                </div>
+                <h4 className="font-bold text-neutral-900 text-sm mb-1">Retail & Consumers</h4>
+                <p className="text-xs text-neutral-500 font-medium">Step Backward: Bottled Batch Key<br />Step Forward: End Consumer Pantry</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Two Pillars: Swift Problem Isolation & Provenance vs Spot Testing */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Pillar A: Swiftly Isolating Problems */}
+            <div className="bg-white rounded-[2.5rem] border border-neutral-200/80 p-8 sm:p-10 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="h-12 w-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mb-6">
+                  <ShieldCheck className="h-6 w-6 text-amber-700" />
+                </div>
+                <Badge className="bg-amber-50 text-amber-800 border-amber-200 text-[10px] font-bold mb-3">
+                  Rapid Incident Response
+                </Badge>
+                <h3 className="text-2xl font-bold text-neutral-900 mb-4 tracking-tight">
+                  Swiftly Isolating Problems
+                </h3>
+                <p className="text-neutral-600 leading-relaxed font-medium mb-6">
+                  A honey traceability system can ensure honey safety and quality by swiftly isolating problems. For example, if a problem is detected in a batch of honey which is collected from a distant village, the associated data should be able to indicate where the problem originated and who must be contacted to correct it.
+                </p>
+              </div>
+              <div className="p-4 bg-amber-50/60 rounded-2xl border border-amber-200/50 text-xs font-semibold text-amber-900">
+                Pinpoint root-cause issues down to the village apiary within minutes — avoiding massive product recalls and isolating risk before batch blending.
+              </div>
+            </div>
+
+            {/* Pillar B: Proving Authenticity vs. Spot Testing Alone */}
+            <div className="bg-white rounded-[2.5rem] border border-neutral-200/80 p-8 sm:p-10 shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6">
+                  <Award className="h-6 w-6 text-emerald-700" />
+                </div>
+                <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px] font-bold mb-3">
+                  Combatting Honey Fraud
+                </Badge>
+                <h3 className="text-2xl font-bold text-neutral-900 mb-4 tracking-tight">
+                  Traceability vs. Spot Testing
+                </h3>
+                <p className="text-neutral-600 leading-relaxed font-medium mb-6">
+                  A fully traceable supply chain enables verification of product origin and authenticity. This is especially important because the honey sector is much affected by honey fraud. Combatting honey fraud through honey spot testing alone is very expensive and not wholly foolproof. For many honey producers, a robust traceability system is the best way to prove honey authenticity.
+                </p>
+              </div>
+              <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200/50 text-xs font-semibold text-emerald-900">
+                Replace expensive, recurring spot tests with an unassailable blockchain audit trail that proves authentic origin from hive to shelf.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 3: USING A TRACEABILITY PLATFORM TO COMBAT AUTHENTICITY ISSUES (24/7 MONITORING) ─── */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <Activity className="h-3.5 w-3.5 text-amber-600" />
+              Risk Management Toolkit
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              Using a Traceability Platform to <br />
+              <span className="text-beeyield-green">Combat Authenticity Issues</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              BeeYield Trace is a powerful addition to your authenticity risk management toolkit. With data available 24/7 you can monitor all aspects of your global supply chain, from GPS beekeeper verification to storing laboratory test results and tracking the blending of batches.
+            </p>
+          </div>
+
+          {/* 4 Feature Pillars */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            <div className="bg-[#FAF9F5] p-8 rounded-[2rem] border border-neutral-200/70 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="h-14 w-14 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <MapPin className="h-7 w-7 text-amber-700" />
+                </div>
+                <Badge className="bg-amber-100 text-amber-800 border-amber-200 mb-3 text-[11px] font-bold">Origin Verification</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">GPS Beekeeper Verification</h3>
+                <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+                  Verify your beekeepers' identity, exact apiary GPS coordinates, and registered hive numbers directly on-site to guarantee true rural provenance.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-amber-800">
+                <span>Verified Field Origins</span>
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] p-8 rounded-[2rem] border border-neutral-200/70 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="h-14 w-14 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Microscope className="h-7 w-7 text-emerald-700" />
+                </div>
+                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 mb-3 text-[11px] font-bold">Laboratory Purity</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Storing Lab Test Results</h3>
+                <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+                  Store accredited laboratory certificates on-chain — including moisture content, NMR spectrometry, pollen analysis, and antibiotic screenings.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-emerald-800">
+                <span>Tamper-Proof Assay Vault</span>
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] p-8 rounded-[2rem] border border-neutral-200/70 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="h-14 w-14 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Layers className="h-7 w-7 text-blue-700" />
+                </div>
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200 mb-3 text-[11px] font-bold">Blending Audits</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Tracking Batch Blending</h3>
+                <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+                  Cryptographically audit the blending of batches. Monitor blending ratios, track parent lots, and prevent unauthorized syrup dilution.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-blue-800">
+                <span>Unbroken Lot Lineage</span>
+              </div>
+            </div>
+
+            <div className="bg-[#FAF9F5] p-8 rounded-[2rem] border border-neutral-200/70 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group">
+              <div>
+                <div className="h-14 w-14 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                  <Clock className="h-7 w-7 text-purple-700" />
+                </div>
+                <Badge className="bg-purple-100 text-purple-800 border-purple-200 mb-3 text-[11px] font-bold">Continuous Access</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Immediate 24/7 Visibility</h3>
+                <p className="text-sm text-neutral-600 leading-relaxed font-medium">
+                  Enjoy immediate and 24/7 access to authenticated batch data for importers, auditors, regulators, retailers, and end-consumers worldwide.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-purple-800">
+                <span>Zero Downtime Verification</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 4: HOW DOES IT BENEFIT ME? (STAKEHOLDER VALUE MATRIX) ─── */}
+      <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <Users className="h-3.5 w-3.5 text-beeyield-green" />
+              Ecosystem Advantages
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              How Does BeeYield Trace <span className="text-beeyield-green">Benefit You?</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Purpose-built value propositions addressing the core operational, quality, and commercial needs of every participant in the honey value chain.
+            </p>
+
+            {/* Role Filter Tabs */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
+              {[
+                { id: "all", label: "View All Roles" },
+                { id: "beekeepers", label: "Beekeepers" },
+                { id: "exporters", label: "Exporters" },
+                { id: "importers", label: "Importers" },
+                { id: "packers", label: "Packers & Retailers" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedStakeholder(tab.id as any)}
+                  className={cn(
+                    "px-5 py-2 rounded-full text-xs font-bold transition-all shadow-sm",
+                    selectedStakeholder === tab.id
+                      ? "bg-neutral-900 text-white shadow-md scale-105"
+                      : "bg-white hover:bg-neutral-100 text-neutral-700 border border-neutral-200"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Stakeholder Cards Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+            {stakeholderBenefits
+              .filter((item) => selectedStakeholder === "all" || selectedStakeholder === item.id)
+              .map((stakeholder) => (
+                <motion.div
+                  key={stakeholder.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-[2.5rem] border border-neutral-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="h-14 w-14 rounded-2xl bg-neutral-50 flex items-center justify-center group-hover:bg-beeyield-green/10 transition-colors text-beeyield-green">
+                        <stakeholder.icon className="h-7 w-7" />
+                      </div>
+                      <Badge className={cn("text-[10px] font-bold px-3 py-1 rounded-full", stakeholder.accent)}>
+                        {stakeholder.badge}
+                      </Badge>
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-neutral-900 mb-1">{stakeholder.title}</h3>
+                    <p className="text-xs font-bold text-beeyield-green uppercase tracking-wider mb-4">{stakeholder.tagline}</p>
+                    
+                    <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-100 text-sm font-bold text-neutral-900 leading-snug mb-6">
+                      “{stakeholder.headline}”
+                    </div>
+
+                    <div className="space-y-3 mb-6">
+                      {stakeholder.points.map((pt, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5">
+                          <Check className="h-4 w-4 text-beeyield-green shrink-0 mt-0.5" />
+                          <span className="text-xs text-neutral-600 font-medium leading-relaxed">{pt}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-neutral-100">
+                    <p className="text-[11px] font-medium text-neutral-500 italic">
+                      {stakeholder.quote}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 5: KEY FEATURES OF BEEYIELD TRACE ─── */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <Zap className="h-3.5 w-3.5 text-amber-600" />
+              Technology Architecture
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              Key Features of <span className="text-beeyield-green">BeeYield Trace</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Enterprise-grade blockchain engineering combined with on-the-ground beekeeping domain expertise.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {beeyieldTraceKeyFeatures.map((feature, idx) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-neutral-50/70 rounded-[2.5rem] border border-neutral-200/80 p-8 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="h-14 w-14 rounded-2xl bg-white border border-neutral-200 shadow-sm flex items-center justify-center text-beeyield-green group-hover:scale-110 transition-transform">
+                      <feature.icon className="h-7 w-7" />
+                    </div>
+                    <Badge className="bg-neutral-200/70 text-neutral-700 text-[10px] font-bold px-3 py-1 rounded-full">
+                      {feature.tag}
+                    </Badge>
+                  </div>
+                  <h3 className="text-xl font-bold text-neutral-900 mb-3 tracking-tight">{feature.title}</h3>
+                  <p className="text-sm text-neutral-600 leading-relaxed font-medium">{feature.description}</p>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* 6th Complementary Box: Intertek ATIC Certification Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-br from-emerald-900 to-neutral-900 rounded-[2.5rem] p-8 text-white shadow-xl flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="h-14 w-14 rounded-2xl bg-emerald-800/60 border border-emerald-500/30 flex items-center justify-center text-beeyield-gold">
+                    <ShieldCheck className="h-7 w-7" />
+                  </div>
+                  <Badge className="bg-emerald-800 text-emerald-200 border-emerald-600 text-[10px] font-bold px-3 py-1 rounded-full">
+                    Global ATIC Standard
+                  </Badge>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">ATIC Compliance Ready</h3>
+                <p className="text-sm text-emerald-100/80 leading-relaxed font-medium">
+                  Designed for frictionless synchronization with Intertek and certified testing laboratories for global export approvals.
+                </p>
+              </div>
+              <div className="pt-6 border-t border-emerald-800/60 flex items-center gap-2 text-xs font-bold text-beeyield-gold">
+                <span>Auditing, Testing, Inspection, Certification</span>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 6: STRATEGIC BENEFITS & 360° APPROACH ─── */}
+      <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <Shield className="h-3.5 w-3.5 text-beeyield-green" />
+              360° Brand Protection
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              Strategic Benefits: A <span className="text-beeyield-green">360° Approach</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Protect your brand with a 360 approach to security and transparency, supported by industry-leading inspection and auditing capabilities.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {beeyieldTraceBenefits.map((benefit, index) => (
+              <motion.div
+                key={benefit.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white p-8 rounded-[2.5rem] border border-neutral-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="h-14 w-14 rounded-2xl bg-emerald-50 text-beeyield-green flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <benefit.icon className="h-7 w-7" />
+                  </div>
+                  <Badge className="bg-neutral-100 text-neutral-700 text-[10px] font-bold px-3 py-1 rounded-full mb-3">
+                    {benefit.subtitle}
+                  </Badge>
+                  <h3 className="text-xl font-bold text-neutral-900 mb-3 tracking-tight">{benefit.title}</h3>
+                  <p className="text-sm text-neutral-600 leading-relaxed font-medium">{benefit.description}</p>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* Highlight Banner: One-Stop Shop Advantage */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-br from-amber-500 to-amber-600 p-8 rounded-[2.5rem] text-neutral-900 shadow-xl flex flex-col justify-between"
+            >
+              <div>
+                <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 text-neutral-900">
+                  <Sparkles className="h-7 w-7" />
+                </div>
+                <Badge className="bg-white/30 text-neutral-950 text-[10px] font-black px-3 py-1 rounded-full mb-3">
+                  One-Stop Authenticity
+                </Badge>
+                <h3 className="text-2xl font-black text-neutral-950 mb-3 tracking-tight">Full Authenticity Suite</h3>
+                <p className="text-sm text-neutral-900/90 leading-relaxed font-semibold">
+                  Supports other Intertek honey services to provide a one stop shop for managing authenticity risk with traceability, auditing, testing and inspections.
+                </p>
+              </div>
+              <div className="pt-6 border-t border-black/10 flex items-center justify-between text-xs font-black">
+                <span>360° Risk Mitigation</span>
+                <ArrowRight className="h-4 w-4" />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 7: LOW-COST HONEY TRACEABILITY RESOURCES & STARTER TOOLKIT ─── */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100" id="traceability-resources">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <BookOpen className="h-3.5 w-3.5 text-beeyield-green" />
+              Free Practical Resources
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              Establish Honey Traceability at <br />
+              <span className="text-beeyield-green">Relatively Low Cost</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Here you will find some resources to help you establish a honey traceability system at relatively low cost — empowering smallholders, cooperative aggregators, and commercial beekeepers.
+            </p>
+
+            {/* Category filter pills */}
+            <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
+              {[
+                { id: "all", label: "All Resources" },
+                { id: "templates", label: "Field Templates" },
+                { id: "protocols", label: "Quality Protocols" },
+                { id: "guides", label: "Implementation Guides" },
+              ].map((pill) => (
+                <button
+                  key={pill.id}
+                  onClick={() => setActiveResourceCategory(pill.id as any)}
+                  className={cn(
+                    "px-5 py-2 rounded-full text-xs font-bold transition-all shadow-sm",
+                    activeResourceCategory === pill.id
+                      ? "bg-neutral-900 text-white shadow-md scale-105"
+                      : "bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
+                  )}
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {lowCostResources
+              .filter((res) => activeResourceCategory === "all" || activeResourceCategory === res.category)
+              .map((res) => (
+                <motion.div
+                  key={res.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-[#FAF9F5] rounded-[2.5rem] border border-neutral-200/80 p-8 shadow-sm hover:shadow-lg hover:border-beeyield-green/40 transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="h-14 w-14 rounded-2xl bg-white border border-neutral-200 flex items-center justify-center text-beeyield-green group-hover:scale-110 transition-transform">
+                        <res.icon className="h-7 w-7" />
+                      </div>
+                      <Badge className="bg-amber-100 text-amber-900 border-amber-200 text-[10px] font-bold px-3 py-1 rounded-full">
+                        {res.badge}
+                      </Badge>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">{res.title}</h3>
+                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">{res.format}</p>
+                    <p className="text-sm text-neutral-600 leading-relaxed font-medium mb-6">{res.description}</p>
+                  </div>
+
+                  <div className="pt-6 border-t border-neutral-200/60">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        toast({
+                          title: res.title,
+                          description: `Resource ready: ${res.format}. Connecting to BeeYield resource repository.`,
+                        });
+                      }}
+                      className="w-full h-11 rounded-xl font-bold text-xs border-neutral-300 hover:border-beeyield-green hover:bg-white text-neutral-800 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Download className="h-3.5 w-3.5 text-beeyield-green" />
+                      {res.downloadText}
+                    </Button>
+                  </div>
+                </motion.div>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 8: FAQ & SEO STRUCTURED KNOWLEDGE ─── */}
+      <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
+              <HelpCircle className="h-3.5 w-3.5 text-amber-600" />
+              Frequently Asked Questions
+            </Badge>
+            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
+              Honey Traceability & <span className="text-beeyield-green">Authenticity FAQs</span>
+            </h2>
+            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
+            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
+              Key insights into implementing one-step-forward / one-step-backward systems, isolating batch issues, and combating food fraud.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-4">
+            {honeyTraceabilityFaqs.map((faq, index) => {
+              const isOpen = openFaq === index;
+              return (
+                <div
+                  key={index}
+                  className="bg-white rounded-3xl border border-neutral-200/80 overflow-hidden shadow-sm transition-all"
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : index)}
+                    className="w-full p-6 sm:p-8 text-left flex items-center justify-between gap-4 focus:outline-none"
+                  >
+                    <span className="text-lg font-bold text-neutral-900">{faq.q}</span>
+                    <div className={cn(
+                      "h-8 w-8 rounded-full bg-neutral-100 flex items-center justify-center shrink-0 transition-transform duration-300",
+                      isOpen && "rotate-180 bg-beeyield-green/10 text-beeyield-green"
+                    )}>
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="px-6 pb-6 sm:px-8 sm:pb-8 pt-0 text-neutral-600 leading-relaxed font-medium text-sm sm:text-base border-t border-neutral-100"
+                    >
+                      {faq.a}
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TECHNICAL FIELD FEATURES ─── */}
+      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-20">
             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-5 py-2 font-semibold text-[10px] rounded-full">Built for Field Reality</Badge>
             <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 tracking-tight mb-4">
               Traceability Built for <span className="text-beeyield-green">Real</span> Beekeeping

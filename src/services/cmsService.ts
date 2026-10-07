@@ -38,5 +38,5 @@ export const getBlogPost = async (slug: string): Promise<BlogPost | null> => {
 
 export const getBlogCategories = async (): Promise<{ name: string, slug: string }[]> => {
     // Use fallback categories to match the local data
-    return ["Pollination", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"].map(c => ({ name: c, slug: c.toLowerCase() }));
+    return ["Traceability & Quality", "Pollination", "Conservation", "Education", "Sustainability", "Process", "Health", "Community"].map(c => ({ name: c, slug: c.toLowerCase() }));
 };
