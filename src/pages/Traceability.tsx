@@ -719,14 +719,19 @@ const Traceability = () => {
                       </form>
 
                       <div className="mt-8 pt-8 border-t border-slate-100">
-                        <p className="text-xs font-black text-slate-400 mb-4">Latest verified harvest batches</p>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-black text-slate-400">Timothy Nduva's Verified Batches</p>
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                            {exampleCodes.length} Batches Available
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
                           {exampleCodes.map(code => (
                             <Button
                               key={code}
                               variant="ghost"
                               size="sm"
-                              className="text-[10px] font-bold bg-[#F9F7F2] hover:bg-amber-50 hover:text-[#F4D03F] rounded-full h-8"
+                              className="text-[10px] font-mono font-bold bg-[#F9F7F2] hover:bg-amber-100 hover:text-amber-900 rounded-full h-8 px-3"
                               onClick={() => {
                                 setQrCode(code);
                                 handleTrace(code);
@@ -736,7 +741,7 @@ const Traceability = () => {
                             </Button>
                           ))}
                         </div>
-                        <div className="flex items-center gap-2 mt-6">
+                        <div className="flex items-center gap-2 mt-4">
                           <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
                           <span className="text-xs font-bold text-muted-foreground italic">Every batch is permanently recorded and verified</span>
                         </div>
