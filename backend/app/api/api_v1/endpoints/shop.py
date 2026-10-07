@@ -5,7 +5,6 @@ import random
 from app.core import security
 from app.schemas import shop as schemas
 from app.services import mpesa_c2b, shop_service
-from app.db.supabase_db import db_select
 
 
 router = APIRouter()

@@ -27,7 +27,7 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
     Core order creation logic with Oxidized Idempotency.
     Ensures 'Never Trust the Client' principle using the Rust ShopEngine.
     """
-    from app.db.supabase_db import db_insert, db_select, db_update
+    from app.db.supabase_db import db_insert, db_select
     from datetime import datetime
     import uuid
 
