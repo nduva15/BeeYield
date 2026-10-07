@@ -46,6 +46,15 @@ const DEFAULT_EXAMPLE_CODES = [
   "BEE-2026-01-0420",
   "BEE-2026-01-0419",
   "BEE-2026-01-0418",
+  "BEE-2026-01-0421",
+  "BEE-2025-12-0112",
+  "BEE-2025-10-0089",
+  "BEE-2025-08-0056",
+  "BEE-2025-06-0031",
+  "BEE-20260103-001",
+  "BEE-20260103-002",
+  "BEE-20260103-003",
+  "BEE-20260103-004",
 ];
 
 const Traceability = () => {
@@ -213,31 +222,18 @@ const Traceability = () => {
     let active = true;
 
     const loadExampleCodes = async () => {
-      const batches = await getPublicTraceabilityBatches(12);
+      const batches = await getPublicTraceabilityBatches(30);
       if (!active || batches.length === 0) return;
-
-      const latestYear = batches
-        .map((batch) => Number.parseInt(String(batch.harvest_date || "").slice(0, 4), 10))
-        .find((year) => Number.isFinite(year));
-
-      const currentBatches = latestYear
-        ? batches.filter((batch) => String(batch.harvest_date || "").startsWith(String(latestYear)))
-        : batches;
 
       const liveCodes = Array.from(
         new Set(
-          currentBatches
-            .sort((left, right) => {
-              const dateCompare = String(right.harvest_date || "").localeCompare(String(left.harvest_date || ""));
-              if (dateCompare !== 0) return dateCompare;
-              return String(right.batch_code || "").localeCompare(String(left.batch_code || ""));
-            })
+          batches
             .map((batch) => batch.batch_code)
             .filter((code): code is string => typeof code === "string" && code.trim().length > 0)
         )
-      ).slice(0, 3);
+      );
 
-      if (active && liveCodes.length === 3) {
+      if (active && liveCodes.length > 0) {
         setExampleCodes(liveCodes);
       }
     };
