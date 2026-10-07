@@ -11,20 +11,19 @@ export const BEEYIELD_TRACEABILITY_STORY = {
   apiaryFootprint: "5-acre apiary",
   treesPlanted: "2,500+",
   conservationFocus:
-    "BeeYield pairs ethical harvesting with biodiversity restoration, tree planting, and intelligent hive care so every harvest protects the colony and the landscape around it.",
+    "BeeYield pairs fair harvesting with planting trees and caring for bee health so every harvest protects the colony and the land around it.",
   fiftyFifty:
-    "We follow a 50/50 harvest journey: a documented portion is harvested for people and an equal reserve is left in the hive to sustain the bees through the season.",
+    "We always leave half: we harvest only surplus honey for people and leave an equal amount in the hive so the bees have plenty of food all year.",
   esgCommitment:
-    "Our ESG commitment centers on traceability, pollinator health, ecosystem restoration, and accountable field operations backed by verifiable records.",
-  // Hive-to-Honey Digital Traceability Standards
+    "We are committed to honest farming, bee protection, tree planting, and clear harvest records you can always check.",
   faoCompliance:
-    "Adheres to FAO (Food and Agriculture Organization) standards for food safety, chain-of-custody transparency, and supply chain authenticity from geo-tagged bee boxes to collection centers.",
+    "Meets international food safety standards with clear tracking from bee hive to packaging.",
   antiAdulterationGuarantee:
-    "Every batch undergoes unbroken hive-to-jar chain of custody and field verification to guarantee 100% raw, unadulterated honey—free of added sugars, high-fructose corn syrup, or fraudulent multifloral blending.",
+    "100% pure raw honey guaranteed: no added sugar, no corn syrup, and no dilution.",
   monofloralStandard:
-    "Monofloral honey requires precision tracking: GPS coordinates of bee boxes during peak bloom of specific flora (Acacia, Citrus, Mango, Jamun, Wildflora) combined with pollen density validation.",
+    "Single-flower honey means bees collected nectar during peak flower season, with exact hive location and flower types recorded on your jar.",
   digitalProductPassportReady:
-    "EU Digital Product Passport (DPP) and EUDR-ready GeoJSON spatial records, enabling seamless end-to-end audit readiness from the first mile in Makueni to global retail shelves.",
+    "Ready for global retail standards, showing the full journey from Kenyan farms to your kitchen table.",
 };
 
 export interface HoneyValueChainStage {
@@ -41,77 +40,77 @@ export const HIVE_TO_HONEY_VALUE_CHAIN: HoneyValueChainStage[] = [
   {
     id: "hive-management",
     stepNumber: 1,
-    title: "Beekeeping & Hive Management",
-    subtitle: "Precision apiary setup & bee colony welfare",
+    title: "Beekeeping & Hive Care",
+    subtitle: "Setting up hives and keeping bees healthy",
     dataPoints: [
-      "GPS Geo-tagging of bee box (GeoJSON point)",
-      "Beekeeper verified identity (KYC)",
-      "Unique QR-tagged Bee Box ID",
-      "Colony health & acoustic inspection log"
+      "Exact GPS hive location",
+      "Verified local beekeeper",
+      "Individual hive number and tag",
+      "Colony health and sound check"
     ],
-    complianceStandard: "Certified Naturally Grown (CNG) & Bee Better Certified",
+    complianceStandard: "Naturally Grown & Bee-Friendly",
     description:
-      "Beekeepers carefully place and maintain Langstroth hives in targeted floral corridors, tracking queen vigor, colony strength, and acoustic frequency to prevent disease without synthetic chemicals."
+      "Beekeepers place hives near wild flowering trees, regularly checking queen health and colony strength without using harsh chemicals."
   },
   {
     id: "pollination-bloom",
     stepNumber: 2,
-    title: "Pollination & Floral Foraging",
-    subtitle: "Peak bloom synchronization & monofloral foraging",
+    title: "Flower Blooming Season",
+    subtitle: "Bees visiting wild flowers in full bloom",
     dataPoints: [
-      "Target flora species (Acacia, Mango, Citrus, Neem)",
-      "Floral anthesis & bloom phenology dates",
-      "Foraging corridor radius mapping",
-      "Pollen density & nectar flow readings"
+      "Main flower types (Acacia, Mango, Citrus)",
+      "Peak flower blooming dates",
+      "Bee flight area",
+      "Nectar flow tracking"
     ],
-    complianceStandard: "Monofloral Origin Authentication (FAO Standards)",
+    complianceStandard: "Single-Flower Honey Standard",
     description:
-      "Bees forage across pristine nectar sources during specific bloom windows. Monofloral verification captures spatial and phenological proof that nectar was gathered from designated blossoms."
+      "Bees collect nectar while wild flowers are in full bloom, making sure each jar has the genuine taste of that specific flower."
   },
   {
     id: "ethical-harvest",
     stepNumber: 3,
-    title: "Ethical 50/50 Harvesting",
-    subtitle: "On-site uncapping & colony reserve protection",
+    title: "Ethical 50/50 Harvest",
+    subtitle: "Harvesting surplus while feeding the bees",
     dataPoints: [
-      "Harvest timestamp & ambient weather",
-      "Quantity harvested for consumers (kg)",
-      "50% reserve left for colony sustenance (kg)",
-      "Sealed food-grade SS304 bucket tag"
+      "Harvest date and weather",
+      "Honey harvested for people (kg)",
+      "Equal reserve left for the bees (kg)",
+      "Clean food-grade stainless buckets"
     ],
-    complianceStandard: "BeeYield 50/50 Ethical Harvest Protocol",
+    complianceStandard: "BeeYield 50/50 Harvest Promise",
     description:
-      "Frames are carefully pulled, inspected, and uncapped. Exactly half of the honey reserve is preserved in the brood chamber to safeguard bee colony vitality throughout the dry season."
+      "Beekeepers carefully harvest only extra honey, always leaving half in the hive so the colony stays strong and well-fed."
   },
   {
     id: "collection-extraction",
     stepNumber: 4,
-    title: "Collection Center & Cold Extraction",
-    subtitle: "Centrifugal extraction & batch consolidation",
+    title: "Cold Extraction & Bottling",
+    subtitle: "Gently spun without heat to protect raw enzymes",
     dataPoints: [
-      "Regional collection center intake ID",
-      "Centrifugal cold-spin extraction (<35°C)",
-      "Field optical refractometer check (<18.0%)",
-      "Digital batch custody sealing"
+      "Local collection center record",
+      "Gentle cold extraction (under 35°C)",
+      "Natural moisture check (under 18%)",
+      "Sealed batch tracking"
     ],
-    complianceStandard: "Codex Alimentarius Standard 12-1981",
+    complianceStandard: "Pure Honey Standards",
     description:
-      "Harvested frames are spun in sanitary centrifugal extractors at local collection hubs. Barcodes and QR tags tie every drum back to individual bee box coordinates and beekeeper accounts."
+      "Honey frames are spun in clean, stainless extractors without cooking or high heat. This keeps all the natural aromas, enzymes, and bee nutrients alive."
   },
   {
     id: "distribution-transparency",
     stepNumber: 5,
-    title: "Bottling, QR Passport & Retail",
-    subtitle: "Consumer transparency & Digital Product Passport",
+    title: "QR Jar Seal & Your Kitchen",
+    subtitle: "Scan the lid to see where your honey came from",
     dataPoints: [
-      "Unique jar QR code linking to digital ledger",
-      "Batch-specific digital harvest provenance record",
-      "Carbon & deforestation-free footprint",
-      "Fair-trade beekeeper settlement verification"
+      "QR code on jar linking to harvest details",
+      "Batch harvest certificate",
+      "Tree planting and community impact",
+      "Fair pay for the local beekeeper"
     ],
-    complianceStandard: "EU Digital Product Passport (DPP) & GS1 EPCIS",
+    complianceStandard: "Verified Pure Honey",
     description:
-      "Honey is gravity-filtered (preserving enzymes and pollen) and bottled into serialized jars. Consumers scan the QR code to view the entire journey from bee box coordinates to finished jar."
+      "Pure honey is poured into glass jars and sealed. You can scan the QR code on the lid to see who harvested it, where the bees lived, and when it was made."
   }
 ];
 
@@ -159,7 +158,7 @@ export const buildDeepTraceabilityStory = (traceData: TraceResponse | null): str
 
   const esgStory = `${BEEYIELD_TRACEABILITY_STORY.fiftyFifty} ${BEEYIELD_TRACEABILITY_STORY.esgCommitment}`;
 
-  const traceabilityStory = `Every jar of BeeYield honey follows a strict Hive-to-Honey traceability protocol: GPS-tagged bee box coordinates, floral anthesis tracking, cold centrifugal extraction at verified collection centers, and an immutable digital record meeting FAO and EU food safety standards.`;
+  const traceabilityStory = `Every jar of BeeYield honey can be traced straight back to the hive: the exact farm location, the wild flowers visited, gentle cold extraction, and a permanent record of when and where it was harvested.`;
 
   return [farmerStory, growthStory, conservationStory, esgStory, traceabilityStory];
 };
@@ -169,54 +168,54 @@ export const buildHarvestFacts = (traceData: TraceResponse | null) => [
   { label: "Harvest date", value: formatTraceDate(traceData?.harvest_date || traceData?.timeline?.find((item) => item.title === "Harvest Day")?.date) },
   { label: "Apiary", value: formatTraceText(traceData?.apiary?.name) },
   { label: "Hive", value: formatTraceText(traceData?.hive?.hive_code) },
-  { label: "Farmer", value: formatTraceText(traceData?.farmer?.name, "Timothy Nduva") },
-  { label: "Florage", value: traceData?.apiary?.flora_types?.length ? traceData?.apiary?.flora_types?.join(", ") ?? formatTraceText(traceData?.florage_type) : formatTraceText(traceData?.florage_type) },
-  { label: "Traceability Standard", value: "FAO & EU DPP Certified" },
-  { label: "Extraction", value: "Centrifugal Cold Extract (<35°C)" },
+  { label: "Beekeeper", value: formatTraceText(traceData?.farmer?.name, "Timothy Nduva") },
+  { label: "Flowers", value: traceData?.apiary?.flora_types?.length ? traceData?.apiary?.flora_types?.join(", ") ?? formatTraceText(traceData?.florage_type) : formatTraceText(traceData?.florage_type) },
+  { label: "Quality standard", value: "Verified Pure & Safe" },
+  { label: "Extraction", value: "Cold Extracted (Raw & Unheated)" },
 ];
 
 export const buildPurityAssuranceFacts = (traceData: TraceResponse | null) => [
-  { label: "Purity Status", value: "100% Pure Raw Honey (0% Added Sugar)" },
-  { label: "Monofloral Proof", value: formatTraceText(traceData?.florage_type, "Verified Acacia Floral Origin") },
-  { label: "Geo-Tag Standard", value: "WGS84 GeoJSON Precision" },
-  { label: "Moisture Level", value: "<18.0% (Export Grade A)" },
-  { label: "50/50 Bee Reserve", value: "Verified Active" },
-  { label: "Traceability Status", value: "Complete Chain of Custody Verified" },
+  { label: "Purity", value: "100% Pure Raw Honey (0% Added Sugar)" },
+  { label: "Flower origin", value: formatTraceText(traceData?.florage_type, "Wild Acacia Flowers") },
+  { label: "Farm location", value: "GPS Verified" },
+  { label: "Natural moisture", value: "Under 18% (Naturally Capped)" },
+  { label: "Bee reserve", value: "50% Left for Hive Health" },
+  { label: "Harvest record", value: "Fully Verified from Hive to Jar" },
 ];
 
 export const buildConservationFacts = (traceData: TraceResponse | null) => [
   {
-    label: "50/50 reserve left for bees",
+    label: "Honey left for bees",
     value: typeof traceData?.extra_metadata?.quantity_left_for_bees_kg === "number"
       ? `${traceData?.extra_metadata?.quantity_left_for_bees_kg}kg`
       : formatTraceText(traceData?.extra_metadata?.quantity_left_for_bees_kg),
   },
   {
-    label: "Harvested volume",
+    label: "Harvested amount",
     value: typeof traceData?.impact_stats?.total_honey_kg === "number"
       ? `${traceData?.impact_stats?.total_honey_kg}kg`
       : formatTraceText(traceData?.impact_stats?.total_honey_kg),
   },
-  { label: "50/50 rule status", value: formatTraceText(traceData?.sustainability?.status, "Compliant (50% Reserved)") },
+  { label: "50/50 promise", value: formatTraceText(traceData?.sustainability?.status, "Active (50% Reserved)") },
   {
     label: "Trees planted",
     value: formatTraceText(traceData?.impact_stats?.trees_planted || traceData?.impact_stats?.tree_count, BEEYIELD_TRACEABILITY_STORY.treesPlanted),
   },
   {
-    label: "Hive growth story",
+    label: "Hive growth",
     value: `${BEEYIELD_TRACEABILITY_STORY.foundingHives} to ${BEEYIELD_TRACEABILITY_STORY.currentHives} hives`,
   },
   {
-    label: "ESG & Compliance",
-    value: "FAO Food Safety, Certified Naturally Grown (CNG), EU DPP",
+    label: "Eco commitment",
+    value: "Bee-Friendly, Naturally Grown, Fair Trade",
   },
 ];
 
 export const buildSensorFacts = (traceData: TraceResponse | null) => [
-  { label: "Temperature", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_temp, " C", 1) },
-  { label: "Humidity", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_humidity, "%", 1) },
+  { label: "Hive temperature", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_temp, "°C", 1) },
+  { label: "Hive humidity", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_humidity, "%", 1) },
   { label: "Hive weight", value: formatTraceNumber(traceData?.sensor_snapshot?.weight_kg, "kg", 1) },
-  { label: "Last sensor sync", value: formatTraceDate(traceData?.sensor_snapshot?.sync_time) },
+  { label: "Last sensor update", value: formatTraceDate(traceData?.sensor_snapshot?.sync_time) },
 ];
 
 export const buildWeatherFacts = (
@@ -232,10 +231,10 @@ export const buildWeatherFacts = (
     };
   } | null,
 ) => [
-  { label: "Recorded harvest weather", value: formatTraceText(traceData?.extra_metadata?.weather_conditions) },
-  { label: "Current apiary condition", value: formatTraceText(weather?.current?.condition) },
-  { label: "Current temperature", value: formatTraceNumber(weather?.current?.temperature_c as number, " C", 1) },
-  { label: "Current humidity", value: formatTraceNumber(weather?.current?.humidity_pct as number, "%", 1) },
+  { label: "Harvest weather", value: formatTraceText(traceData?.extra_metadata?.weather_conditions) },
+  { label: "Farm weather", value: formatTraceText(weather?.current?.condition) },
+  { label: "Air temperature", value: formatTraceNumber(weather?.current?.temperature_c as number, "°C", 1) },
+  { label: "Air humidity", value: formatTraceNumber(weather?.current?.humidity_pct as number, "%", 1) },
   { label: "Wind speed", value: formatTraceNumber((weather?.current?.wind_speed_kmh ?? weather?.current?.wind_speed_kph) as number, " km/h", 1) },
-  { label: "Observed at", value: formatTraceDate(weather?.current?.last_observed_at) },
+  { label: "Time checked", value: formatTraceDate(weather?.current?.last_observed_at) },
 ];

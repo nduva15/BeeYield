@@ -304,143 +304,143 @@ const Traceability = () => {
   }, [traceData]);
 
   const traceabilityFeatures = [
-    { icon: MapPin, label: "Hive-to-Jar Tracking", description: "GPS-verified tracking of every honey batch from apiary to shelf — in real time" },
-    { icon: Calendar, label: "Digital Harvest Logbooks", description: "Timestamped records of every harvest with moisture levels, weights, and inspector data" },
-    { icon: Shield, label: "Compliance Records", description: "Automatically generated audit-ready documentation for food safety and export standards" },
-    { icon: Globe, label: "GPS-verified Apiaries", description: "Precise coordinates logged for every apiary, hive, and harvest activity" },
-    { icon: LockIcon, label: "Immutable Audit Trail", description: "Complete chain-of-custody showing who harvested what, when, and where — permanently recorded" },
-    { icon: Leaf, label: "Field Condition Logging", description: "Real-time weather, flora, and colony health data captured where the work actually happens" },
+    { icon: MapPin, label: "Hive-to-Jar Tracking", description: "GPS tracking of every honey batch from the bee farm to the store shelf" },
+    { icon: Calendar, label: "Digital Harvest Logbooks", description: "Records of every harvest with moisture levels, weights, and dates" },
+    { icon: Shield, label: "Compliance Records", description: "Clear, audit-ready paperwork for food safety and export rules" },
+    { icon: Globe, label: "GPS-Mapped Bee Hives", description: "Exact location recorded for every apiary, hive, and harvest" },
+    { icon: LockIcon, label: "Permanent Records", description: "Clear history showing who harvested what, when, and where — saved permanently" },
+    { icon: Leaf, label: "Real Hive Conditions", description: "Weather, wild flowers, and bee health recorded right at the hive" },
   ];
 
   const stakeholderBenefits = [
     {
       id: "beekeepers",
       title: "Beekeepers",
-      badge: "Apiary Origins",
-      tagline: "Verify Identity & Command Premium Value",
-      headline: "Verify your identity, location, and hives. Become a trusted supplier worldwide.",
+      badge: "Local Beekeepers",
+      tagline: "Prove Your Honey is Real & Earn Fair Pay",
+      headline: "Show where your honey comes from and become a trusted supplier worldwide.",
       icon: Users,
       accent: "text-amber-800 bg-amber-100 border-amber-200",
       points: [
-        "Cryptographic proof of registered beekeeper identity and hive ownership",
-        "Field-locked GPS logging verifying authentic Kenyan flora provenance",
-        "Direct visibility and fair-trade recognition without predatory middleman discounting",
-        "Digital harvest weigh-in records ensuring complete payment transparency",
+        "Verified proof of who you are and where your hives are located",
+        "GPS location showing your honey comes from wild Kenyan flowers",
+        "Direct connection to buyers with fair prices and no unfair middlemen",
+        "Clear weight and harvest records for fast, honest payments",
       ],
-      quote: "Transform traditional apiculture into a globally verified, premium export brand.",
+      quote: "Turn traditional beekeeping into a trusted, premium honey brand.",
     },
     {
       id: "exporters",
       title: "Exporters",
       badge: "Global Trade",
-      tagline: "De-Risk Procurement & Homogenization",
-      headline: "Combine field telemetry and digital traceability to manage the authenticity risk of the honey you are purchasing and track the blending of batches.",
+      tagline: "Know Exactly Where Your Honey Comes From",
+      headline: "Track honey from local farms to final packing so you always know what is in every batch.",
       icon: Scale,
       accent: "text-emerald-800 bg-emerald-100 border-emerald-200",
       points: [
-        "Pre-purchase field batch provenance verification to prevent buying adulterated stock",
-        "Cryptographic blend tracking to record exact multi-lot blending proportions",
-        "Audit-ready blockchain logbooks that speed up international customs clearance",
-        "Zero-risk compliance with EU, US FDA, and Middle Eastern import regulations",
+        "Check batch origin before buying to make sure you get 100% pure honey",
+        "Track how batches are mixed and packed with clear batch numbers",
+        "Easy-to-read records that speed up international customs clearance",
+        "Full peace of mind meeting food safety and export rules",
       ],
-      quote: "Scale export volumes with bulletproof batch provenance and blend accountability.",
+      quote: "Sell real honey with confidence using clear proof of where it came from.",
     },
     {
       id: "importers",
       title: "Importers",
-      badge: "Cross-Border Assurance",
-      tagline: "Pre-Clear Lots Before Capital Deployment",
-      headline: "Manage risk by checking the authenticity of batches before importing them and manage your suppliers.",
+      badge: "Quality Assurance",
+      tagline: "Check Honey Quality Before You Buy",
+      headline: "Know your honey is genuine before shipping containers across borders.",
       icon: ShieldCheck,
       accent: "text-blue-800 bg-blue-100 border-blue-200",
       points: [
-        "Verify batch authenticity, moisture, and botanical origin before shipping containers",
-        "Manage global suppliers with transparent historical quality scorecards",
-        "Eliminate expensive border detentions, compliance failures, and port rejections",
-        "Ensure complete adherence to food safety standards and traceability mandates",
+        "Verify honey origin, natural moisture, and flower sources before shipping",
+        "Work with trusted local suppliers who have proven track records",
+        "Avoid costly border delays, food safety fines, and returned containers",
+        "Meet all grocery and food safety rules with zero guesswork",
       ],
-      quote: "Never gamble on imported honey purity. Inspect certified origin proofs in real time.",
+      quote: "Never guess if imported honey is pure. Check real harvest details in seconds.",
     },
     {
       id: "packers",
       title: "Packers & Retailers",
-      badge: "Brand & Shelf Integrity",
-      tagline: "Inspire Unshakeable Consumer Loyalty",
-      headline: "Visualise the full honey journey from hive to jar for confidence in your products and build consumer trust.",
+      badge: "Store Shelves",
+      tagline: "Earn Customer Trust on Every Jar",
+      headline: "Show shoppers the real story from bee hive to jar so they buy with confidence.",
       icon: Box,
       accent: "text-orange-800 bg-orange-100 border-orange-200",
       points: [
-        "On-jar interactive QR codes that show consumers the genuine hive-to-jar journey",
-        "Shield your private-label and retail brands from global honey fraud scandals",
-        "Differentiate on store shelves with verifiable raw, monofloral, and ethical claims",
-        "Strengthen ESG credentials with verified 50/50 conservation and farmer support",
+        "QR code on the jar lets shoppers see the beekeeper and the hive",
+        "Protect your brand from fake or watered-down honey",
+        "Stand out on grocery shelves with true raw honey from wild flowers",
+        "Show real support for local beekeepers and bee protection",
       ],
-      quote: "Give modern shoppers transparent proof that commands trust and shelf velocity.",
+      quote: "Give shoppers honest proof they can see on their phone right in the store.",
     },
   ];
 
   const beeyieldTraceKeyFeatures = [
     {
       icon: LockIcon,
-      title: "Secure Blockchain Solution",
-      tag: "Immutable Ledger",
-      description: "Decentralized, tamper-evident cryptographic architecture. Once harvest data, GPS coordinates, and telemetry records are written to the blockchain, they cannot be modified, deleted, or falsified.",
+      title: "Tamper-Proof Records",
+      tag: "Protected Data",
+      description: "Safe digital records that cannot be changed or faked once saved. You can always trust the harvest date and hive location.",
     },
     {
       icon: Eye,
-      title: "Visibility of Data for Appropriate Stakeholders",
-      tag: "Granular Access",
-      description: "Customized data visibility for each participant. Beekeepers, quality auditors, exporters, port customs authorities, retailers, and end-consumers each view verified data relevant to their role.",
+      title: "Clear Information for Everyone",
+      tag: "Easy Access",
+      description: "Beekeepers, buyers, food inspectors, and shoppers each see the clear details they need.",
     },
     {
       icon: ShieldCheck,
-      title: "Integrates with Global Quality Standards",
-      tag: "Audit Standards",
-      description: "Built to integrate seamlessly with global food safety and certification standards, including Codex Alimentarius and FAO protocols for gold-standard compliance.",
+      title: "Meets Global Food Standards",
+      tag: "Certified Quality",
+      description: "Built to match international food safety rules and export requirements for pure honey.",
     },
     {
       icon: MapPin,
-      title: "Local Support Available Where Needed",
-      tag: "Field Extension",
-      description: "Dedicated regional apiculture officers, field agronomists, and local technical teams present across harvesting areas to assist beekeepers, calibrate scales, and verify physical hive sites.",
+      title: "Local Field Support",
+      tag: "On the Ground",
+      description: "Our local teams are in the field helping beekeepers, checking hives, and verifying harvests in person.",
     },
     {
       icon: Zap,
-      title: "Immediate & 24/7 Access to Data",
-      tag: "Real-Time 24/7",
-      description: "Continuous real-time access to batch authenticity data via mobile camera QR scanning, web verifier portal, and enterprise REST/GraphQL APIs with zero downtime.",
+      title: "Instant 24/7 Access",
+      tag: "Always Online",
+      description: "Scan a jar QR code anytime with your phone to see its origin story instantly.",
     },
   ];
 
   const beeyieldTraceBenefits = [
     {
-      title: "Protect Your Brand with a 360° Approach",
-      subtitle: "Comprehensive Security & Transparency",
-      description: "Unite physical tamper-evident seals, field IoT telemetry, and blockchain ledgers to safeguard your brand from adulteration risks and counterfeiting.",
+      title: "Total Protection for Your Brand",
+      subtitle: "Safe, Honest & Pure",
+      description: "Combine sealed jars, smart hive monitors, and honest records to make sure your honey is always 100% genuine.",
       icon: Shield,
     },
     {
-      title: "End-to-End Visibility of the Supply Chain",
-      subtitle: "Unbroken Chain of Custody",
-      description: "Monitor every critical milestone from remote acacia apiaries through processing, blending, export transit, packaging, and final retail delivery.",
+      title: "Clear History from Hive to Table",
+      subtitle: "Every Step Accounted For",
+      description: "Follow the honey from wild acacia trees through extraction, packing, and all the way to store shelves.",
       icon: Globe,
     },
     {
-      title: "Manage Risk by Checking Authenticity",
-      subtitle: "Proactive Risk Mitigation",
-      description: "Detect adulterants, unauthorized syrups (C4/C3), high moisture, or low-quality dilution early before batches are blended, containerized, or distributed to markets.",
+      title: "Catch Quality Issues Early",
+      subtitle: "Stop Fakes Early",
+      description: "Catch high moisture or low-grade honey immediately before batches are mixed or bottled.",
       icon: Scale,
     },
     {
-      title: "Build Reputation and Consumer Trust",
-      subtitle: "Customer Brand Equity",
-      description: "Turn transparency into your strongest competitive edge. Consumers scan on-jar QR codes to explore the genuine origin, beekeeper story, and digital harvest certification of their specific jar.",
+      title: "Build Real Customer Trust",
+      subtitle: "Transparency That Sells",
+      description: "Shoppers can scan any jar to meet the beekeeper and see where the bees made their honey.",
       icon: Award,
     },
     {
-      title: "One-Stop Platform for Authenticity Risk",
-      subtitle: "Traceability & Compliance",
-      description: "Provides a true one-stop platform for managing authenticity risk with blockchain traceability, auditing, and field inspections.",
+      title: "Everything in One Place",
+      subtitle: "Simple & Complete",
+      description: "A single, easy system for tracking harvests, managing quality, and proving honey purity.",
       icon: Layers,
     },
   ];
@@ -497,11 +497,11 @@ const Traceability = () => {
     {
       id: "economics",
       category: "guides",
-      title: "Honey Fraud Economics: Spot Sampling vs. Traceability",
-      format: "Whitepaper & Decision Matrix",
-      description: "Cost-benefit comparison demonstrating why continuous blockchain traceability is vastly more reliable and cost-effective than recurring spot sampling alone.",
-      badge: "Industry Whitepaper",
-      downloadText: "Explore Whitepaper",
+      title: "Honey Authenticity: Random Sampling vs. Complete Tracking",
+      format: "Practical Guide & Comparison",
+      description: "Comparison showing why continuous digital tracking is vastly more reliable and cost-effective than random spot checks alone.",
+      badge: "Industry Guide",
+      downloadText: "Read Comparison",
       href: "/learn",
       type: "Whitepaper",
       icon: BookOpen,
@@ -509,11 +509,11 @@ const Traceability = () => {
     {
       id: "api",
       category: "guides",
-      title: "BeeYield Open Traceability API Quickstart",
-      format: "Developer Documentation",
-      description: "Lightweight REST API endpoints to push harvest records directly to the BeeYield Trace blockchain ledger from any existing inventory management software.",
-      badge: "Developer API",
-      downloadText: "API Documentation",
+      title: "BeeYield Open Tracking API Quickstart",
+      format: "Integration Guide",
+      description: "Simple digital tools to push harvest records directly to BeeYield Trace from any existing farm or inventory software.",
+      badge: "Software Tools",
+      downloadText: "Integration Guide",
       href: "/beeyield",
       type: "Integration",
       icon: Cpu,
@@ -523,23 +523,23 @@ const Traceability = () => {
   const honeyTraceabilityFaqs = [
     {
       q: "What is a honey traceability system?",
-      a: "A honey traceability system is a documented framework that tracks the movement of honey throughout the supply chain from beekeeper to consumer. It relies on data collected and stored by each participant in the chain, with each actor recording data one step forward (processors, traders, customers) and one step backward (suppliers) through all stages of production, processing, and distribution.",
+      a: "A honey traceability system is a documented record that tracks honey at every step from the beehive to the consumer. Everyone involved—beekeepers, processors, and bottlers—keeps track of who they received honey from and where it was sent next, ensuring total honesty across the entire journey.",
     },
     {
       q: "How does BeeYield Trace isolate problems in the supply chain?",
-      a: "Because each batch is tied to field-level records, if a quality problem is detected in honey collected from a distant village, the system immediately pinpoints where the issue originated, which apiary was involved, and who must be contacted to correct it before the product reaches consumers or is blended into larger batches.",
+      a: "Because every jar is tied to farm-level records, if any quality problem arises, the system immediately pinpoints the exact hive and harvest date involved. This lets producers address issues quickly before honey is bottled or sent to customers.",
     },
     {
-      q: "Why is a traceability system better than spot testing alone for combating honey fraud?",
-      a: "Honey spot sampling alone is very expensive and not wholly foolproof on its own, especially when adulterators use sophisticated designer syrups. A robust, blockchain-backed traceability system proves authentic provenance at every touchpoint, establishing an unbroken chain of custody that spot testing alone cannot provide.",
+      q: "Why is a traceability system better than spot testing alone for combating fake honey?",
+      a: "Random spot checks alone are expensive and can easily miss hidden syrups or diluted honey. A full traceability system proves real origin at every step, showing a clear, verified journey from beehive to your jar.",
     },
     {
-      q: "How does BeeYield Trace integrate with quality compliance frameworks?",
-      a: "BeeYield Trace is designed to connect with quality compliance and export inspection frameworks. This allows certified origin documents, sanitary inspections, and export compliance records to be bound directly to the blockchain batch record.",
+      q: "How does BeeYield Trace connect with quality standards?",
+      a: "BeeYield Trace connects with standard food safety and export rules. This links official origin papers, health inspections, and export permits directly to the batch record.",
     },
     {
       q: "Can smallholder beekeepers implement this system at low cost?",
-      a: "Yes. BeeYield Trace is specifically architected to support low-cost field entry. Smallholder beekeepers and aggregators can use paper-based or low-bandwidth mobile logbooks that sync with the blockchain, providing enterprise-grade traceability without high capital expense.",
+      a: "Yes. BeeYield Trace is designed to be affordable and practical for everyday beekeepers. Local farmers and beekeeping groups can use paper logs or basic mobile phones that sync automatically, giving full traceability without expensive equipment.",
     },
   ];
 
@@ -561,9 +561,9 @@ const Traceability = () => {
   return (
     <BeeYieldPageShell className="bg-background">
       <SEO 
-        title="BeeYield Trace | Blockchain Honey Traceability & Verification System"
-        description="BeeYield Trace is a blockchain-based honey traceability system tracking pure honey from hive to jar. Combat honey fraud, verify origin, swiftly isolate batch problems, and access low-cost apiculture traceability resources."
-        keywords="honey traceability, honey traceability system, blockchain honey, BeeYield Trace, combat honey fraud, honey authenticity, one step forward one step backward, isolate honey batch problems, verify honey purity, Kenya honey origin, honey supply chain visibility, Intertek ATIC honey"
+        title="BeeYield Trace | Track Pure Honey from Hive to Jar"
+        description="BeeYield Trace lets you track pure honey from hive to jar. Verify where your honey was gathered, meet local beekeepers, and check harvest details on any jar."
+        keywords="honey tracking, honey traceability, pure honey, BeeYield Trace, real honey, Kenya honey origin, honey farm, hive to jar"
         url="/traceability"
         image="/og-image.png"
         schema={{
@@ -573,25 +573,25 @@ const Traceability = () => {
               "@type": "WebPage",
               "@id": "https://beeyield.co.ke/traceability#webpage",
               "url": "https://beeyield.co.ke/traceability",
-              "name": "BeeYield Trace | Blockchain Honey Traceability & Verification System",
-              "description": "End-to-end blockchain traceability platform for the honey industry tracking honey from hive to jar."
+              "name": "BeeYield Trace | Track Pure Honey from Hive to Jar",
+              "description": "Follow pure honey from the bee farm to your kitchen table."
             },
             {
               "@type": "HowTo",
               "name": "How to Trace Your Honey Jar with BeeYield Trace",
-              "description": "Follow these simple steps to verify the authenticity, origin, and purity of your honey jar on the blockchain.",
+              "description": "Follow these simple steps to see the story, origin, and purity of your honey jar.",
               "step": [
                 {
                   "@type": "HowToStep",
-                  "text": "Locate the unique batch code on your honey jar label (e.g., BEE-2026-01-0420)."
+                  "text": "Find the batch code on your honey jar label (such as BEE-2026-01-0420)."
                 },
                 {
                   "@type": "HowToStep",
-                  "text": "Enter the code into the search field or use your smartphone camera to scan the QR seal."
+                  "text": "Type the code into the search box or scan the QR code with your phone camera."
                 },
                 {
                   "@type": "HowToStep",
-                  "text": "Inspect the verified harvest data, GPS apiary coordinates, moisture levels, and blockchain audit trail."
+                  "text": "See the exact farm location, beekeeper details, natural moisture, and harvest date."
                 }
               ]
             },
@@ -624,7 +624,7 @@ const Traceability = () => {
             />
             <Badge className="mb-6 bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full backdrop-blur-sm inline-flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-              BeeYield Trace • Blockchain Honey Provenance
+              BeeYield Trace • Pure Honey From Real Hives
             </Badge>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -641,7 +641,7 @@ const Traceability = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
             >
-              Audit the complete lifecycle of your honey jar with <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> — our blockchain-based traceability solution tracking honey from hive to jar. Enter your batch code or scan the QR seal to inspect GPS apiary origins, in-hive sensor telemetry, and certified harvest records.
+              See the full story behind your honey with <strong className="text-neutral-900 font-bold">BeeYield Trace</strong>. Enter your jar's batch code or scan the QR code on the lid to see the exact hive location, beekeeper details, and harvest date.
             </motion.p>
 
             {/* Stats Bar */}
@@ -652,10 +652,10 @@ const Traceability = () => {
               className="flex flex-wrap items-center justify-center gap-4 md:gap-6"
             >
               {[
-                { value: "100%", label: "GPS-Verified Origin" },
-                { value: "Blockchain", label: "Immutable Ledger" },
-                { value: "24/7", label: "Traceability & Access" },
-                { value: "DPP-Ready", label: "Quality & Compliance" },
+                { value: "100%", label: "GPS Farm Location" },
+                { value: "Permanent", label: "Protected Records" },
+                { value: "24/7", label: "Instant Mobile Access" },
+                { value: "Certified", label: "Pure & Safe" },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -909,7 +909,7 @@ const Traceability = () => {
                     </Badge>
 
                     <h2 className="text-3xl font-black text-neutral-900 tracking-tight">BeeYield Trace Report</h2>
-                    <p className="text-neutral-600 font-medium">Batch: <span className="text-[#1B9157] font-bold">{traceData?.batch_code}</span> • <span className="text-amber-700 font-bold text-xs uppercase tracking-wider">Blockchain Verified</span></p>
+                    <p className="text-neutral-600 font-medium">Batch: <span className="text-[#1B9157] font-bold">{traceData?.batch_code}</span> • <span className="text-amber-700 font-bold text-xs uppercase tracking-wider">Verified Pure Honey</span></p>
                   </div>
 
                   {/* Mission Story Section */}
@@ -1245,7 +1245,7 @@ const Traceability = () => {
                                     <p className="text-[10px] font-black text-[#1B9157]">Forage and Weather</p>
                                     <div className="rounded-2xl bg-[#022c22]/50 border border-[#1B9157] p-4 space-y-4">
                                       <div>
-                                        <p className="text-[10px] font-bold text-[#1B9157] tracking-wide mb-2">Specific Florage</p>
+                                        <p className="text-[10px] font-bold text-[#1B9157] tracking-wide mb-2">Flower Sources</p>
                                         <div className="flex flex-wrap gap-2">
                                           {traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.map((flora: string) => (
                                             <Badge key={`forage-${flora}`} className="bg-[#1B9157]/15 text-white border border-[#1B9157]/40 text-[10px] font-bold px-2.5 py-1 rounded-full">
@@ -1286,7 +1286,7 @@ const Traceability = () => {
                                   </div>
 
                                   <div className="space-y-2 flex flex-col">
-                                    <p className="text-[10px] font-black text-[#1B9157]">Record Integrity</p>
+                                    <p className="text-[10px] font-black text-[#1B9157]">Harvest Verification</p>
                                     <div className="bg-[#022c22]/40 rounded-2xl p-5 border border-[#1B9157] flex-1 flex flex-col justify-between">
                                       <div className="space-y-4">
                                         <div className="flex items-center gap-3 p-3 bg-[#1B9157] rounded-xl border border-[#1B9157]">
@@ -1294,24 +1294,24 @@ const Traceability = () => {
                                             <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
                                           </div>
                                           <div>
-                                            <p className="text-[10px] font-bold text-[#1A1A1A] leading-tight">Batch Fingerprint</p>
+                                            <p className="text-[10px] font-bold text-[#1A1A1A] leading-tight">Digital Batch Proof</p>
                                             <p className="text-[9px] font-medium text-[#1B9157]/80">{textOrMissing(traceData?.blockchain_status?.overall, "verification pending")}</p>
                                           </div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                           <div>
-                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">BeeYield Ledger</p>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Bee Farm Registry</p>
                                             <p className="text-sm font-black text-white">{(traceData?.blockchain_status?.beeyield_ledger?.verified ?? traceData?.blockchain_status?.honeychain?.verified) ? "Verified" : "Not verified"}</p>
                                           </div>
                                           <div className="text-right">
-                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Polygon</p>
+                                            <p className="text-xs font-semibold text-[#1B9157] mb-1">Permanent Record</p>
                                             <p className="text-sm font-black text-white">{traceData?.blockchain_status?.polygon?.verified ? "Verified" : "Not verified"}</p>
                                           </div>
                                         </div>
 
                                         <div>
-                                          <p className="text-xs font-semibold text-[#1B9157] mb-1">Block Hash</p>
+                                          <p className="text-xs font-semibold text-[#1B9157] mb-1">Verification Key</p>
                                           <p className="text-[11px] font-mono text-slate-200 break-all">{textOrMissing(traceData?.blockchain_status?.block_hash)}</p>
                                         </div>
                                       </div>
@@ -1319,7 +1319,7 @@ const Traceability = () => {
                                       <div className="mt-4 pt-4 border-t border-[#F4D03F]/10 flex items-center justify-between">
                                         <div className="flex items-center gap-1.5">
                                           <LockIcon className="h-3 w-3 text-[#1B9157]" />
-                                          <span className="text-xs font-semibold text-[#1B9157]">Secure record</span>
+                                          <span className="text-xs font-semibold text-[#1B9157]">Verified Safe</span>
                                         </div>
                                         <span className="text-xs font-semibold text-[#D4AC0D]">{textOrMissing(traceData?.verification_status)}</span>
                                       </div>
@@ -1444,14 +1444,14 @@ const Traceability = () => {
 
                     <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white">
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-black tracking-tighter">Verification & Telemetry</h3>
+                        <h3 className="text-2xl font-black tracking-tighter">Hive & Harvest Details</h3>
                         <Badge className="bg-white/10 text-white border-white/20 font-bold">
                           {textOrMissing(traceData?.verification_status)}
                         </Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         {[
-                          { label: "Blockchain", value: textOrMissing(traceData?.blockchain_status?.overall) },
+                          { label: "Record Status", value: textOrMissing(traceData?.blockchain_status?.overall) },
                           { label: "Verification URL", value: textOrMissing(traceData?.verification_url) },
                           ...sensorFacts,
                           ...weatherFacts,
@@ -1490,7 +1490,7 @@ const Traceability = () => {
 
                     <Card className="border-none shadow-xl rounded-[2.5rem] p-8 bg-[#FFF9F0]">
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Specific Chain of Custody</h3>
+                        <h3 className="text-2xl font-black text-neutral-900 tracking-tighter">Harvest Story</h3>
                         <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-bold">Field to Jar</Badge>
                       </div>
                       <div className="space-y-4 text-sm text-slate-700">
@@ -1498,7 +1498,7 @@ const Traceability = () => {
                           Farmer <span className="font-black text-[#1A1A1A]">{traceData?.farmer?.name || "Timothy Nduva"}</span> harvested batch <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.batch_code)}</span> from hive <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.hive?.hive_code)}</span> at apiary <span className="font-black text-[#1A1A1A]">{textOrMissing(traceData?.apiary?.name)}</span> on <span className="font-black text-[#1A1A1A]">{dateOrMissing(traceData?.harvest_date || traceData?.timeline?.find(s => s.title === "Harvest Day")?.date)}</span>.
                         </p>
                         <p>
-                          Florage recorded for this lot: <span className="font-black text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : textOrMissing(traceData?.florage_type)}</span>.
+                          Flowers for this batch: <span className="font-black text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : textOrMissing(traceData?.florage_type)}</span>.
                         </p>
                         <p>
                           Weather record: <span className="font-black text-[#1A1A1A]">{weatherFacts.find((item) => item.label === "Recorded harvest weather")?.value || missingDataLabel}</span>.
@@ -1745,29 +1745,29 @@ const Traceability = () => {
               </div>
             </div>
 
-            {/* The BeeYield Trace Blockchain Solution Card */}
+            {/* The BeeYield Trace Solution Card */}
             <div className="bg-[#F0F7F0] border border-emerald-200/80 rounded-[2.5rem] p-8 sm:p-12 relative overflow-hidden flex flex-col justify-between shadow-sm">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200/40 rounded-bl-[100px] pointer-events-none" />
               <div>
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-100 border border-emerald-300 rounded-full text-emerald-800 text-xs font-bold mb-6">
                   <LockIcon className="h-3.5 w-3.5 text-emerald-700" />
-                  BeeYield Trace • Blockchain Solution
+                  BeeYield Trace • Pure Honey Verification
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
-                  Cryptographic Traceability From Hive to Jar
+                  Honest Honey Tracking From Hive to Jar
                 </h3>
                 <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
-                  <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> is a blockchain-based traceability solution that combines our years of industry expertise to track honey from hive to jar.
+                  <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> is a verified tracking system that combines years of beekeeping experience to follow real honey from hive to jar.
                 </p>
                 <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
-                  Our BeeYield Trace platform provides visibility at each step in your supply chain, so you have confidence in your products’ origin, safety, and compliance.
+                  Our BeeYield Trace platform gives you clear visibility at every step, so you can trust where your honey came from, how it was made, and that it is 100% pure.
                 </p>
                 <div className="space-y-3.5 mb-8">
                   {[
-                    "Decentralized, tamper-evident blockchain ledger recording every harvest event",
-                    "GPS beekeeper verification connecting each jar to verified rural apiaries",
-                    "Full custody tracking through extraction, bulk aggregation, and bottling",
-                    "Integrates with international food safety standards for verifiable authenticity",
+                    "Permanent, tamper-proof records for every single harvest",
+                    "Exact GPS location connecting every jar to real beekeepers and hives",
+                    "Complete tracking through harvesting, careful handling, and bottling",
+                    "Meets strict food safety standards so you can be sure your honey is genuine",
                   ].map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="h-5 w-5 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
@@ -1891,17 +1891,17 @@ const Traceability = () => {
                   <Award className="h-6 w-6 text-emerald-700" />
                 </div>
                 <Badge className="bg-emerald-50 text-emerald-800 border-emerald-200 text-[10px] font-bold mb-3">
-                  Combatting Honey Fraud
+                  Combatting Fake Honey
                 </Badge>
                 <h3 className="text-2xl font-bold text-neutral-900 mb-4 tracking-tight">
-                  Traceability vs. Spot Testing
+                  Traceability vs. Random Testing
                 </h3>
                 <p className="text-neutral-600 leading-relaxed font-medium mb-6">
-                  A fully traceable supply chain enables verification of product origin and authenticity. This is especially important because the honey sector is much affected by honey fraud. Combatting honey fraud through honey spot testing alone is very expensive and not wholly foolproof. For many honey producers, a robust traceability system is the best way to prove honey authenticity.
+                  A clear tracking system lets you prove exactly where honey came from and that it is genuine. Fake and watered-down honey is a huge problem worldwide. Relying only on occasional spot checks is expensive and easily fooled. A complete tracking system from the hive to your home is the best way to guarantee real honey.
                 </p>
               </div>
               <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200/50 text-xs font-semibold text-emerald-900">
-                Replace expensive, recurring spot tests with an unassailable blockchain audit trail that proves authentic origin from hive to shelf.
+                Replace costly, unreliable spot checks with a verified paper and digital trail that proves genuine origin from hive to shelf.
               </div>
             </div>
           </div>
@@ -1914,15 +1914,15 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center mb-16">
             <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
               <Activity className="h-3.5 w-3.5 text-amber-600" />
-              Risk Management Toolkit
+              Honest Honey Toolkit
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              Using a Traceability Platform to <br />
-              <span className="text-beeyield-green">Combat Authenticity Issues</span>
+              Using Smart Tracking to <br />
+              <span className="text-beeyield-green">Keep Honey Honest & Pure</span>
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              BeeYield Trace is a powerful addition to your authenticity risk management toolkit. With data available 24/7 you can monitor all aspects of your global supply chain, from GPS beekeeper verification to in-hive IoT telemetry and tracking the blending of batches.
+              BeeYield Trace gives you complete peace of mind. With data available 24/7, you can follow your honey at every step—from exact GPS hive locations to healthy hive checks and batch packaging.
             </p>
           </div>
 
@@ -1936,7 +1936,7 @@ const Traceability = () => {
                 <Badge className="bg-amber-100 text-amber-800 border-amber-200 mb-3 text-[11px] font-bold">Origin Verification</Badge>
                 <h3 className="text-xl font-bold text-neutral-900 mb-3">GPS Beekeeper Verification</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Verify your beekeepers' identity, exact apiary GPS coordinates, and registered hive numbers directly on-site to guarantee true rural provenance.
+                  Verify your beekeepers' identity, exact apiary GPS coordinates, and registered hive numbers directly on-site to guarantee true rural origins.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-amber-800">
@@ -1949,14 +1949,14 @@ const Traceability = () => {
                 <div className="h-14 w-14 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Activity className="h-7 w-7 text-emerald-700" />
                 </div>
-                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 mb-3 text-[11px] font-bold">Hive Telemetry</Badge>
-                <h3 className="text-xl font-bold text-neutral-900 mb-3">In-Hive Sensor Telemetry</h3>
+                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 mb-3 text-[11px] font-bold">Hive Health</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Smart In-Hive Monitoring</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Capture automated hive scale weight gains, brood temperatures, and acoustic frequencies that biologically verify genuine nectar flow and harvest timing directly at the hive.
+                  Track hive weight, temperature, and bee activity in real time. This confirms natural nectar flow and shows the honey was harvested at the perfect moment.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-emerald-800">
-                <span>Biological Production Proof</span>
+                <span>Proof of Natural Honey</span>
               </div>
             </div>
 
@@ -1965,14 +1965,14 @@ const Traceability = () => {
                 <div className="h-14 w-14 rounded-2xl bg-blue-100 text-blue-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <Layers className="h-7 w-7 text-blue-700" />
                 </div>
-                <Badge className="bg-blue-100 text-blue-800 border-blue-200 mb-3 text-[11px] font-bold">Blending Audits</Badge>
-                <h3 className="text-xl font-bold text-neutral-900 mb-3">Tracking Batch Blending</h3>
+                <Badge className="bg-blue-100 text-blue-800 border-blue-200 mb-3 text-[11px] font-bold">Batch Tracking</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Tracking Every Batch</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Cryptographically audit the blending of batches. Monitor blending ratios, track parent lots, and prevent unauthorized syrup dilution.
+                  Carefully track every batch from start to finish. Monitor batch sizes, trace original harvests, and make sure no artificial syrups or water are ever added.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-blue-800">
-                <span>Unbroken Lot Lineage</span>
+                <span>Clear Batch History</span>
               </div>
             </div>
 
@@ -2092,14 +2092,14 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center mb-16">
             <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
               <Zap className="h-3.5 w-3.5 text-amber-600" />
-              Technology Architecture
+              System Highlights
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
               Key Features of <span className="text-beeyield-green">BeeYield Trace</span>
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              Enterprise-grade blockchain engineering combined with on-the-ground beekeeping domain expertise.
+              Modern digital tracking combined with on-the-ground beekeeping experience.
             </p>
           </div>
 
@@ -2128,7 +2128,7 @@ const Traceability = () => {
               </motion.div>
             ))}
 
-            {/* 6th Complementary Box: Intertek ATIC Certification Badge */}
+            {/* 6th Complementary Box: Certification Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -2145,13 +2145,13 @@ const Traceability = () => {
                     Global Export Standards
                   </Badge>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Compliance Ready</h3>
+                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Export & Quality Ready</h3>
                 <p className="text-sm text-emerald-100/80 leading-relaxed font-medium">
-                  Designed for frictionless synchronization with regional collection centers and digital certification bodies for global export approvals.
+                  Built to work smoothly with local collection centers and official inspectors for global export and grocery approvals.
                 </p>
               </div>
               <div className="pt-6 border-t border-emerald-800/60 flex items-center gap-2 text-xs font-bold text-beeyield-gold">
-                <span>Auditing, Telemetry, Inspection, Certification</span>
+                <span>Verification, Field Inspection, Quality Checks</span>
               </div>
             </motion.div>
           </div>
@@ -2215,7 +2215,7 @@ const Traceability = () => {
                 </Badge>
                 <h3 className="text-2xl font-black text-neutral-950 mb-3 tracking-tight">Full Authenticity Suite</h3>
                 <p className="text-sm text-neutral-900/90 leading-relaxed font-semibold">
-                  Supports comprehensive apicultural standards to provide a one-stop platform for managing authenticity risk with traceability, auditing, telemetry, and field inspections.
+                  Supports high beekeeping standards in a simple platform to protect honey quality with clear tracking, records, and field inspections.
                 </p>
               </div>
               <div className="pt-6 border-t border-black/10 flex items-center justify-between text-xs font-black">
@@ -2421,7 +2421,7 @@ const Traceability = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             {[
               { step: "1", title: "Record Harvest", desc: "Log field activities with GPS location, timestamp, moisture levels, and harvest weight.", icon: ClipboardList },
-              { step: "2", title: "Verify Provenance", desc: "Confirm every batch is GPS-verified with hive origin, flora source, and colony health data.", icon: ShieldCheck },
+              { step: "2", title: "Verify Farm Origin", desc: "Confirm every batch is GPS-verified with hive origin, flower source, and colony health data.", icon: ShieldCheck },
               { step: "3", title: "Generate Logbooks", desc: "Create comprehensive digital records with the full operational history of each batch.", icon: FileDown },
               { step: "4", title: "Audit-Ready Reports", desc: "Get compliance documentation ready for regulatory review, export certification, or customer inquiry.", icon: Award },
             ].map((item, index) => (

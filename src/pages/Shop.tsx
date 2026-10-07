@@ -765,16 +765,16 @@ const Shop = () => {
                   Track Every Jar from Geo-Tagged Bee Box to Collection Center
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Unlike generic multifloral blends, our monofloral honey captures GPS coordinates of every bee box during peak bloom, logs centrifugal extraction at regional centers, and maintains an immutable chain of custody to guarantee 0% adulteration.
+                  Unlike generic blended honey, our single-flower honey records GPS coordinates for every bee box during peak bloom, logs cold extraction at regional centers, and maintains a verified record to guarantee pure honey with no added syrups.
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-foreground/80">
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    Geo-Tagged Bee Boxes (GeoJSON)
+                    GPS-Verified Bee Boxes
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    Monofloral Verified Floral Sources
+                    Single-Flower Verified Sources
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />

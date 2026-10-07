@@ -60,14 +60,14 @@ const Media = () => {
       badge: "GPS Mapped (GeoJSON)",
       badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Migrating 184 managed Langstroth hives into pristine wild Acacia woodlands during peak blooming anthesis. Every individual hive stand is geo-tagged with WGS84 coordinates and serialized QR identifiers, forming the immutable origin node of our honey trail.",
+        "Moving 184 managed hives into wild Acacia woodlands during peak flower blooming season. Every hive is tagged with GPS coordinates and QR codes, forming the verified origin of our honey.",
       image: "/images/story/hives/apiary-langstroth-row.jpg",
       thumbLabel: "Box Migration",
       cropType: "Acacia Monofloral",
       provenanceHighlights: [
         "Target flora: 100% Wild Acacia tortilis and senegal bloom corridor",
         "Box IDs: KIB-001 through KIB-184 with tamper-evident QR tags",
-        "Offline mobile logging syncing WGS84 GeoJSON spatial polygons",
+        "Offline mobile logging syncing exact hive GPS locations",
       ],
       qualityImpact:
         "Ensures strictly monofloral floral forage, preventing mixed adulteration with agricultural syrups or off-target weeds.",
@@ -111,7 +111,7 @@ const Media = () => {
       provenanceHighlights: [
         "100% negative for exogenous sugars, maltose, and inverted syrups",
         "Pollen spectrum confirming authentic floral dominance",
-        "Batch-specific digital provenance certificate attached to jar QR passport",
+        "Batch-specific harvest verification attached to jar QR code",
       ],
       qualityImpact:
         "Provides indisputable legal and consumer defense against global honey fraud and mislabeling.",
@@ -1048,11 +1048,11 @@ const Media = () => {
                 Hive-to-Honey Digital Traceability • Monofloral Authenticity
               </Badge>
               <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
-                Honey Media & <span className="text-amber-600">Hive-to-Jar Provenance</span>
+                Honey Media & <span className="text-amber-600">Hive-to-Jar Journey</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-                Tracing honey from <strong>geo-tagged bee boxes and peak floral anthesis</strong> to regional collection center cold extraction.
-                Backing monofloral claims with verifiable data, combating adulteration, and meeting FAO and EU food safety standards.
+                Tracing honey from <strong>GPS-verified bee boxes and flower blooming season</strong> to regional collection center cold extraction.
+                Backing pure honey with clear, verified records that meet international food safety standards.
               </p>
 
               {/* Quick Filter Navigation Buttons for Honey Media */}
@@ -1687,7 +1687,7 @@ const Media = () => {
                   <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      Provenance & Traceability Attributes:
+                      Honey Origin & Tracking Attributes:
                     </p>
                     <ul className="space-y-1.5">
                       {honeyMediaDispatches[selectedHoneyPhotoIndex].provenanceHighlights.map((obs, idx) => (
@@ -1835,12 +1835,12 @@ const Media = () => {
             <Card className="border-emerald-300/40 bg-emerald-50/10 dark:bg-emerald-950/10 p-6 md:p-8 rounded-3xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold">✓</span>
-                <h3 className="font-black text-xl text-foreground">BeeYield Digital Provenance</h3>
+                <h3 className="font-black text-xl text-foreground">BeeYield Honey Origin Records</h3>
               </div>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>Geo-Tagged Bee Boxes (GeoJSON):</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
+                  <span><strong>GPS-Verified Bee Boxes:</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -1852,7 +1852,7 @@ const Media = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>EU Digital Product Passport (DPP):</strong> First-mile beekeeper KYC to serialized retail QR passport ready for audit.</span>
+                  <span><strong>Digital Product Verification:</strong> First-mile beekeeper registration to serialized retail QR code ready for audit.</span>
                 </li>
               </ul>
             </Card>
@@ -1864,7 +1864,7 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center font-black">
                 <MapPin className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">Geo-Tagged Boxes</h4>
+              <h4 className="font-bold text-base text-foreground">GPS-Mapped Boxes</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 GPS coordinates logged during box migration to verify specific floral zones during peak nectar flows.
               </p>
@@ -1884,7 +1884,7 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-700 flex items-center justify-center font-black">
                 <Users className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">Beekeeper KYC</h4>
+              <h4 className="font-bold text-base text-foreground">Beekeeper Direct Pay</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Mobile-first offline onboarding captures smallholder identities and transparent weight receipts for direct payment.
               </p>
@@ -1914,7 +1914,7 @@ const Media = () => {
             Verify Your Jar from Bee Box to Table
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Scan your jar's QR code or click any verified batch code below to view the immutable ledger of GPS coordinates, beekeeper identity, floral anthesis dates, and verified harvest metrics.
+            Scan your jar's QR code or click any verified batch code below to view the verified records of GPS coordinates, beekeeper details, flower blooming dates, and harvest details.
           </p>
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
