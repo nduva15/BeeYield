@@ -1253,7 +1253,7 @@ const Traceability = () => {
                                       <div className="grid grid-cols-2 gap-3 text-sm">
                                         <div>
                                           <p className="text-[10px] font-black text-[#1B9157] mb-1">Weather Status</p>
-                                          <p className="font-semibold text-white">{textOrMissing(apiaryWeather?.weather_summary?.status || traceData?.extra_metadata?.weather_conditions)}</p>
+                                          <p className="font-semibold text-white">{textOrMissing(apiaryWeather?.current?.condition || traceData?.extra_metadata?.weather_conditions)}</p>
                                         </div>
                                         <div>
                                           <p className="text-[10px] font-black text-[#1B9157] mb-1">Apiary Terrain</p>
@@ -1269,7 +1269,7 @@ const Traceability = () => {
                                         </div>
                                         <div>
                                           <p className="text-[10px] font-black text-[#1B9157] mb-1">Wind Speed</p>
-                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.current?.wind_speed_kph, " kph", 1)}</p>
+                                          <p className="font-semibold text-white">{numberOrMissing(apiaryWeather?.current?.wind_speed_kmh, " km/h", 1)}</p>
                                         </div>
                                         <div>
                                           <p className="text-[10px] font-black text-[#1B9157] mb-1">Rainfall</p>

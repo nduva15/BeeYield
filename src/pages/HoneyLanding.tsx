@@ -103,33 +103,33 @@ const HeroSection = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-              Verifiable Purity • Smart Beekeeping
+              100% Raw Honey • Direct From The Hive
             </Badge>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-neutral-900 leading-[0.85] tracking-tighter mb-6 drop-shadow-sm">
-              The Purest <span className="text-beeyield-green block">Harvest</span>
+              Real, Pure <span className="text-beeyield-green block">Honey</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-neutral-500 mb-10 max-w-lg leading-relaxed font-medium">
-              Experience the world's most transparent honey. Powered by <span className="text-beeyield-gold font-bold">BeeYield</span> and a commitment to protecting 50% of the surplus for the bees.
+            <p className="text-lg md:text-xl text-neutral-600 mb-10 max-w-lg leading-relaxed font-medium">
+              Taste real, natural honey straight from our hives in Kibwezi. We leave half of the honey in the hive so our bees stay healthy and strong.
             </p>
 
             {/* CTA Group */}
             <div className="flex flex-wrap gap-4 mb-12">
               <Button
                 size="lg"
-                className="bg-neutral-900 hover:bg-beeyield-green text-[#1A1A1A] font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 text-xs"
+                className="bg-neutral-900 hover:bg-beeyield-green text-white hover:text-neutral-900 font-black rounded-2xl px-10 h-16 shadow-2xl shadow-neutral-900/20 transition-all hover:scale-105 active:scale-95 text-xs"
                 onClick={() => navigate("/shop")}
               >
-                Shop Collection
+                Buy Honey
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-neutral-200 text-neutral-900 font-black rounded-2xl px-10 h-16 hover:bg-neutral-50 transition-all text-xs"
+                className="border-2 border-neutral-300 text-neutral-900 font-black rounded-2xl px-10 h-16 hover:bg-neutral-100 transition-all text-xs"
                 onClick={() => navigate("/traceability")}
               >
-                Trace Your Jar
+                Check Your Jar
               </Button>
             </div>
 
@@ -142,7 +142,7 @@ const HeroSection = () => {
               <div className="w-px h-8 bg-neutral-100" />
               <div className="flex flex-col">
                 <span className="text-2xl font-black text-beeyield-gold">{liveStats?.hive_count || "184"}</span>
-                <span className="text-[10px] font-black text-neutral-400">Smart Hives</span>
+                <span className="text-[10px] font-black text-neutral-400">Active Hives</span>
               </div>
             </div>
           </motion.div>
@@ -176,7 +176,7 @@ const HeroSection = () => {
                 className="absolute top-10 -right-4 lg:-right-12 z-20 bg-[#FFF9F0]/90 backdrop-blur-xl p-6 rounded-[2rem] shadow-2xl border border-[#F4D03F]/100 flex flex-col items-center gap-2"
               >
                 <div className="w-12 h-12 bg-beeyield-green rounded-2xl flex items-center justify-center shadow-lg">
-                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A]" />
+                  <ShieldCheck className="w-6 h-6 text-white" />
                 </div>
                 <div className="text-center">
                   <span className="block text-sm font-black text-neutral-900">Verified</span>
@@ -206,10 +206,10 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-xl">
             <Badge className="bg-beeyield-gold/10 text-beeyield-gold border border-beeyield-gold/20 mb-6 hover:bg-beeyield-gold/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full">
-              Purest Gold
+              Our Best Honey
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black text-beeyield-green tracking-tighter leading-tight">
-              Featured <span className="text-beeyield-gold">Collection</span>
+              Popular <span className="text-beeyield-gold">Honey Jars</span>
             </h2>
           </div>
           <Button
@@ -218,7 +218,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
             asChild
           >
             <Link to="/shop">
-              Shop All <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+              See All Honey <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
         </div>
@@ -306,7 +306,7 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
                         to={`/trace?code=${product.batch_code}`}
                         className="text-amber-800 hover:text-amber-950 font-bold underline hover:no-underline"
                       >
-                        Verify Hive &rarr;
+                        Check This Batch &rarr;
                       </Link>
                     </div>
                   )}
@@ -319,10 +319,10 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
 
                     <Button
                       size="sm"
-                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-[#1A1A1A] font-black tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
+                      className="rounded-xl h-10 bg-beeyield-green hover:bg-beeyield-green-dark text-white font-bold tracking-wider px-6 shadow-lg shadow-beeyield-green/20 transition-all hover:scale-105 active:scale-95"
                       onClick={() => handleAddToCart(product)}
                     >
-                      Add
+                      Add to Cart
                     </Button>
                   </div>
                 </CardContent>
@@ -344,22 +344,28 @@ const TestimonialSection = () => {
       name: "Sarah Jurbina",
       title: "Verified Buyer",
       location: "Nairobi",
-      quote: "BeeYield honey is the best I've ever had! The taste is so pure and rich, and I love knowing that it's ethically sourced through the 50/50 promise.",
-      verified: true
+      quote: "BeeYield honey is the best I have ever tasted! It is thick, sweet, and completely natural. My whole family loves it.",
+      verified: true,
+      image: "/images/story/hives/yellow-langstroth-closeup.jpg",
+      imageAlt: "BeeYield Precision Langstroth Hive with African Honeybees"
     },
     {
       name: "Michael Ochieng",
       title: "Wellness Enthusiast",
       location: "Mombasa",
-      quote: "The traceability feature gives me confidence that we're consuming 100% pure honey. Amazing quality!",
-      verified: true
+      quote: "I can scan the jar with my phone and see the farm where it came from. The honey is very fresh and clean.",
+      verified: true,
+      image: "/images/story/apisense-bees-cluster-1.png",
+      imageAlt: "Active African Honeybee Colony at Hive Entrance"
     },
     {
       name: "Amina Hassan",
       title: "Head Chef",
       location: "Karen",
-      quote: "As a professional chef, I'm very particular about ingredients. BeeYield's honey has become a staple in my kitchen.",
-      verified: true
+      quote: "Real, clean honey with a rich natural aroma. Perfect in tea, baking, or on fresh bread.",
+      verified: true,
+      image: "/images/story/hives/apiary-langstroth-row.jpg",
+      imageAlt: "BeeYield Apiary Field in Kibwezi Kenya"
     },
   ];
 
@@ -385,10 +391,10 @@ const TestimonialSection = () => {
           className="text-center mb-16"
         >
           <Badge className="bg-beeyield-green/10 text-beeyield-green border border-beeyield-green/20 mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full">
-            Community Love
+            What Customers Say
           </Badge>
           <h2 className="text-4xl md:text-5xl font-black leading-none tracking-tighter text-beeyield-green">
-            Trusted by the <span className="text-beeyield-gold">Hive</span>
+            Loved By <span className="text-beeyield-gold">Honey Lovers</span>
           </h2>
         </motion.div>
 
@@ -407,11 +413,11 @@ const TestimonialSection = () => {
                 <div className="relative order-2 md:order-1">
                   <div className="aspect-[4/5] md:aspect-square rounded-[2rem] overflow-hidden relative group shadow-2xl">
                     <img
-                      src={`https://i.pravatar.cc/600?u=${testimonials[currentIndex].name}`}
-                      alt={testimonials[currentIndex].name}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                      src={testimonials[currentIndex].image}
+                      alt={testimonials[currentIndex].imageAlt}
+                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-beeyield-green/80 via-beeyield-green/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-beeyield-green/80 via-beeyield-green/20 to-transparent opacity-40 group-hover:opacity-20 transition-opacity" />
 
                     {/* Badge on Image */}
                     <div className="absolute bottom-6 left-6 bg-[#FFF9F0]/90 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg">
@@ -514,17 +520,17 @@ const HeritageSection = () => {
             transition={{ duration: 0.8 }}
           >
             <Badge className="bg-beeyield-green/10 text-beeyield-green mb-6 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1">
-              Our Vision
+              Our Farm Story
             </Badge>
             <h2 className="text-4xl md:text-5xl font-black text-neutral-900 mb-8 tracking-tighter leading-[0.9]">
-              The Most Trusted <span className="text-beeyield-green block">Honey in Makueni</span>
+              Real Honey From <span className="text-beeyield-green block">Kibwezi, Kenya</span>
             </h2>
             <div className="space-y-6">
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                BeeYield was founded with a simple goal: to make beekeeping better through technology and honest reporting. Our journey began in the pristine landscapes of Kenya, where we saw the need for a more sustainable approach. Today, we are proud to lead with our <strong className="text-beeyield-green">50/50 Harvest Promise</strong>—ensuring that for every drop we take, enough is left for the bees to thrive.
+                BeeYield started in Kibwezi with a simple promise: make real, honest honey while taking good care of the bees. In traditional beekeeping, hives are often stripped bare. We do things differently. With our <strong className="text-beeyield-green">50/50 Harvest Promise</strong>, we leave half the honey in the hive so our bees stay strong and well fed through every season.
               </p>
               <p className="text-neutral-600 leading-relaxed text-base font-medium">
-                Every jar you hold features <strong className="text-beeyield-gold">Honey Journey Tracking</strong>, allowing you to trace your honey back to the very hive it came from, meeting the beekeeper and seeing our verified seal of authenticity.
+                Every jar has a simple code on the label. You can scan it anytime with your phone to see which hive your honey came from, when it was harvested, and the beekeeper who cared for it.
               </p>
             </div>
           </motion.div>
@@ -540,34 +546,34 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: ShieldCheck,
-      title: "Hive-to-Honey Journey",
-      description: "Scan the QR code on any jar to trace your honey back to the specific geo-tagged bee box, beekeeper, and cold extraction center.",
+      title: "Know Your Hive",
+      description: "Scan the code on your jar to see the exact hive, the blooming flowers, the harvest date, and the beekeeper.",
       color: "text-beeyield-green bg-beeyield-green/10",
-      cta: "Verify Batch",
+      cta: "Check a Jar",
       ctaLink: "/traceability?code=BEE-2026-01-0420"
     },
     {
       icon: Leaf,
-      title: "50/50 Harvest Promise",
-      description: "We strictly harvest only what the colony can spare—leaving 50% of the surplus to ensure colony survival through dry spells.",
+      title: "Half For The Bees",
+      description: "We only harvest extra honey. We always leave half in the box so the bee colony has natural food all year round.",
       color: "text-beeyield-gold bg-beeyield-gold/10",
-      cta: "Learn Impact",
+      cta: "Our 50/50 Promise",
       ctaLink: "/about"
     },
     {
       icon: Droplets,
-      title: "0% Adulteration Proof",
-      description: "Harvest verified for purity: field optical refractometer moisture under 18%, single-origin flora, zero added corn or rice syrups.",
+      title: "100% Pure, Zero Syrups",
+      description: "Tested for purity and natural moisture. We never add sugar, corn syrup, water, or artificial coloring.",
       color: "text-cyan-700 bg-cyan-50",
-      cta: "Verify Origin",
+      cta: "How We Test",
       ctaLink: "/traceability"
     },
     {
       icon: Sparkles,
-      title: "Monofloral Verification",
-      description: "Geo-tagged boxes synchronized with peak bloom of Acacia, Citrus, Mango, and Jamun for authentic single-origin floral nectar.",
+      title: "Wild Kenyan Flowers",
+      description: "Our bees collect nectar from wild Acacia, Orange blossom, and Mango trees for a clean, rich natural taste.",
       color: "text-amber-700 bg-amber-50",
-      cta: "Explore Flora",
+      cta: "See Flowers",
       ctaLink: "/media"
     },
   ];
@@ -643,21 +649,21 @@ const FlashSaleSection = () => {
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <Badge className="bg-beeyield-gold text-neutral-900 border-none mb-8 px-6 py-2 font-black text-[10px] shadow-glow">
-                Limited Time Offer
+                Special Welcome Gift
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] mb-8 leading-[0.9] tracking-tighter">
-                Claim Your <span className="text-beeyield-gold">20% Welcome</span> Discount
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
+                Get <span className="text-beeyield-gold">20% Off</span> Your First Jar
               </h2>
-              <p className="text-neutral-400 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
-                Join the BeeYield community today and get a discount on your first purchase of our traceable honey.
+              <p className="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
+                Join BeeYield today and enjoy 20% off your first order of fresh, natural honey straight from the farm.
               </p>
 
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-beeyield-gold to-beeyield-orange hover:from-beeyield-orange hover:to-beeyield-gold text-[#1A1A1A] font-black rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
+                className="bg-beeyield-gold hover:bg-amber-400 text-neutral-900 font-bold rounded-2xl px-12 h-16 shadow-2xl shadow-beeyield-gold/20 text-xs transition-all hover:scale-105 active:scale-95 w-full sm:w-auto"
                 onClick={() => navigate("/shop")}
               >
-                Claim Discount Now
+                Get 20% Off Now
               </Button>
             </div>
 
@@ -671,7 +677,7 @@ const FlashSaleSection = () => {
                 <div key={i} className="flex flex-col items-center group">
                   <div className="bg-[#F9F7F2] backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-[#F4D03F]/20 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
                     <div className="absolute inset-0 bg-beeyield-gold/0 group-hover:bg-beeyield-gold/5 transition-colors duration-500" />
-                    <span className="text-4xl sm:text-5xl font-black text-[#1A1A1A] tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
+                    <span className="text-4xl sm:text-5xl font-black text-white tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
                   </div>
                   <span className="text-[10px] text-neutral-500 font-black group-hover:text-beeyield-gold transition-colors">{time.label}</span>
                 </div>
@@ -688,44 +694,44 @@ const FlashSaleSection = () => {
 const FAQSection = () => {
   const faqs = [
     {
-      question: "How can I verify where my honey comes from?",
-      answer: "Every jar of BeeYield honey features a unique QR code. By scanning it, you can access the record of your honey, showing the exact hive location, harvest date, moisture levels, and even the beekeeper who cared for the colony.",
+      question: "How do I know where my honey came from?",
+      answer: "Every jar has a QR code. Use your phone camera to scan it, and you will see the exact hive, the harvest date, the flowers, and the beekeeper.",
     },
     {
-      question: "What exactly is the 50/50 Harvest Promise?",
-      answer: "Traditional beekeeping often over-harvests, leaving bees with sugar water. Our 50/50 Promise means we only take a maximum of 50% of the surplus honey. We leave the rest to ensure the bees have their natural, nutrient-rich food to survive and thrive through all seasons.",
+      question: "What is the 50/50 Harvest Promise?",
+      answer: "We only harvest extra honey. We always leave half of the honey in the hive so our bees have natural, healthy food to eat all year round.",
     },
     {
-      question: "How does BeeYield protect bees from diseases?",
-      answer: "We monitor the hive with sensors and sound patterns to spot early signs of stress or disease (like Varroa mites). That gives us time to act before it becomes a bigger issue.",
+      question: "Do you add any sugar or syrup to the honey?",
+      answer: "No. Never. Our honey is 100% pure raw honey straight from the comb. We never add sugar, corn syrup, water, color, or flavoring.",
     },
     {
-      question: "Why does protecting bees result in better honey?",
-      answer: "A healthy, stress-free bee colony has a stronger immune system and produces honey with higher enzymatic activity. By protecting bees from disease and environmental stress, we ensure the honey remains pure, potent, and free from the contaminants often found in struggling colonies.",
+      question: "Is your honey boiled or heated?",
+      answer: "No. Heating honey destroys healthy natural enzymes. We only spin the combs cold and gently strain out beeswax particles.",
     },
     {
-      question: "How are you contributing to apiary restoration?",
-      answer: "We don't just place hives; we restore ecosystems. To date, we have planted 2,500 indigenous trees around our apiary sites to provide diverse forage for bees and restore the natural biodiversity of the region.",
+      question: "Why does raw honey taste different from supermarket honey?",
+      answer: "Supermarket honey is often boiled, blended, and diluted. Our honey comes directly from wild Kenyan flowers like Acacia and Mango, giving it a rich, clean flavor.",
     },
     {
-      question: "Is your honey raw and unfiltered?",
-      answer: "Yes! Our honey is 100% raw and gravity-filtered, preserving all the natural pollen, enzymes, and antioxidants that commercial heat-processing destroys.",
+      question: "How should I store my honey?",
+      answer: "Keep the jar tightly closed at room temperature in a dry place. Pure natural honey never spoils.",
     },
     {
-      question: "Can I visit the apiary from which my honey was harvested?",
-      answer: "Through our digital dashboard, you can virtually visit your honey's origin. For corporate partners and members, we also organize physical 'Open Apiary Days' to witness our beekeeping practices firsthand.",
+      question: "Can young children eat this honey?",
+      answer: "Natural raw honey is safe and healthy for adults and children over one year old. It should not be given to babies under 12 months.",
     },
     {
-      question: "How does BeeYield support local farmers?",
-      answer: "We provide local farmers with professional beekeeping training and IoT hive monitoring technology. By creating a sustainable market for their honey, we ensure they earn significantly above fair-trade market rates.",
+      question: "How do you help local beekeepers?",
+      answer: "We work directly with beekeepers in Makueni, providing modern Langstroth boxes, fair wages, and hands-on training.",
     },
     {
-      question: "Does BeeYield offer honey subscriptions?",
-      answer: "Yes! Our 'Hive Connection' subscription ensures you never run out of your favorite blossoms while directly supporting the maintenance of a specific apiary restoration project.",
+      question: "What flowers do your bees visit?",
+      answer: "Our bees forage on wild Acacia trees, Desert Date bushes, Orange blossoms, and Mango trees across the Kibwezi savannah.",
     },
     {
-      question: "Is BeeYield honey suitable for medicinal use?",
-      answer: "While we don't make medical claims, our honey is tested for high 'Total Activity' (TA) levels. Because it is raw and never heat-modified, it retains the natural antibacterial properties prized in traditional wellness.",
+      question: "How can I order honey jars?",
+      answer: "You can order directly from our online shop. We deliver safely packed jars across Kenya, with fast dispatch from our regional hubs.",
     },
   ];
 
@@ -734,10 +740,10 @@ const FAQSection = () => {
       <div className="container mx-auto px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <Badge className="bg-neutral-100 text-neutral-600 border-none mb-6 px-4 py-1.5 font-black text-[10px] mx-auto block w-fit">
-            Common Questions
+            Questions & Answers
           </Badge>
           <h2 className="text-3xl md:text-5xl font-black text-neutral-900 text-center mb-12 tracking-tight">
-            Curious about <span className="text-beeyield-green">Quality?</span>
+            Simple Answers About <span className="text-beeyield-green">Our Honey</span>
           </h2>
 
           <Accordion type="single" collapsible className="space-y-4">
@@ -809,11 +815,11 @@ const NewsletterSection = () => {
                 <Mail className="w-8 h-8 text-[#1A1A1A]" />
               </div>
 
-              <h2 className="text-4xl md:text-6xl font-black text-[#1A1A1A] mb-6 tracking-tighter">
-                Keep in <span className="text-beeyield-gold">Touch</span>
+              <h2 className="text-4xl md:text-6xl font-black text-white mb-6 tracking-tighter">
+                Stay in <span className="text-beeyield-gold">Touch</span>
               </h2>
-              <p className="text-beeyield-green-100/80 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
-                Subscribe for new releases, updates, and practical tips for beekeepers.
+              <p className="text-neutral-100 text-lg mb-12 max-w-lg mx-auto leading-relaxed font-medium">
+                Get updates when new honey batches are harvested, special discounts, and stories from our bee farm.
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto bg-[#F9F7F2] p-2 rounded-3xl border border-[#F4D03F]/20">
@@ -862,13 +868,13 @@ const AllProductsSection = ({
       <div className="container mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <Badge className="bg-beeyield-green/10 text-beeyield-green mb-4 hover:bg-beeyield-green/20 transition-colors font-black text-[10px] px-4 py-1.5 rounded-full border border-beeyield-green/20">
-            Pure Kibwezi Gold
+            Fresh From The Farm
           </Badge>
           <h2 className="text-4xl md:text-5xl font-black text-neutral-900 leading-none tracking-tighter mb-6">
-            Our Full <span className="text-beeyield-green">Honey</span> Collection
+            Choose Your <span className="text-beeyield-green">Honey</span>
           </h2>
-          <p className="text-neutral-500 text-base max-w-xl mx-auto font-medium leading-relaxed">
-            From medicinal Neem to delicate Acacia, discover our range of ethically harvested, 100% raw honey.
+          <p className="text-neutral-600 text-base max-w-xl mx-auto font-medium leading-relaxed">
+            From light, sweet Acacia to rich dark forest honey, find the right jar for your table.
           </p>
         </div>
 
@@ -932,7 +938,7 @@ const AllProductsSection = ({
 
                     <Button
                       size="sm"
-                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-[#1A1A1A] rounded-xl h-11 text-[10px] font-black transition-all hover:shadow-lg shadow-neutral-900/10"
+                      className="w-full bg-neutral-900 hover:bg-beeyield-green text-white hover:text-neutral-900 rounded-xl h-11 text-xs font-bold transition-all hover:shadow-lg shadow-neutral-900/10"
                       onClick={() => handleAddToCart(product)}
                     >
                       <ShoppingCart className="h-3.5 w-3.5 mr-2" />
@@ -976,10 +982,10 @@ const MissionStatementSection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-[#1A1A1A] text-[10px] font-black mb-12 shadow-2xl"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 text-white text-[10px] font-black mb-12 shadow-2xl"
           >
             <Sparkles className="w-3.5 h-3.5 text-beeyield-gold" />
-            The Mission
+            Our Simple Promise
           </motion.div>
 
           <motion.h2
@@ -989,7 +995,7 @@ const MissionStatementSection = () => {
             transition={{ duration: 0.8 }}
             className="text-3xl md:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tighter leading-[1.1] mb-12"
           >
-            To protect the world's pollinators by supporting healthier hives and giving customers clear proof of where their honey came from.
+            We take care of our bees, protect nature, and show you exactly where your honey came from.
           </motion.h2>
 
           <motion.div
@@ -1005,9 +1011,9 @@ const MissionStatementSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="text-lg md:text-xl text-neutral-500 font-medium leading-relaxed max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-neutral-600 font-medium leading-relaxed max-w-2xl mx-auto"
           >
-            Ensuring every drop of honey is not just a product, but a testament to planetary health and verified ecosystem restoration.
+            Every jar is 100% natural, never heated, and bottled with care so you enjoy the full, rich taste of wild Kenyan flowers.
           </motion.p>
         </div>
       </div>
@@ -1128,22 +1134,22 @@ const HoneyLanding = () => {
               <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <ShieldCheck className="h-6 w-6 text-beeyield-green" />
               </div>
-              <span className="font-black text-xs text-neutral-900">100% Origin Verified</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for single-origin harvest and unheated raw purity</span>
+              <span className="font-black text-xs text-neutral-900">100% Pure Honey</span>
+              <span className="text-[11px] text-neutral-600 font-medium max-w-[220px]">Zero added sugar, zero syrup, and never boiled.</span>
             </div>
             <div className="flex flex-col items-center gap-3">
               <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <Zap className="h-6 w-6 text-beeyield-gold" />
               </div>
-              <span className="font-black text-xs text-neutral-900">Direct from Hive</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Bottled at source to preserve active enzymes</span>
+              <span className="font-black text-xs text-neutral-900">Straight From The Hive</span>
+              <span className="text-[11px] text-neutral-600 font-medium max-w-[220px]">Bottled on our farm in clean, food-grade glass jars.</span>
             </div>
             <div className="flex flex-col items-center gap-3">
               <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <Leaf className="h-6 w-6 text-beeyield-green" />
               </div>
-              <span className="font-black text-xs text-neutral-900">Sustainable Harvest</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">50/50 Promise: We leave half for the bees</span>
+              <span className="font-black text-xs text-neutral-900">We Leave Half For The Bees</span>
+              <span className="text-[11px] text-neutral-600 font-medium max-w-[220px]">We only harvest extra honey so our bees never go hungry.</span>
             </div>
           </div>
         </div>

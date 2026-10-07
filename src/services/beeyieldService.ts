@@ -441,6 +441,7 @@ export interface WeatherDailySummary {
   condition?: string | null;
   temp_max_c?: number | null;
   temp_min_c?: number | null;
+  precipitation_mm?: number | null;
   sunrise_at?: string | null;
   sunset_at?: string | null;
   uv_index_max?: number | null;

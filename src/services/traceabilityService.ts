@@ -5,6 +5,26 @@ import { apiGet } from "./api";
 import { CANONICAL_TIMOTHY_HARVESTS, DISTRIBUTION_HUBS } from "@/data/canonicalHarvests";
 import type { Harvest } from "@/services/beeyieldService";
 
+export type CanonicalHarvest = Harvest & {
+    harvested_on?: string;
+    hive_code?: string;
+    hive_label?: string;
+    weight_kg?: number;
+    moisture_pct?: number;
+    apiary_name?: string;
+    frames_harvested?: number;
+    weather?: string;
+    batch?: string;
+    retail_batch_code?: string;
+    distribution_destination?: string;
+    distribution_date?: string;
+    distribution_status?: string;
+    actions?: string[];
+    beekeeper?: string;
+    quality_grade?: string;
+    location?: string;
+};
+
 export interface Location {
     latitude: number;
     longitude: number;
@@ -482,12 +502,10 @@ const isRecoverableVerificationError = (error: any): boolean => {
     );
 };
 
-/**
- * Converts a canonical harvest record into a complete verified TraceResponse for Timothy Nduva
- */
-const harvestToTraceResponse = (harvest: Harvest): TraceResponse => {
-    const hub = (harvest as any).distribution_destination || DISTRIBUTION_HUBS[0];
-    const dispatchDate = (harvest as any).distribution_date || "2026-01-14";
+const harvestToTraceResponse = (rawHarvest: Harvest | CanonicalHarvest): TraceResponse => {
+    const harvest = rawHarvest as CanonicalHarvest;
+    const hub = harvest.distribution_destination || DISTRIBUTION_HUBS[0];
+    const dispatchDate = harvest.distribution_date || "2026-01-14";
     const code = String(harvest.batch_code || harvest.batch || harvest.traceability_code || harvest.id || "BEE-20260103-001");
     const harvestDate = String(harvest.harvest_date || harvest.harvested_on || "2026-01-10").slice(0, 10);
     const hiveCode = String(harvest.hive_code || "KIB-001");
@@ -693,12 +711,13 @@ const buildOfflineTraceData = (code: string): TraceResponse | null => {
     }
 
     // 2. Check CANONICAL_TIMOTHY_HARVESTS (strictly 2026 season batches)
-    const matchedHarvest = CANONICAL_TIMOTHY_HARVESTS.find(h => {
+    const matchedHarvest = CANONICAL_TIMOTHY_HARVESTS.find(rawH => {
+        const h = rawH as CanonicalHarvest;
         const hDate = String(h.harvest_date || h.harvested_on || "");
         if (hDate && !hDate.startsWith("2026")) return false;
 
         const bCode = String(h.batch_code || h.batch || "").toUpperCase();
-        const rCode = String((h as any).retail_batch_code || "").toUpperCase();
+        const rCode = String(h.retail_batch_code || "").toUpperCase();
         const trcCode = String(h.traceability_code || "").toUpperCase();
         const hId = String(h.id || "").toUpperCase();
         const hiveCode = String(h.hive_code || "").toUpperCase();
@@ -756,6 +775,9 @@ const buildOfflineTraceData = (code: string): TraceResponse | null => {
             region: "Makueni",
             county: "Makueni",
             photo_url: "/timothy-nduva.png",
+            registration_date: template.farmer?.registration_date || "2020-01-15",
+            latitude: template.farmer?.latitude ?? -2.4167,
+            longitude: template.farmer?.longitude ?? 37.9667,
         },
         sensor_snapshot: {
             ...template.sensor_snapshot,
