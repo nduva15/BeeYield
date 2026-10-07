@@ -37,7 +37,8 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
-  Camera
+  Camera,
+  Linkedin
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -148,35 +149,35 @@ const Team = () => {
     const founders = [
         {
             name: "Timothy Nduva",
-            role: "CEO & Founder",
-            department: "Directorate",
-            description: "A visionary leader committed to the intersection of traditional apiology and digital precision. Timothy oversees the global strategic direction of the BeeYield ecosystem, spending equal time on software architecture and evening apiary inspections in Kibwezi.",
+            role: "CEO & Co-Founder",
+            department: "Executive & Directorate",
+            description: "A visionary leader bridging traditional apiculture and digital precision. Timothy oversees the strategic direction of the BeeYield ecosystem, spending equal time on software architecture and apiary inspections in Kibwezi.",
             image: TIMOTHY_PHOTO,
             fieldImage: "/images/team/timothy-beekeeper-suit.jpg",
             fieldCaption: "Timothy inspecting hives in Kibwezi apiary wearing custom BeeYield protective gear at dusk",
             linkedin: "https://linkedin.com/in/timothynduva",
-            email: "info@beeyield.com",
+            email: "timothy@beeyield.com",
             achievements: ["Vision Lead", "Architecture Head", "Global Strategy", "Field Beekeeper"]
         },
         {
             name: "Carole Nduva",
-            role: "Technical Director",
-            department: "Operations",
-            description: "Master of operational logistics and partner engineering. Carole leads the team in scaling BeeYield's physical and digital infrastructure across international borders.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["Ops Scalability", "Partner Systems", "Logistics Core"]
+            role: "Co-Founder & Chief Operating Officer (COO)",
+            department: "Operations & Partnerships",
+            description: "Master of operational logistics, partner engineering, and agricultural scaling. Carole leads BeeYield's community expansion, smallholder fair-pay contracts, and international export channels.",
+            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+            linkedin: "https://linkedin.com/company/beeyield",
+            email: "carole@beeyield.com",
+            achievements: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"]
         },
         {
             name: "Agatha Nduva",
-            role: "Technical Director",
-            department: "Engineering",
-            description: "Pioneer in distributed systems and data security. Agatha ensures that every byte of bee telemetry is secured, verified, and processed with high fidelity.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            linkedin: "#",
-            email: "info@beeyield.com",
-            achievements: ["System Integrity", "Data Security", "Protocol Lead"]
+            role: "Co-Founder & Chief Technology Officer (CTO)",
+            department: "Engineering & IT Systems",
+            description: "Pioneer in distributed systems, hive sensor telemetry, and cryptographic data security. Agatha ensures every byte of bee telemetry from Kibwezi bee boxes is secured, verified, and mapped with high fidelity.",
+            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600",
+            linkedin: "https://linkedin.com/company/beeyield",
+            email: "agatha@beeyield.com",
+            achievements: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"]
         },
     ];
 
@@ -561,40 +562,125 @@ const Team = () => {
             {/* ═══════════════════════════════════════════════════════════════
                  DIRECTORATE — Matching Diseases Threat Grid style
             ═══════════════════════════════════════════════════════════════ */}
-            <section className="py-32 bg-white relative">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-24">
-                        <Badge className="bg-amber-500/10 text-amber-700 border-none px-5 py-2 font-semibold text-[10px] rounded-full">
+            <section className="py-28 bg-neutral-50/60 dark:bg-neutral-950/40 relative border-t border-neutral-100 dark:border-neutral-800">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="text-center max-w-3xl mx-auto mb-20">
+                        <Badge className="bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 font-bold px-4 py-1.5 text-xs rounded-full uppercase tracking-wider">
+                            <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
                             The Directorate
                         </Badge>
-                        <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mt-6">Our Leadership</h2>
+                        <h2 className="text-3xl lg:text-5xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight mt-4">
+                            Our Leadership
+                        </h2>
+                        <p className="mt-4 text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                            Pioneering the future of precision apiculture, telemetry-driven hive health, and equitable smallholder agricultural partnerships.
+                        </p>
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+                    <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
                         {founders.map((member, i) => (
                             <motion.div 
                                 key={i}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0, y: 24 }}
+                                whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
+                                transition={{ delay: i * 0.12, duration: 0.6 }}
                                 onClick={() => setSelectedMember(member)}
-                                className="group cursor-pointer"
+                                className="group cursor-pointer flex flex-col h-full bg-white dark:bg-neutral-900 rounded-[2.5rem] border border-neutral-200/80 dark:border-neutral-800 hover:border-amber-500/40 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden"
                             >
-                                <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-neutral-50 border border-neutral-100 shadow-sm mb-8 transition-all group-hover:shadow-xl">
+                                {/* Media / Portrait View */}
+                                <div className="relative aspect-[4/5] m-3.5 rounded-[2rem] overflow-hidden bg-neutral-100 dark:bg-neutral-800 shadow-inner">
                                     <img 
                                         src={member.image} 
                                         alt={member.name} 
                                         className={cn(
-                                            "w-full h-full object-cover transition-all duration-700 group-hover:scale-105",
+                                            "w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105",
                                             member.image === LOGO ? "opacity-10 p-12" : ""
                                         )}
                                     />
-                                    <div className="absolute inset-0 bg-neutral-900/10 group-hover:bg-transparent transition-all" />
-                                    <div className="absolute bottom-8 left-8 right-8">
-                                        <div className="bg-white/90 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
-                                            <h4 className="text-xl font-bold text-neutral-900 mb-1">{member.name}</h4>
-                                            <p className="text-[10px] font-bold text-beeyield-green uppercase tracking-widest">{member.role}</p>
+                                    {/* Subtle Gradient Scrim at Bottom of Photo */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                                    {/* Top Corner Pill Badges */}
+                                    <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                                        <Badge className="bg-white/90 dark:bg-neutral-900/90 text-neutral-900 dark:text-neutral-100 backdrop-blur-md border border-neutral-200/50 font-bold text-[10px] tracking-wider px-3 py-1 rounded-full shadow-sm">
+                                            {member.department}
+                                        </Badge>
+                                        <span className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center shadow-sm opacity-90 group-hover:scale-110 transition-transform">
+                                            <Sparkles className="w-4 h-4 text-amber-400" />
+                                        </span>
+                                    </div>
+
+                                    {/* Bottom Micro-Badge on Image */}
+                                    <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between text-white text-[11px] font-medium pointer-events-none">
+                                        <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white/95 font-semibold text-[10px] flex items-center gap-1.5 shadow-sm">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                            Active Co-Founder
+                                        </span>
+                                        <span className="text-[10px] font-bold text-white/90 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full">
+                                            Kibwezi, Kenya
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Content Details Section Below Portrait */}
+                                <div className="p-6 pt-3 flex flex-col flex-1 justify-between">
+                                    <div>
+                                        <p className="text-[11px] font-bold text-beeyield-green uppercase tracking-widest mb-1.5">
+                                            {member.role}
+                                        </p>
+
+                                        <h3 className="text-2xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight group-hover:text-primary transition-colors flex items-center justify-between">
+                                            <span>{member.name}</span>
+                                            <ArrowRight className="w-4 h-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                                        </h3>
+
+                                        <p className="mt-2.5 text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed line-clamp-2">
+                                            {member.description}
+                                        </p>
+
+                                        {/* Key Focus Tags */}
+                                        <div className="flex flex-wrap gap-1.5 mt-4">
+                                            {member.achievements?.slice(0, 3).map((ach) => (
+                                                <Badge
+                                                    key={ach}
+                                                    variant="secondary"
+                                                    className="text-[10px] font-semibold py-0.5 px-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-none"
+                                                >
+                                                    {ach}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Action Bar */}
+                                    <div className="mt-6 pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+                                        <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors flex items-center gap-1.5">
+                                            <span>View Executive Bio</span>
+                                            <ChevronRight className="w-3.5 h-3.5" />
+                                        </span>
+
+                                        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                            {member.linkedin && member.linkedin !== "#" && (
+                                                <a
+                                                    href={member.linkedin}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label={`${member.name} LinkedIn`}
+                                                    className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-[#0077B5] hover:text-white text-neutral-600 dark:text-neutral-300 flex items-center justify-center transition-colors"
+                                                >
+                                                    <Linkedin className="w-4 h-4" />
+                                                </a>
+                                            )}
+                                            {member.email && (
+                                                <a
+                                                    href={`mailto:${member.email}`}
+                                                    aria-label={`Email ${member.name}`}
+                                                    className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-900 hover:text-white dark:hover:bg-neutral-100 dark:hover:text-neutral-900 text-neutral-600 dark:text-neutral-300 flex items-center justify-center transition-colors"
+                                                >
+                                                    <Mail className="w-4 h-4" />
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

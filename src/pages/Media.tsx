@@ -1046,14 +1046,14 @@ const Media = () => {
                 className="mb-4 px-4 py-1.5 rounded-full text-amber-700 dark:text-amber-300 border-amber-300 bg-amber-500/10 font-bold uppercase tracking-wider text-xs inline-flex items-center"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
-                Hive-to-Honey Digital Traceability • Monofloral Authenticity
+                From Hive to Jar • 100% Pure Honey
               </Badge>
               <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
                 Honey Media & <span className="text-amber-600">Hive-to-Jar Journey</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-                Tracing honey from <strong>verified bee boxes and flower blooming season</strong> to regional collection center cold extraction.
-                Backing pure honey with clear, verified records that meet international food safety standards.
+                Tracing honey from <strong>verified bee hives and wild flower blooms</strong> to clean cold spinning.
+                Every jar comes with honest, verified records you can check on your phone.
               </p>
 
               {/* Quick Filter Navigation Buttons for Honey Media */}
@@ -1067,7 +1067,7 @@ const Media = () => {
                   }
                 >
                   <Camera className="w-3.5 h-3.5 mr-1.5" />
-                  <span>Honey Field Dispatches</span>
+                  <span>Field Photos</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -1077,7 +1077,7 @@ const Media = () => {
                     document.getElementById("honey-value-chain")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🌱 Value Chain (5 Stages)
+                  🌱 The 5 Steps
                 </Button>
                 <Button
                   variant="outline"
@@ -1087,7 +1087,7 @@ const Media = () => {
                     document.getElementById("honey-purity-defense")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🛡️ Anti-Adulteration Proof
+                  🛡️ 100% Pure Proof
                 </Button>
                 <Button
                   variant="outline"
@@ -1097,7 +1097,7 @@ const Media = () => {
                     document.getElementById("honey-ethics-5050")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  ⚖️ 50/50 Reserve Ethics
+                  ⚖️ Our 50/50 Promise
                 </Button>
                 <Button
                   variant="default"
@@ -1107,7 +1107,7 @@ const Media = () => {
                 >
                   <Link to="/traceability">
                     <QrCode className="w-3.5 h-3.5 mr-1.5" />
-                    <span>Verify Honey Jar</span>
+                    <span>Verify Your Jar</span>
                   </Link>
                 </Button>
               </div>
@@ -1518,7 +1518,7 @@ const Media = () => {
               The Hive-to-Honey Value Chain
             </h2>
             <p className="text-base text-muted-foreground mt-3 leading-relaxed">
-              Unlike generic multifloral blends, our monofloral honey captures precise spatial, phenological, and extraction records across all 5 supply chain nodes.
+              Every jar is tracked from wild flower blossoms and the hive all the way to cold extraction and your kitchen.
             </p>
           </div>
 
@@ -1584,7 +1584,7 @@ const Media = () => {
                   className="inline-flex items-center gap-2 text-xs font-bold text-amber-700 hover:text-amber-800 dark:text-amber-400 bg-amber-500/10 px-4 py-2 rounded-xl transition-all"
                 >
                   <QrCode className="w-4 h-4" />
-                  <span>Trace Live Batch Ledger</span>
+                  <span>Check Batch Records</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -1592,7 +1592,7 @@ const Media = () => {
               <div className="grid md:grid-cols-12 gap-8 pt-6">
                 <div className="md:col-span-7 space-y-4">
                   <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">
-                    Stage Overview & Agronomic Discipline:
+                    What Happens at this Step:
                   </h4>
                   <p className="text-sm md:text-base text-foreground/85 leading-relaxed">
                     {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].description}
@@ -1602,7 +1602,7 @@ const Media = () => {
                 <div className="md:col-span-5 bg-secondary/40 border border-border/50 rounded-2xl p-5 space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                     <FileCheck className="w-4 h-4 text-emerald-600" />
-                    Verified Data Points Logged:
+                    What We Record & Check:
                   </h4>
                   <ul className="space-y-2">
                     {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].dataPoints.map((pt, pIdx) => (
@@ -1634,7 +1634,7 @@ const Media = () => {
               Honey Traceability in the Field
             </h2>
             <p className="text-base text-muted-foreground mt-3">
-              Photographic proof capturing bee box migration, sanitary centrifugal extraction at regional centers, field refractometer checks, and smallholder beekeeper onboarding.
+              Real photos from our apiaries showing hive moves, clean cold extraction, moisture testing, and our local beekeepers at work.
             </p>
           </div>
 
@@ -1688,7 +1688,7 @@ const Media = () => {
                   <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      Honey Origin & Tracking Attributes:
+                      Where It Comes From & How It's Tracked:
                     </p>
                     <ul className="space-y-1.5">
                       {honeyMediaDispatches[selectedHoneyPhotoIndex].provenanceHighlights.map((obs, idx) => (
@@ -1703,7 +1703,7 @@ const Media = () => {
                   <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-300/30">
                     <p className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1.5 mb-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
-                      Purity & Quality Assurance Standard
+                      Purity & Quality Guarantee
                     </p>
                     <p className="text-xs text-foreground/80">
                       {honeyMediaDispatches[selectedHoneyPhotoIndex].qualityImpact}
@@ -1796,13 +1796,13 @@ const Media = () => {
           <div className="text-center max-w-3xl mx-auto mb-12">
             <Badge className="bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border-emerald-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-3">
               <ShieldCheck className="w-3.5 h-3.5 mr-1.5 inline text-emerald-600" />
-              Anti-Adulteration & Monofloral Defense
+              100% Pure & Real Honey
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
-              Why Honey Traceability is Essential
+              Why Honey Tracking Matters to You
             </h2>
             <p className="text-base text-muted-foreground mt-3 leading-relaxed">
-              Food safety agencies like the FAO, FSSAI, and EU authorities are tightening origin regulations to stop diluted syrups and fake blends. Traceability transforms authenticity from a marketing slogan into verified legal proof.
+              A lot of honey on store shelves is watered down with cheap sugar syrups or harvested unsustainably. Our tracking proves that every jar is 100% real, natural honey made by healthy bees.
             </p>
           </div>
 
@@ -1811,24 +1811,24 @@ const Media = () => {
             <Card className="border-rose-300/40 bg-rose-50/10 dark:bg-rose-950/10 p-6 md:p-8 rounded-3xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-700 flex items-center justify-center font-bold">✕</span>
-                <h3 className="font-black text-xl text-foreground">The Honey Adulteration Crisis</h3>
+                <h3 className="font-black text-xl text-foreground">Problems with Ordinary Honey</h3>
               </div>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0">•</span>
-                  <span><strong>Generic Multifloral Blending:</strong> Mixing unidentified floral syrups with no spatial documentation or bloom timing.</span>
+                  <span><strong>Fake blends:</strong> Mixing mystery honey from unknown sources without any origin details.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0">•</span>
-                  <span><strong>High-Fructose & Rice Syrups:</strong> Exogenous sugars fed to colonies or blended post-harvest to increase liquid volume.</span>
+                  <span><strong>Added sugars:</strong> Feeding bees artificial sugar syrups or watering down honey after harvest.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0">•</span>
-                  <span><strong>Over-Harvesting & Bee Starvation:</strong> Stripping all honey from colonies and substituting artificial sugar syrup.</span>
+                  <span><strong>Hurting bee colonies:</strong> Taking all the honey from hives and leaving bees to starve.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-rose-500 font-bold shrink-0">•</span>
-                  <span><strong>Export Border Rejection:</strong> Failure to provide EUDR-compliant GeoJSON polygons and chain-of-custody records.</span>
+                  <span><strong>Poor quality:</strong> Failing food safety tests due to high moisture or artificial fillers.</span>
                 </li>
               </ul>
             </Card>
@@ -1836,24 +1836,24 @@ const Media = () => {
             <Card className="border-emerald-300/40 bg-emerald-50/10 dark:bg-emerald-950/10 p-6 md:p-8 rounded-3xl">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold">✓</span>
-                <h3 className="font-black text-xl text-foreground">BeeYield Honey Origin Records</h3>
+                <h3 className="font-black text-xl text-foreground">The BeeYield Promise</h3>
               </div>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>Verified Bee Boxes:</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
+                  <span><strong>Tracked hives:</strong> Hives placed in clean Acacia, Citrus, and Mango flower fields.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>0% Added Sugar Guarantee:</strong> Verified natural ripeness and moisture levels kept below 18.0%.</span>
+                  <span><strong>0% added sugar:</strong> 100% pure honey with natural moisture below 18%.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>The 50/50 Reserve Protocol:</strong> Exactly 50% retained in brood chambers for colony wintering and health.</span>
+                  <span><strong>50/50 promise:</strong> We leave half the honey in the hive so bees stay fed and healthy.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>Digital Product Verification:</strong> First-mile beekeeper registration to serialized retail QR code ready for audit.</span>
+                  <span><strong>Scan with your phone:</strong> Every jar has a QR code showing who harvested it and where.</span>
                 </li>
               </ul>
             </Card>
@@ -1865,9 +1865,9 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center font-black">
                 <MapPin className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">Field-Mapped Boxes</h4>
+              <h4 className="font-bold text-base text-foreground">Tracked Hives</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Field coordinates logged during box migration to verify specific floral zones during peak nectar flows.
+                We record hive locations during bloom season so you know which flowers the bees visited.
               </p>
             </div>
 
@@ -1875,9 +1875,9 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center font-black">
                 <Droplets className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">Centrifugal Cold Spin</h4>
+              <h4 className="font-bold text-base text-foreground">Gentle Cold Spin</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Spun under 35°C at regional collection hubs to preserve delicate aromatic notes, minerals, and live enzymes.
+                Spun gently under 35°C so the honey keeps its natural enzymes, pleasant aroma, and rich taste.
               </p>
             </div>
 
@@ -1885,9 +1885,9 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-700 flex items-center justify-center font-black">
                 <Users className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">Beekeeper Direct Pay</h4>
+              <h4 className="font-bold text-base text-foreground">Direct Farmer Pay</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Mobile-first offline onboarding captures smallholder identities and transparent weight receipts for direct payment.
+                We work directly with local beekeepers and pay them fair prices directly on their phones via M-Pesa.
               </p>
             </div>
 
@@ -1895,9 +1895,9 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-teal-500/15 text-teal-700 flex items-center justify-center font-black">
                 <Scale className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">50/50 Harvest Ethics</h4>
+              <h4 className="font-bold text-base text-foreground">50/50 Bee Promise</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Certified Naturally Grown apiculture protocol: half for consumers, half reserved for colony survival.
+                We take only surplus honey and leave the rest so our bees thrive through dry seasons.
               </p>
             </div>
           </div>
@@ -1909,13 +1909,13 @@ const Media = () => {
         <div className="container mx-auto px-4 max-w-4xl space-y-6">
           <Badge className="bg-amber-600/15 text-amber-800 dark:text-amber-200 border-amber-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
             <QrCode className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
-            Live Verification Hub
+            Check Your Honey
           </Badge>
           <h2 className="text-3xl md:text-5xl font-black text-foreground">
-            Verify Your Jar from Bee Box to Table
+            Check Your Jar from Hive to Table
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Scan your jar's QR code or click any verified batch code below to view the verified records of origin coordinates, beekeeper details, flower blooming dates, and harvest details.
+            Scan the QR code on your jar or tap a sample batch below to see the beekeeper, flowering season, and harvest details.
           </p>
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
