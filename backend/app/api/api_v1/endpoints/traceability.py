@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, HTTPException, Request, BackgroundTasks, Depends
 from typing import Optional, Any
 from app.schemas import traceability as schemas
@@ -19,6 +20,14 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     Public endpoint to trace honey by its batch code (e.g. from jar).
     Returns full journey: Farmer -> Apiary -> Hive -> Harvest -> Processing.
     """
+    # Enforce: only new 2026 season batches are eligible for active retail scanning
+    pre_2026 = re.search(r"20(1\d|2[0-5])", code)
+    if pre_2026:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Batch Archive Policy: Only new 2026 season batches can be scanned. Batches from {pre_2026.group(0)} and earlier are archived and no longer eligible for active retail scanning.",
+        )
+
     try:
         result = await traceability_service.get_trace_journey(code, token=token)
 

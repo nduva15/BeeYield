@@ -42,20 +42,10 @@ import {
   buildWeatherFacts,
 } from "@/lib/traceabilityNarrative";
 
-const DEFAULT_EXAMPLE_CODES = [
-  "BEE-2026-01-0420",
-  "BEE-2026-01-0419",
-  "BEE-2026-01-0418",
-  "BEE-2026-01-0421",
-  "BEE-2025-12-0112",
-  "BEE-2025-10-0089",
-  "BEE-2025-08-0056",
-  "BEE-2025-06-0031",
-  "BEE-20260103-001",
-  "BEE-20260103-002",
-  "BEE-20260103-003",
-  "BEE-20260103-004",
-];
+export const DEFAULT_EXAMPLE_CODES = Array.from(
+  { length: 60 },
+  (_, i) => `BEE-2026-01-04${String(i + 1).padStart(2, "0")}`
+);
 
 const Traceability = () => {
   const [qrCode, setQrCode] = useState("");
@@ -222,7 +212,7 @@ const Traceability = () => {
     let active = true;
 
     const loadExampleCodes = async () => {
-      const batches = await getPublicTraceabilityBatches(30);
+      const batches = await getPublicTraceabilityBatches(60);
       if (!active || batches.length === 0) return;
 
       const liveCodes = Array.from(
@@ -720,11 +710,14 @@ const Traceability = () => {
 
                       <div className="mt-8 pt-8 border-t border-slate-100">
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-black text-slate-400">Timothy Nduva's Verified Batches</p>
+                          <p className="text-xs font-black text-slate-400">2026 Harvest Season • Distributed Batches</p>
                           <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                            {exampleCodes.length} Batches Available
+                            {exampleCodes.length} Batches (2026 Only)
                           </span>
                         </div>
+                        <p className="text-[11px] text-slate-500 mb-3 font-medium">
+                          Active scanning is restricted to new 2026 batches. All 60 batches have been cold-extracted, quality-sealed, and distributed to regional retail hubs:
+                        </p>
                         <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
                           {exampleCodes.map(code => (
                             <Button
@@ -743,7 +736,7 @@ const Traceability = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-4">
                           <ShieldCheck className="h-4 w-4 text-[#1B9157]" />
-                          <span className="text-xs font-bold text-muted-foreground italic">Every batch is permanently recorded and verified</span>
+                          <span className="text-xs font-bold text-muted-foreground italic">60 verified 2026 batches distributed across regional hubs</span>
                         </div>
                       </div>
                     </div>
@@ -1629,7 +1622,7 @@ const Traceability = () => {
                         </div>
                       </div>
 
-                      {/* 4. Journey Closure: Your Jar */}
+                      {/* 4. Journey Step: Bottling & Sealing */}
                       <div className="flex gap-8 sm:gap-14 group relative">
                         <div className="relative z-10 shrink-0">
                           <motion.div
@@ -1639,24 +1632,58 @@ const Traceability = () => {
                             <Box className="h-8 w-8 sm:h-10 sm:w-10" />
                           </motion.div>
                           <div className="mt-3 text-center text-[11px] font-semibold text-[#D4AC0D]">
-                            Your Jar
+                            Bottling
+                          </div>
+                        </div>
+                        <div className="flex-1 pb-12 border-b border-slate-50">
+                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                            <h4 className="font-black text-2xl sm:text-3xl text-[#1A1A1A] tracking-tighter">Packaging & Quality Seal</h4>
+                            <Badge className="bg-amber-100 text-amber-800 border-none font-black text-[10px] px-3 py-1">500g Glass Jar</Badge>
+                          </div>
+                          <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
+                            Hand-bottled and assigned to batch <span className="text-beeyield-gold font-black underline underline-offset-4 decoration-2">{traceData?.batch_code}</span> with tamper-evident seal and registered on the HoneyTrace verification ledger.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* 5. Journey Step: Distribution Hub */}
+                      <div className="flex gap-8 sm:gap-14 group relative">
+                        <div className="relative z-10 shrink-0">
+                          <motion.div
+                            whileInView={{ scale: [0.9, 1], opacity: [0, 1] }}
+                            className="h-16 w-16 sm:h-20 sm:w-20 rounded-[2.5rem] bg-[#FFF9F0] border-4 border-emerald-500 flex items-center justify-center text-emerald-600 shadow-glow-green group-hover:scale-110 transition-transform duration-500"
+                          >
+                            <Truck className="h-8 w-8 sm:h-10 sm:w-10" />
+                          </motion.div>
+                          <div className="mt-3 text-center text-[11px] font-semibold text-emerald-700">
+                            Distributed
                           </div>
                         </div>
                         <div className="flex-1 last:pb-0">
                           <div className="flex flex-wrap items-center gap-3 mb-4">
-                            <h4 className="font-black text-2xl sm:text-3xl text-[#1A1A1A] tracking-tighter">Final Custody</h4>
-                            <Badge className="bg-[#FFF9F0] text-[#1A1A1A] border-none font-black text-[10px] px-3 py-1">Final Step</Badge>
+                            <h4 className="font-black text-2xl sm:text-3xl text-[#1A1A1A] tracking-tighter">Distribution & Retail Hub</h4>
+                            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 font-black text-[10px] px-3 py-1">2026 DISPATCHED</Badge>
                           </div>
                           <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-medium mb-4">
-                            Hand-bottled and assigned to batch <span className="text-beeyield-gold font-black underline underline-offset-4 decoration-2">{traceData?.batch_code}</span>. Destination: Excellence.
+                            Distributed to <span className="text-emerald-800 font-black underline underline-offset-4 decoration-2">{traceData?.distribution?.destination || (traceData?.extra_metadata as any)?.distribution_destination || "Nairobi Organic Farmers Market & Retail Hub"}</span>.
                           </p>
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 font-medium mb-3">
+                            <span className="bg-emerald-50 text-emerald-800 px-3 py-1 rounded-full border border-emerald-200 font-bold">
+                              Status: {traceData?.distribution?.status || "Distributed & Ready for Table"}
+                            </span>
+                            {traceData?.distribution?.dispatch_date && (
+                              <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full border border-slate-200">
+                                Dispatched: {traceData.distribution.dispatch_date}
+                              </span>
+                            )}
+                          </div>
                           <motion.div
                             animate={{ opacity: [0.5, 1, 0.5] }}
                             transition={{ duration: 2, repeat: Infinity }}
-                            className="flex items-center gap-2 text-beeyield-gold font-black text-[10px]"
+                            className="flex items-center gap-2 text-emerald-700 font-black text-[10px]"
                           >
-                            <div className="h-1 w-1 rounded-full bg-beeyield-gold" />
-                            Traceability verified
+                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                            Retail authenticity verified
                           </motion.div>
                         </div>
                       </div>

@@ -1,15 +1,24 @@
 import type { Harvest } from "@/services/beeyieldService";
 
+export const DISTRIBUTION_HUBS = [
+  "Nairobi Organic Farmers Market & Retail Hub",
+  "Makueni Regional Farm Store & Collection Center",
+  "Mombasa Coastal Organic Foods & Wellness Hub",
+  "BeeYield Direct Digital Store (Online Jar Order Dispatch)",
+  "Kisumu Lakeview Fresh Produce & Health Market",
+  "Export Cold-Chain Hub (Direct Airfreight to Premium Retail)",
+] as const;
+
 export const YEAR_PLANS = [
   {
     year: 2026,
-    totalKg: 60.0,
+    totalKg: 120.0,
     start: "2026-01-03",
     end: "2026-01-10",
     honeyType: "Early Spring Acacia Blossom",
     nectarSource: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     colorGrade: "Extra Light Amber",
-    batchesCount: 30,
+    batchesCount: 60,
   },
   {
     year: 2025,
@@ -94,8 +103,14 @@ export function generateTimothyHarvestBatches(): Harvest[] {
 
       // Accurate historical hive distribution across Timothy Nduva's active colonies (hives 1..150):
       let hiveIndex: number;
+      let distributionHub: string | undefined;
+      let distributionDate: string | undefined;
+
       if (plan.year === 2026) {
-        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (Jan 2026 current season: 30 batches = 60kg)
+        hiveIndex = (seq - 1) % 60; // KIB-001 to KIB-060 (Jan 2026 current season: 60 batches = 120kg)
+        distributionHub = DISTRIBUTION_HUBS[(seq - 1) % DISTRIBUTION_HUBS.length];
+        const dayOffset = 11 + ((seq - 1) % 5);
+        distributionDate = `2026-01-${String(dayOffset).padStart(2, "0")}`;
       } else if (plan.year === 2025) {
         hiveIndex = (seq - 1) % 150; // KIB-001 to KIB-150 (2025 season: 150 batches = 300kg)
       } else if (plan.year === 2024) {
@@ -114,8 +129,19 @@ export function generateTimothyHarvestBatches(): Harvest[] {
       const hiveCode = `KIB-${String(hiveIndex + 1).padStart(3, "0")}`;
       const pad = String(hiveIndex + 1).padStart(3, "0");
       const batchCode = `BEE-${yyyymmdd}-${pad}`;
+      const retailBatchCode = plan.year === 2026 ? `BEE-2026-01-04${String(seq).padStart(2, "0")}` : undefined;
       const traceCode = `TRC-${plan.year}-${pad}-${String(seq).padStart(3, "0")}`;
       const moisture = plan.year === 2026 ? 16.8 : Number((17.0 + ((seq % 5) * 0.1)).toFixed(1));
+
+      const actions = [
+        "Cold extracted (<35 °C)",
+        "Double strained (200µm)",
+        "Refractometer tested",
+        "Batch sealed in SS304",
+      ];
+      if (distributionHub) {
+        actions.push(`Distributed to ${distributionHub} (${distributionDate})`);
+      }
 
       batches.push({
         id: `harv-${plan.year}-${String(seq).padStart(3, "0")}`,
@@ -128,6 +154,7 @@ export function generateTimothyHarvestBatches(): Harvest[] {
         hive_label: hiveLabel,
         batch: batchCode,
         batch_code: batchCode,
+        retail_batch_code: retailBatchCode,
         honey_type: plan.honeyType,
         nectar_source: plan.nectarSource,
         florage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
@@ -140,16 +167,14 @@ export function generateTimothyHarvestBatches(): Harvest[] {
         quality_grade: "Export Grade A (<18% moisture)",
         traceability_code: traceCode,
         beekeeper: "Timothy Nduva",
-        actions: [
-          "Cold extracted (<35 °C)",
-          "Double strained (200µm)",
-          "Refractometer tested",
-          "Batch sealed in SS304",
-        ],
+        distribution_status: distributionHub ? "Distributed" : undefined,
+        distribution_destination: distributionHub,
+        distribution_date: distributionDate,
+        actions,
         weather: "28 °C, 40% RH, clear dry extraction conditions",
         notes:
           plan.year === 2026
-            ? `Timothy Nduva - Current Season Jan Harvest Window batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel}). Florage: ${plan.nectarSource}`
+            ? `Timothy Nduva - Current Season Jan Harvest Window batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel}). Florage: ${plan.nectarSource}. Distributed to: ${distributionHub}.`
             : `Timothy Nduva - Production Record ${plan.year} batch ${seq} of ${totalBatches} (${quantity}kg from ${hiveLabel}). Florage: ${plan.nectarSource}`,
         created_at: `${dateStr}T10:00:00.000Z`,
       } as any);
@@ -204,7 +229,7 @@ export function getNormalizedHarvestKey(h: any): string {
   }
 
   // 3. Fallback: Year & Sequence (e.g. harv-2026-001, BEE-2026-01-001, TRC-2026-001-001)
-  const allIdSources = [h.id, h.batch_id, h.batch_code, h.batch, h.traceability_code, h.notes]
+  const allIdSources = [h.id, h.batch_id, h.batch_code, h.retail_batch_code, h.batch, h.traceability_code, h.notes]
     .filter(Boolean)
     .join(" ");
   const seqMatch =
