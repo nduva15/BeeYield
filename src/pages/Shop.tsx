@@ -494,7 +494,7 @@ const ProductCard = memo(({
             )}
             <div className="flex items-center justify-between pt-1">
               <Link
-                to={`/trace?code=${product.batch_code || "BEE-2026-01-0420"}`}
+                to={`/verify?code=${encodeURIComponent(product.batch_code || "BEE-2026-01-0420")}`}
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 hover:underline transition-all"
               >
                 <QrCode className="w-3.5 h-3.5" />
@@ -747,8 +747,24 @@ const Shop = () => {
           ))}
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {visibleProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              selectedSize={selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "")}
+              onSizeChange={handleSizeChange}
+              onAddToCart={handleAddToCart}
+              onToggleWishlist={handleToggleWishlist}
+              isWishlisted={isInWishlist(product.id)}
+              formatPrice={formatPrice}
+              renderStars={renderStars}
+            />
+          ))}
+        </div>
+
         {activeCategory === "honey" && (
-          <div className="mb-10 p-6 md:p-8 rounded-[2rem] bg-gradient-to-r from-amber-500/10 via-[#FFF9F0] to-emerald-500/10 dark:from-amber-950/20 dark:via-background dark:to-emerald-950/20 border border-amber-300/40 dark:border-amber-700/30 shadow-sm">
+          <div className="mt-12 p-6 md:p-8 rounded-[2rem] bg-gradient-to-r from-amber-500/10 via-[#FFF9F0] to-emerald-500/10 dark:from-amber-950/20 dark:via-background dark:to-emerald-950/20 border border-amber-300/40 dark:border-amber-700/30 shadow-sm">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="space-y-2 max-w-2xl">
                 <div className="flex items-center gap-2">
@@ -796,10 +812,19 @@ const Shop = () => {
                   Enter batch code from your jar or try a sample batch:
                 </p>
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
+                  {[
+                    "BEE-2026-01-0420",
+                    "BEE-2026-01-0419",
+                    "BEE-2026-01-0418",
+                    "BEE-2026-01-0421",
+                    "BEE-2025-12-0112",
+                    "BEE-2025-10-0089",
+                    "BEE-2025-08-0056",
+                    "BEE-2025-06-0031",
+                  ].map((code) => (
                     <Link
                       key={code}
-                      to={`/trace?code=${code}`}
+                      to={`/verify?code=${encodeURIComponent(code)}`}
                       className="text-[10px] font-mono font-bold bg-muted hover:bg-primary hover:text-primary-foreground px-2 py-1 rounded transition-colors"
                     >
                       {code}
@@ -811,7 +836,7 @@ const Shop = () => {
                   className="w-full rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-900/10 gap-2"
                   asChild
                 >
-                  <Link to="/traceability">
+                  <Link to="/verify">
                     <span>Open Full Traceability Hub</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -820,22 +845,6 @@ const Shop = () => {
             </div>
           </div>
         )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {visibleProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              selectedSize={selectedSizes[product.id] || (product.variants && product.variants.length > 0 ? product.variants[0].size : "")}
-              onSizeChange={handleSizeChange}
-              onAddToCart={handleAddToCart}
-              onToggleWishlist={handleToggleWishlist}
-              isWishlisted={isInWishlist(product.id)}
-              formatPrice={formatPrice}
-              renderStars={renderStars}
-            />
-          ))}
-        </div>
       </section>
     </BeeYieldPageShell>
   );
