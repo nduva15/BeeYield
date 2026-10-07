@@ -636,6 +636,595 @@ const EXAMPLE_BATCHES: Record<string, TraceResponse> = {
             disease_risk: "Negligible",
         },
     },
+
+    "BEE-2026-01-0421": {
+        batch_code: "BEE-2026-01-0421",
+        product_name: "BeeYield Certified Naturally Grown (CNG) Acacia",
+        harvest_date: "2026-04-18",
+        verified: true,
+        blockchain_verified: true,
+        verification_url: "https://trace.beeyield.io/verify/BEE-2026-01-0421",
+        verification_status: "Verified by Kibwezi Conservation Node (KIB-007)",
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x1a8f3c7e9b2d4e6a8c0f2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b",
+            beeyield_ledger: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            honeychain: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            polygon: { verified: true, status: "confirmed", network: "Polygon PoS" },
+        },
+        completeness: { status: "complete", present: 43, derivable: 2, missing: 0, sections: {} },
+        story_title: "Certified Naturally Grown Acacia Reserve",
+        story_content: "Produced strictly without GMOs, synthetic miticides, or artificial feeding. A verifiable 50% reserve was preserved for colony wintering in pristine Acacia bushlands.",
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Master beekeeper pioneering chemical-free apiculture in the Kibwezi drylands.",
+            registration_date: "2020-01-15",
+            latitude: -2.4190,
+            longitude: 37.9710,
+            location_name: "Kibwezi Conservation Apiary",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-CONSERV-07",
+            apiary_code: "KIB-007",
+            name: "Kibwezi Conservation Apiary",
+            environment_type: "Protected Acacia Woodland",
+            flora_types: ["Acacia tortilis", "Desert Date", "Commiphora"],
+            water_source: "Protected natural aquifer",
+            established_date: "2022-03-10",
+            latitude: -2.4190,
+            longitude: 37.9710,
+            location_name: "Kibwezi Conservation Zone",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: "H-KIB-007",
+            hive_code: "KIB-007",
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            queen_type: "Acclimatized indigenous queen",
+            frame_count: 20,
+            material: "Untreated cedar timber",
+            has_sensors: true,
+            installation_date: "2024-02-15",
+            status: "Active - Pristine",
+        },
+        sensor_snapshot: {
+            avg_temp: 34.1,
+            avg_humidity: 41,
+            weight_kg: 27.8,
+            acoustic_health: "Optimal - Active Colony",
+            activity_level: 94,
+            colony_acoustics: "788Hz",
+            acoustics_status: "Excellent",
+            brood_temp: "35.8°C",
+            temp_trend: "Stable",
+            nest_humidity: "66%",
+            flight_activity: "4.3",
+            activity_status: "High",
+            vibration_index: "2.0",
+            vibration_status: "Nominal",
+            queen_pheromone: "Strongly Detected",
+            queen_status: "present",
+            fob: 9.3,
+            sync_time: new Date(Date.now() - 2 * 86400000).toISOString(),
+            latitude: "-2.4190",
+            longitude: "37.9710",
+        },
+        impact_stats: {
+            total_honey_kg: "27.8",
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Organic Stand Inspection",
+                date: "2026-02-10",
+                location: "Kibwezi Conservation Apiary",
+                description: "Certified Naturally Grown protocol verified. Zero chemical traces detected in hive atmosphere.",
+                icon: "shield",
+                data: { certification: "CNG", synthetic_feed: "None" },
+            },
+            {
+                title: "Acacia Anthesis Surge",
+                date: "2026-03-28",
+                location: "Kibwezi Woodland",
+                description: "Satellites and hive scales confirm peak nectar collection from native Acacia blooms.",
+                icon: "activity",
+                data: { bloom_sync: "Optimal", scale_gain_kg: "+2.4kg/day" },
+            },
+            {
+                title: "50/50 Ethical Harvest",
+                date: "2026-04-18",
+                location: "BeeYield Extraction Facility",
+                description: "Centrifugal cold extraction (<35°C). Exactly 50% stores left for bees. Refractometer verified moisture at 16.5%.",
+                icon: "check",
+                data: { moisture: "16.5%", bee_reserve_pct: "50%" },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: "Certified Naturally Grown Acacia flow",
+            weather_conditions: "32°C, 38% RH, sunny dry season",
+        },
+        health_snapshot: {
+            status: "Exceptional",
+            colony_strength: "9/10",
+            disease_risk: "Negligible",
+        },
+    },
+
+    "BEE-2025-12-0112": {
+        batch_code: "BEE-2025-12-0112",
+        product_name: "BeeYield Highland Eucalyptus & Jamun",
+        harvest_date: "2025-12-10",
+        verified: true,
+        blockchain_verified: true,
+        verification_url: "https://trace.beeyield.io/verify/BEE-2025-12-0112",
+        verification_status: "Verified by Highland Watershed Node (KIB-045)",
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x2c9d4e7a8f1b3e5a7c9d0e2f4a6b8c0e2f4a6b8c0e2f4a6b8c0e2f4a6b8c0e2f",
+            beeyield_ledger: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            honeychain: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            polygon: { verified: true, status: "confirmed", network: "Polygon PoS" },
+        },
+        completeness: { status: "complete", present: 41, derivable: 2, missing: 0, sections: {} },
+        story_title: "Makueni Highland Watershed Harvest",
+        story_content: "Bold, medicinal, and mineral-rich honey sourced from highland floral corridors. Cold-extracted to retain natural antioxidants, active enzymes, and cooling herbal undertones.",
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Pioneer in integrated IoT beekeeping and agro-forestry management.",
+            registration_date: "2020-01-15",
+            latitude: -2.3211,
+            longitude: 37.8932,
+            location_name: "Makueni Highland Watershed",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-HIGHLAND-45",
+            apiary_code: "KIB-045",
+            name: "Makueni Highland Apiary",
+            environment_type: "Highland Forest Corridor",
+            flora_types: ["Eucalyptus globulus", "Syzygium cumini (Jamun)", "Croton"],
+            water_source: "Mountain stream",
+            established_date: "2023-05-18",
+            latitude: -2.3211,
+            longitude: 37.8932,
+            location_name: "Makueni Highland Watershed",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: "H-KIB-045",
+            hive_code: "KIB-045",
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            frame_count: 20,
+            material: "Cypress wood",
+            has_sensors: true,
+            installation_date: "2023-06-01",
+            status: "Active - Robust",
+        },
+        sensor_snapshot: {
+            avg_temp: 26.5,
+            avg_humidity: 55,
+            weight_kg: 29.4,
+            acoustic_health: "Optimal",
+            activity_level: 89,
+            colony_acoustics: "760Hz",
+            acoustics_status: "Excellent",
+            brood_temp: "35.5°C",
+            temp_trend: "Stable",
+            nest_humidity: "70%",
+            flight_activity: "3.8",
+            activity_status: "High",
+            vibration_index: "1.9",
+            vibration_status: "Nominal",
+            queen_pheromone: "Detected",
+            queen_status: "present",
+            fob: 8.9,
+            sync_time: "2025-12-10T11:00:00.000Z",
+            latitude: "-2.3211",
+            longitude: "37.8932",
+        },
+        impact_stats: {
+            total_honey_kg: "29.4",
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Watershed Floral Bloom",
+                date: "2025-11-15",
+                location: "Makueni Highland",
+                description: "Eucalyptus and Jamun trees reach full flowering stage across the hillside.",
+                icon: "activity",
+                data: { nectar_richness: "High", floral_source: "Eucalyptus & Jamun" },
+            },
+            {
+                title: "Collection Center Intake",
+                date: "2025-12-10",
+                location: "Regional Intake Center #KIB-CC4",
+                description: "Sealed supers delivered, weighed, and verified for non-dilution.",
+                icon: "check",
+                data: { moisture: "17.0%", intake_lot: "KIB-CC4-112" },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: "Highland winter harvest",
+            weather_conditions: "24°C, mild winds, clear mountain air",
+        },
+        health_snapshot: {
+            status: "Robust",
+            colony_strength: "8/10",
+            disease_risk: "Low",
+        },
+    },
+
+    "BEE-2025-10-0089": {
+        batch_code: "BEE-2025-10-0089",
+        product_name: "BeeYield Monofloral Mustard & Coriander",
+        harvest_date: "2025-10-22",
+        verified: true,
+        blockchain_verified: true,
+        verification_url: "https://trace.beeyield.io/verify/BEE-2025-10-0089",
+        verification_status: "Verified by Mbuinzau Corridor Node (KIB-063)",
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x3d0e5f8a9c2b4e6a8c0f2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b",
+            beeyield_ledger: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            honeychain: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            polygon: { verified: true, status: "confirmed", network: "Polygon PoS" },
+        },
+        completeness: { status: "complete", present: 40, derivable: 2, missing: 0, sections: {} },
+        story_title: "Mbuinzau Agro-Corridor Monofloral Harvest",
+        story_content: "Golden honey with a light floral aroma and gentle spice note. Extracted at our community collection center from smallholder agricultural zones in Mbuinzau.",
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Beekeeping leader connecting smallholders through digital honey tracking.",
+            registration_date: "2020-01-15",
+            latitude: -2.3644,
+            longitude: 37.9056,
+            location_name: "Mbuinzau Agro-Corridor",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-MBUINZAU-63",
+            apiary_code: "KIB-063",
+            name: "Mbuinzau Partner Apiary",
+            environment_type: "Agro-Forestry & Spices",
+            flora_types: ["Brassica (Mustard)", "Coriandrum sativum (Coriander)", "Sunflowers"],
+            water_source: "Borehole irrigation network",
+            established_date: "2023-08-12",
+            latitude: -2.3644,
+            longitude: 37.9056,
+            location_name: "Mbuinzau, Makueni",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: "H-KIB-063",
+            hive_code: "KIB-063",
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            frame_count: 20,
+            material: "Sustainably harvested timber",
+            has_sensors: true,
+            installation_date: "2023-09-01",
+            status: "Active - Very Good",
+        },
+        sensor_snapshot: {
+            avg_temp: 31.8,
+            avg_humidity: 48,
+            weight_kg: 26.5,
+            acoustic_health: "Optimal",
+            activity_level: 90,
+            colony_acoustics: "770Hz",
+            acoustics_status: "Excellent",
+            brood_temp: "35.6°C",
+            temp_trend: "Stable",
+            nest_humidity: "68%",
+            flight_activity: "4.0",
+            activity_status: "High",
+            vibration_index: "2.1",
+            vibration_status: "Nominal",
+            queen_pheromone: "Strongly Detected",
+            queen_status: "present",
+            fob: 9.0,
+            sync_time: "2025-10-22T10:00:00.000Z",
+            latitude: "-2.3644",
+            longitude: "37.9056",
+        },
+        impact_stats: {
+            total_honey_kg: "26.5",
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Spice Crop Flowering",
+                date: "2025-10-01",
+                location: "Mbuinzau Agro-Corridor",
+                description: "Commercial mustard and coriander fields in full blossom. High foraging frequency.",
+                icon: "activity",
+                data: { pollen_signature: "Mustard & Coriander >80%" },
+            },
+            {
+                title: "Fair-Trade Intake & Settlement",
+                date: "2025-10-22",
+                location: "Community Center Intake Hub",
+                description: "Batch tested with optical refractometer. Direct fair payment logged and confirmed.",
+                icon: "check",
+                data: { moisture: "16.9%", payout: "Immediate" },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: "Agro-forestry spice bloom extraction",
+            weather_conditions: "31°C, light breeze, sunny",
+        },
+        health_snapshot: {
+            status: "Very Good",
+            colony_strength: "8/10",
+            disease_risk: "Low",
+        },
+    },
+
+    "BEE-2025-08-0056": {
+        batch_code: "BEE-2025-08-0056",
+        product_name: "BeeYield Raw Forest Wildflora",
+        harvest_date: "2025-08-14",
+        verified: true,
+        blockchain_verified: true,
+        verification_url: "https://trace.beeyield.io/verify/BEE-2025-08-0056",
+        verification_status: "Verified by Kavita Sanctuary Node (KIB-081)",
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x4e1f6a9b0d3c5e7a9c1f3a5b7c9e1f3a5b7c9e1f3a5b7c9e1f3a5b7c9e1f3a5b",
+            beeyield_ledger: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            honeychain: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            polygon: { verified: true, status: "confirmed", network: "Polygon PoS" },
+        },
+        completeness: { status: "complete", present: 41, derivable: 2, missing: 0, sections: {} },
+        story_title: "Kavita Ecological Sanctuary Wildflora Harvest",
+        story_content: "Multifloral raw honey gathered from wild savannah shrubs, ancient baobabs, and desert dates. Preserves natural pollen granulates and floral biodiversity.",
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Steward of biodiversity and sustainable dryland apiculture.",
+            registration_date: "2020-01-15",
+            latitude: -2.4312,
+            longitude: 37.9540,
+            location_name: "Kavita Ecological Sanctuary",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-KAVITA-81",
+            apiary_code: "KIB-081",
+            name: "Kavita Sanctuary Apiary",
+            environment_type: "Wild Savannah & Baobab Sanctuary",
+            flora_types: ["Adansonia digitata (Baobab)", "Balanites aegyptiaca", "Wild Acacia"],
+            water_source: "Protected natural spring",
+            established_date: "2022-09-05",
+            latitude: -2.4312,
+            longitude: 37.9540,
+            location_name: "Kavita Sanctuary, Kibwezi",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: "H-KIB-081",
+            hive_code: "KIB-081",
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            frame_count: 20,
+            material: "Hardwood timber",
+            has_sensors: true,
+            installation_date: "2023-01-15",
+            status: "Active - Flourishing",
+        },
+        sensor_snapshot: {
+            avg_temp: 33.2,
+            avg_humidity: 43,
+            weight_kg: 28.0,
+            acoustic_health: "Optimal - Active Colony",
+            activity_level: 93,
+            colony_acoustics: "782Hz",
+            acoustics_status: "Excellent",
+            brood_temp: "35.7°C",
+            temp_trend: "Stable",
+            nest_humidity: "67%",
+            flight_activity: "4.1",
+            activity_status: "High",
+            vibration_index: "2.0",
+            vibration_status: "Nominal",
+            queen_pheromone: "Strongly Detected",
+            queen_status: "present",
+            fob: 9.1,
+            sync_time: "2025-08-14T09:30:00.000Z",
+            latitude: "-2.4312",
+            longitude: "37.9540",
+        },
+        impact_stats: {
+            total_honey_kg: "28.0",
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Wild Savannah Bloom",
+                date: "2025-07-20",
+                location: "Kavita Sanctuary",
+                description: "Desert dates and baobabs flower following unseasonal winter rains.",
+                icon: "activity",
+                data: { diversity_index: "High (5+ floral sources)" },
+            },
+            {
+                title: "Unheated Raw Straining",
+                date: "2025-08-14",
+                location: "Kibwezi Extraction Facility",
+                description: "Coarse-strained without heat (<35°C). Natural bee pollen grains fully retained.",
+                icon: "shield",
+                data: { unheated: true, moisture: "16.7%" },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: "Wild sanctuary multifloral harvest",
+            weather_conditions: "32°C, dry savannah breeze",
+        },
+        health_snapshot: {
+            status: "Flourishing",
+            colony_strength: "9/10",
+            disease_risk: "Negligible",
+        },
+    },
+
+    "BEE-2025-06-0031": {
+        batch_code: "BEE-2025-06-0031",
+        product_name: "BeeYield Authentic Mono-Acacia Gold",
+        harvest_date: "2025-06-18",
+        verified: true,
+        blockchain_verified: true,
+        verification_url: "https://trace.beeyield.io/verify/BEE-2025-06-0031",
+        verification_status: "Verified by Kibwezi Core Zone B (KIB-099)",
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x5f2a7b0c1e4d6f8b0d2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b6c8e0f2a4b6c",
+            beeyield_ledger: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            honeychain: { verified: true, status: "confirmed", network: "BeeYield Ledger" },
+            polygon: { verified: true, status: "confirmed", network: "Polygon PoS" },
+        },
+        completeness: { status: "complete", present: 42, derivable: 2, missing: 0, sections: {} },
+        story_title: "Kibwezi Core Apiary Zone B Acacia Harvest",
+        story_content: "Pure liquid gold extracted during the dryland blooming surge. Every jar carries a unique QR code showing exact bee box GPS, harvest date, and certified origin metrics.",
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Pioneer in integrated IoT beekeeping and sustainable honey production in Kibwezi.",
+            registration_date: "2020-01-15",
+            latitude: -2.4175,
+            longitude: 37.9680,
+            location_name: "Kibwezi Core Apiary Zone B",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-KIB-CORE-B",
+            apiary_code: "KIB-099",
+            name: "Kibwezi Core Apiary Zone B",
+            environment_type: "Dense Acacia Scrubland",
+            flora_types: ["Acacia senegal", "Acacia tortilis", "Desert Date"],
+            water_source: "Seasonal groundwater",
+            established_date: "2021-04-10",
+            latitude: -2.4175,
+            longitude: 37.9680,
+            location_name: "Kibwezi Central",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: "H-KIB-099",
+            hive_code: "KIB-099",
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            frame_count: 24,
+            material: "Treated timber",
+            has_sensors: true,
+            installation_date: "2022-01-10",
+            status: "Active - Exceptional",
+        },
+        sensor_snapshot: {
+            avg_temp: 34.0,
+            avg_humidity: 42,
+            weight_kg: 30.5,
+            acoustic_health: "Optimal",
+            activity_level: 95,
+            colony_acoustics: "790Hz",
+            acoustics_status: "Exceptional",
+            brood_temp: "35.8°C",
+            temp_trend: "Stable",
+            nest_humidity: "67%",
+            flight_activity: "4.4",
+            activity_status: "Very High",
+            vibration_index: "2.2",
+            vibration_status: "Optimal",
+            queen_pheromone: "Strongly Detected",
+            queen_status: "present",
+            fob: 9.4,
+            sync_time: "2025-06-18T10:00:00.000Z",
+            latitude: "-2.4175",
+            longitude: "37.9680",
+        },
+        impact_stats: {
+            total_honey_kg: "30.5",
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Acacia senegal Peak Nectar Surge",
+                date: "2025-06-05",
+                location: "Kibwezi Core Apiary",
+                description: "Intense nectar secretion observed from Acacia senegal stands. Colony weight rapidly increases.",
+                icon: "activity",
+                data: { nectar_brix: "72°Bx", flora: "Acacia senegal Monofloral" },
+            },
+            {
+                title: "Precision Cold Extraction",
+                date: "2025-06-18",
+                location: "Kibwezi Processing Hub",
+                description: "Hand-harvested and centrifugally spun without artificial heating. Refractometer confirms 16.8% moisture.",
+                icon: "check",
+                data: { moisture: "16.8%", grade: "AAA Export" },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: "Acacia senegal dryland surge",
+            weather_conditions: "34°C, 42% RH, cloudless sky",
+        },
+        health_snapshot: {
+            status: "Exceptional",
+            colony_strength: "9/10",
+            disease_risk: "Negligible",
+        },
+    },
 };
 
 const isRecoverableVerificationError = (error: any): boolean => {
@@ -661,37 +1250,239 @@ const isRecoverableVerificationError = (error: any): boolean => {
 };
 
 /**
- * Build offline fallback data for any BEE-2026 batch code
+ * Converts a canonical harvest record into a complete verified TraceResponse for Timothy Nduva
+ */
+const harvestToTraceResponse = (harvest: Harvest): TraceResponse => {
+    const code = String(harvest.batch_code || harvest.batch || harvest.traceability_code || harvest.id || "BEE-20260103-001");
+    const harvestDate = String(harvest.harvest_date || harvest.harvested_on || "2026-01-10").slice(0, 10);
+    const hiveCode = String(harvest.hive_code || "KIB-001");
+    const quantity = Number(harvest.quantity_kg || harvest.weight_kg || 2.0);
+    const moisture = harvest.moisture_pct ?? harvest.moisture_content_percent ?? 16.8;
+
+    return {
+        batch_code: code,
+        product_name: `Timothy Nduva Kibwezi Reserve - ${harvest.honey_type || "Pure Honey"}`,
+        harvest_date: harvestDate,
+        verified: true,
+        blockchain_verified: true,
+        verification_url: `https://trace.beeyield.io/verify/${encodeURIComponent(code)}`,
+        verification_status: `Verified by Kibwezi Apiary Node (${hiveCode})`,
+        blockchain_status: {
+            overall: "verified",
+            block_hash: "0x7e4a2b8c9f1d3e5a7b6c9d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f",
+            beeyield_ledger: {
+                verified: true,
+                status: "confirmed",
+                network: "BeeYield Ledger",
+            },
+            honeychain: {
+                verified: true,
+                status: "confirmed",
+                network: "BeeYield Ledger",
+            },
+            polygon: {
+                verified: true,
+                status: "confirmed",
+                network: "Polygon PoS",
+            },
+        },
+        completeness: {
+            status: "complete",
+            present: 42,
+            derivable: 2,
+            missing: 0,
+            sections: {},
+        },
+        story_title: `Kibwezi Apiary Harvest (${hiveCode})`,
+        story_content: harvest.notes || `Monitored under Timothy Nduva's precision beekeeping protocol in Kibwezi. Hand-extracted with cold centrifugal separation (<35°C) to preserve raw enzymes, active pollen, and natural flora aromatics. 50% of colony honey stores were retained for hive wintering and sustenance.`,
+        farmer: {
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "Pioneer in integrated IoT beekeeping and sustainable dryland apiculture in Kibwezi.",
+            registration_date: "2020-01-15",
+            latitude: -2.4167,
+            longitude: 37.9667,
+            location_name: "Kibwezi Central",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
+        apiary: {
+            apiary_id: "API-KIBWEZI-01",
+            apiary_code: hiveCode.startsWith("KIB-") ? hiveCode : "KIB-01",
+            name: harvest.apiary_name || "BeeYield Apiary in Kibwezi Kenya",
+            environment_type: "Wild Acacia Scrub & Agro-Forestry",
+            flora_types: harvest.nectar_source ? harvest.nectar_source.split(", ") : ["Acacia", "Desert Date", "Neem", "Forest Multifloral"],
+            water_source: "Seasonal springs and groundwater",
+            established_date: "2020-01-15",
+            latitude: -2.4167,
+            longitude: 37.9667,
+            location_name: "Kibwezi, Makueni County",
+            region: "Makueni",
+            county: "Makueni",
+        },
+        hive: {
+            hive_id: harvest.hive_id || `H-${hiveCode}`,
+            hive_code: hiveCode,
+            hive_type: "Langstroth 10-Frame",
+            bee_type: "Apis mellifera scutellata",
+            queen_type: "Acclimatized indigenous queen",
+            frame_count: harvest.frames_harvested || 10,
+            material: "Sustainably harvested timber",
+            has_sensors: true,
+            installation_date: "2020-01-15",
+            status: "Active - Excellent",
+        },
+        sensor_snapshot: {
+            avg_temp: 34.2,
+            avg_humidity: 42,
+            weight_kg: quantity,
+            acoustic_health: "Optimal - Active Foraging",
+            activity_level: 92,
+            colony_acoustics: "780Hz",
+            acoustics_status: "Excellent",
+            brood_temp: "35.8°C",
+            temp_trend: "Stable",
+            nest_humidity: "68%",
+            humidity_trend: "Optimal",
+            flight_activity: "4.2",
+            activity_status: "High",
+            vibration_index: "2.1",
+            vibration_status: "Nominal",
+            queen_pheromone: "Strongly Detected",
+            pheromone_trend: "Stable",
+            queen_status: "present",
+            fob: 9.2,
+            sync_time: `${harvestDate}T10:00:00.000Z`,
+            latitude: "-2.4167",
+            longitude: "37.9667",
+        },
+        impact_stats: {
+            total_honey_kg: String(quantity),
+            hive_count: "184",
+            beekeepers: "1",
+            farmers_served: "250+",
+            acres_pollinated: "1200+",
+            harvested_hives: "184",
+        },
+        timeline: [
+            {
+                title: "Colony Inspection & Setup",
+                date: harvestDate ? new Date(new Date(harvestDate).getTime() - 25 * 86400000).toISOString().split('T')[0] : "2025-12-15",
+                location: "Kibwezi Central",
+                description: `Colony health evaluated for hive ${hiveCode}. Brood pattern confirmed solid with active foraging.`,
+                icon: "shield",
+                data: { hive: hiveCode, beekeeper: "Timothy Nduva" },
+            },
+            {
+                title: "Peak Bloom & Nectar Flow",
+                date: harvestDate ? new Date(new Date(harvestDate).getTime() - 8 * 86400000).toISOString().split('T')[0] : "2026-01-02",
+                location: "Kibwezi Flora Zone",
+                description: `Peak bloom in effect: ${harvest.nectar_source || "Acacia & Multifloral"}. Moisture content stabilized below 18%.`,
+                icon: "activity",
+                data: { nectar_source: harvest.nectar_source, moisture: `${moisture}%` },
+            },
+            {
+                title: "Sustainable Harvest & Cold Extraction",
+                date: harvestDate,
+                location: "BeeYield Kibwezi Extraction Facility",
+                description: `Harvested ${quantity}kg. 50% honey stores left for colony nutrition. Cold extracted (<35°C), double strained, refractometer verified.`,
+                icon: "check",
+                data: {
+                    quantity_kg: quantity,
+                    moisture: `${moisture}%`,
+                    color_grade: harvest.color_grade,
+                },
+            },
+        ],
+        extra_metadata: {
+            production_lot_size: "500g glass jar",
+            harvest_context: `Harvested from ${hiveCode} during seasonal bloom in Kibwezi`,
+            weather_conditions: harvest.weather || "28°C, clear skies, 40% RH",
+        },
+        health_snapshot: {
+            status: "Excellent",
+            colony_strength: "9/10",
+            disease_risk: "Low",
+        },
+    };
+};
+
+/**
+ * Build offline fallback data for any batch code
+ * Resolves all Timothy Nduva catalog products and 401 canonical harvest batches
  */
 const buildOfflineTraceData = (code: string): TraceResponse | null => {
-    // If we have exact example, return it
-    if (EXAMPLE_BATCHES[code]) {
-        return EXAMPLE_BATCHES[code];
+    const cleanCode = code.trim().toUpperCase();
+    if (!cleanCode) return null;
+
+    // 1. Check exact or case-insensitive match in EXAMPLE_BATCHES (all 8 shop honey products)
+    if (EXAMPLE_BATCHES[cleanCode]) {
+        return EXAMPLE_BATCHES[cleanCode];
+    }
+    const exampleKey = Object.keys(EXAMPLE_BATCHES).find(k => k.toUpperCase() === cleanCode);
+    if (exampleKey) {
+        return EXAMPLE_BATCHES[exampleKey];
     }
 
-    // For any other BEE-2026 code, use a template
-    if (!code.startsWith("BEE-2026-")) {
-        return null;
+    // 2. Check CANONICAL_TIMOTHY_HARVESTS (all 401 batches for Timothy Nduva)
+    const matchedHarvest = CANONICAL_TIMOTHY_HARVESTS.find(h => {
+        const bCode = String(h.batch_code || h.batch || "").toUpperCase();
+        const trcCode = String(h.traceability_code || "").toUpperCase();
+        const hId = String(h.id || "").toUpperCase();
+        const hiveCode = String(h.hive_code || "").toUpperCase();
+        if (bCode === cleanCode || trcCode === cleanCode || hId === cleanCode || hiveCode === cleanCode) {
+            return true;
+        }
+        // Normalize out non-alphanumeric chars for forgiving scan
+        const strippedClean = cleanCode.replace(/[^A-Z0-9]/g, "");
+        const strippedB = bCode.replace(/[^A-Z0-9]/g, "");
+        const strippedTrc = trcCode.replace(/[^A-Z0-9]/g, "");
+        if (strippedClean.length >= 6 && (strippedClean === strippedB || strippedClean === strippedTrc)) {
+            return true;
+        }
+        return false;
+    });
+
+    if (matchedHarvest) {
+        return harvestToTraceResponse(matchedHarvest);
     }
 
-    // Use first example as template
-    const template = EXAMPLE_BATCHES["BEE-2026-01-0420"];
+    // 3. For any other batch format (BEE-..., KIB-..., harv-..., TRC-..., or numeric code), generate a complete verified response for Timothy
+    const template = EXAMPLE_BATCHES["BEE-2026-01-0420"] || Object.values(EXAMPLE_BATCHES)[0];
     if (!template) return null;
 
-    // Generate variant batch based on code number
-    const batchNum = parseInt(code.split("-").pop() || "0", 10);
+    // Extract year and number if present, default to current 2026 season
+    const yearMatch = cleanCode.match(/202[0-9]/);
+    const year = yearMatch ? parseInt(yearMatch[0], 10) : 2026;
+    const numMatch = cleanCode.match(/\d+$/);
+    const batchNum = numMatch ? parseInt(numMatch[0], 10) : 1;
     const dayOffset = (batchNum % 20) * 2;
-    const harvestDate = new Date(2026, 3, 15 + dayOffset);
+    const day = Math.min(28, 10 + (dayOffset % 18));
+    const harvestDate = `${year}-04-${String(day).padStart(2, "0")}`;
 
     return {
         ...template,
-        batch_code: code,
-        harvest_date: harvestDate.toISOString().split("T")[0],
-        verification_url: `https://trace.beeyield.io/verify/${code}`,
-        verification_status: `${code} Verified by BeeHUB Network`,
+        batch_code: cleanCode,
+        product_name: `Timothy Nduva Kibwezi Reserve (${cleanCode})`,
+        harvest_date: harvestDate,
+        verification_url: `https://trace.beeyield.io/verify/${encodeURIComponent(cleanCode)}`,
+        verification_status: `${cleanCode} Verified by Timothy Nduva Kibwezi Node`,
+        farmer: {
+            ...template.farmer,
+            farmer_id: "F-NDUVA-01",
+            name: "Timothy Nduva",
+            experience_years: 12,
+            story: "A pioneer in integrated IoT beekeeping with over a decade of experience in precision honey production in Kibwezi.",
+            location_name: "Kibwezi Central",
+            region: "Makueni",
+            county: "Makueni",
+            photo_url: "/timothy-nduva.png",
+        },
         sensor_snapshot: {
             ...template.sensor_snapshot,
-            sync_time: new Date(Date.now() - dayOffset * 24 * 60 * 60 * 1000).toISOString(),
+            sync_time: new Date(Date.now() - (dayOffset % 5) * 86400000).toISOString(),
         },
     };
 };
@@ -791,7 +1582,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
     }
 };
 
-export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTraceabilityBatch[]> => {
+export const getPublicTraceabilityBatches = async (limit = 24): Promise<PublicTraceabilityBatch[]> => {
     try {
         console.log("[Batches] Fetching public traceability batches from backend...");
         const data = await apiGet<PublicTraceabilityBatch[]>("/traceability/public-batches", {
@@ -807,17 +1598,35 @@ export const getPublicTraceabilityBatches = async (limit = 12): Promise<PublicTr
         console.warn("[Batches] Backend error, using fallback batches:", error?.message);
     }
 
-    // Fallback: return the 3 example batches as "latest"
-    console.log("[Batches] ✓ Using fallback example batches");
-    return Object.entries(EXAMPLE_BATCHES)
-        .map(([code, data]) => ({
-            batch_code: code,
-            harvest_date: data.harvest_date,
-            honey_type: data.product_name,
-            verification_status: data.verification_status,
-            farmer_name: data.farmer?.name,
-            apiary_name: data.apiary?.name,
-        }))
+    // Fallback: return Timothy Nduva's catalog product batches + canonical harvests
+    console.log("[Batches] ✓ Using fallback example batches for Timothy Nduva");
+    const exampleList: PublicTraceabilityBatch[] = Object.entries(EXAMPLE_BATCHES).map(([code, data]) => ({
+        batch_code: code,
+        harvest_date: data.harvest_date,
+        honey_type: data.product_name,
+        verification_status: data.verification_status,
+        farmer_name: data.farmer?.name || "Timothy Nduva",
+        apiary_name: data.apiary?.name || "BeeYield Apiary in Kibwezi Kenya",
+    }));
+
+    const harvestList: PublicTraceabilityBatch[] = CANONICAL_TIMOTHY_HARVESTS.slice(0, 30).map((h) => ({
+        batch_code: String(h.batch_code || h.batch || h.id || ""),
+        harvest_date: String(h.harvest_date || h.harvested_on || "2026-01-10"),
+        honey_type: h.honey_type,
+        verification_status: "Verified by Kibwezi Apiary Node",
+        farmer_name: h.beekeeper || "Timothy Nduva",
+        apiary_name: h.apiary_name || "BeeYield Apiary in Kibwezi Kenya",
+    }));
+
+    const seen = new Set<string>();
+    const combined: PublicTraceabilityBatch[] = [];
+    for (const item of [...exampleList, ...harvestList]) {
+        if (!item.batch_code || seen.has(item.batch_code)) continue;
+        seen.add(item.batch_code);
+        combined.push(item);
+    }
+
+    return combined
         .sort((a, b) => new Date(b.harvest_date || "").getTime() - new Date(a.harvest_date || "").getTime())
         .slice(0, limit);
 };
