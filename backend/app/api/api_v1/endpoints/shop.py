@@ -16,6 +16,12 @@ def get_token(request: Request) -> Optional[str]:
         return auth_header.split(" ")[1]
     return None
 
+def get_user_id(current_user: dict) -> str:
+    user_id = current_user.get("sub")
+    if not isinstance(user_id, str) or not user_id:
+        raise HTTPException(status_code=401, detail="User ID not found in token")
+    return user_id
+
 @router.get("/products", response_model=list[schemas.Product])
 async def get_products(category: Optional[str] = None, token: Optional[str] = Depends(get_token)):
     """
@@ -153,7 +159,7 @@ async def get_user_orders(
     """
     Get orders for the current user.
     """
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     orders = await shop_service.get_user_orders(user_id=user_id, token=token)
     return orders
 
@@ -163,7 +169,7 @@ async def get_dashboard_summary(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.get_dashboard_summary(user_id, token=token)
 
 @router.get("/orders/{order_id}", response_model=schemas.Order)
@@ -207,12 +213,12 @@ async def validate_coupon(
 # --- Wallet ---
 @router.get("/wallet", response_model=schemas.Wallet)
 async def get_wallet(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.get_user_wallet(user_id, token=token)
 
 @router.get("/wallet/transactions", response_model=list[schemas.WalletTransaction])
 async def get_transactions(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.get_wallet_transactions(user_id, token=token)
 
 @router.post("/wallet/topup")
@@ -222,7 +228,7 @@ async def top_up_wallet(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.top_up_wallet(user_id, amount, reference, token=token)
 
 # --- Wishlist ---
@@ -279,7 +285,7 @@ async def toggle_wishlist(
 # --- Addresses ---
 @router.get("/addresses", response_model=list[schemas.Address])
 async def get_addresses(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.get_user_addresses(user_id, token=token)
 
 @router.post("/addresses", response_model=schemas.Address)
@@ -288,9 +294,9 @@ async def add_address(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     try:
-        return await shop_service.add_user_address(user_id, address_in.dict(), token=token)
+        return await shop_service.add_user_address(user_id, address_in.model_dump(), token=token)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -300,7 +306,7 @@ async def delete_address(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     await shop_service.delete_user_address(user_id, address_id, token=token)
     return {"status": "success"}
 
@@ -311,9 +317,9 @@ async def update_address(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     try:
-        return await shop_service.update_user_address(user_id, address_id, address_in.dict(), token=token)
+        return await shop_service.update_user_address(user_id, address_id, address_in.model_dump(), token=token)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -324,9 +330,9 @@ async def track_order(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     orders = await shop_service.get_user_orders(user_id, token=token)
-    if not any(str(o["id"]) == str(order_id) for o in orders):
+    if not any(str(o["id"]) == order_id for o in orders):
          raise HTTPException(status_code=403, detail="Order not found or access denied")
 
     info = await shop_service.get_order_tracking(order_id, token=token)
@@ -350,7 +356,7 @@ async def get_suggestions(current_user: dict = Depends(security.get_current_user
 # --- Payment Methods ---
 @router.get("/payment-methods", response_model=list[schemas.PaymentMethod])
 async def get_payment_methods(current_user: dict = Depends(security.get_current_user), token: Optional[str] = Depends(get_token)):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     return await shop_service.get_user_payment_methods(user_id, token=token)
 
 @router.post("/payment-methods", response_model=schemas.PaymentMethod)
@@ -359,8 +365,8 @@ async def add_payment_method(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
-    return await shop_service.add_user_payment_method(user_id, method_in.dict(), token=token)
+    user_id = get_user_id(current_user)
+    return await shop_service.add_user_payment_method(user_id, method_in.model_dump(), token=token)
 
 @router.delete("/payment-methods/{method_id}")
 async def delete_payment_method(
@@ -368,7 +374,7 @@ async def delete_payment_method(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     await shop_service.delete_user_payment_method(user_id, method_id, token=token)
     return {"status": "success"}
 
@@ -380,8 +386,8 @@ async def update_payment_method(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
-    return await shop_service.update_user_payment_method(user_id, method_id, method_in.dict(), token=token)
+    user_id = get_user_id(current_user)
+    return await shop_service.update_user_payment_method(user_id, method_id, method_in.model_dump(), token=token)
 
 
 @router.post("/orders/{order_id}/cancel", response_model=schemas.Order)
@@ -390,7 +396,7 @@ async def cancel_order(
     current_user: dict = Depends(security.get_current_user),
     token: Optional[str] = Depends(get_token)
 ):
-    user_id = current_user.get("sub")
+    user_id = get_user_id(current_user)
     try:
         return await shop_service.cancel_order(user_id, order_id, token=token)
     except ValueError as exc:

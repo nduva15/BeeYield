@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 # Defensive import: Rust engine is optional — backend works without it
 try:
-    from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc
+    from honey_rust import ShopEngine, MpesaEngine, InvoicingEngine, calc_yield as _rust_calc  # type: ignore[attr-defined]
     engine = ShopEngine(500000)
     mpesa = MpesaEngine()
     invoicer = InvoicingEngine()
@@ -59,11 +59,12 @@ async def create_order(order_in: Any, user_id: Optional[str] = None, token: Opti
             # If we just need to know if they are an admin, we can rely on a custom RPC or just check if the backend allowed a certain operation,
             # but for a quick RBAC, it's better to fetch their profile role if available. 
             # Alternatively, since we created the SQL is_admin() function, we can execute an RPC call.
-            from app.db.supabase_db import supabase_client
-            # Verify admin status securely via RPC
-            rpc_res = supabase_client.rpc("is_admin").execute()
-            if rpc_res.data is True:
-                is_bypass = True
+            from app.db.supabase_db import get_supabase
+            client = get_supabase()
+            if client:
+                rpc_res = client.rpc("is_admin").execute()
+                if rpc_res.data is True:
+                    is_bypass = True
         except Exception as e:
             logger.warning(f"Failed to verify admin status via RPC: {e}")
             
@@ -257,22 +258,25 @@ async def apply_coupon_code(code: str, total_amount: float) -> dict:
             "message": "Invalid or expired coupon code.",
         }
 
-    if total_amount < rule["minimum_amount"]:
+    min_amount = float(rule["minimum_amount"])
+    discount_pct = float(rule["discount_percent"])
+
+    if total_amount < min_amount:
         return {
             "valid": False,
             "code": normalized,
-            "discount_percent": rule["discount_percent"],
+            "discount_percent": discount_pct,
             "discount_amount": 0.0,
-            "message": f"Coupon requires a minimum cart value of KES {int(rule['minimum_amount'])}.",
+            "message": f"Coupon requires a minimum cart value of KES {int(min_amount)}.",
         }
 
-    discount_amount = round((rule["discount_percent"] / 100.0) * total_amount, 2)
+    discount_amount = round((discount_pct / 100.0) * total_amount, 2)
     return {
         "valid": True,
         "code": normalized,
-        "discount_percent": rule["discount_percent"],
+        "discount_percent": discount_pct,
         "discount_amount": discount_amount,
-        "message": rule["message"],
+        "message": str(rule["message"]),
     }
 
 async def get_products(category: Optional[str] = None, token: Optional[str] = None) -> list[dict[str, Any]]:
@@ -352,7 +356,8 @@ async def _append_tracking_event(
 
     if records:
         record = records[0]
-        events = record.get("events") if isinstance(record.get("events"), list) else []
+        raw_events = record.get("events")
+        events: list[Any] = list(raw_events) if isinstance(raw_events, list) else []
         events.append(new_event)
         await db_update(
             "order_tracking",
@@ -462,7 +467,7 @@ async def initiate_mpesa_stk_push(
     from app.db.supabase_db import db_update, db_insert
     import uuid
 
-    clean_digits = "".join(filter(str.isdigit, str(phone)))
+    clean_digits = "".join(filter(str.isdigit, phone))
     if clean_digits.startswith("0"):
         formatted_phone = "254" + clean_digits[1:]
     elif not clean_digits.startswith("254"):
@@ -699,7 +704,7 @@ async def update_status(order_id: str, current_status: str, next_status: str, to
         # Fallback: direct DB update without Rust validation
         from app.db.supabase_db import db_update
         return await db_update("orders", {"status": next_status}, {"id": order_id}, token=token)
-    from honey_rust import rust_update_order_status
+    from honey_rust import rust_update_order_status  # type: ignore[attr-defined]
     return await rust_update_order_status(order_id, next_status, token=token)
 
 async def update_order_status(order_id: str, current_status: str, next_status: str, token: Optional[str] = None) -> dict:
@@ -963,7 +968,7 @@ async def cancel_order(user_id: str, order_id: str, token: Optional[str] = None)
     from app.db.supabase_db import db_update
 
     order = await get_order(order_id, token=token)
-    if not order or str(order.get("user_id")) != str(user_id):
+    if not order or str(order.get("user_id")) != user_id:
         raise ValueError("Order not found")
 
     current_status = str(order.get("status", "pending")).lower()
