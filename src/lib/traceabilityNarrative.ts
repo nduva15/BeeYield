@@ -43,7 +43,7 @@ export const HIVE_TO_HONEY_VALUE_CHAIN: HoneyValueChainStage[] = [
     title: "Beekeeping & Hive Care",
     subtitle: "Setting up hives and keeping bees healthy",
     dataPoints: [
-      "Exact GPS hive location",
+      "Exact hive location",
       "Verified local beekeeper",
       "Individual hive number and tag",
       "Colony health and sound check"

@@ -53,113 +53,113 @@ const Media = () => {
   const honeyMediaDispatches = [
     {
       id: "box-migration",
-      title: "Geo-Tagged Bee Box Migration: Peak Acacia Bloom",
+      title: "Moving Bee Hives: Peak Acacia Bloom",
       location: "Kibwezi Forest Apiary Zone A",
-      coordinates: "-2.4167° S, 37.9667° E",
+      coordinates: "Kibwezi, Makueni",
       beekeeper: "Timothy Nduva & Kibwezi Team",
-      category: "First-Mile Geo-Tagging",
-      badge: "GPS Mapped (GeoJSON)",
+      category: "Hive Tracking",
+      badge: "Tracked Origin",
       badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Moving 184 managed hives into wild Acacia woodlands during peak flower blooming season. Every hive is tagged with GPS coordinates and QR codes, forming the verified origin of our honey.",
+        "We move 184 hives into wild Acacia woodlands when trees are in full bloom. Every hive has its own QR code and location record so you can see exactly where your honey came from.",
       image: "/images/story/hives/apiary-langstroth-row.jpg",
-      thumbLabel: "Box Migration",
-      cropType: "Acacia Monofloral",
+      thumbLabel: "Moving Hives",
+      cropType: "Wild Acacia",
       provenanceHighlights: [
-        "Target flora: 100% Wild Acacia tortilis and senegal bloom corridor",
-        "Box IDs: KIB-001 through KIB-184 with tamper-evident QR tags",
-        "Offline mobile logging syncing exact hive GPS locations",
+        "Flowers: 100% wild Acacia blossoms in dryland forests",
+        "Hive tags: Hives KIB-001 to KIB-184 with unique QR tags",
+        "Mobile records: Hive locations logged on phone, even offline",
       ],
       qualityImpact:
-        "Ensures strictly monofloral floral forage, preventing mixed adulteration with agricultural syrups or off-target weeds.",
+        "Bees feed only on wild blossoms, ensuring pure single-flower honey with no added sugar, corn syrup, or chemicals.",
     },
     {
       id: "centrifugal-extraction",
-      title: "Centrifugal Cold Extraction & Collection Center Intake",
+      title: "Gentle Cold Spinning at the Collection Center",
       location: "Kibwezi Regional Collection Center",
-      coordinates: "Makueni Hub Intake #KIB-CC1",
+      coordinates: "Makueni Center #KIB-CC1",
       beekeeper: "Makueni Extraction Team",
-      category: "Cold Processing & Purity",
-      badge: "Cold Spin (<35°C)",
+      category: "Cold Extraction",
+      badge: "Cold Spun (<35°C)",
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
-        "Harvested honeycomb frames are weighed, uncapped, and spun in sanitary centrifugal extractors at room temperature (<35°C). Unprocessed cold extraction protects delicate enzymes, diastase activity, and beneficial pollen grains from heat degradation.",
+        "We weigh honeycomb frames and spin them at normal room temperature (below 35°C). We never boil or overheat our honey, so all natural bee enzymes and healthy nutrients stay alive.",
       image: "/images/story/hives/yellow-langstroth-closeup.jpg",
-      thumbLabel: "Cold Extraction",
-      cropType: "Centrifugal Extraction",
+      thumbLabel: "Cold Spinning",
+      cropType: "Raw Honey",
       provenanceHighlights: [
-        "Sanitary SS304 centrifugal extraction preserving bioactive enzymes",
-        "Immediate refractometer moisture testing logging 16.8% (Export Grade A)",
-        "Digital intake receipt linked to original hive box QR code",
+        "Spun gently in clean stainless steel extractors without cooking",
+        "Moisture tested at 16.8% for rich, premium grade honey",
+        "Digital receipt links each jar back to its original hive",
       ],
       qualityImpact:
-        "Eliminates heat damage, maintaining live bee enzymes and rich wildflower aromatic esters.",
+        "No heating means you get pure, raw honey packed with natural vitamins, enzymes, and wildflower aroma.",
     },
     {
       id: "refractometer-purity",
-      title: "Field Refractometer & Anti-Adulteration Harvest Defense",
-      location: "BeeYield Field Processing Hub",
-      coordinates: "TraceX & Food Safety Protocols",
+      title: "Purity Testing & Zero Added Sugar",
+      location: "BeeYield Field Center",
+      coordinates: "Food Safety Standards",
       beekeeper: "Quality Field Inspector",
-      category: "Purity & Compliance",
-      badge: "0% Added Sugar Guaranteed",
+      category: "Pure & Real",
+      badge: "0% Added Sugar",
       badgeColor: "bg-blue-500/15 text-blue-800 border-blue-300 dark:text-blue-200",
       description:
-        "Every batch is verified against moisture excess and adulteration. Backed by digital traceability, BeeYield proves that every jar is pure monofloral honey, meeting FAO and EU import specifications.",
+        "Every batch is tested to confirm low moisture and zero fake syrups. With our QR code tracking, we prove every jar is 100% real honey meeting strict international food standards.",
       image: "/images/products/beeyield_honey_500g.png",
-      thumbLabel: "Purity Defense",
-      cropType: "Field Verification",
+      thumbLabel: "Purity Check",
+      cropType: "Quality Tested",
       provenanceHighlights: [
-        "100% negative for exogenous sugars, maltose, and inverted syrups",
-        "Pollen spectrum confirming authentic floral dominance",
-        "Batch-specific harvest verification attached to jar QR code",
+        "Tested 100% free of corn syrup, cane sugar, or fillers",
+        "Pollen testing confirms genuine blossom source",
+        "Batch test results attached to your jar's QR code",
       ],
       qualityImpact:
-        "Provides indisputable legal and consumer defense against global honey fraud and mislabeling.",
+        "Guarantees that you and your family are eating honest, 100% pure honey.",
     },
     {
       id: "beekeeper-kyc",
-      title: "Empowering Smallholder Beekeepers with Digital KYC",
+      title: "Fair Pay & Support for Local Beekeepers",
       location: "Mbuinzau & Kiunduani Cooperatives",
-      coordinates: "105+ Contracted Farmer Network",
+      coordinates: "105+ Local Beekeepers",
       beekeeper: "Farmer Christopher & Clement",
-      category: "Beekeeper Empowerment",
-      badge: "Fair Trade Verified",
+      category: "Fair Trade",
+      badge: "Fair Pay Guaranteed",
       badgeColor: "bg-purple-500/15 text-purple-800 border-purple-300 dark:text-purple-200",
       description:
-        "Smallholder beekeepers are registered on mobile-first offline apps, creating digital worker profiles, box inventories, and direct digital payment settlements upon honey delivery.",
+        "Local beekeepers use our simple mobile app to track their hives and receive fair payments directly to their phones as soon as they deliver honey.",
       image: "/images/story/hives/beekeeper-inspection-twilight.jpg",
-      thumbLabel: "Beekeeper Network",
-      cropType: "Digital Inclusion",
+      thumbLabel: "Our Beekeepers",
+      cropType: "Community Farming",
       provenanceHighlights: [
-        "Offline-first mobile onboarding works without cellular internet in dryland brush",
-        "Transparent weight logging at collection center prevents middleman exploitation",
-        "Premium export pricing directly credited to beekeeper accounts",
+        "Works offline on basic smartphones in remote rural areas",
+        "Accurate digital scales ensure farmers are paid for every gram",
+        "Fair prices paid directly via mobile money (M-Pesa)",
       ],
       qualityImpact:
-        "Incentivizes pristine hive care, chemical-free foraging, and zero colony harm.",
+        "Fair pay rewards beekeepers for taking great care of their bees and protecting wild trees.",
     },
     {
       id: "fifty-fifty-reserve",
-      title: "Certified Naturally Grown (CNG) & 50/50 Reserve Protocol",
-      location: "Kavita Ecological Sanctuary",
-      coordinates: "-2.4312° S, 37.9540° E",
+      title: "Our 50/50 Promise: Feeding the Bees First",
+      location: "Kavita Nature Sanctuary",
+      coordinates: "Kavita, Kibwezi",
       beekeeper: "Farmer Gabriel Kavita",
-      category: "Colony Welfare & ESG",
-      badge: "50% Colony Reserve",
+      category: "Bee Care",
+      badge: "50% Saved for Bees",
       badgeColor: "bg-teal-500/15 text-teal-800 border-teal-300 dark:text-teal-200",
       description:
-        "Our golden rule: exactly 50% of the honey is left in the brood chamber to nourish the bees through seasonal droughts. Zero artificial sugar water feeding, zero GMOs, and full alignment with Certified Naturally Grown apiculture standards.",
+        "Our golden rule: we always leave at least half the honey in the hive so bees have plenty of food during dry seasons. We never feed bees artificial sugar water or use harsh chemicals.",
       image: "/images/story/hives/savannah-hanging-hive.jpg",
-      thumbLabel: "50/50 Reserve",
-      cropType: "Ethical Harvest",
+      thumbLabel: "50/50 Promise",
+      cropType: "Bee-Friendly Harvest",
       provenanceHighlights: [
-        "Audited 50/50 harvest records ensuring zero starvation in winter/dry season",
-        "No synthetic pesticides, miticides, or prophylactic antibiotics",
-        "Harmonized with 2,500+ indigenous trees planted for pollinator habitat",
+        "We leave 50% in the hive so colonies stay strong and fed",
+        "Zero pesticides, artificial chemicals, or antibiotics",
+        "Over 2,500 native trees planted to give bees more flowers",
       ],
       qualityImpact:
-        "Colonies remain naturally robust and disease-resistant, producing higher-vitality honey season after season.",
+        "Healthy, well-fed bees stay strong and make clean, top-quality honey season after season.",
     },
   ];
 
@@ -1052,7 +1052,7 @@ const Media = () => {
                 Honey Media & <span className="text-amber-600">Hive-to-Jar Journey</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-                Tracing honey from <strong>GPS-verified bee boxes and flower blooming season</strong> to regional collection center cold extraction.
+                Tracing honey from <strong>verified bee boxes and flower blooming season</strong> to regional collection center cold extraction.
                 Backing pure honey with clear, verified records that meet international food safety standards.
               </p>
 
@@ -1841,7 +1841,7 @@ const Media = () => {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>GPS-Verified Bee Boxes:</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
+                  <span><strong>Verified Bee Boxes:</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -1865,9 +1865,9 @@ const Media = () => {
               <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center font-black">
                 <MapPin className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-base text-foreground">GPS-Mapped Boxes</h4>
+              <h4 className="font-bold text-base text-foreground">Field-Mapped Boxes</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                GPS coordinates logged during box migration to verify specific floral zones during peak nectar flows.
+                Field coordinates logged during box migration to verify specific floral zones during peak nectar flows.
               </p>
             </div>
 
@@ -1915,7 +1915,7 @@ const Media = () => {
             Verify Your Jar from Bee Box to Table
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Scan your jar's QR code or click any verified batch code below to view the verified records of GPS coordinates, beekeeper details, flower blooming dates, and harvest details.
+            Scan your jar's QR code or click any verified batch code below to view the verified records of origin coordinates, beekeeper details, flower blooming dates, and harvest details.
           </p>
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
