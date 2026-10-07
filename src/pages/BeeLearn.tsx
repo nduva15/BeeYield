@@ -40,6 +40,8 @@ import { BrandedProductImage } from "@/components/BrandedProductImage";
 import { toast } from "sonner";
 import { submitNewsletterSubscription } from "@/services/contactService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { TrainingManualSection } from "@/components/beeyield/TrainingManualSection";
+import BeeYieldLogo from "@/assets/Logo.png";
 
 // Canonical Education products from Catalog
 const educationProducts: Product[] = CATALOG.filter(p => p.category === 'education');
@@ -342,11 +344,13 @@ const BeeLearn = () => {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-14 px-8 border-2 border-neutral-200 hover:bg-neutral-50 font-bold rounded-xl"
-                  onClick={() => setIsGuideModalOpen(true)}
+                  className="h-14 px-8 border-2 border-[#1B9157]/40 hover:border-[#1B9157] hover:bg-green-50/60 font-black rounded-xl text-neutral-900"
+                  asChild
                 >
-                  <Download className="mr-2 h-5 w-5" />
-                  Download Free Starter Guide
+                  <a href="#training-manual">
+                    <FileText className="mr-2 h-5 w-5 text-[#1B9157]" />
+                    Kenyan Training Manual (PDF)
+                  </a>
                 </Button>
               </div>
 
@@ -447,14 +451,18 @@ const BeeLearn = () => {
               </div>
 
               {/* Floating Info Card - Left Bottom */}
-              <div className="absolute left-0 bottom-20 lg:-left-12 lg:bottom-32 bg-[#FFF9F0]/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-neutral-100 z-20 max-w-[200px] animate-in slide-in-from-left duration-700 delay-300">
+              <div className="absolute left-0 bottom-20 lg:-left-12 lg:bottom-32 bg-[#FFF9F0]/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-amber-200/60 z-20 max-w-[210px] animate-in slide-in-from-left duration-700 delay-300">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-5 w-5 text-[#F4D03F]" />
-                  <p className="text-sm font-bold text-neutral-900">50+ Digital Guides</p>
+                  <div className="w-6 h-6 rounded-lg bg-amber-100 p-1 flex items-center justify-center border border-amber-200 flex-shrink-0">
+                    <img src={BeeYieldLogo} alt="BeeYield" className="w-full h-full object-contain" />
+                  </div>
+                  <p className="text-xs font-black text-neutral-900 leading-tight">Training Manual</p>
                 </div>
-                <p className="text-xs text-neutral-500 mb-3">Instant access to field manuals</p>
-                <Button size="sm" variant="outline" className="h-8 text-xs font-bold w-full border-amber-200 hover:bg-amber-50">
-                  Preview Library
+                <p className="text-[10px] text-neutral-500 mb-3 font-medium leading-relaxed">
+                  16-Page Kenyan Field Guide & SOPs
+                </p>
+                <Button size="sm" variant="outline" className="h-8 text-xs font-black w-full border-amber-300 hover:bg-amber-100 text-[#1B9157]" asChild>
+                  <a href="#training-manual">Open Handbook</a>
                 </Button>
               </div>
 
@@ -536,6 +544,9 @@ const BeeLearn = () => {
           </div>
         </div>
       </section>
+
+      {/* MODERN APICULTURE TRAINING MANUAL & FIELD HANDBOOK */}
+      <TrainingManualSection />
 
       {/* Experience & Expertise Section */}
       <section className="py-20 lg:py-28">

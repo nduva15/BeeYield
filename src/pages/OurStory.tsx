@@ -829,7 +829,7 @@ const OurStory = () => {
                   </div>
                   <h4 className="font-bold text-neutral-900 text-base mb-2">In-Land Ground Truth</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    In-land acoustic counters log actual visits per flower (>15 visits/hr target) and eradicate orchard cold spots with dynamic hive re-positioning.
+                    In-land acoustic counters log actual visits per flower (&gt;15 visits/hr target) and eradicate orchard cold spots with dynamic hive re-positioning.
                   </p>
                 </div>
                 <div className="mt-4 pt-3 border-t border-neutral-200/60 text-[11px] font-bold text-purple-700">
