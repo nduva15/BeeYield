@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogPosts";
+import SEO from "@/components/SEO";
 
 export default function BlogsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
@@ -109,6 +110,12 @@ export default function BlogsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
+      <SEO
+        title="Field Agronomy & Pollination Blog | Protecting Bees"
+        description="Scientific insights, hives per acre research, in-hive pollination monitoring, and apiary conservation practices protecting bees across East African crops."
+        keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, pollination research, bee agronomy blog"
+        url="/blogs"
+      />
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">

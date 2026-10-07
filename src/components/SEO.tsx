@@ -11,9 +11,10 @@ interface SEOProps {
   type?: string;
 }
 
-const DEFAULT_DESCRIPTION = "Your partner in pollination";
+const DEFAULT_DESCRIPTION =
+  "BeeYield is your partner in precision pollination, in-land pollination, and protecting bees. Optimize crop yields with data-backed hives per acre models, in-hive pollination tracking, and pure traceable honey.";
 const DEFAULT_KEYWORDS =
-  "BeeYield, your partner in pollination, precision pollination, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT bees";
+  "precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, BeeYield, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT hive monitoring";
 
 function upsertMeta(selector: string, attributes: Record<string, string>) {
   if (typeof document === "undefined") return;
@@ -91,7 +92,7 @@ const SEO = ({
     upsertMeta('meta[name="twitter:label1"]', { name: "twitter:label1", content: "Region" });
     upsertMeta('meta[name="twitter:data1"]', { name: "twitter:data1", content: "Kenya, Africa" });
     upsertMeta('meta[name="twitter:label2"]', { name: "twitter:label2", content: "Expertise" });
-    upsertMeta('meta[name="twitter:data2"]', { name: "twitter:data2", content: "Precision Pollination & IoT IoT" });
+    upsertMeta('meta[name="twitter:data2"]', { name: "twitter:data2", content: "Precision Pollination & Apiary Management" });
 
     const schemaId = "beeyield-seo-schema";
     const existingSchema = document.getElementById(schemaId);

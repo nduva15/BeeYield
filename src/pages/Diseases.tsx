@@ -59,6 +59,7 @@ import { motion } from "framer-motion";
 import { submitContactForm } from "@/services/contactService";
 import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 import LOGO from "@/assets/Logo.png";
@@ -521,6 +522,13 @@ const Diseases = () => {
 
     return (
         <BeeYieldPageShell className="bg-background text-foreground">
+            <SEO
+                title="Bee Disease Detection & Apiary Health | Protecting Bees"
+                description="Early detection of Varroa, Foulbrood, and Nosema using in-hive pollination bio-sensors and environmental monitoring. Protecting bees across commercial apiary sites."
+                keywords="protecting bees, in hive pollination, bees, apiary, precision pollination, hives per acre model, in land pollination, bee disease detection, Varroa monitoring, hive health"
+                url="/diseases"
+                image="/images/diseases/hive-inspection-1.png"
+            />
 
             {/* ═══════════════════════════════════════════════════════════════
                 HERO SECTION — Partnership Announcement

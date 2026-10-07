@@ -31,6 +31,7 @@ import {
   Quote,
 } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
+import SEO from "@/components/SEO";
 
 /* ------------------------------------------------------------------ */
 /*  Animated counter hook                                              */
@@ -470,6 +471,13 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO
+        title="About BeeYield | Precision Pollination, Apiary Heritage & Protecting Bees"
+        description="Learn about BeeYield's journey in precision pollination, sustainable apiary stewardship, calibrated hives per acre models, and protecting bees across Kenya and East Africa."
+        keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, about BeeYield, Kenya beekeeping, sustainable pollination"
+        url="/about"
+        image="/assets/beeyield-logo.png"
+      />
       {/* ============================================================ */}
       {/*  HERO                                                        */}
       {/* ============================================================ */}

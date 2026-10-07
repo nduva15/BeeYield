@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
 /* ── Authentic Field Photos (Zero AI Renders) ─────────────────── */
@@ -345,7 +346,13 @@ const Impact = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen bg-[#fdfbf6] p-0">
-      
+      <SEO
+        title="Ecological & Agricultural Impact | Protecting Bees"
+        description="Measurable impact of BeeYield: 2.4M+ bees protected, 105+ acres pollinated with calibrated hives per acre models, 2,500+ trees planted, and sustainable apiary support."
+        keywords="protecting bees, bees, apiary, precision pollination, hives per acre model, in hive pollination, in land pollination, ecological impact, sustainable agriculture Kenya"
+        url="/impact"
+        image="/images/story/apisense-bees-cluster-1.png"
+      />
       {/* ═══════════════════════════════════════════════════════════════
           1. HERO SECTION — Real Honeybee Colony on Sensor Background
       ═══════════════════════════════════════════════════════════════ */}

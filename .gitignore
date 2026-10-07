@@ -106,6 +106,7 @@ release/
 *.txt
 !requirements.txt
 !**/requirements.txt
+!public/robots.txt
 *.log
 *.json
 !package*.json

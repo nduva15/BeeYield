@@ -43,6 +43,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
@@ -928,6 +929,23 @@ const Media = () => {
 
   return (
     <BeeYieldPageShell>
+      <SEO
+        title="Media & Field Gallery | Precision Pollination & Apiary Stories"
+        description="Visual proof and field case studies of precision pollination, calibrated hives per acre models, in-hive pollination monitoring, and apiary stewardship protecting bees across 105+ acres in Kenya."
+        keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, pollination field gallery, Kenya beekeeping media"
+        url="/media"
+        image="/images/pollination/mango-orchard-pink-panicles.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "ImageGallery",
+          "name": "BeeYield Pollination & Apiary Media Gallery",
+          "description": "Photographic dispatches, farmer case studies, in-hive monitoring data, and apiary conservation across Kenya.",
+          "publisher": {
+            "@type": "Organization",
+            "name": "BeeYield"
+          }
+        }}
+      />
       {/* Hero Header with Media Switcher */}
       <section className="relative py-20 md:py-24 bg-gradient-to-b from-secondary/40 via-background to-background overflow-hidden border-b border-border/40">
         <div className="container mx-auto px-4 text-center max-w-4xl">

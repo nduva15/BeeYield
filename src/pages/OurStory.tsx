@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import Logo from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
@@ -257,7 +258,13 @@ const OurStory = () => {
   const [activeTimelineYear, setActiveTimelineYear] = useState<string | null>(null);
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
-      
+      <SEO
+        title="Our Story | Protecting Bees, Precision Pollination & Apiary Heritage"
+        description="From 4 hives to Africa's precision pollination pioneer. How BeeYield built its apiary network, engineered the hives per acre model, and dedicated its mission to protecting bees."
+        keywords="protecting bees, precision pollination, hives per acre model, bees, apiary, in hive pollination, in land pollination, BeeYield story, Timothy Nduva, Kenya beekeeping history"
+        url="/our-story"
+        image="/images/story/deployed-hive-antenna-1.png"
+      />
       {/* ═══════════════════════════════════════════════════════════════
           1. HERO SECTION — Real IoT Deployed Hive Background
       ═══════════════════════════════════════════════════════════════ */}

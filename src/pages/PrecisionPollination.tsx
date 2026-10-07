@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -573,6 +574,26 @@ const InHiveHivesPerAcreSection = () => {
 const PrecisionPollination = () => {
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
+      <SEO
+        title="Precision Pollination & Hives Per Acre Model | In-Hive Pollination"
+        description="Maximize commercial crop yields with BeeYield precision pollination. Data-driven hives per acre models, in-hive pollination monitoring, and expert apiary management protecting bees."
+        keywords="precision pollination, hives per acre model, in hive pollination, bees, apiary, protecting bees, in land pollination, smart hive sensors, commercial orchard pollination, bee colony strength"
+        url="/precision-pollination"
+        image="/images/pollination/gateway-solar-node.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "BeeYield Precision Pollination & Hives Per Acre Service",
+          "serviceType": "Precision Pollination & In-Hive Agricultural Monitoring",
+          "description": "Commercial precision pollination deploying verified hives per acre models, acoustic in-hive monitoring, and real-time foraging telemetry while protecting bees and apiary health.",
+          "provider": {
+            "@type": "Organization",
+            "name": "BeeYield",
+            "url": "https://beeyield.com"
+          },
+          "areaServed": "Kenya"
+        }}
+      />
 
 
       {/* ═══════════════════════════════════════════════════════════════

@@ -64,16 +64,16 @@ const PollinationServices = () => {
     return (
         <BeeYieldPageShell className="bg-background">
             <SEO 
-                title="BeeYield: Precision Pollination & Hive Intelligence"
-                description="Precision pollination services and smart hive telemetry. Optimize crop yields and monitor hive health across agricultural landscapes."
-                keywords="precision pollination services, smart hive IoT, crop pollination, beekeeping intelligence, agricultural yields"
+                title="Precision Pollination & In-Land Pollination | Hives Per Acre Model"
+                description="BeeYield delivers precision pollination and in-land pollination across East Africa. Data-backed hives per acre models and in-hive pollination monitoring protecting bees and boosting crop yields."
+                keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, commercial pollination services, bee colony health, crop yield optimization"
                 url="/pollination-services"
                 image="/og-image.png"
                 schema={{
                     "@context": "https://schema.org",
                     "@type": "Service",
-                    "name": "BeeYield Precision Pollination",
-                    "description": "Professional pollination records and hive activity monitoring using IoT sensors for commercial farmers.",
+                    "name": "BeeYield Precision Pollination & In-Land Pollination",
+                    "description": "Professional in-land and in-hive pollination services, calculating exact hives per acre models while protecting bees and boosting commercial crop yields.",
                     "provider": {
                         "@type": "LocalBusiness",
                         "name": "BeeYield Kibwezi HQ",
@@ -87,20 +87,34 @@ const PollinationServices = () => {
                     "areaServed": ["Kenya", "Africa", "Global"],
                     "hasOfferCatalog": {
                         "@type": "OfferCatalog",
-                        "name": "Pollination Services",
+                        "name": "Precision Pollination Solutions",
                         "itemListElement": [
                             {
                                 "@type": "Offer",
                                 "itemOffered": {
                                     "@type": "Service",
-                                    "name": "In-Hive Monitoring"
+                                    "name": "In-Hive Pollination Telemetry"
                                 }
                             },
                             {
                                 "@type": "Offer",
                                 "itemOffered": {
                                     "@type": "Service",
-                                    "name": "Field Activity Mapping"
+                                    "name": "Hives Per Acre Modeling & Placement"
+                                }
+                            },
+                            {
+                                "@type": "Offer",
+                                "itemOffered": {
+                                    "@type": "Service",
+                                    "name": "In-Land Pollination Field Coverage"
+                                }
+                            },
+                            {
+                                "@type": "Offer",
+                                "itemOffered": {
+                                    "@type": "Service",
+                                    "name": "Apiary Management & Protecting Bees"
                                 }
                             }
                         ]

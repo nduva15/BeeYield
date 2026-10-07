@@ -205,9 +205,9 @@ const Contact = () => {
   return (
     <BeeYieldPageShell className="min-h-screen py-20 bg-background">
       <SEO 
-        title="Contact BeeYield | Support, Sales & Partnership Inquiries"
-        description="Get in touch with BeeYield. Contact our Kibwezi headquarters for pollination services, honey wholesale, beekeeping technology, or bee health support across Kenya."
-        keywords="contact BeeYield, beekeeping support Kenya, pollination service inquiry, honey wholesale Makueni, Kibwezi agritech contact"
+        title="Contact BeeYield | Precision Pollination & Apiary Inquiries"
+        description="Get in touch with BeeYield. Contact us for commercial precision pollination, calibrated hives per acre models, pure honey orders, and apiary support protecting bees across Kenya."
+        keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, contact BeeYield, Kenya pollination service"
         url="/contact"
         image="/og-image.png"
         schema={{

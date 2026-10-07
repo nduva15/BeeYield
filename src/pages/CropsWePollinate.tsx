@@ -12,6 +12,7 @@ import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps
 import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/data/beePollinationData";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 
 const CropsWePollinate = () => {
@@ -36,7 +37,24 @@ const CropsWePollinate = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
-      
+      <SEO
+        title="Crops We Pollinate | Hives Per Acre Model & Precision Pollination"
+        description="Scientific crop pollination recommendations and hives per acre models for macadamia, avocado, mango, watermelon, sunflower, and coffee. Protecting bees while increasing export yields."
+        keywords="crops we pollinate, precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, avocado pollination, macadamia pollination Kenya"
+        url="/crops-we-pollinate"
+        image="/logo.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "BeeYield Commercial Crop Pollination Services",
+          "description": "Customized hives per acre deployment, precision pollination, and apiary placement for commercial fruit, nut, and seed crops in Kenya.",
+          "provider": {
+            "@type": "Organization",
+            "name": "BeeYield",
+            "url": "https://beeyield.com"
+          }
+        }}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-[#F0F7F0] py-20 md:py-32">

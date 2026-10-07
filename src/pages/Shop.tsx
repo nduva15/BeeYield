@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import {
   ShoppingCart,
   Star,
@@ -696,6 +697,22 @@ const Shop = () => {
 
   return (
     <BeeYieldPageShell className="bg-background">
+      <SEO
+        title="Shop Pure Honey & Apiary Supplies | Protecting Bees"
+        description="Buy 100% pure raw honey, IoT in-hive pollination sensors, and professional beekeeping supplies. Directly supporting Kenya apiary yards and protecting bees."
+        keywords="shop pure honey, apiary, bees, protecting bees, in hive pollination, in land pollination, precision pollination, hives per acre model, BeeYield shop, Kenya raw honey"
+        url="/shop"
+        image="/images/products/beeyield_honey_500g.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Store",
+          "name": "BeeYield Official Store",
+          "description": "Pure traceable Kenyan honey, in-hive monitoring equipment, and sustainable apiary supplies.",
+          "url": "https://beeyield.com/shop",
+          "currenciesAccepted": "KES, USD",
+          "paymentAccepted": "M-Pesa, Credit Card"
+        }}
+      />
       {/* Shop */}
       <section className="container mx-auto px-4 py-10">
         <div className="flex items-end justify-between gap-6 flex-wrap mb-8">

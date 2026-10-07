@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 
@@ -172,6 +173,23 @@ const PollinationSolutions = () => {
 
   return (
     <BeeYieldPageShell className="pt-8 p-0">
+      <SEO
+        title="Pollination Solutions & Apiary Hardware | Precision Pollination"
+        description="End-to-end precision pollination and in-land pollination solutions. Calibrated hives per acre models, in-hive pollination probes, and smart apiary telemetry protecting bees."
+        keywords="precision pollination, hives per acre model, in hive pollination, in land pollination, bees, apiary, protecting bees, apiary management, hive telemetry hardware, crop pollination solutions"
+        url="/pollination-solutions"
+        image="/images/pollination/gateway-solar-node.png"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "BeeYield Pollination Solutions & Hardware Ecosystem",
+          "description": "Comprehensive precision pollination hardware, in-hive monitoring probes, hives per acre modeling, and apiary services designed for commercial farms.",
+          "brand": {
+            "@type": "Brand",
+            "name": "BeeYield"
+          }
+        }}
+      />
       {/* Hub Hero */}
       <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
         <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">

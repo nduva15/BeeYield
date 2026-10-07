@@ -1102,9 +1102,11 @@ const HoneyLanding = () => {
   return (
     <BeeYieldPageShell className="bg-[#FFF9F0] p-0 md:p-0 -m-4 md:-m-6">
       <SEO
-        title="Premium Traceable Honey from Kibwezi"
-        description="Shop 100% raw, traceable honey from Kibwezi. Powered by BeeYield technology and the 50/50 Harvest Promise. Supporting sustainable pollination in Kenya."
-        keywords="honey, raw honey, Kibwezi honey, traceable honey, BeeYield, beekeeping Kenya, sustainable honey, Acacia honey"
+        title="Pure Traceable Honey & Apiary Harvest | Protecting Bees"
+        description="Shop 100% pure raw honey harvested from sustainable apiary sites in Kibwezi. Fully traceable, supporting precision pollination and protecting bees with our 50/50 Harvest Promise."
+        keywords="bees, apiary, protecting bees, pure honey Kenya, traceable honey, precision pollination, in land pollination, in hive pollination, hives per acre model, BeeYield honey"
+        url="/honey"
+        image="/og-image.png"
       />
 
       {/* Structured Data for AEO / SEO */}

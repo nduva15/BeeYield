@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import SEO from '@/components/SEO';
 import { fadeInUp } from '@/lib/motion';
 import { useApiaries } from '@/hooks/useApiaries';
 import { useSensorReadings } from '@/hooks/useSensorReadings';
@@ -120,6 +121,12 @@ const BloomPhenology: React.FC = () => {
     return (
         <motion.div {...fadeInUp} className="h-full">
             <BeeYieldPageShell>
+                <SEO
+                    title="Bloom Phenology & Pollination Synchronization | BeeYield"
+                    description="Track crop flowering windows, floral nectar flow, and optimal hives per acre timing. Align in-hive pollination with peak bloom phenology while protecting bees."
+                    keywords="precision pollination, hives per acre model, in hive pollination, in land pollination, bees, apiary, protecting bees, bloom phenology, flower blooming season Kenya"
+                    url="/bloom-phenology"
+                />
                 <BeeYieldPageHeader
                     icon={Flower2}
                     label="Phenology"

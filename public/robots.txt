@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-dashboard
+Disallow: /shop-dashboard
+Disallow: /account-settings
+Disallow: /auth
+Disallow: /auth/callback
+
+Sitemap: https://beeyield.com/sitemap.xml

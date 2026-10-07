@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calculator, Droplet, Flame, Wallet, History, ArrowUpRight, Zap, Activity, TrendingUp, Flower2, Truck, ShieldCheck, Gauge } from 'lucide-react';
 import { glass } from '@/components/beeyield/GlassTheme';
 import { BeeYieldPageHeader, BeeYieldPageShell } from '@/components/beeyield/BeeYieldUI';
+import SEO from '@/components/SEO';
 import { cn } from '@/lib/utils';
 import VarroaWashInterpreter from '@/components/calculators/VarroaWashInterpreter';
 import { calculateHealthyHiveIndex, calculatePollinationMetrics, HealthyHiveInputs } from '@/lib/pollinationCalculations';
@@ -90,6 +91,12 @@ const BeeCalculatorSuite = () => {
 
     return (
         <BeeYieldPageShell className="space-y-6">
+            <SEO
+                title="Hives Per Acre Calculator & Precision Pollination Suite"
+                description="Calculate exact hives per acre requirements, economic ROI, and in-hive pollination metrics. Plan apiary placements, feed ratios, and treatments while protecting bees."
+                keywords="hives per acre model, precision pollination, bees, apiary, protecting bees, in hive pollination, in land pollination, pollination calculator, bee colony health calculator"
+                url="/bee-calculator"
+            />
             <BeeYieldPageHeader
                 icon={Calculator}
                 label="Universal Calculator Suite"

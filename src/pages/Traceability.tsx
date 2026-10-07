@@ -547,9 +547,9 @@ const Traceability = () => {
   return (
     <BeeYieldPageShell className="bg-background">
       <SEO 
-        title="BeeYield Trace | Track Pure Honey from Hive to Jar"
-        description="BeeYield Trace lets you track pure honey from hive to jar. Verify where your honey was gathered, meet local beekeepers, and check harvest details on any jar."
-        keywords="honey tracking, honey traceability, pure honey, BeeYield Trace, real honey, Kenya honey origin, honey farm, hive to jar"
+        title="Honey Traceability & Apiary Records | Protecting Bees"
+        description="Track pure honey from hive to jar. Verify origin apiary sites, floral bloom forage, in-hive pollination health, and our commitment to protecting bees."
+        keywords="honey traceability, apiary, bees, protecting bees, in hive pollination, in land pollination, precision pollination, hives per acre model, BeeYield trace, Kibwezi honey"
         url="/traceability"
         image="/og-image.png"
         schema={{

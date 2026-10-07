@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -254,6 +255,26 @@ const InLandPollination = () => {
 
   return (
     <BeeYieldPageShell className="bg-background text-foreground">
+      <SEO
+        title="In-Land Pollination Platform & Apiary Insights | Protecting Bees"
+        description="BeeYield's in-land pollination platform pairs field mapping with in-hive telemetry. Monitor bee activity, calculate optimal hives per acre, and protect bees across agricultural acreage."
+        keywords="in land pollination, precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, bee activity mapping, smart pollination platform Kenya, apiary management"
+        url="/in-land-pollination"
+        image="/images/beehub/apiary-lavender.jpg"
+        schema={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "BeeYield In-Land Pollination Platform",
+          "applicationCategory": "AgriculturalTechnologyApplication",
+          "operatingSystem": "Web, iOS, Android",
+          "description": "In-land pollination platform delivering field coverage analytics, in-hive monitoring data, and hives per acre intelligence for commercial farmers and apiary managers.",
+          "provider": {
+            "@type": "Organization",
+            "name": "BeeYield",
+            "url": "https://beeyield.com"
+          }
+        }}
+      />
 
       {/* ═══════════════════════════════════════════════════════════════
           HERO SECTION

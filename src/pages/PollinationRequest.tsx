@@ -10,6 +10,7 @@ import { Calendar, MapPin, Sprout } from "lucide-react";
 
 import { submitPollinationRequest, PollinationRequest as IPollinationRequest } from "@/services/contactService";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import SEO from "@/components/SEO";
 
 const PollinationRequest = () => {
   const { toast } = useToast();
@@ -80,6 +81,12 @@ const PollinationRequest = () => {
 
   return (
     <BeeYieldPageShell className="min-h-screen py-20 p-0">
+      <SEO
+        title="Request Precision Pollination | Calibrate Hives Per Acre"
+        description="Book commercial precision pollination services for your farm. Get custom hives per acre models, in-hive pollination monitoring, and professional apiary teams protecting bees."
+        keywords="precision pollination, hives per acre model, in hive pollination, in land pollination, bees, apiary, protecting bees, book pollination services, commercial crop pollination Kenya"
+        url="/pollination-request"
+      />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl">
           <div className="mb-12 text-center">

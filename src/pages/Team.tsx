@@ -196,8 +196,9 @@ const Team = () => {
     return (
         <BeeYieldPageShell className="bg-background text-foreground">
             <SEO 
-                title="Meet the Team | BeeYield"
-                description="Our team of specialists committed to applying diverse expertise in agriculture, data science, and engineering to help secure the future of the world's food supply."
+                title="Meet the Team | Protecting Bees & Precision Pollination"
+                description="Meet the agronomists, apiary stewards, and engineers at BeeYield developing precision pollination models, in-hive monitoring, and protecting bees across Africa."
+                keywords="protecting bees, precision pollination, apiary, bees, hives per acre model, in hive pollination, in land pollination, BeeYield team, Kenya agriculture experts"
                 url="/team"
             />
             {/* ═══════════════════════════════════════════════════════════════
