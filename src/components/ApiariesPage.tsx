@@ -8731,18 +8731,6 @@ Provide: (1) Colony status and viability assessment, (2) Frame utilization & bro
                     </div>
                   )}
 
-                  {/* Floating Add Hive Button (Matching Screenshot 1) */}
-                  <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-30">
-                    <button
-                      type="button"
-                      onClick={handleOpenInlineAddHive}
-                      className="px-5 py-3 rounded-2xl bg-[#E8A020] hover:bg-[#D99215] active:scale-95 text-stone-950 font-bold text-sm flex items-center gap-2 shadow-xl hover:shadow-2xl transition-all cursor-pointer border border-amber-300/60"
-                      title="Add New Hive Colony"
-                    >
-                      <Plus className="w-5 h-5 stroke-[2.5]" />
-                      <span>Add</span>
-                    </button>
-                  </div>
                 </div>
               )}
 
