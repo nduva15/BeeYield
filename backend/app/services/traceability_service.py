@@ -396,6 +396,54 @@ class TraceabilityService:
 TraceabilityService = TraceabilityService()
 
 
+async def register_farmer(farmer_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.register_farmer(farmer_in, token=token)
+
+
+async def register_apiary(apiary_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.register_apiary(apiary_in, token=token)
+
+
+async def register_hive(hive_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.register_hive(hive_in, token=token)
+
+
+def record_sensor_data(sensor_in: Any) -> dict[str, Any]:
+    return TraceabilityService.record_sensor_data(sensor_in)
+
+
+async def record_harvest(harvest_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.record_harvest(harvest_in, token=token)
+
+
+async def get_all_harvests(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_all_harvests(limit=limit, token=token)
+
+
+async def get_all_apiaries(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_all_apiaries(limit=limit, token=token)
+
+
+async def get_all_hives(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_all_hives(limit=limit, token=token)
+
+
+async def create_batch(batch_in: Any, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.create_batch(batch_in, token=token)
+
+
+async def get_all_batches(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_all_batches(limit=limit, token=token)
+
+
+async def audit_account(email: Optional[str] = None, user_id: Optional[str] = None, token: Optional[str] = None) -> dict[str, Any]:
+    return await TraceabilityService.audit_account(email=email, user_id=user_id, token=token)
+
+
+async def get_history(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
+    return await TraceabilityService.get_history(batch_code, token=token)
+
+
 async def get_trace_journey(batch_code: str, token: Optional[str] = None) -> Optional[schemas.TraceResponse]:
     return await TraceabilityService.get_trace_journey(batch_code, token=token)
 
