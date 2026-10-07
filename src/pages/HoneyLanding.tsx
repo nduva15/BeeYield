@@ -544,7 +544,7 @@ const FeaturesSection = () => {
       description: "Scan the QR code on any jar to trace your honey back to the specific geo-tagged bee box, beekeeper, and cold extraction center.",
       color: "text-beeyield-green bg-beeyield-green/10",
       cta: "Verify Batch",
-      ctaLink: "/trace?code=BEE-2026-01-0420"
+      ctaLink: "/traceability?code=BEE-2026-01-0420"
     },
     {
       icon: Leaf,

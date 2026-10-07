@@ -38,6 +38,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
+import { cn } from "@/lib/utils";
 
 const Media = () => {
   const location = useLocation();
@@ -1104,7 +1105,7 @@ const Media = () => {
                   className="rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
                   asChild
                 >
-                  <Link to="/trace">
+                  <Link to="/traceability">
                     <QrCode className="w-3.5 h-3.5 mr-1.5" />
                     <span>Verify Honey Jar</span>
                   </Link>
@@ -1579,7 +1580,7 @@ const Media = () => {
                 </div>
 
                 <Link
-                  to="/trace"
+                  to="/traceability"
                   className="inline-flex items-center gap-2 text-xs font-bold text-amber-700 hover:text-amber-800 dark:text-amber-400 bg-amber-500/10 px-4 py-2 rounded-xl transition-all"
                 >
                   <QrCode className="w-4 h-4" />
@@ -1920,7 +1921,7 @@ const Media = () => {
             {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
               <Link
                 key={code}
-                to={`/trace?code=${code}`}
+                to={`/traceability?code=${code}`}
                 className="font-mono text-xs font-bold bg-card hover:bg-amber-600 hover:text-white border border-border/60 px-4 py-2 rounded-xl transition-all shadow-sm"
               >
                 🔍 Batch {code}
@@ -1935,7 +1936,7 @@ const Media = () => {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-full font-bold px-8">
-              <Link to="/trace">
+              <Link to="/traceability">
                 <span>Open Full Traceability Ledger</span>
               </Link>
             </Button>
@@ -1998,7 +1999,7 @@ const Media = () => {
               size="lg"
               className="rounded-full font-bold px-8"
             >
-              <Link to="/trace">
+              <Link to="/traceability">
                 <span>Scan Jar QR Code</span>
               </Link>
             </Button>

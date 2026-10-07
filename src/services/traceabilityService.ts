@@ -2,6 +2,8 @@
  * Traceability Service - Powered by BeeYield Honey Trail
  */
 import { apiGet } from "./api";
+import { CANONICAL_TIMOTHY_HARVESTS } from "@/data/canonicalHarvests";
+import type { Harvest } from "@/services/beeyieldService";
 
 export interface Location {
     latitude: number;

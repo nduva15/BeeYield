@@ -811,7 +811,7 @@ const Shop = () => {
                   className="w-full rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-900/10 gap-2"
                   asChild
                 >
-                  <Link to="/trace">
+                  <Link to="/traceability">
                     <span>Open Full Traceability Hub</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
