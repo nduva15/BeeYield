@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ShopLoginForm from '@/components/auth/shop/ShopLoginForm';
 import ShopRegisterForm from '@/components/auth/shop/ShopRegisterForm';
 import { StripeCardForm } from '@/components/payments/StripeCardForm';
+import { MpesaPaymentModal } from '@/components/payments/MpesaPaymentModal';
 import { initializeCheckout, CheckoutOrder, downloadInvoice, createStripePaymentIntent } from '@/services/shopService';
 import { adminService } from '@/services/adminService';
 import {
@@ -80,6 +81,17 @@ const Checkout = () => {
         cardHolder: '',
     });
 
+    // M-Pesa Prompt & Confirmation State
+    const [showMpesaModal, setShowMpesaModal] = useState(false);
+    const [mpesaModalData, setMpesaModalData] = useState<{
+        orderId: string;
+        orderNumber: string;
+        amount: number;
+        phone: string;
+        checkoutRequestId?: string;
+        idempotencyKey?: string;
+    } | null>(null);
+
     // Stripe state
     const [stripeCardReady, setStripeCardReady] = useState(false);
     const [stripePaymentMethodId, setStripePaymentMethodId] = useState<string | null>(null);
@@ -101,7 +113,7 @@ const Checkout = () => {
         notes: '',
     });
 
-    // Prefill shipping from user profile
+    // Prefill shipping and payment from user profile
     useEffect(() => {
         if (user) {
             const meta = user.user_metadata || {};
@@ -114,6 +126,9 @@ const Checkout = () => {
                 city: meta.city || prev.city,
                 county: meta.county || prev.county,
             }));
+            if (meta.phone && !paymentDetails.mpesaNumber) {
+                setPaymentDetails(prev => ({ ...prev, mpesaNumber: meta.phone }));
+            }
 
             // Fetch saved cards
             const fetchCards = async () => {
@@ -179,9 +194,15 @@ const Checkout = () => {
     };
 
     const handlePaymentInfoNext = () => {
-        if (paymentMethod === 'mpesa' && !paymentDetails.mpesaNumber) {
-            toast.error('Please enter your M-Pesa number');
-            return;
+        if (paymentMethod === 'mpesa') {
+            const phoneVal = paymentDetails.mpesaNumber || shippingDetails.phone;
+            if (!phoneVal) {
+                toast.error('Please enter your M-Pesa phone number');
+                return;
+            }
+            if (!paymentDetails.mpesaNumber && shippingDetails.phone) {
+                setPaymentDetails({ ...paymentDetails, mpesaNumber: shippingDetails.phone });
+            }
         }
         if (paymentMethod === 'card' && !stripeCardReady) {
             toast.error('Please verify your card using the secure form');
@@ -195,6 +216,9 @@ const Checkout = () => {
             toast.error('Please fill in all required shipping details');
             return;
         }
+        if (paymentMethod === 'mpesa' && !paymentDetails.mpesaNumber && shippingDetails.phone) {
+            setPaymentDetails({ ...paymentDetails, mpesaNumber: shippingDetails.phone });
+        }
         setCurrentStep('payment');
     };
 
@@ -203,10 +227,46 @@ const Checkout = () => {
         toast.success('Information saved!');
     };
 
+    const handleMpesaSuccess = (result: any) => {
+        setShowMpesaModal(false);
+        const orderNum = mpesaModalData?.orderNumber || orderNumber;
+
+        // Log payment for admin dashboard
+        adminService.logPayment({
+            order_number: orderNum,
+            payment_method: 'mpesa',
+            amount_kes: totalPayable,
+            status: 'completed',
+            customer_email: shippingDetails.email
+        }).catch(() => { });
+
+        // Log activity
+        adminService.logActivity({
+            activity_type: 'payment',
+            action: 'created',
+            entity_type: 'order',
+            entity_reference: orderNum,
+            user_email: shippingDetails.email,
+            metadata: { total: totalPayable, items_count: items.length, mpesa_ref: result.mpesa_code }
+        }).catch(() => { });
+
+        trackConversion('purchase', totalPayable, 'KES');
+        trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
+
+        setCurrentStep('shipment');
+        toast.success(`M-Pesa payment confirmed! Reference: ${result.mpesa_code || 'PROCESSED'}`);
+    };
+
     const handlePlaceOrder = async () => {
         if (!user && !isBypassActive) {
             setShowAuthModal(true);
             toast.error('Please sign in to complete your order');
+            return;
+        }
+
+        const mpesaPhoneToUse = paymentDetails.mpesaNumber || shippingDetails.phone;
+        if (paymentMethod === 'mpesa' && !mpesaPhoneToUse) {
+            toast.error('Please provide an M-Pesa phone number to receive the prompt.');
             return;
         }
 
@@ -224,6 +284,7 @@ const Checkout = () => {
                     postal_code: shippingDetails.postalCode,
                 },
                 payment_method: paymentMethod,
+                mpesa_phone: mpesaPhoneToUse,
                 payment_method_id: paymentMethod === 'card' ? (stripePaymentMethodId || undefined) : undefined,
                 items: items.map(item => ({
                     product_id: item.productId.toString(),
@@ -264,7 +325,30 @@ const Checkout = () => {
                 setOrderTraceabilityBatches(['KIB-ACACIAL-26']);
             }
 
-            // Log payment for admin dashboard
+            if (isBypassActive) {
+                trackConversion('purchase', totalPayable, 'KES');
+                trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
+                setCurrentStep('shipment');
+                toast.success('Bypass Active: Order confirmed!');
+                return;
+            }
+
+            // M-Pesa Prompt Trigger
+            if (paymentMethod === 'mpesa') {
+                const checkoutReqId = response.checkout_request_id || (response.payment_info as any)?.CheckoutRequestID;
+                setMpesaModalData({
+                    orderId,
+                    orderNumber: orderNum,
+                    amount: totalPayable,
+                    phone: mpesaPhoneToUse,
+                    checkoutRequestId: checkoutReqId,
+                    idempotencyKey: orderData.idempotency_key,
+                });
+                setShowMpesaModal(true);
+                return;
+            }
+
+            // Card flow
             adminService.logPayment({
                 order_number: orderNum,
                 payment_method: paymentMethod,
@@ -273,7 +357,6 @@ const Checkout = () => {
                 customer_email: shippingDetails.email
             }).catch(() => { });
 
-            // Log activity
             adminService.logActivity({
                 activity_type: 'payment',
                 action: 'created',
@@ -283,15 +366,12 @@ const Checkout = () => {
                 metadata: { total: totalPayable, items_count: items.length }
             }).catch(() => { });
 
-            // Simulate payment processing flow
-            await new Promise(r => setTimeout(r, 2000));
-
-            // Track dynamic conversion
+            await new Promise(r => setTimeout(r, 1500));
             trackConversion('purchase', totalPayable, 'KES');
             trackEvent('order_completed', { order_number: orderNum, items_count: items.length });
 
             setCurrentStep('shipment');
-            toast.success(isBypassActive ? 'Bypass Active: Order confirmed!' : 'Payment successful!');
+            toast.success('Payment successful!');
         } catch (error: any) {
             console.error('Checkout error:', error);
             toast.error(error.message || 'Payment failed. Please try again.');
@@ -1054,21 +1134,41 @@ const Checkout = () => {
 
                         {currentStep === 'payment' && (
                             <Card className="border border-border rounded-2xl p-8 text-center space-y-6">
-                                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                                    <Smartphone className="w-10 h-10 text-primary" />
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${paymentMethod === 'mpesa' ? 'bg-[#1B9157]/15 text-[#1B9157]' : 'bg-primary/10 text-primary'}`}>
+                                    <Smartphone className="w-10 h-10" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black">Final Confirmation</h2>
-                                    <p className="text-muted-foreground mt-2">
-                                        Everything is ready! Click below to complete your payment of
-                                        <span className="font-bold text-foreground"> {formatPrice(totalPayable)}</span>
+                                    <h2 className="text-2xl font-black">
+                                        {paymentMethod === 'mpesa' ? 'M-Pesa STK Push Confirmation' : 'Final Order Review'}
+                                    </h2>
+                                    <p className="text-muted-foreground mt-2 max-w-md mx-auto">
+                                        {paymentMethod === 'mpesa' ? (
+                                            <>
+                                                A prompt will be sent directly to your phone{' '}
+                                                <span className="font-extrabold text-foreground">
+                                                    ({paymentDetails.mpesaNumber || shippingDetails.phone || 'your phone'})
+                                                </span>{' '}
+                                                to authorize payment of{' '}
+                                                <span className="font-bold text-foreground">{formatPrice(totalPayable)}</span>.
+                                            </>
+                                        ) : (
+                                            <>
+                                                Everything is ready! Click below to complete your payment of
+                                                <span className="font-bold text-foreground"> {formatPrice(totalPayable)}</span>
+                                            </>
+                                        )}
                                     </p>
                                 </div>
                                 <div className="bg-muted/30 p-4 rounded-xl text-left">
                                     <p className="text-sm font-bold text-muted-foreground mb-2">Order Summary</p>
                                     <div className="space-y-1">
                                         <p className="text-sm flex justify-between"><span>Items:</span> <span>{getTotalItems()}</span></p>
-                                        <p className="text-sm flex justify-between"><span>Method:</span> <span>{paymentMethod.toUpperCase()}</span></p>
+                                        <p className="text-sm flex justify-between">
+                                            <span>Payment Method:</span>
+                                            <span className="font-bold text-foreground">
+                                                {paymentMethod === 'mpesa' ? `M-PESA (${paymentDetails.mpesaNumber || shippingDetails.phone})` : 'CARD'}
+                                            </span>
+                                        </p>
                                         <p className="text-sm flex justify-between"><span>Delivery:</span> <span>{shippingDetails.city}, {shippingDetails.address}</span></p>
                                     </div>
                                 </div>
@@ -1079,16 +1179,21 @@ const Checkout = () => {
                                     <Button
                                         onClick={handlePlaceOrder}
                                         disabled={isProcessing}
-                                        className="flex-1 rounded-full h-12 text-lg font-bold bg-gradient-to-r from-primary to-amber-600 shadow-glow"
+                                        className={`flex-1 rounded-full h-12 text-lg font-bold ${
+                                            paymentMethod === 'mpesa'
+                                                ? 'bg-[#1B9157] hover:bg-[#157847] text-white shadow-lg shadow-emerald-600/20'
+                                                : 'bg-gradient-to-r from-primary to-amber-600 shadow-glow'
+                                        }`}
                                     >
                                         {isProcessing ? (
                                             <>
                                                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                                Processing...
+                                                Sending STK Prompt...
                                             </>
                                         ) : (
                                             <>
-                                                Pay Now {formatPrice(totalPayable)}
+                                                <Smartphone className="mr-2 w-5 h-5" />
+                                                {paymentMethod === 'mpesa' ? 'Send M-Pesa Prompt' : 'Pay Now'} {formatPrice(totalPayable)}
                                                 <ArrowRight className="ml-2 w-5 h-5" />
                                             </>
                                         )}
@@ -1358,6 +1463,21 @@ const Checkout = () => {
                     </Tabs>
                 </DialogContent>
             </Dialog>
+
+            {/* M-Pesa STK Push Prompt & Confirmation Modal */}
+            {mpesaModalData && (
+                <MpesaPaymentModal
+                    isOpen={showMpesaModal}
+                    onClose={() => setShowMpesaModal(false)}
+                    orderId={mpesaModalData.orderId}
+                    orderNumber={mpesaModalData.orderNumber}
+                    amount={mpesaModalData.amount}
+                    phone={mpesaModalData.phone}
+                    checkoutRequestId={mpesaModalData.checkoutRequestId}
+                    idempotencyKey={mpesaModalData.idempotencyKey}
+                    onPaymentSuccess={handleMpesaSuccess}
+                />
+            )}
         </BeeYieldPageShell>
     );
 };

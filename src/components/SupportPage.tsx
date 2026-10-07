@@ -485,7 +485,7 @@ export default function SupportPage({
               <Send className="w-10 h-10 mx-auto text-honey mb-3 opacity-60" />
               <p className="font-semibold text-foreground">No Tickets Found</p>
               <p className="text-xs text-muted-foreground mt-1">
-                All support channels are synchronized with backend and Supabase
+                Our support team is ready to help you anytime
               </p>
               <button
                 onClick={() => setShowForm(true)}

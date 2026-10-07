@@ -95,18 +95,55 @@ async def mpesa_c2b_confirmation(request: Request, payload: dict):
 @router.get("/checkout/status/{idempotency_key}")
 async def get_checkout_status(idempotency_key: str, token: Optional[str] = Depends(get_token)):
     """
-    Poll point for frontend to check if M-Pesa callback landed.
+    Poll point for frontend to check if M-Pesa callback or payment landed.
     """
-    filters = {"idempotency_key": idempotency_key}
-    results = await db_select("billing_ledger", filters=filters, token=token)
-    if results:
-        tx = results[0]
-        return {
-            "status": tx.get("payment_status"),
-            "transaction_id": tx.get("id"),
-            "paid": tx.get("payment_status") == "completed"
-        }
-    return {"status": "not_found", "paid": False}
+    return await shop_service.get_payment_status(idempotency_key, token=token)
+
+
+@router.post("/checkout/mpesa-push")
+async def send_mpesa_push(
+    push_in: schemas.MpesaPushRequest,
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    Trigger or re-trigger M-Pesa STK Push prompt to customer's phone.
+    """
+    from app.core.config import settings
+    order = await shop_service.get_order(push_in.order_id, token=settings.SUPABASE_SERVICE_ROLE_KEY)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    amount = push_in.amount or float(order.get("total_kes", 0))
+    res = await shop_service.initiate_mpesa_stk_push(
+        phone=push_in.phone,
+        amount=amount,
+        order_number=order.get("order_number", push_in.order_id),
+        order_id=push_in.order_id,
+        id_key=order.get("idempotency_key"),
+        token=token
+    )
+    return res
+
+
+@router.post("/checkout/confirm-mpesa")
+async def confirm_mpesa_checkout(
+    confirm_in: schemas.MpesaConfirmRequest,
+    current_user: Optional[dict] = Depends(security.get_optional_current_user),
+    token: Optional[str] = Depends(get_token)
+):
+    """
+    Confirm M-Pesa payment with customer receipt code / verification.
+    """
+    result = await shop_service.confirm_mpesa_payment(
+        order_id=confirm_in.order_id,
+        mpesa_code=confirm_in.mpesa_code,
+        checkout_request_id=confirm_in.checkout_request_id,
+        token=token
+    )
+    if result.get("status") == "error":
+        raise HTTPException(status_code=400, detail=result.get("message", "Payment confirmation failed"))
+    return result
 
 @router.get("/orders", response_model=list[schemas.Order])
 async def get_user_orders(

@@ -52,12 +52,24 @@ class OrderCreate(BaseModel):
     shipping_address: dict
     payment_method: str # mpesa, card
     payment_method_id: Optional[str] = None
+    mpesa_phone: Optional[str] = None
     delivery_method: str = "delivery" # delivery, pickup
     items: list[OrderItem]
     total_kes: float
     coupon_code: Optional[str] = None
     notes: Optional[str] = None
     idempotency_key: Optional[str] = None # Added for Oxidized Financial Core
+
+class MpesaPushRequest(BaseModel):
+    order_id: str
+    phone: str
+    amount: Optional[float] = None
+
+class MpesaConfirmRequest(BaseModel):
+    order_id: str
+    mpesa_code: Optional[str] = None
+    checkout_request_id: Optional[str] = None
+
 
 class Order(OrderCreate):
     id: str

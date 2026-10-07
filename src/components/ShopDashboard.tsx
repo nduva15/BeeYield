@@ -66,7 +66,9 @@ import {
   type CustomerProfileData,
   type SupportTicket,
   type TrackingInfo,
+  type MpesaPaymentStatusResponse,
 } from "@/services/shopService";
+import { MpesaPaymentModal } from "@/components/payments/MpesaPaymentModal";
 
 export interface ShopDashboardProps {
   isOpen?: boolean;
@@ -261,6 +263,15 @@ function ShopDashboardInner({
   const [deliveryMethod, setDeliveryMethod] = useState<"delivery" | "pickup">("delivery");
   const [paymentMethodType, setPaymentMethodType] = useState<"mpesa" | "card">("mpesa");
   const [mpesaPhone, setMpesaPhone] = useState(profile?.phone || "");
+  const [showMpesaModal, setShowMpesaModal] = useState(false);
+  const [mpesaModalData, setMpesaModalData] = useState<{
+    orderId: string;
+    orderNumber: string;
+    amount: number;
+    phone: string;
+    checkoutRequestId?: string;
+    idempotencyKey?: string;
+  } | null>(null);
 
   // Custom Address draft for checkout or Address tab
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
@@ -593,7 +604,21 @@ function ShopDashboardInner({
 
       const res = await initializeCheckout(payload);
 
-      // Auto-sync with Shopify if connected
+      if (paymentMethodType === "mpesa") {
+        setMpesaModalData({
+          orderId: res.order_id,
+          orderNumber: res.order_number,
+          amount: cartTotal,
+          phone: mpesaPhone || chosenAddr.phone || "",
+          checkoutRequestId: res.checkout_request_id || (res.payment_info as any)?.CheckoutRequestID,
+          idempotencyKey: payload.idempotency_key,
+        });
+        setShowMpesaModal(true);
+        setShowCheckoutForm(false);
+        return;
+      }
+
+      // Auto-sync with Shopify if connected (for card/other)
       void autoSyncRecord({
         deviceId: "shop-client",
         kind: "shop_order" as any,
@@ -609,7 +634,7 @@ function ShopDashboardInner({
         },
       });
 
-      toast.success(`⚡ Order #${res.order_number} confirmed! M-Pesa STK push dispatched.`);
+      toast.success(`⚡ Order #${res.order_number} confirmed!`);
       clearCart();
       setShowCheckoutForm(false);
       void loadAllData();
@@ -619,6 +644,29 @@ function ShopDashboardInner({
     } finally {
       setCheckoutSubmitting(false);
     }
+  };
+
+  const handleMpesaDashboardSuccess = (result: MpesaPaymentStatusResponse) => {
+    setShowMpesaModal(false);
+    void autoSyncRecord({
+      deviceId: "shop-client",
+      kind: "shop_order" as any,
+      recordId: result.order_id || result.order_number || "order",
+      hiveLabel: "Kibwezi Apiary Stand",
+      title: `Shop Order #${result.order_number}`,
+      summary: `M-Pesa payment confirmed (Ref: ${result.mpesa_code})`,
+      status: "completed",
+      occurredAt: new Date().toISOString(),
+      metrics: {
+        total: result.amount || cartTotal,
+        items_count: cart.length,
+      },
+    });
+
+    toast.success(`⚡ Payment confirmed! Order #${result.order_number} marked as Paid.`);
+    clearCart();
+    void loadAllData();
+    setActiveTab("orders");
   };
 
   // Download PDF Invoice / Receipt
@@ -747,7 +795,7 @@ function ShopDashboardInner({
           };
           setWishlist((prev) => [newItem, ...prev.filter((w) => w.id !== productId)]);
         }
-        toast.success("Saved to Wishlist & synced to Supabase database! ❤️");
+        toast.success("Saved to Wishlist! ❤️");
       } else {
         setWishlist((prev) => prev.filter((w) => w.id !== productId));
         toast.info("Removed from Wishlist");
@@ -793,7 +841,7 @@ function ShopDashboardInner({
       const updated = await updateCustomerProfile(profileDraft);
       setCustomerProfile(updated);
       setShowProfileModal(false);
-      toast.success("Profile saved and synced with Supabase PostgreSQL! 👤");
+      toast.success("Profile saved successfully! 👤");
     } catch (e: any) {
       toast.error(e?.message || "Failed to save profile");
     } finally {
@@ -1490,7 +1538,7 @@ function ShopDashboardInner({
           {/* Orders Accordion List */}
           {loading ? (
             <div className="py-16 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading orders from Supabase...
+              <Loader2 className="w-4 h-4 animate-spin text-honey" /> Loading orders...
             </div>
           ) : filteredOrders.length === 0 ? (
             <div className="py-16 text-center rounded-2xl border border-dashed border-border/80 bg-card/40 p-8">
@@ -2796,8 +2844,8 @@ function ShopDashboardInner({
             </div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Synced with Supabase Wishlist
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                Saved to Account
               </span>
               <button
                 onClick={() => setActiveTab("products")}
@@ -2816,7 +2864,7 @@ function ShopDashboardInner({
               <div>
                 <p className="font-bold text-foreground text-sm">Your wishlist is currently empty</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                  Click the heart icon on any raw honey variant, BeeHUB IoT sensor, or beekeeping equipment in our catalog to save it to your permanent database ledger.
+                  Click the heart icon on any raw honey variant, BeeHUB sensor, or beekeeping equipment in our catalog to save it here for quick access later.
                 </p>
               </div>
               <button
@@ -2930,8 +2978,8 @@ function ShopDashboardInner({
 
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Synced with Supabase PostgreSQL
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Verified Member
                 </span>
                 <button
                   onClick={() => {
@@ -2985,11 +3033,13 @@ function ShopDashboardInner({
               </div>
 
               <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
-                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Supabase UUID</span>
-                <p className="font-mono text-muted-foreground text-[11px] truncate">
-                  {user?.id || "usr_kibwezi_pioneer_01"}
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Account ID</span>
+                <p className="font-mono font-bold text-foreground text-xs truncate">
+                  {user?.id ? user.id.slice(0, 18) + "..." : "BY-CUST-001"}
                 </p>
-                <p className="text-[10px] text-emerald-600 dark:text-emerald-400">PostgreSQL Schema: public.profiles</p>
+                <p className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Member Profile Active
+                </p>
               </div>
             </div>
 
@@ -3090,8 +3140,8 @@ function ShopDashboardInner({
                 <MessageSquare className="w-4 h-4 text-honey" />
                 Your Support Tickets & Responses ({supportTickets.length})
               </h4>
-              <span className="text-[11px] text-muted-foreground font-mono">
-                Synced with Supabase Backend
+              <span className="text-[11px] text-muted-foreground font-medium">
+                Live Support
               </span>
             </div>
 
@@ -3174,7 +3224,7 @@ function ShopDashboardInner({
               <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
                 <h5 className="font-bold text-foreground">How does M-Pesa automatic STK Push checkout work?</h5>
                 <p className="text-muted-foreground leading-relaxed text-[11px]">
-                  Selecting M-Pesa triggers an instantaneous Daraja API STK push directly to your mobile handset. Entering your PIN confirms your order and updates our Supabase PostgreSQL ledger.
+                  Selecting M-Pesa sends an instant prompt to your phone. Enter your M-Pesa PIN to complete your payment safely and place your order immediately.
                 </p>
               </div>
               <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1.5">
@@ -3307,12 +3357,12 @@ function ShopDashboardInner({
                 {isSavingProfile ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Syncing with Supabase...
+                    Saving...
                   </>
                 ) : (
                   <>
                     <Save className="w-3.5 h-3.5" />
-                    Save & Sync to Supabase
+                    Save Profile
                   </>
                 )}
               </button>
@@ -3538,7 +3588,7 @@ function ShopDashboardInner({
         <AlertDialogHeader>
           <AlertDialogTitle>{deleteTarget?.title}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. It will update the database ledger in Supabase and sync with your local cache.
+            This action cannot be undone. It will remove this item from your account.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -3559,12 +3609,27 @@ function ShopDashboardInner({
     />
   );
 
+  const mpesaModal = mpesaModalData && (
+    <MpesaPaymentModal
+      isOpen={showMpesaModal}
+      onClose={() => setShowMpesaModal(false)}
+      orderId={mpesaModalData.orderId}
+      orderNumber={mpesaModalData.orderNumber}
+      amount={mpesaModalData.amount}
+      phone={mpesaModalData.phone}
+      checkoutRequestId={mpesaModalData.checkoutRequestId}
+      idempotencyKey={mpesaModalData.idempotencyKey}
+      onPaymentSuccess={handleMpesaDashboardSuccess}
+    />
+  );
+
   if (embedded) {
     return (
       <div className="w-full space-y-6">
         {mainContent}
         {alertDialog}
         {authModal}
+        {mpesaModal}
       </div>
     );
   }
@@ -3575,6 +3640,7 @@ function ShopDashboardInner({
         {mainContent}
         {alertDialog}
         {authModal}
+        {mpesaModal}
       </div>
     </div>
   );
