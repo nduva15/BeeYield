@@ -25,7 +25,13 @@ import {
   Radio,
   Activity,
   Container,
-  BookOpen
+  BookOpen,
+  QrCode,
+  MapPin,
+  Sparkles,
+  ArrowRight,
+  CheckCircle2,
+  Check
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";
@@ -468,9 +474,39 @@ const ProductCard = memo(({
         <h3 className="text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-1 flex items-center gap-2">
           {product.name}
         </h3>
-        <p className="text-sm text-muted-foreground font-medium mb-6 line-clamp-2 leading-relaxed h-10">
+        <p className="text-sm text-muted-foreground font-medium mb-3 line-clamp-2 leading-relaxed h-10">
           {product.description}
         </p>
+
+        {product.category === "honey" && (
+          <div className="mb-4 space-y-2 pt-1 border-t border-border/40">
+            {product.floral_source && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-900 dark:text-amber-200 bg-amber-500/10 border border-amber-300/40 px-2.5 py-1 rounded-lg">
+                <Sparkles className="w-3 h-3 text-amber-600 shrink-0" />
+                <span className="font-bold truncate">{product.floral_source}</span>
+              </div>
+            )}
+            {product.origin_region && (
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
+                <span className="truncate">{product.origin_region}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-1">
+              <Link
+                to={`/trace?code=${product.batch_code || "BEE-2026-01-0420"}`}
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 hover:underline transition-all"
+              >
+                <QrCode className="w-3.5 h-3.5" />
+                <span>Verify Hive Origin</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">
+                0% Adulteration
+              </span>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-4">
           {!product.variants || product.variants.length === 0 ? (
@@ -710,6 +746,80 @@ const Shop = () => {
             </button>
           ))}
         </div>
+
+        {activeCategory === "honey" && (
+          <div className="mb-10 p-6 md:p-8 rounded-[2rem] bg-gradient-to-r from-amber-500/10 via-[#FFF9F0] to-emerald-500/10 dark:from-amber-950/20 dark:via-background dark:to-emerald-950/20 border border-amber-300/40 dark:border-amber-700/30 shadow-sm">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-2xl">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 font-bold px-3 py-1 rounded-full text-xs">
+                    <Sparkles className="w-3.5 h-3.5 mr-1 inline text-amber-600" />
+                    Hive-to-Honey Digital Traceability
+                  </Badge>
+                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 inline" />
+                    FAO & EU DPP Ready
+                  </span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
+                  Track Every Jar from Geo-Tagged Bee Box to Collection Center
+                </h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Unlike generic multifloral blends, our monofloral honey captures GPS coordinates of every bee box during peak bloom, logs centrifugal extraction at regional centers, and undergoes laboratory purity tests to guarantee 0% adulteration.
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-foreground/80">
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    Geo-Tagged Bee Boxes (GeoJSON)
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    Monofloral Verified Floral Sources
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    50% Reserve Kept for Colony Health
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    Zero Added Sugar Syrups
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-card/90 backdrop-blur-sm p-4 sm:p-5 rounded-2xl border border-border/60 shadow-sm shrink-0 w-full lg:w-80">
+                <p className="text-xs font-bold text-foreground mb-1 flex items-center gap-1.5">
+                  <QrCode className="w-4 h-4 text-primary" />
+                  Verify Honey Jar Authenticity
+                </p>
+                <p className="text-[11px] text-muted-foreground mb-3">
+                  Enter batch code from your jar or try a sample batch:
+                </p>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
+                    <Link
+                      key={code}
+                      to={`/trace?code=${code}`}
+                      className="text-[10px] font-mono font-bold bg-muted hover:bg-primary hover:text-primary-foreground px-2 py-1 rounded transition-colors"
+                    >
+                      {code}
+                    </Link>
+                  ))}
+                </div>
+                <Button
+                  size="sm"
+                  className="w-full rounded-xl font-bold text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-900/10 gap-2"
+                  asChild
+                >
+                  <Link to="/trace">
+                    <span>Open Full Traceability Hub</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {visibleProducts.map((product) => (

@@ -283,11 +283,33 @@ const FeaturedProductsSection = ({ handleAddToCart, formatPrice, products }: {
 
                 <CardContent className="p-6 flex flex-col flex-grow bg-[#FFF9F0] relative z-20">
                   <div className="mb-3">
-                    <div className="text-[10px] font-black text-beeyield-gold mb-1">Single Origin</div>
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className="text-[10px] font-black text-beeyield-gold uppercase tracking-wider">{product.floral_source || 'Single Origin'}</span>
+                      {product.batch_code && (
+                        <span className="text-[9px] font-mono font-bold bg-amber-100/70 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200">
+                          {product.batch_code}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="font-bold text-lg text-beeyield-green group-hover:text-beeyield-green-dark transition-colors line-clamp-1">{product.name}</h3>
                   </div>
 
-                  <p className="text-sm text-neutral-500 mb-6 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
+                  <p className="text-sm text-neutral-500 mb-4 line-clamp-2 leading-relaxed flex-grow">{product.description}</p>
+
+                  {product.batch_code && (
+                    <div className="mb-4 pt-2 border-t border-amber-100 flex items-center justify-between text-[11px]">
+                      <span className="text-emerald-700 font-bold flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        0% Adulteration
+                      </span>
+                      <Link
+                        to={`/trace?code=${product.batch_code}`}
+                        className="text-amber-800 hover:text-amber-950 font-bold underline hover:no-underline"
+                      >
+                        Verify Hive &rarr;
+                      </Link>
+                    </div>
+                  )}
 
                   <div className="flex items-end justify-between gap-4 pt-4 border-t border-dashed border-neutral-100">
                     <div className="flex flex-col">
@@ -512,34 +534,48 @@ const HeritageSection = () => {
   );
 };
 
-// Features Section - 3 cards
+// Features Section - 4 Traceability Pillars
 const FeaturesSection = () => {
   const navigate = useNavigate();
   const features = [
     {
       icon: ShieldCheck,
-      title: "Honey Journey Tracking",
-      description: "Scan the QR code on any jar to trace your honey back to the specific hive and harvest date.",
-      color: "text-beeyield-green bg-beeyield-green/10"
+      title: "Hive-to-Honey Journey",
+      description: "Scan the QR code on any jar to trace your honey back to the specific geo-tagged bee box, beekeeper, and cold extraction center.",
+      color: "text-beeyield-green bg-beeyield-green/10",
+      cta: "Verify Batch",
+      ctaLink: "/trace?code=BEE-2026-01-0420"
     },
     {
       icon: Leaf,
       title: "50/50 Harvest Promise",
-      description: "We only harvest what the bees can spare, leaving 50% of the surplus to ensure colony survival.",
-      color: "text-beeyield-gold bg-beeyield-gold/10"
+      description: "We strictly harvest only what the colony can spare—leaving 50% of the surplus to ensure colony survival through dry spells.",
+      color: "text-beeyield-gold bg-beeyield-gold/10",
+      cta: "Learn Impact",
+      ctaLink: "/about"
     },
     {
       icon: Droplets,
-      title: "Hive Health Monitoring",
-      description: "Sensors help us spot stress or disease early, so we can support the colony before it affects the harvest.",
-      color: "text-beeyield-orange bg-beeyield-orange/10"
+      title: "0% Adulteration Proof",
+      description: "Laboratory tested for purity: refractometer certified moisture under 18%, C4 carbon isotope cleared, zero added corn or rice syrups.",
+      color: "text-cyan-700 bg-cyan-50",
+      cta: "Quality Tests",
+      ctaLink: "/traceability"
+    },
+    {
+      icon: Sparkles,
+      title: "Monofloral Verification",
+      description: "Geo-tagged boxes synchronized with peak bloom of Acacia, Citrus, Mango, and Jamun for authentic single-origin floral nectar.",
+      color: "text-amber-700 bg-amber-50",
+      cta: "Explore Flora",
+      ctaLink: "/media"
     },
   ];
 
   return (
     <section className="py-24 bg-[#FFF9F0]">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -548,23 +584,21 @@ const FeaturesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="bg-neutral-50 rounded-[2.5rem] p-10 text-left hover:bg-[#FFF9F0] hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
+              className="bg-neutral-50 rounded-[2.5rem] p-8 text-left hover:bg-[#FFF9F0] hover:shadow-2xl transition-all flex flex-col items-start border border-transparent hover:border-neutral-100 group"
             >
-              <div className={`w-16 h-16 mb-8 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
-                <feature.icon className="h-8 w-8" />
+              <div className={`w-14 h-14 mb-6 ${feature.color} rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                <feature.icon className="h-7 w-7" />
               </div>
-              <h3 className="text-xl font-black text-neutral-900 mb-4 tracking-tight group-hover:text-beeyield-green transition-colors">{feature.title}</h3>
-              <p className="text-sm text-neutral-500 mb-8 leading-relaxed font-medium flex-grow">{feature.description}</p>
+              <h3 className="text-lg font-black text-neutral-900 mb-3 tracking-tight group-hover:text-beeyield-green transition-colors">{feature.title}</h3>
+              <p className="text-sm text-neutral-500 mb-6 leading-relaxed font-medium flex-grow">{feature.description}</p>
 
-              {feature.title === "Honey Journey Tracking" && (
-                <Button
-                  variant="link"
-                  className="text-beeyield-green font-black p-0 h-auto gap-2 text-xs group/btn"
-                  onClick={() => navigate("/traceability")}
-                >
-                  Verify Now <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
-                </Button>
-              )}
+              <Button
+                variant="link"
+                className="text-beeyield-green font-black p-0 h-auto gap-1.5 text-xs group/btn"
+                onClick={() => navigate(feature.ctaLink)}
+              >
+                {feature.cta} <ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1" />
+              </Button>
             </motion.div>
           ))}
         </div>

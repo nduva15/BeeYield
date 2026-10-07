@@ -2009,6 +2009,7 @@ function HiveDetailModal({
       setActiveHive(cleaned);
       onUpdateHive(cleaned);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hive.sensorSerial]);
   const [showAddHarvestForm, setShowAddHarvestForm] = useState(false);
   const [editingBatch, setEditingBatch] = useState<HiveHarvestBatch | null>(null);

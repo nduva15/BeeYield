@@ -229,4 +229,52 @@ case_studies_data = [
             }
         ],
     },
+    {
+        "id": "honey-traceability",
+        "title": "Hive-to-Honey Digital Traceability",
+        "category": "Honey Traceability & Quality Assurance",
+        "stories": [
+            {
+                "farmer": "Timothy Nduva & Kibwezi Apiary Network",
+                "location": "Kibwezi & Makueni Collection Hub",
+                "role": "Lead Apiculturist & Honey Operations Lead",
+                "acres": 5,
+                "description": (
+                    "By digitizing every stage of production from GPS-tagged Langstroth bee boxes to regional collection centers, "
+                    "BeeYield provides verifiable source-level transparency. Monofloral honey from Acacia and Citrus blooms is tested "
+                    "via refractometer (<18% moisture) and guaranteed 100% pure and unadulterated, meeting FAO and EU food safety standards."
+                ),
+                "quote": (
+                    "Traceability is no longer optional—it is a differentiator. Our consumers and export partners know the exact flower, "
+                    "bee box GPS coordinates, and beekeeper behind every jar."
+                ),
+                "stats": [
+                    {"label": "Adulteration", "value": "0% (Pure Raw)"},
+                    {"label": "Moisture Level", "value": "16.8% (Grade A)"},
+                    {"label": "Bee Reserve Kept", "value": "50% Guaranteed"},
+                ],
+                "image": "/images/story/hives/apiary-langstroth-row.jpg",
+            },
+            {
+                "farmer": "Makueni Beekeepers Cooperative",
+                "location": "Mbuinzau Collection Center",
+                "role": "Smallholder Extraction & Quality Assurance Hub",
+                "acres": 105,
+                "description": (
+                    "Offline-compatible mobile tools enable smallholder beekeepers across Makueni to log QR-tagged bee boxes and "
+                    "centrifugal cold extraction batches. Batch codes provide tamper-proof provenance that commands premium pricing."
+                ),
+                "quote": (
+                    "Digitizing first-mile honey data at the collection center has empowered smallholder beekeepers with fair trade pricing "
+                    "and bulletproof proof of origin."
+                ),
+                "stats": [
+                    {"label": "Monofloral Accuracy", "value": "100%"},
+                    {"label": "Digital KYC Logged", "value": "100%"},
+                    {"label": "Compliance Ready", "value": "FAO & EU DPP"},
+                ],
+                "image": "/images/story/hives/beekeeper-inspection-twilight.jpg",
+            },
+        ],
+    },
 ]

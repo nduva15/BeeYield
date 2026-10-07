@@ -183,7 +183,7 @@ Honey quality is easily destroyed in the extraction house if overheated:
 Laboratory verification provides the scientific proof that confirms the digital ledger:
 - **Melissopalynology (Pollen Analysis)**: Microscopic examination identifies characteristic pollen grains, proving botanical purity (e.g., >45% *Acacia* pollen for monofloral acacia honey) and geographic origin.
 - **Nuclear Magnetic Resonance (1H-NMR Spectroscopy)**: High-resolution spectral fingerprinting compares the honey's unique metabolic profile against authentic global databases, detecting even 1% addition of foreign sugar syrups or chemical manipulation.
-- **Stable Isotope Ratio Mass Spectrometry (EA/LC-IRMS)**: Measures carbon isotope ratios ($\delta^{13}C$) between whole honey and extracted honey protein, conclusively distinguishing natural C3 plant nectar from adulterating C4 plant syrups (corn, sugarcane) and C3 syrups (rice, beet).
+- **Stable Isotope Ratio Mass Spectrometry (EA/LC-IRMS)**: Measures carbon isotope ratios (δ¹³C) between whole honey and extracted honey protein, conclusively distinguishing natural C3 plant nectar from adulterating C4 plant syrups (corn, sugarcane) and C3 syrups (rice, beet).
 
 ### Stage 5: Smart Packaging, Anti-Tamper Seals, and Consumer Delivery
 Traceability finishes at the retail shelf:

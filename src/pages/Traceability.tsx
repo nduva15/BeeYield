@@ -37,6 +37,7 @@ import {
   buildConservationFacts,
   buildDeepTraceabilityStory,
   buildHarvestFacts,
+  buildPurityAssuranceFacts,
   buildSensorFacts,
   buildWeatherFacts,
 } from "@/lib/traceabilityNarrative";
@@ -549,6 +550,7 @@ const Traceability = () => {
   const esgHighlights = esgMetrics.slice(0, 3);
   const traceStoryParagraphs = buildDeepTraceabilityStory(traceData);
   const harvestFacts = buildHarvestFacts(traceData);
+  const purityFacts = buildPurityAssuranceFacts(traceData);
   const conservationFacts = buildConservationFacts(traceData);
   const sensorFacts = buildSensorFacts(traceData);
   const weatherFacts = buildWeatherFacts(traceData, apiaryWeather).map((item) => {
@@ -1428,6 +1430,7 @@ const Traceability = () => {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         {[
                           ...harvestFacts,
+                          ...purityFacts,
                           { label: "Water source", value: textOrMissing(traceData?.apiary?.water_source) },
                           { label: "Experience", value: hasValue(traceData?.farmer?.experience_years) ? `${traceData?.farmer?.experience_years} years` : missingDataLabel },
                         ].map((item) => (

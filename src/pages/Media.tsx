@@ -18,10 +18,18 @@ import {
   Radio,
   ShieldCheck,
   Award,
+  QrCode,
+  Droplets,
+  Scale,
+  Box,
+  Truck,
+  FileCheck,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { HIVE_TO_HONEY_VALUE_CHAIN, BEEYIELD_TRACEABILITY_STORY } from "@/lib/traceabilityNarrative";
 import {
   Carousel,
   CarouselContent,
@@ -34,6 +42,125 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 const Media = () => {
   const location = useLocation();
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const queryParams = new URLSearchParams(location.search);
+  const initialMediaTab = queryParams.get("tab") === "honey" || location.hash.includes("honey") ? "honey" : "bee";
+  const [activeMediaType, setActiveMediaType] = useState<"bee" | "honey">(initialMediaTab);
+  const [selectedHoneyPhotoIndex, setSelectedHoneyPhotoIndex] = useState(0);
+  const [activeValueChainStep, setActiveValueChainStep] = useState(0);
+
+  // Honey Traceability Media Dispatches & Case Studies
+  const honeyMediaDispatches = [
+    {
+      id: "box-migration",
+      title: "Geo-Tagged Bee Box Migration: Peak Acacia Bloom",
+      location: "Kibwezi Forest Apiary Zone A",
+      coordinates: "-2.4167° S, 37.9667° E",
+      beekeeper: "Timothy Nduva & Kibwezi Team",
+      category: "First-Mile Geo-Tagging",
+      badge: "GPS Mapped (GeoJSON)",
+      badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
+      description:
+        "Migrating 184 managed Langstroth hives into pristine wild Acacia woodlands during peak blooming anthesis. Every individual hive stand is geo-tagged with WGS84 coordinates and serialized QR identifiers, forming the immutable origin node of our honey trail.",
+      image: "/images/story/hives/apiary-langstroth-row.jpg",
+      thumbLabel: "Box Migration",
+      cropType: "Acacia Monofloral",
+      provenanceHighlights: [
+        "Target flora: 100% Wild Acacia tortilis and senegal bloom corridor",
+        "Box IDs: KIB-001 through KIB-184 with tamper-evident QR tags",
+        "Offline mobile logging syncing WGS84 GeoJSON spatial polygons",
+      ],
+      qualityImpact:
+        "Ensures strictly monofloral floral forage, preventing mixed adulteration with agricultural syrups or off-target weeds.",
+    },
+    {
+      id: "centrifugal-extraction",
+      title: "Centrifugal Cold Extraction & Collection Center Intake",
+      location: "Kibwezi Regional Collection Center",
+      coordinates: "Makueni Hub Intake #KIB-CC1",
+      beekeeper: "Makueni Extraction Team",
+      category: "Cold Processing & Purity",
+      badge: "Cold Spin (<35°C)",
+      badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
+      description:
+        "Harvested honeycomb frames are weighed, uncapped, and spun in sanitary centrifugal extractors at room temperature (<35°C). Unprocessed cold extraction protects delicate enzymes, diastase activity, and beneficial pollen grains from heat degradation.",
+      image: "/images/story/hives/yellow-langstroth-closeup.jpg",
+      thumbLabel: "Cold Extraction",
+      cropType: "Centrifugal Extraction",
+      provenanceHighlights: [
+        "Sanitary SS304 centrifugal extraction preserving bioactive enzymes",
+        "Immediate refractometer moisture testing logging 16.8% (Export Grade A)",
+        "Digital intake receipt linked to original hive box QR code",
+      ],
+      qualityImpact:
+        "Eliminates heat damage, maintaining live bee enzymes and rich wildflower aromatic esters.",
+    },
+    {
+      id: "refractometer-purity",
+      title: "Refractometer Purity & Anti-Adulteration Laboratory Defense",
+      location: "BeeYield Central Apiculture Lab",
+      coordinates: "TraceX & FSSAI Verification Protocols",
+      beekeeper: "Lead Quality Chemist",
+      category: "Purity & Compliance",
+      badge: "0% Added Sugar Guaranteed",
+      badgeColor: "bg-blue-500/15 text-blue-800 border-blue-300 dark:text-blue-200",
+      description:
+        "Every batch is screened against C3/C4 corn syrups, rice syrups, and moisture excess. Backed by digital traceability, BeeYield proves that every jar is pure monofloral honey, meeting FAO, AGMARK, and EU import specifications.",
+      image: "/images/products/beeyield_honey_500g.png",
+      thumbLabel: "Purity Testing",
+      cropType: "Lab Verification",
+      provenanceHighlights: [
+        "100% negative for exogenous sugars, maltose, and inverted syrups",
+        "Melissopalynological pollen spectrum confirming Acacia / Citrus dominance",
+        "Batch-specific Certificate of Analysis attached to jar QR passport",
+      ],
+      qualityImpact:
+        "Provides indisputable legal and consumer defense against global honey fraud and mislabeling.",
+    },
+    {
+      id: "beekeeper-kyc",
+      title: "Empowering Smallholder Beekeepers with Digital KYC",
+      location: "Mbuinzau & Kiunduani Cooperatives",
+      coordinates: "105+ Contracted Farmer Network",
+      beekeeper: "Farmer Christopher & Clement",
+      category: "Beekeeper Empowerment",
+      badge: "Fair Trade Verified",
+      badgeColor: "bg-purple-500/15 text-purple-800 border-purple-300 dark:text-purple-200",
+      description:
+        "Smallholder beekeepers are registered on mobile-first offline apps, creating digital worker profiles, box inventories, and direct digital payment settlements upon honey delivery.",
+      image: "/images/story/hives/beekeeper-inspection-twilight.jpg",
+      thumbLabel: "Beekeeper Network",
+      cropType: "Digital Inclusion",
+      provenanceHighlights: [
+        "Offline-first mobile onboarding works without cellular internet in dryland brush",
+        "Transparent weight logging at collection center prevents middleman exploitation",
+        "Premium export pricing directly credited to beekeeper accounts",
+      ],
+      qualityImpact:
+        "Incentivizes pristine hive care, chemical-free foraging, and zero colony harm.",
+    },
+    {
+      id: "fifty-fifty-reserve",
+      title: "Certified Naturally Grown (CNG) & 50/50 Reserve Protocol",
+      location: "Kavita Ecological Sanctuary",
+      coordinates: "-2.4312° S, 37.9540° E",
+      beekeeper: "Farmer Gabriel Kavita",
+      category: "Colony Welfare & ESG",
+      badge: "50% Colony Reserve",
+      badgeColor: "bg-teal-500/15 text-teal-800 border-teal-300 dark:text-teal-200",
+      description:
+        "Our golden rule: exactly 50% of the honey is left in the brood chamber to nourish the bees through seasonal droughts. Zero artificial sugar water feeding, zero GMOs, and full alignment with Certified Naturally Grown apiculture standards.",
+      image: "/images/story/hives/savannah-hanging-hive.jpg",
+      thumbLabel: "50/50 Reserve",
+      cropType: "Ethical Harvest",
+      provenanceHighlights: [
+        "Audited 50/50 harvest records ensuring zero starvation in winter/dry season",
+        "No synthetic pesticides, miticides, or prophylactic antibiotics",
+        "Harmonized with 2,500+ indigenous trees planted for pollinator habitat",
+      ],
+      qualityImpact:
+        "Colonies remain naturally robust and disease-resistant, producing higher-vitality honey season after season.",
+    },
+  ];
 
   // 105 Total Acres Network across Makueni Partner Farmers
   const partnerFarmers = [
@@ -794,95 +921,205 @@ const Media = () => {
 
   return (
     <BeeYieldPageShell>
-      {/* Hero Header */}
+      {/* Hero Header with Media Switcher */}
       <section className="relative py-20 md:py-24 bg-gradient-to-b from-secondary/40 via-background to-background overflow-hidden border-b border-border/40">
         <div className="container mx-auto px-4 text-center max-w-4xl">
-          <Badge
-            variant="outline"
-            className="mb-4 px-4 py-1.5 rounded-full text-[#1B9157] border-[#1B9157]/30 bg-[#1B9157]/10 font-bold uppercase tracking-wider text-xs"
-          >
-            <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-[#1B9157]" />
-            Verified Field Operations • 105 Acres and Counting
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
-            Field Media & <span className="text-[#1B9157]">105 Acres and Counting</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-            Photographic proof and verified dispatches across <strong>105 acres and counting</strong> in Makueni County.
-            Featuring our partner farmers across Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
-          </p>
-
-          {/* Quick Filter Navigation Buttons */}
-          <div className="flex flex-wrap justify-center gap-2 px-2">
-            <Button
-              variant="default"
-              size="sm"
-              className="max-w-full rounded-full bg-[#1B9157] text-white hover:bg-[#157746] transition-colors font-bold shadow-md shadow-green-900/10 text-[11px] sm:text-xs py-2 px-3.5 h-auto whitespace-normal text-center"
-              onClick={() =>
-                document
-                  .getElementById("latest-pollination")
-                  ?.scrollIntoView({ behavior: "smooth" })
-              }
+          {/* Top Primary Tab Switcher: Bee Media vs Honey Media */}
+          <div className="inline-flex p-1.5 rounded-2xl bg-secondary/80 border border-border/60 shadow-sm mb-6 max-w-md mx-auto">
+            <button
+              type="button"
+              onClick={() => setActiveMediaType("bee")}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all",
+                activeMediaType === "bee"
+                  ? "bg-[#1B9157] text-white shadow-md shadow-green-900/10"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <Camera className="w-3.5 h-3.5 mr-1.5 shrink-0" />
-              <span>Field Dispatch (105 Acres and Counting)</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-200 border-amber-300 hover:bg-amber-500/25 font-bold"
-              onClick={() =>
-                document.getElementById("mangoes")?.scrollIntoView({ behavior: "smooth" })
-              }
+              <Camera className="w-4 h-4" />
+              <span>🐝 Bee Media (Pollination)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMediaType("honey")}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all",
+                activeMediaType === "honey"
+                  ? "bg-amber-600 text-white shadow-md shadow-amber-900/10"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              🥭 Mango Exports
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200 border-orange-300 hover:bg-orange-500/25 font-bold"
-              onClick={() =>
-                document.getElementById("citrus")?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              🍊 Citrus & Oranges
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-yellow-500/15 text-yellow-900 dark:text-yellow-200 border-yellow-300 hover:bg-yellow-500/25 font-bold"
-              onClick={() =>
-                document.getElementById("maize")?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              🌽 Maize Pollination
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border-emerald-300 hover:bg-emerald-500/25 font-bold"
-              onClick={() =>
-                document.getElementById("vegetables")?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              🥬 Mixed Vegetables
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-full bg-teal-500/15 text-teal-900 dark:text-teal-200 border-teal-300 hover:bg-teal-500/25 font-bold"
-              onClick={() =>
-                document.getElementById("restoration")?.scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              🌿 Bees & Restoration
-            </Button>
+              <Sparkles className="w-4 h-4" />
+              <span>🍯 Honey Media (Traceability)</span>
+            </button>
           </div>
+
+          {activeMediaType === "bee" ? (
+            <>
+              <Badge
+                variant="outline"
+                className="mb-4 px-4 py-1.5 rounded-full text-[#1B9157] border-[#1B9157]/30 bg-[#1B9157]/10 font-bold uppercase tracking-wider text-xs inline-flex items-center"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-[#1B9157]" />
+                Verified Field Operations • 105 Acres and Counting
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
+                Bee Media & <span className="text-[#1B9157]">105 Acres and Counting</span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+                Photographic proof and verified dispatches across <strong>105 acres and counting</strong> in Makueni County.
+                Featuring our partner farmers across Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
+              </p>
+
+              {/* Quick Filter Navigation Buttons for Bee Media */}
+              <div className="flex flex-wrap justify-center gap-2 px-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="max-w-full rounded-full bg-[#1B9157] text-white hover:bg-[#157746] transition-colors font-bold shadow-md shadow-green-900/10 text-[11px] sm:text-xs py-2 px-3.5 h-auto whitespace-normal text-center"
+                  onClick={() =>
+                    document
+                      .getElementById("latest-pollination")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  <Camera className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                  <span>Field Dispatch (105 Acres and Counting)</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-200 border-amber-300 hover:bg-amber-500/25 font-bold"
+                  onClick={() =>
+                    document.getElementById("mangoes")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🥭 Mango Exports
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-200 border-orange-300 hover:bg-orange-500/25 font-bold"
+                  onClick={() =>
+                    document.getElementById("citrus")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🍊 Citrus & Oranges
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-yellow-500/15 text-yellow-900 dark:text-yellow-200 border-yellow-300 hover:bg-yellow-500/25 font-bold"
+                  onClick={() =>
+                    document.getElementById("maize")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🌽 Maize Pollination
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border-emerald-300 hover:bg-emerald-500/25 font-bold"
+                  onClick={() =>
+                    document.getElementById("vegetables")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🥬 Mixed Vegetables
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-teal-500/15 text-teal-900 dark:text-teal-200 border-teal-300 hover:bg-teal-500/25 font-bold"
+                  onClick={() =>
+                    document.getElementById("restoration")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🌿 Bees & Restoration
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Badge
+                variant="outline"
+                className="mb-4 px-4 py-1.5 rounded-full text-amber-700 dark:text-amber-300 border-amber-300 bg-amber-500/10 font-bold uppercase tracking-wider text-xs inline-flex items-center"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
+                Hive-to-Honey Digital Traceability • Monofloral Authenticity
+              </Badge>
+              <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
+                Honey Media & <span className="text-amber-600">Hive-to-Jar Provenance</span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
+                Tracing honey from <strong>geo-tagged bee boxes and peak floral anthesis</strong> to regional collection center cold extraction.
+                Backing monofloral claims with verifiable data, combating adulteration, and meeting FAO and EU food safety standards.
+              </p>
+
+              {/* Quick Filter Navigation Buttons for Honey Media */}
+              <div className="flex flex-wrap justify-center gap-2 px-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="rounded-full bg-amber-600 text-white hover:bg-amber-700 font-bold shadow-md shadow-amber-900/10 text-xs py-2 px-4"
+                  onClick={() =>
+                    document.getElementById("honey-dispatches")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  <Camera className="w-3.5 h-3.5 mr-1.5" />
+                  <span>Honey Field Dispatches</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-amber-500/15 text-amber-900 dark:text-amber-200 border-amber-300 hover:bg-amber-500/25 font-bold text-xs"
+                  onClick={() =>
+                    document.getElementById("honey-value-chain")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🌱 Value Chain (5 Stages)
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border-emerald-300 hover:bg-emerald-500/25 font-bold text-xs"
+                  onClick={() =>
+                    document.getElementById("honey-purity-defense")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  🛡️ Anti-Adulteration Proof
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full bg-teal-500/15 text-teal-900 dark:text-teal-200 border-teal-300 hover:bg-teal-500/25 font-bold text-xs"
+                  onClick={() =>
+                    document.getElementById("honey-ethics-5050")?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  ⚖️ 50/50 Reserve Ethics
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="rounded-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                  asChild
+                >
+                  <Link to="/trace">
+                    <QrCode className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Verify Honey Jar</span>
+                  </Link>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
-      {/* 105-Acre Partner Farmer Roster Grid */}
-      <section className="py-12 bg-secondary/20 border-b border-border/40">
+      {/* CONTENT TABS: BEE MEDIA vs HONEY MEDIA */}
+      {activeMediaType === "bee" ? (
+        <div id="bee-media-root">
+          {/* 105-Acre Partner Farmer Roster Grid */}
+          <section className="py-12 bg-secondary/20 border-b border-border/40">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-8">
             <Badge className="bg-primary/15 text-primary border-primary/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">
@@ -1264,10 +1501,455 @@ const Media = () => {
           ))}
         </div>
       </div>
+    </div>
+  ) : (
+    /* HONEY MEDIA SECTION: HIVE-TO-HONEY DIGITAL TRACEABILITY */
+    <div id="honey-media-root">
+      {/* Section 1: The 5-Stage Value Chain Interactive Timeline */}
+      <section id="honey-value-chain" className="py-16 bg-secondary/20 border-b border-border/40">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <Badge className="bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-3">
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
+              From Floral Forage to Collection Center
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+              The Hive-to-Honey Value Chain
+            </h2>
+            <p className="text-base text-muted-foreground mt-3 leading-relaxed">
+              Unlike generic multifloral blends, our monofloral honey captures precise spatial, phenological, and extraction records across all 5 supply chain nodes.
+            </p>
+          </div>
 
-      {/* Bottom CTA Banner */}
-      <section className="py-20 bg-gradient-to-t from-secondary/40 via-background to-background border-t border-border/40 text-center">
-        <div className="container mx-auto px-4 max-w-3xl">
+          {/* Step Navigation Pill Buttons */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-8">
+            {HIVE_TO_HONEY_VALUE_CHAIN.map((stage, idx) => (
+              <button
+                key={stage.id}
+                type="button"
+                onClick={() => setActiveValueChainStep(idx)}
+                className={cn(
+                  "p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2 shadow-sm",
+                  activeValueChainStep === idx
+                    ? "bg-amber-500/15 border-amber-500 text-amber-950 dark:text-amber-100 shadow-amber-500/10 scale-[1.02]"
+                    : "bg-card border-border/60 hover:bg-muted/50 text-muted-foreground"
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center font-black text-xs",
+                    activeValueChainStep === idx ? "bg-amber-600 text-white" : "bg-muted text-foreground"
+                  )}>
+                    {stage.stepNumber}
+                  </span>
+                  {idx === 0 && <Box className="w-4 h-4 text-amber-600" />}
+                  {idx === 1 && <Sprout className="w-4 h-4 text-amber-600" />}
+                  {idx === 2 && <Scale className="w-4 h-4 text-amber-600" />}
+                  {idx === 3 && <Truck className="w-4 h-4 text-amber-600" />}
+                  {idx === 4 && <QrCode className="w-4 h-4 text-amber-600" />}
+                </div>
+                <div>
+                  <p className="text-xs font-black text-foreground line-clamp-1">{stage.title}</p>
+                  <p className="text-[10px] text-muted-foreground truncate">{stage.subtitle}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Active Value Chain Step Deep Dive Card */}
+          {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep] && (
+            <div className="bg-card border border-amber-300/50 dark:border-amber-700/40 rounded-3xl p-6 md:p-10 shadow-lg">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-border/40">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-amber-600 text-white font-bold text-xs">
+                      Stage {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].stepNumber} of 5
+                    </Badge>
+                    <Badge variant="outline" className="text-emerald-700 border-emerald-300 bg-emerald-50/50 dark:text-emerald-300 text-xs font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 mr-1 inline" />
+                      {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].complianceStandard}
+                    </Badge>
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-black text-foreground">
+                    {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].subtitle}
+                  </p>
+                </div>
+
+                <Link
+                  to="/trace"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-amber-700 hover:text-amber-800 dark:text-amber-400 bg-amber-500/10 px-4 py-2 rounded-xl transition-all"
+                >
+                  <QrCode className="w-4 h-4" />
+                  <span>Trace Live Batch Ledger</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid md:grid-cols-12 gap-8 pt-6">
+                <div className="md:col-span-7 space-y-4">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-foreground">
+                    Stage Overview & Agronomic Discipline:
+                  </h4>
+                  <p className="text-sm md:text-base text-foreground/85 leading-relaxed">
+                    {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].description}
+                  </p>
+                </div>
+
+                <div className="md:col-span-5 bg-secondary/40 border border-border/50 rounded-2xl p-5 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                    <FileCheck className="w-4 h-4 text-emerald-600" />
+                    Verified Data Points Logged:
+                  </h4>
+                  <ul className="space-y-2">
+                    {HIVE_TO_HONEY_VALUE_CHAIN[activeValueChainStep].dataPoints.map((pt, pIdx) => (
+                      <li key={pIdx} className="text-xs text-foreground/90 flex items-start gap-2">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <span className="font-medium">{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Section 2: Honey Photo & Field Dispatches Spotlight */}
+      <section
+        id="honey-dispatches"
+        className="py-16 md:py-20 bg-gradient-to-b from-background via-amber-50/20 dark:via-amber-950/10 to-background border-b border-border/40"
+      >
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <Badge className="bg-amber-600/15 text-amber-800 dark:text-amber-200 border-amber-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-3">
+              <Camera className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
+              Verified Dispatches from Kibwezi & Makueni
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+              Honey Traceability in the Field
+            </h2>
+            <p className="text-base text-muted-foreground mt-3">
+              Photographic proof capturing bee box migration, sanitary centrifugal extraction at regional centers, refractometer lab checks, and smallholder beekeeper onboarding.
+            </p>
+          </div>
+
+          {/* Main Featured Honey Dispatch Display */}
+          <div className="bg-card border border-border/60 rounded-3xl overflow-hidden shadow-xl mb-8">
+            <div className="grid lg:grid-cols-12 gap-0">
+              <div className="lg:col-span-7 relative min-h-[380px] lg:min-h-[500px] bg-black/5 overflow-hidden flex items-center justify-center">
+                <img
+                  src={honeyMediaDispatches[selectedHoneyPhotoIndex].image}
+                  alt={honeyMediaDispatches[selectedHoneyPhotoIndex].title}
+                  className="w-full h-full object-cover transition-all duration-500 max-h-[550px]"
+                />
+                <div className="absolute top-4 left-4">
+                  <Badge className={honeyMediaDispatches[selectedHoneyPhotoIndex].badgeColor + " font-bold px-3 py-1 shadow-sm"}>
+                    {honeyMediaDispatches[selectedHoneyPhotoIndex].badge}
+                  </Badge>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-2xl p-3 text-white text-xs flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <MapPin className="w-3.5 h-3.5 text-[#F4D03F]" />
+                    {honeyMediaDispatches[selectedHoneyPhotoIndex].location}
+                  </span>
+                  <span className="font-bold text-[#F4D03F]">
+                    {honeyMediaDispatches[selectedHoneyPhotoIndex].coordinates}
+                  </span>
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 p-6 md:p-8 flex flex-col justify-between space-y-6">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="text-xs font-semibold text-amber-700 border-amber-300 dark:text-amber-300">
+                      {honeyMediaDispatches[selectedHoneyPhotoIndex].category}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      Record {selectedHoneyPhotoIndex + 1} of {honeyMediaDispatches.length}
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-bold text-foreground leading-snug">
+                    {honeyMediaDispatches[selectedHoneyPhotoIndex].title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1 font-medium">
+                    Led by: {honeyMediaDispatches[selectedHoneyPhotoIndex].beekeeper}
+                  </p>
+
+                  <p className="text-sm text-foreground/80 mt-4 leading-relaxed">
+                    {honeyMediaDispatches[selectedHoneyPhotoIndex].description}
+                  </p>
+
+                  <div className="mt-6 space-y-2 border-t border-border/40 pt-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      Provenance & Traceability Attributes:
+                    </p>
+                    <ul className="space-y-1.5">
+                      {honeyMediaDispatches[selectedHoneyPhotoIndex].provenanceHighlights.map((obs, idx) => (
+                        <li key={idx} className="text-xs text-foreground/85 flex items-start gap-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{obs}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-4 p-3 rounded-xl bg-amber-500/10 border border-amber-300/30">
+                    <p className="text-xs font-semibold text-amber-900 dark:text-amber-200 flex items-center gap-1.5 mb-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                      Purity & Quality Assurance Standard
+                    </p>
+                    <p className="text-xs text-foreground/80">
+                      {honeyMediaDispatches[selectedHoneyPhotoIndex].qualityImpact}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-border/40">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={selectedHoneyPhotoIndex === 0}
+                    onClick={() => setSelectedHoneyPhotoIndex((prev) => Math.max(0, prev - 1))}
+                    className="rounded-full text-xs font-bold gap-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </Button>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {selectedHoneyPhotoIndex + 1} / {honeyMediaDispatches.length}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={selectedHoneyPhotoIndex === honeyMediaDispatches.length - 1}
+                    onClick={() =>
+                      setSelectedHoneyPhotoIndex((prev) =>
+                        Math.min(honeyMediaDispatches.length - 1, prev + 1)
+                      )
+                    }
+                    className="rounded-full text-xs font-bold gap-1"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Honey Photo Thumbnails Carousel */}
+          <div className="mt-6">
+            <Carousel className="w-full">
+              <CarouselContent className="-ml-2 md:-ml-3">
+                {honeyMediaDispatches.map((media, idx) => (
+                  <CarouselItem
+                    key={media.id}
+                    className="pl-2 md:pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setSelectedHoneyPhotoIndex(idx)}
+                      className={cn(
+                        "w-full text-left rounded-2xl overflow-hidden border-2 transition-all p-1.5 bg-card flex flex-col gap-1.5",
+                        selectedHoneyPhotoIndex === idx
+                          ? "border-amber-600 shadow-md shadow-amber-600/20 scale-[1.02]"
+                          : "border-border/40 opacity-70 hover:opacity-100"
+                      )}
+                    >
+                      <div className="relative aspect-video rounded-xl overflow-hidden bg-muted">
+                        <img
+                          src={media.image}
+                          alt={media.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-1 right-1 bg-black/70 rounded px-1.5 py-0.5 text-[9px] text-white font-mono">
+                          {media.thumbLabel}
+                        </div>
+                      </div>
+                      <div className="px-1">
+                        <p className="text-xs font-bold text-foreground truncate">{media.cropType}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{media.location}</p>
+                      </div>
+                    </button>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-end gap-2 mt-3">
+                <CarouselPrevious className="static translate-y-0 h-8 w-8" />
+                <CarouselNext className="static translate-y-0 h-8 w-8" />
+              </div>
+            </Carousel>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 3: Anti-Adulteration Purity Defense & FAO / EU Standards */}
+      <section id="honey-purity-defense" className="py-16 bg-card/60 border-b border-border/40">
+        <div className="container mx-auto px-4 max-w-6xl">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <Badge className="bg-emerald-500/15 text-emerald-800 dark:text-emerald-200 border-emerald-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-3">
+              <ShieldCheck className="w-3.5 h-3.5 mr-1.5 inline text-emerald-600" />
+              Anti-Adulteration & Monofloral Defense
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+              Why Honey Traceability is Essential
+            </h2>
+            <p className="text-base text-muted-foreground mt-3 leading-relaxed">
+              Food safety agencies like the FAO, FSSAI, and EU authorities are tightening origin regulations to stop diluted syrups and fake blends. Traceability transforms authenticity from a marketing slogan into verified legal proof.
+            </p>
+          </div>
+
+          {/* Side-by-side comparison */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <Card className="border-rose-300/40 bg-rose-50/10 dark:bg-rose-950/10 p-6 md:p-8 rounded-3xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-700 flex items-center justify-center font-bold">✕</span>
+                <h3 className="font-black text-xl text-foreground">The Honey Adulteration Crisis</h3>
+              </div>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span><strong>Generic Multifloral Blending:</strong> Mixing unidentified floral syrups with no spatial documentation or bloom timing.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span><strong>High-Fructose & Rice Syrups:</strong> Exogenous sugars fed to colonies or blended post-harvest to increase liquid volume.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span><strong>Over-Harvesting & Bee Starvation:</strong> Stripping all honey from colonies and substituting artificial sugar syrup.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span><strong>Export Border Rejection:</strong> Failure to provide EUDR-compliant GeoJSON polygons and chain-of-custody records.</span>
+                </li>
+              </ul>
+            </Card>
+
+            <Card className="border-emerald-300/40 bg-emerald-50/10 dark:bg-emerald-950/10 p-6 md:p-8 rounded-3xl">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold">✓</span>
+                <h3 className="font-black text-xl text-foreground">BeeYield Digital Provenance</h3>
+              </div>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>Geo-Tagged Bee Boxes (GeoJSON):</strong> Hive stands mapped to pristine Acacia, Citrus, and Mango bloom corridors.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>0% Added Sugar Guarantee:</strong> Lab-verified diastase activity and moisture levels kept below 18.0%.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>The 50/50 Reserve Protocol:</strong> Exactly 50% retained in brood chambers for colony wintering and health.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span><strong>EU Digital Product Passport (DPP):</strong> First-mile beekeeper KYC to serialized retail QR passport ready for audit.</span>
+                </li>
+              </ul>
+            </Card>
+          </div>
+
+          {/* 4 Core Pillars Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 rounded-2xl bg-card border border-border/60 space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center font-black">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-base text-foreground">Geo-Tagged Boxes</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                GPS coordinates logged during box migration to verify specific floral zones during peak nectar flows.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-card border border-border/60 space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center font-black">
+                <Droplets className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-base text-foreground">Centrifugal Cold Spin</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Spun under 35°C at regional collection hubs to preserve delicate aromatic notes, minerals, and live enzymes.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-card border border-border/60 space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-700 flex items-center justify-center font-black">
+                <Users className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-base text-foreground">Beekeeper KYC</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Mobile-first offline onboarding captures smallholder identities and transparent weight receipts for direct payment.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-card border border-border/60 space-y-2">
+              <div className="w-10 h-10 rounded-xl bg-teal-500/15 text-teal-700 flex items-center justify-center font-black">
+                <Scale className="w-5 h-5" />
+              </div>
+              <h4 className="font-bold text-base text-foreground">50/50 Harvest Ethics</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Certified Naturally Grown apiculture protocol: half for consumers, half reserved for colony survival.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 4: Call-to-Action & Quick Batch Verification */}
+      <section id="honey-ethics-5050" className="py-16 bg-gradient-to-t from-secondary/40 via-background to-background text-center">
+        <div className="container mx-auto px-4 max-w-4xl space-y-6">
+          <Badge className="bg-amber-600/15 text-amber-800 dark:text-amber-200 border-amber-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider">
+            <QrCode className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
+            Live Verification Hub
+          </Badge>
+          <h2 className="text-3xl md:text-5xl font-black text-foreground">
+            Verify Your Jar from Bee Box to Table
+          </h2>
+          <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Scan your jar's QR code or click any verified batch code below to view the immutable ledger of GPS coordinates, beekeeper identity, floral anthesis dates, and lab purity metrics.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 pt-2">
+            {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (
+              <Link
+                key={code}
+                to={`/trace?code=${code}`}
+                className="font-mono text-xs font-bold bg-card hover:bg-amber-600 hover:text-white border border-border/60 px-4 py-2 rounded-xl transition-all shadow-sm"
+              >
+                🔍 Batch {code}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+            <Button asChild size="lg" className="rounded-full bg-amber-600 hover:bg-amber-700 text-white font-bold px-8">
+              <Link to="/shop">
+                <span>Explore Traceable Honey in Shop</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="rounded-full font-bold px-8">
+              <Link to="/trace">
+                <span>Open Full Traceability Ledger</span>
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+    </div>
+  )}
+
+  {/* Bottom CTA Banner (Adapts for Bee vs Honey) */}
+  <section className="py-20 bg-gradient-to-t from-secondary/40 via-background to-background border-t border-border/40 text-center">
+    <div className="container mx-auto px-4 max-w-3xl">
+      {activeMediaType === "bee" ? (
+        <>
           <Badge className="bg-[#1B9157]/15 text-[#1B9157] border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
             Join Our Growing Network
           </Badge>
@@ -1287,8 +1969,44 @@ const Media = () => {
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
             </Link>
           </Button>
-        </div>
-      </section>
+        </>
+      ) : (
+        <>
+          <Badge className="bg-amber-600/15 text-amber-800 dark:text-amber-200 border-amber-300 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
+            Authentic Traceable Honey
+          </Badge>
+          <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4">
+            Taste Pure Monofloral Honey from Kenya
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Every single jar is backed by geo-tagged bee box coordinates, cold centrifugal extraction, and a verified 50% reserve for the bees.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-amber-600 hover:bg-amber-700 text-white font-bold px-8 shadow-xl shadow-amber-900/10"
+            >
+              <Link to="/shop">
+                <span>Shop Traceable Honey Jars</span>
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="rounded-full font-bold px-8"
+            >
+              <Link to="/trace">
+                <span>Scan Jar QR Code</span>
+              </Link>
+            </Button>
+          </div>
+        </>
+      )}
+    </div>
+  </section>
     </BeeYieldPageShell>
   );
 };
