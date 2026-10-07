@@ -96,22 +96,22 @@ const Media = () => {
     },
     {
       id: "refractometer-purity",
-      title: "Refractometer Purity & Anti-Adulteration Laboratory Defense",
-      location: "BeeYield Central Apiculture Lab",
-      coordinates: "TraceX & FSSAI Verification Protocols",
-      beekeeper: "Lead Quality Chemist",
+      title: "Field Refractometer & Anti-Adulteration Harvest Defense",
+      location: "BeeYield Field Processing Hub",
+      coordinates: "TraceX & Food Safety Protocols",
+      beekeeper: "Quality Field Inspector",
       category: "Purity & Compliance",
       badge: "0% Added Sugar Guaranteed",
       badgeColor: "bg-blue-500/15 text-blue-800 border-blue-300 dark:text-blue-200",
       description:
-        "Every batch is screened against C3/C4 corn syrups, rice syrups, and moisture excess. Backed by digital traceability, BeeYield proves that every jar is pure monofloral honey, meeting FAO, AGMARK, and EU import specifications.",
+        "Every batch is verified against moisture excess and adulteration. Backed by digital traceability, BeeYield proves that every jar is pure monofloral honey, meeting FAO and EU import specifications.",
       image: "/images/products/beeyield_honey_500g.png",
-      thumbLabel: "Purity Testing",
-      cropType: "Lab Verification",
+      thumbLabel: "Purity Defense",
+      cropType: "Field Verification",
       provenanceHighlights: [
         "100% negative for exogenous sugars, maltose, and inverted syrups",
-        "Melissopalynological pollen spectrum confirming Acacia / Citrus dominance",
-        "Batch-specific Certificate of Analysis attached to jar QR passport",
+        "Pollen spectrum confirming authentic floral dominance",
+        "Batch-specific digital provenance certificate attached to jar QR passport",
       ],
       qualityImpact:
         "Provides indisputable legal and consumer defense against global honey fraud and mislabeling.",
@@ -1633,7 +1633,7 @@ const Media = () => {
               Honey Traceability in the Field
             </h2>
             <p className="text-base text-muted-foreground mt-3">
-              Photographic proof capturing bee box migration, sanitary centrifugal extraction at regional centers, refractometer lab checks, and smallholder beekeeper onboarding.
+              Photographic proof capturing bee box migration, sanitary centrifugal extraction at regional centers, field refractometer checks, and smallholder beekeeper onboarding.
             </p>
           </div>
 
@@ -1844,7 +1844,7 @@ const Media = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span><strong>0% Added Sugar Guarantee:</strong> Lab-verified diastase activity and moisture levels kept below 18.0%.</span>
+                  <span><strong>0% Added Sugar Guarantee:</strong> Verified natural ripeness and moisture levels kept below 18.0%.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -1914,7 +1914,7 @@ const Media = () => {
             Verify Your Jar from Bee Box to Table
           </h2>
           <p className="text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Scan your jar's QR code or click any verified batch code below to view the immutable ledger of GPS coordinates, beekeeper identity, floral anthesis dates, and lab purity metrics.
+            Scan your jar's QR code or click any verified batch code below to view the immutable ledger of GPS coordinates, beekeeper identity, floral anthesis dates, and verified harvest metrics.
           </p>
           <div className="flex flex-wrap justify-center gap-2 pt-2">
             {["BEE-2026-01-0420", "BEE-2026-01-0419", "BEE-2026-01-0418"].map((code) => (

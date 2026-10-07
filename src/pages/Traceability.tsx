@@ -334,11 +334,11 @@ const Traceability = () => {
       title: "Exporters",
       badge: "Global Trade",
       tagline: "De-Risk Procurement & Homogenization",
-      headline: "Combine testing and traceability to manage the authenticity risk of the honey you are purchasing and track the blending of batches.",
+      headline: "Combine field telemetry and digital traceability to manage the authenticity risk of the honey you are purchasing and track the blending of batches.",
       icon: Scale,
       accent: "text-emerald-800 bg-emerald-100 border-emerald-200",
       points: [
-        "Pre-purchase laboratory test verification to prevent buying adulterated stock",
+        "Pre-purchase field batch provenance verification to prevent buying adulterated stock",
         "Cryptographic blend tracking to record exact multi-lot blending proportions",
         "Audit-ready blockchain logbooks that speed up international customs clearance",
         "Zero-risk compliance with EU, US FDA, and Middle Eastern import regulations",
@@ -354,12 +354,12 @@ const Traceability = () => {
       icon: ShieldCheck,
       accent: "text-blue-800 bg-blue-100 border-blue-200",
       points: [
-        "Verify batch authenticity, moisture, and NMR purity before shipping containers",
+        "Verify batch authenticity, moisture, and botanical origin before shipping containers",
         "Manage global suppliers with transparent historical quality scorecards",
-        "Eliminate expensive border detentions, laboratory re-tests, and port rejections",
+        "Eliminate expensive border detentions, compliance failures, and port rejections",
         "Ensure complete adherence to food safety standards and traceability mandates",
       ],
-      quote: "Never gamble on imported honey purity. Inspect certified lab proofs in real time.",
+      quote: "Never gamble on imported honey purity. Inspect certified origin proofs in real time.",
     },
     {
       id: "packers",
@@ -384,7 +384,7 @@ const Traceability = () => {
       icon: LockIcon,
       title: "Secure Blockchain Solution",
       tag: "Immutable Ledger",
-      description: "Decentralized, tamper-evident cryptographic architecture. Once harvest data, GPS coordinates, and lab results are written to the blockchain, they cannot be modified, deleted, or falsified.",
+      description: "Decentralized, tamper-evident cryptographic architecture. Once harvest data, GPS coordinates, and telemetry records are written to the blockchain, they cannot be modified, deleted, or falsified.",
     },
     {
       icon: Eye,
@@ -394,9 +394,9 @@ const Traceability = () => {
     },
     {
       icon: ShieldCheck,
-      title: "Integrates with Intertek’s ATIC Services",
-      tag: "ATIC Standards",
-      description: "Built to integrate seamlessly with global ATIC (Assurance, Testing, Inspection, and Certification) services, including Intertek's honey authenticity and food safety protocols for gold-standard compliance.",
+      title: "Integrates with Global Quality Standards",
+      tag: "Audit Standards",
+      description: "Built to integrate seamlessly with global food safety and certification standards, including Codex Alimentarius and FAO protocols for gold-standard compliance.",
     },
     {
       icon: MapPin,
@@ -416,13 +416,13 @@ const Traceability = () => {
     {
       title: "Protect Your Brand with a 360° Approach",
       subtitle: "Comprehensive Security & Transparency",
-      description: "Unite physical tamper-evident seals, field IoT telemetry, accredited laboratory assays, and blockchain ledgers to safeguard your brand from adulteration risks and counterfeiting.",
+      description: "Unite physical tamper-evident seals, field IoT telemetry, and blockchain ledgers to safeguard your brand from adulteration risks and counterfeiting.",
       icon: Shield,
     },
     {
       title: "End-to-End Visibility of the Supply Chain",
       subtitle: "Unbroken Chain of Custody",
-      description: "Monitor every critical milestone from remote acacia apiaries through processing, blending, testing, export transit, packaging, and final retail delivery.",
+      description: "Monitor every critical milestone from remote acacia apiaries through processing, blending, export transit, packaging, and final retail delivery.",
       icon: Globe,
     },
     {
@@ -434,13 +434,13 @@ const Traceability = () => {
     {
       title: "Build Reputation and Consumer Trust",
       subtitle: "Customer Brand Equity",
-      description: "Turn transparency into your strongest competitive edge. Consumers scan on-jar QR codes to explore the genuine origin, beekeeper story, and lab certification of their specific jar.",
+      description: "Turn transparency into your strongest competitive edge. Consumers scan on-jar QR codes to explore the genuine origin, beekeeper story, and digital harvest certification of their specific jar.",
       icon: Award,
     },
     {
-      title: "One-Stop Shop for Authenticity Risk",
-      subtitle: "ATIC & Honey Services Synergy",
-      description: "Supports other Intertek honey services to provide a true one-stop shop for managing authenticity risk with blockchain traceability, auditing, testing, and field inspections.",
+      title: "One-Stop Platform for Authenticity Risk",
+      subtitle: "Traceability & Compliance",
+      description: "Provides a true one-stop platform for managing authenticity risk with blockchain traceability, auditing, and field inspections.",
       icon: Layers,
     },
   ];
@@ -497,9 +497,9 @@ const Traceability = () => {
     {
       id: "economics",
       category: "guides",
-      title: "Honey Fraud Economics: Spot Testing vs. Traceability",
+      title: "Honey Fraud Economics: Spot Sampling vs. Traceability",
       format: "Whitepaper & Decision Matrix",
-      description: "Cost-benefit comparison demonstrating why continuous blockchain traceability is vastly more reliable and cost-effective than recurring spot lab tests alone.",
+      description: "Cost-benefit comparison demonstrating why continuous blockchain traceability is vastly more reliable and cost-effective than recurring spot sampling alone.",
       badge: "Industry Whitepaper",
       downloadText: "Explore Whitepaper",
       href: "/learn",
@@ -531,11 +531,11 @@ const Traceability = () => {
     },
     {
       q: "Why is a traceability system better than spot testing alone for combating honey fraud?",
-      a: "Honey spot testing (such as NMR spectroscopy or C3/C4 isotope testing) is very expensive and not wholly foolproof on its own, especially when adulterators use sophisticated designer syrups. A robust, blockchain-backed traceability system proves authentic provenance at every touchpoint, establishing an unbroken chain of custody that spot testing alone cannot provide.",
+      a: "Honey spot sampling alone is very expensive and not wholly foolproof on its own, especially when adulterators use sophisticated designer syrups. A robust, blockchain-backed traceability system proves authentic provenance at every touchpoint, establishing an unbroken chain of custody that spot testing alone cannot provide.",
     },
     {
-      q: "How does BeeYield Trace integrate with Intertek's ATIC services?",
-      a: "BeeYield Trace is designed to connect with Intertek's ATIC (Assurance, Testing, Inspection, and Certification) services. This allows accredited laboratory test reports, sanitary inspections, and export compliance documents to be bound directly to the blockchain batch record.",
+      q: "How does BeeYield Trace integrate with quality compliance frameworks?",
+      a: "BeeYield Trace is designed to connect with quality compliance and export inspection frameworks. This allows certified origin documents, sanitary inspections, and export compliance records to be bound directly to the blockchain batch record.",
     },
     {
       q: "Can smallholder beekeepers implement this system at low cost?",
@@ -641,7 +641,7 @@ const Traceability = () => {
               transition={{ delay: 0.2 }}
               className="text-xl text-muted-foreground leading-relaxed mb-12 max-w-2xl mx-auto"
             >
-              Audit the complete lifecycle of your honey jar with <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> — our blockchain-based traceability solution tracking honey from hive to jar. Enter your batch code or scan the QR seal to inspect GPS apiary origins, laboratory test results, and certified harvest records.
+              Audit the complete lifecycle of your honey jar with <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> — our blockchain-based traceability solution tracking honey from hive to jar. Enter your batch code or scan the QR seal to inspect GPS apiary origins, in-hive sensor telemetry, and certified harvest records.
             </motion.p>
 
             {/* Stats Bar */}
@@ -655,7 +655,7 @@ const Traceability = () => {
                 { value: "100%", label: "GPS-Verified Origin" },
                 { value: "Blockchain", label: "Immutable Ledger" },
                 { value: "24/7", label: "Traceability & Access" },
-                { value: "ATIC-Ready", label: "Quality & Compliance" },
+                { value: "DPP-Ready", label: "Quality & Compliance" },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -1766,8 +1766,8 @@ const Traceability = () => {
                   {[
                     "Decentralized, tamper-evident blockchain ledger recording every harvest event",
                     "GPS beekeeper verification connecting each jar to verified rural apiaries",
-                    "Full custody tracking through extraction, bulk aggregation, testing, and bottling",
-                    "Integrates with Intertek ATIC testing standards for verifiable authenticity",
+                    "Full custody tracking through extraction, bulk aggregation, and bottling",
+                    "Integrates with international food safety standards for verifiable authenticity",
                   ].map((feature, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="h-5 w-5 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
@@ -1922,7 +1922,7 @@ const Traceability = () => {
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              BeeYield Trace is a powerful addition to your authenticity risk management toolkit. With data available 24/7 you can monitor all aspects of your global supply chain, from GPS beekeeper verification to storing laboratory test results and tracking the blending of batches.
+              BeeYield Trace is a powerful addition to your authenticity risk management toolkit. With data available 24/7 you can monitor all aspects of your global supply chain, from GPS beekeeper verification to in-hive IoT telemetry and tracking the blending of batches.
             </p>
           </div>
 
@@ -1947,16 +1947,16 @@ const Traceability = () => {
             <div className="bg-[#FAF9F5] p-8 rounded-[2rem] border border-neutral-200/70 shadow-sm hover:shadow-lg hover:border-beeyield-green/30 transition-all flex flex-col justify-between group">
               <div>
                 <div className="h-14 w-14 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                  <Microscope className="h-7 w-7 text-emerald-700" />
+                  <Activity className="h-7 w-7 text-emerald-700" />
                 </div>
-                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 mb-3 text-[11px] font-bold">Laboratory Purity</Badge>
-                <h3 className="text-xl font-bold text-neutral-900 mb-3">Storing Lab Test Results</h3>
+                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200 mb-3 text-[11px] font-bold">Hive Telemetry</Badge>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">In-Hive Sensor Telemetry</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Store accredited laboratory certificates on-chain — including moisture content, NMR spectrometry, pollen analysis, and antibiotic screenings.
+                  Capture automated hive scale weight gains, brood temperatures, and acoustic frequencies that biologically verify genuine nectar flow and harvest timing directly at the hive.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-emerald-800">
-                <span>Tamper-Proof Assay Vault</span>
+                <span>Biological Production Proof</span>
               </div>
             </div>
 
@@ -2142,16 +2142,16 @@ const Traceability = () => {
                     <ShieldCheck className="h-7 w-7" />
                   </div>
                   <Badge className="bg-emerald-800 text-emerald-200 border-emerald-600 text-[10px] font-bold px-3 py-1 rounded-full">
-                    Global ATIC Standard
+                    Global Export Standards
                   </Badge>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">ATIC Compliance Ready</h3>
+                <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Compliance Ready</h3>
                 <p className="text-sm text-emerald-100/80 leading-relaxed font-medium">
-                  Designed for frictionless synchronization with Intertek and certified testing laboratories for global export approvals.
+                  Designed for frictionless synchronization with regional collection centers and digital certification bodies for global export approvals.
                 </p>
               </div>
               <div className="pt-6 border-t border-emerald-800/60 flex items-center gap-2 text-xs font-bold text-beeyield-gold">
-                <span>Auditing, Testing, Inspection, Certification</span>
+                <span>Auditing, Telemetry, Inspection, Certification</span>
               </div>
             </motion.div>
           </div>
@@ -2215,7 +2215,7 @@ const Traceability = () => {
                 </Badge>
                 <h3 className="text-2xl font-black text-neutral-950 mb-3 tracking-tight">Full Authenticity Suite</h3>
                 <p className="text-sm text-neutral-900/90 leading-relaxed font-semibold">
-                  Supports other Intertek honey services to provide a one stop shop for managing authenticity risk with traceability, auditing, testing and inspections.
+                  Supports comprehensive apicultural standards to provide a one-stop platform for managing authenticity risk with traceability, auditing, telemetry, and field inspections.
                 </p>
               </div>
               <div className="pt-6 border-t border-black/10 flex items-center justify-between text-xs font-black">

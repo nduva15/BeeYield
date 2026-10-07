@@ -557,9 +557,9 @@ const FeaturesSection = () => {
     {
       icon: Droplets,
       title: "0% Adulteration Proof",
-      description: "Laboratory tested for purity: refractometer certified moisture under 18%, C4 carbon isotope cleared, zero added corn or rice syrups.",
+      description: "Harvest verified for purity: field optical refractometer moisture under 18%, single-origin flora, zero added corn or rice syrups.",
       color: "text-cyan-700 bg-cyan-50",
-      cta: "Quality Tests",
+      cta: "Verify Origin",
       ctaLink: "/traceability"
     },
     {
@@ -1128,8 +1128,8 @@ const HoneyLanding = () => {
               <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">
                 <ShieldCheck className="h-6 w-6 text-beeyield-green" />
               </div>
-              <span className="font-black text-xs text-neutral-900">100% Lab Tested</span>
-              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for purity and absence of antibiotics</span>
+              <span className="font-black text-xs text-neutral-900">100% Origin Verified</span>
+              <span className="text-[10px] text-neutral-500 font-medium max-w-[200px]">Verified for single-origin harvest and unheated raw purity</span>
             </div>
             <div className="flex flex-col items-center gap-3">
               <div className="p-3 bg-[#FFF9F0] rounded-full shadow-sm mb-1">

@@ -118,7 +118,7 @@ To protect consumer health, rescue ethical beekeepers from economic ruin, and me
 
 ## What Is Honey Traceability?
 
-Honey traceability is the systematic ability to follow and verify every droplet of honey through its entire journey across the agricultural and commercial ecosystem — **from the specific apiary and individual colony to processing, laboratory validation, packaging, and final retail delivery**.
+Honey traceability is the systematic ability to follow and verify every droplet of honey through its entire journey across the agricultural and commercial ecosystem — **from the specific apiary and individual colony to processing, field validation, packaging, and final retail delivery**.
 
 True traceability is not a vague paper certificate or a generic "100% Pure Honey" marketing claim printed on a sticker. True traceability is a **verifiable, tamper-evident digital custody chain** where every physical batch of honey is permanently linked to immutable biological, geographic, and chemical records:
 
@@ -151,7 +151,7 @@ For African honey producers, verifiable traceability transforms export audits fr
 ### 3. Consumer Trust, Transparency, and Premium Valuation
 Modern consumers are no longer satisfied with opaque labels like *"Blend of non-EU honeys"* or ambiguous supermarket house brands. They want to know the human and ecological story behind their food.
 
-When a customer can scan a QR code on a jar of **BeeYield Raw Acacia Honey** and immediately see the GPS coordinates of the Kibwezi apiary, read the independent laboratory purity certificate, view the harvest date, and meet the beekeeper, confidence surges. That verifiable trust translates directly into brand loyalty and a **30% to 50% price premium** that flows directly back to rural beekeeping communities.
+When a customer can scan a QR code on a jar of **BeeYield Raw Acacia Honey** and immediately see the GPS coordinates of the Kibwezi apiary, view the digital harvest certificate, view the harvest date, and meet the beekeeper, confidence surges. That verifiable trust translates directly into brand loyalty and a **30% to 50% price premium** that flows directly back to rural beekeeping communities.
 
 ---
 
@@ -203,7 +203,7 @@ Traceability finishes at the retail shelf:
 | **Processing Integrity** | Frequently flash-pasteurized (>70°C) and microfiltered | Raw cold-extracted (<40°C), enzymes 100% active |
 | **Moisture Content** | Often artificially evaporated | Naturally capped by bees at ≤ 18.5% moisture |
 | **Smallholder Economics** | Depressed commodity prices captured by middlemen | Fair-trade certified premiums paid directly to beekeeper |
-| **Consumer Experience** | Blind trust in static printed paper labels | Interactive scan to verify provenance and batch lab tests |
+| **Consumer Experience** | Blind trust in static printed paper labels | Interactive scan to verify provenance and batch harvest records |
 
 ---
 
@@ -271,7 +271,7 @@ Allowing industrial counterfeiters to undercut that miracle with cheap, sugary s
 
 ![Timothy Nduva, Founder of BeeYield inspecting apiaries](/images/story/timothy-ceo.jpg)
 
-At BeeYield, we believe that **trust cannot be claimed; it must be verified**. By combining the physical wisdom of traditional beekeeping with modern Apisense IoT monitoring, rigorous laboratory science, and transparent digital custody ledgers, we are building a world where every jar of honey tells its true story.
+At BeeYield, we believe that **trust cannot be claimed; it must be verified**. By combining the physical wisdom of traditional beekeeping with modern Apisense IoT monitoring, rigorous field telemetry data, and transparent digital custody ledgers, we are building a world where every jar of honey tells its true story.
 
 When you hold a jar of verified, traceable honey in your hands, you hold the pure, unadulterated essence of wild blossoms, clean soil, and honest labor — exactly as nature intended.
     `,

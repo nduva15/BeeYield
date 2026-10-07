@@ -765,7 +765,7 @@ const Shop = () => {
                   Track Every Jar from Geo-Tagged Bee Box to Collection Center
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Unlike generic multifloral blends, our monofloral honey captures GPS coordinates of every bee box during peak bloom, logs centrifugal extraction at regional centers, and undergoes laboratory purity tests to guarantee 0% adulteration.
+                  Unlike generic multifloral blends, our monofloral honey captures GPS coordinates of every bee box during peak bloom, logs centrifugal extraction at regional centers, and maintains an immutable chain of custody to guarantee 0% adulteration.
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-foreground/80">
                   <span className="flex items-center gap-1.5">

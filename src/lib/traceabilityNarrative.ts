@@ -20,7 +20,7 @@ export const BEEYIELD_TRACEABILITY_STORY = {
   faoCompliance:
     "Adheres to FAO (Food and Agriculture Organization) standards for food safety, chain-of-custody transparency, and supply chain authenticity from geo-tagged bee boxes to collection centers.",
   antiAdulterationGuarantee:
-    "Every batch undergoes refractometer and isotope purity testing to guarantee 100% raw, unadulterated honey—free of added sugars, high-fructose corn syrup, or fraudulent multifloral blending.",
+    "Every batch undergoes unbroken hive-to-jar chain of custody and field verification to guarantee 100% raw, unadulterated honey—free of added sugars, high-fructose corn syrup, or fraudulent multifloral blending.",
   monofloralStandard:
     "Monofloral honey requires precision tracking: GPS coordinates of bee boxes during peak bloom of specific flora (Acacia, Citrus, Mango, Jamun, Wildflora) combined with pollen density validation.",
   digitalProductPassportReady:
@@ -91,10 +91,10 @@ export const HIVE_TO_HONEY_VALUE_CHAIN: HoneyValueChainStage[] = [
     dataPoints: [
       "Regional collection center intake ID",
       "Centrifugal cold-spin extraction (<35°C)",
-      "Refractometer moisture test (<18.0%)",
-      "C4 / rice syrup adulteration screening"
+      "Field optical refractometer check (<18.0%)",
+      "Digital batch custody sealing"
     ],
-    complianceStandard: "FSSAI & AGMARK & Codex Alimentarius Standard 12-1981",
+    complianceStandard: "Codex Alimentarius Standard 12-1981",
     description:
       "Harvested frames are spun in sanitary centrifugal extractors at local collection hubs. Barcodes and QR tags tie every drum back to individual bee box coordinates and beekeeper accounts."
   },
@@ -105,7 +105,7 @@ export const HIVE_TO_HONEY_VALUE_CHAIN: HoneyValueChainStage[] = [
     subtitle: "Consumer transparency & Digital Product Passport",
     dataPoints: [
       "Unique jar QR code linking to digital ledger",
-      "Batch-specific lab certificate of analysis",
+      "Batch-specific digital harvest provenance record",
       "Carbon & deforestation-free footprint",
       "Fair-trade beekeeper settlement verification"
     ],
@@ -181,7 +181,7 @@ export const buildPurityAssuranceFacts = (traceData: TraceResponse | null) => [
   { label: "Geo-Tag Standard", value: "WGS84 GeoJSON Precision" },
   { label: "Moisture Level", value: "<18.0% (Export Grade A)" },
   { label: "50/50 Bee Reserve", value: "Verified Active" },
-  { label: "Adulteration Screening", value: "Passed (C3/C4 Sugar Syrup Negative)" },
+  { label: "Traceability Status", value: "Complete Chain of Custody Verified" },
 ];
 
 export const buildConservationFacts = (traceData: TraceResponse | null) => [

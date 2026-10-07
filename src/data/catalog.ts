@@ -226,7 +226,7 @@ export const CATALOG: Product[] = [
   {
     id: "h8",
     name: "BeeYield Authentic Mono-Acacia Gold",
-    description: "Pure liquid gold extracted during the dryland blooming surge. Every jar carries a unique QR code showing exact bee box GPS, harvest date, and lab purity metrics.",
+    description: "Pure liquid gold extracted during the dryland blooming surge. Every jar carries a unique QR code showing exact bee box GPS, harvest date, and certified origin metrics.",
     category: "honey",
     badge: "Authentic",
     images: [
