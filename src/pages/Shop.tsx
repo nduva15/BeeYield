@@ -770,35 +770,35 @@ const Shop = () => {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 font-bold px-3 py-1 rounded-full text-xs">
                     <Sparkles className="w-3.5 h-3.5 mr-1 inline text-amber-600" />
-                    Hive-to-Honey Digital Traceability
+                    100% Raw & Traceable
                   </Badge>
                   <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5 inline" />
-                    FAO & EU DPP Ready
+                    Pure Kenyan Honey
                   </span>
                 </div>
                 <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
-                  Track Every Jar from Geo-Tagged Bee Box to Collection Center
+                  Track Your Honey Directly from the Hive
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Unlike generic blended honey, our single-flower honey records GPS coordinates for every bee box during peak bloom, logs cold extraction at regional centers, and maintains a verified record to guarantee pure honey with no added syrups.
+                  Unlike blended commercial honey, our honey comes straight from wild flowers in Kibwezi. We gently cold-spin every frame without heating, bottle it cleanly, and record every batch so you know your honey is 100% pure.
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs font-semibold text-foreground/80">
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    GPS-Verified Bee Boxes
+                    Direct From The Hive
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    Single-Flower Verified Sources
+                    Wild Kenyan Flowers
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    50% Reserve Kept for Colony Health
+                    Half Left For The Bees
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Check className="w-3.5 h-3.5 text-emerald-600" />
-                    Zero Added Sugar Syrups
+                    Zero Added Sugars or Syrups
                   </span>
                 </div>
               </div>

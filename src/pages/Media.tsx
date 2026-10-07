@@ -178,9 +178,9 @@ const Media = () => {
       role: "Commercial Mango, Orange & Citrus Grower",
       crops: ["Mangoes", "Oranges", "Citrus"],
       acres: 25,
-      iotRole: "1st Receiver of IoT Disease & Pollination Devices",
+      iotRole: "First Farm Partner to Try Smart Hive Care",
       quote:
-        "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has helped me truly understand bees. Seeing real-time colony health and flight patterns allowed us to time hive placement with floral anthesis. Our mangoes, oranges, and citrus have never had such dense fruit set and superior fruit size.",
+        "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has helped me truly understand bees. Seeing real-time colony health and flight patterns allowed us to time hive placement with flower blooming season. Our mangoes, oranges, and citrus have never had such dense fruit set and superior fruit size.",
       shortQuote: "I have been able to truly understand bees and optimize pollination for our mangoes, oranges, and citrus.",
       image: "/images/pollination/mango-panicles-close-bloom.png",
       badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
@@ -192,9 +192,9 @@ const Media = () => {
       role: "Citrus & Multi-Crop Orchardist",
       crops: ["Citrus", "Oranges", "Companion Crops"],
       acres: 18,
-      iotRole: "2nd Receiver of BeeYield IoT Devices",
+      iotRole: "Partner Orchardist",
       quote:
-        "As the second receiver of BeeYield's IoT devices in Kiunduani, I am excited to continue learning every single day. Tracking temperature, acoustics, and forager departure frequencies right from my phone gives me total visibility over pollination progress across my 18 acres.",
+        "As the second receiver of BeeYield's IoT devices in Kiunduani, I am excited to continue learning every single day. Tracking temperature, acoustics, and bee flight activity right from my phone gives me total visibility over pollination progress across my 18 acres.",
       shortQuote: "I am excited to continue learning how IoT insights and bees work together to transform our orchards.",
       image: "/images/pollination/orange-heavy-fruiting-branches.jpg",
       badgeColor: "bg-orange-500/15 text-orange-800 border-orange-300 dark:text-orange-200",
@@ -206,9 +206,9 @@ const Media = () => {
       role: "Export Mango Producer",
       crops: ["Mangoes", "Orchards"],
       acres: 18,
-      iotRole: "ApiSense Early Varroa Mite Detection",
+      iotRole: "Early Hive Disease Alerts",
       quote:
-        "BeeYield has been completely life changing for our farm. When a varroa mite infestation threatened our colonies, ApiSense tech identified the hive acoustic anomalies in time before colony collapse occurred. That timely intervention saved our hives and protected all 18 acres of blooming mangoes.",
+        "BeeYield has been completely life changing for our farm. When a varroa mite infestation threatened our colonies, ApiSense tech identified the hive unusual buzzing sounds early, warning us before the bees got sick. That timely intervention saved our hives and protected all 18 acres of blooming mangoes.",
       shortQuote: "BeeYield has been life changing. ApiSense tech helped identify varroa in time to save our hives.",
       image: "/images/pollination/mango-orchard-pink-panicles.png",
       badgeColor: "bg-rose-500/15 text-rose-800 border-rose-300 dark:text-rose-200",
@@ -220,7 +220,7 @@ const Media = () => {
       role: "Diversified Horticulture & Orchardist",
       crops: ["Mangoes", "Vegetables", "Citrus"],
       acres: 15,
-      iotRole: "Multi-Crop Floral Synchronization",
+      iotRole: "Orchard & Vegetable Pollination",
       quote:
         "On my 15 acres in Mbuinzau, coordinating pollination across mangoes, fresh vegetables, and citrus was difficult until BeeYield. The bees work the morning citrus blooms and mid-day mango panicles seamlessly, while pollinating our vegetable beds. Rejection rates plummeted and yields broke our record.",
       shortQuote: "Across my mangoes, veges, and citrus, BeeYield's bees ensure complete pollination and zero crop waste.",
@@ -234,7 +234,7 @@ const Media = () => {
       role: "Commercial Maize Grower",
       crops: ["Maize"],
       acres: 15,
-      iotRole: "Tassel Anthesis & Ear Tip Fill Optimization",
+      iotRole: "Maize Flowering & Grain Fill",
       quote:
         "I farm 15 acres of maize in Mbuinzau. Many believe maize only needs wind, but BeeYield proved that bees gathering tassel pollen create massive pollen shed. My cobs this season are filled completely to the tip with heavy, golden kernels, boosting my total yield per acre by over 22%.",
       shortQuote: "Our 15 acres of maize in Mbuinzau achieved 100% cob tip fill thanks to active bee traffic during tasseling.",
@@ -248,7 +248,7 @@ const Media = () => {
       role: "Agroforestry & Ecological Restoration Farmer",
       crops: ["Bees & Ecosystem Restoration", "Mixed Fruit"],
       acres: 14,
-      iotRole: "Biodiversity & Native Habitat Revival",
+      iotRole: "Restoring Nature & Caring for Bees",
       quote:
         "Bees are very dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our degraded land. Partnering with BeeYield has made me so happy—our soil is reviving, tree fruit retention is up, and nature is flourishing.",
       shortQuote: "I am happy and very dear with bees and restoration. Reviving our land with bees brings unmatched joy.",
@@ -266,22 +266,22 @@ const Media = () => {
       location: "Kiunduani, Makueni",
       acres: 18,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Anthesis to Pea-Stage Fruitlet Transition)",
+      cropScientific: "Mangifera indica (Bloom to Young Fruit Stage)",
       category: "Pollination Verification & Fruit Set",
       badge: "Verified Fruitlet Set (Pea Stage)",
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
-        "Remarkable photographic proof of successful bee pollination on Farmer Christopher's 18-acre orchard in Kiunduani. Where honeybees transferred viable pollen across receptive stigmas, floral florets have successfully fertilized and set into clusters of healthy, pea-sized young green mangoes.",
+        "Remarkable photographic proof of successful bee pollination on Farmer Christopher's 18-acre orchard in Kiunduani. Where honeybees transferred viable pollen across blooming flowers have been thoroughly pollinated, turning into healthy clusters of young green mangoes.",
       image: "/images/pollination/mango-pollination-fruitlet-set.jpg",
       thumbLabel: "Fruitlet Set",
       cropType: "Mangoes",
       fieldObservations: [
         "Farmer Christopher (Kiunduani) — 18-acre orchard showing verified fruit set",
-        "Confirmed ovule fertilization with multiple uniform pea-stage fruitlets per panicle cluster",
-        "Transition from floral anthesis to early fruit expansion without flower abortion",
+        "Healthy clusters of young green mangoes growing after successful pollination",
+        "Transition from flower blooming season to early fruit expansion without flower abortion",
       ],
       agronomicImpact:
-        "Active honeybee pollination ensures multiple florets are fertilized per panicle, resulting in heavy clusters of symmetrical fruitlets and directly preventing premature fruit drop.",
+        "Good pollination means flowers turn into heavy clusters of even fruit and prevents fruit from falling off the tree early.",
     },
     {
       id: "mango-dense-pink-spikes",
@@ -290,22 +290,22 @@ const Media = () => {
       location: "Ndeini, Makueni",
       acres: 18,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Peak Anthesis Canopy)",
+      cropScientific: "Mangifera indica (Peak Bloom Canopy)",
       category: "Intense Floral Saturation",
       badge: "Prime Export Blossom Set",
       badgeColor: "bg-rose-500/15 text-rose-700 border-rose-300 dark:text-rose-300",
       description:
-        "Dramatic close shot of a mature mango tree completely engulfed in thousands of dense pink and cream floral spikes against the open sky in Ndeini. Honeybees provide the essential multiple stigmatic visits needed to transform each panicle into clusters of premium export fruits.",
+        "Dramatic close shot of a mature mango tree completely engulfed in thousands of dense pink and cream flower clusters against the open sky in Ndeini. Bees visit every flower cluster, helping turn blossoms into large, sweet fruit.",
       image: "/images/pollination/mango-tree-dense-pink-blossoms.png",
       thumbLabel: "Pink Canopy Bloom",
       cropType: "Mangoes",
       fieldObservations: [
         "Farmer Christopher (Ndeini) — 18-acre orchard under active bloom protection",
         "Exceptional blossom density with thousands of florets per major scaffold branch",
-        "Intensive honeybee pollination activity during morning stigmatic receptivity",
+        "Active bee pollination throughout the morning when flowers open",
       ],
       agronomicImpact:
-        "Ensures uniform fertilization of hermaphroditic florets, preventing flower drop and maximizing the proportion of Class-1 export mangoes.",
+        "Helps every blossom turn into a sweet, healthy mango and stops flowers from dropping early.",
     },
     {
       id: "orchard-panorama-baobab",
@@ -329,7 +329,7 @@ const Media = () => {
         "Red loam terraces capturing seasonal rainfall while hives provide constant pollination traffic",
       ],
       agronomicImpact:
-        "Multi-species agroforestry buffers bee colonies against monoculture famine and sustains high pollinator biomass throughout the year.",
+        "Multi-species agroforestry buffers bee colonies against monoculture famine and keeps bee colonies well-fed all year round.",
     },
     {
       id: "mango-groundcover-panicles",
@@ -338,12 +338,12 @@ const Media = () => {
       location: "Kalakalya, Makueni",
       acres: 25,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Anthesis & Cover Crop Understory)",
-      category: "Anthesis & Soil Microclimate",
-      badge: "Active Anthesis Flush",
+      cropScientific: "Mangifera indica (Bloom & Cover Crop Understory)",
+      category: "Bloom & Soil Microclimate",
+      badge: "Peak Flowering Season",
       badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Vibrant mango panicles loaded with floral florets flowering alongside sweet potato cover crops on rich red loam soil in Kalakalya. Honeybees forage both the upper mango anthesis and low-growing companion blossoms, maintaining moisture and organic biodiversity.",
+        "Vibrant mango panicles loaded with floral florets flowering alongside sweet potato cover crops on rich red loam soil in Kalakalya. Honeybees forage both the upper mango flowers and ground-cover blossoms, maintaining moisture and organic biodiversity.",
       image: "/images/pollination/mango-bloom-panicles-groundcover.jpg",
       thumbLabel: "Panicles & Groundcover",
       cropType: "Mangoes",
@@ -353,7 +353,7 @@ const Media = () => {
         "Cover crop layer retaining soil humidity and cooling root microclimates during dry spells",
       ],
       agronomicImpact:
-        "Integrated cover cropping cools the orchard soil by 3–5°C while managed apiaries ensure complete cross-pollination of delicate mango blossoms.",
+        "Cover crops keep the soil cool and moist while our bees pollinate every mango flower.",
     },
     {
       id: "citrus-mango-slope",
@@ -381,13 +381,13 @@ const Media = () => {
     },
     {
       id: "mango-terraced-canopy",
-      title: "Terraced Mango Anthesis with Savannah Backdrop",
+      title: "Terraced Mango Orchards in Full Bloom",
       farmer: "Farmer Ngumbau",
       location: "Kaunguni, Makueni",
       acres: 16,
       crop: "Mangoes",
       cropScientific: "Mangifera indica (Terraced Orchard)",
-      category: "Hillside Orchard Anthesis",
+      category: "Hillside Mango Bloom",
       badge: "Terraced Forage Corridor",
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
@@ -401,42 +401,42 @@ const Media = () => {
         "Indigenous woodland borders providing diverse supplementary nectar and pollen",
       ],
       agronomicImpact:
-        "Windbreak canopies reduce blossom desiccation from harsh dryland winds, boosting fruitlet retention by over 20%.",
+        "Natural trees block dry winds, keeping flowers moist and helping fruit stay firmly on the branches.",
     },
     {
       id: "mango-panicles",
-      title: "Dense Mango Floral Panicles in Peak Bloom",
+      title: "Mango Trees in Full Blossom",
       farmer: "Farmer Clement",
       location: "Kibarani, Makueni",
       acres: 25,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Apple Mango & Ngowe)",
-      category: "Floral Anthesis & Pollen Deposition",
+      cropScientific: "Mangifera indica (Apple & Ngowe Mangoes)",
+      category: "Blossoms & Bee Pollination",
       badge: "High Bee Dependency (90%)",
       badgeColor: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-300",
       description:
-        "Ultra close-up of dense floral panicles at critical anthesis on Farmer Clement's 25-acre holding in Kibarani. As the 1st receiver of BeeYield IoT devices, Clement tracks colony activity to ensure stigmatic saturation during morning nectar secretion, preventing fruit abortion.",
+        "Ultra close-up of dense floral panicles at critical bloom on Farmer Clement's 25-acre holding in Kibarani. As the 1st receiver of BeeYield IoT devices, Clement checks his hives to make sure bees are active when flowers open in the morning.",
       image: "/images/pollination/mango-panicles-close-bloom.png",
       thumbLabel: "Mango Panicles",
       cropType: "Mangoes",
       fieldObservations: [
         "Farmer Clement (Kibarani) — 1st IoT device recipient monitoring hive acoustics",
-        "Over 2,000 delicate florets per floral panicle actively visited by honeybees",
+        "Thousands of tiny blossoms on every branch visited by honeybees",
         "Targeting 2.5 - 4.0 hives per acre across Clement's 25-acre orchard",
       ],
       agronomicImpact:
-        "Mango flowers have a narrow window of viable receptivity. Continuous bee visits ensure full stigmatic coverage, directly translating to export-grade fruit sizing and high yield density.",
+        "Mango flowers bloom for just a short time. Constant bee visits ensure every flower is pollinated, leading to bigger, sweeter fruit.",
     },
     {
       id: "mango-pink-panicles",
-      title: "Canopy Floral Panicles Burst with Pink Tones",
+      title: "Mango Canopies Burst with Pink Flowers",
       farmer: "Farmer Christopher",
       location: "Kiunduani, Makueni",
       acres: 18,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Canopy Anthesis)",
-      category: "Upper Canopy Saturation",
-      badge: "Canopy Anthesis Peak",
+      cropScientific: "Mangifera indica (Canopy Bloom)",
+      category: "Upper Canopy Bloom",
+      badge: "Canopy in Full Bloom",
       badgeColor: "bg-rose-500/15 text-rose-700 border-rose-300 dark:text-rose-300",
       description:
         "Flowering mango panicles exhibiting vibrant pink hues across Farmer Christopher's 18-acre orchard in Kiunduani. Protected by ApiSense early varroa detection, vigorous colonies push foragers into the high branches where natural wind pollination fails.",
@@ -459,11 +459,11 @@ const Media = () => {
       acres: 25,
       crop: "Mangoes",
       cropScientific: "Mangifera indica (Full Canopy Bloom)",
-      category: "Full Orchard Anthesis",
+      category: "Full Orchard in Bloom",
       badge: "100% Bloom Saturation",
       badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
-        "Spectacular wide shot of a mature mango tree smothered in golden blooms in Kibarani on Farmer Clement's farm. Data from Clement's IoT disease and pollination sensors confirmed peak flight activity during morning peak anthesis.",
+        "Spectacular wide shot of a mature mango tree smothered in golden blooms in Kibarani on Farmer Clement's farm. Data from Clement's IoT disease and pollination sensors confirmed peak flight activity during morning peak bloom.",
       image: "/images/pollination/mango-mature-tree-full-bloom.png",
       thumbLabel: "Full Tree Bloom",
       cropType: "Mangoes",
@@ -497,7 +497,7 @@ const Media = () => {
         "Zero signs of premature physiological fruit drop after complete pollination",
       ],
       agronomicImpact:
-        "Adequate bee visits per flower deposit enough pollen grains to trigger multi-seed development, stimulating auxin production for larger, sweeter oranges.",
+        "Adequate bee visits per flower deposit enough pollen grains to trigger multi-seed development, stimulating natural fruit growth for larger, sweeter oranges.",
     },
     {
       id: "orange-citrus-fruits",
@@ -511,13 +511,13 @@ const Media = () => {
       badge: "Export Grade Sizing",
       badgeColor: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-300",
       description:
-        "Vibrant young oranges expanding rapidly on Farmer Clement's Kibarani farm. Bee-mediated fertilization ensures symmetric carpel development, avoiding deformed or lopsided fruit.",
+        "Vibrant young oranges expanding rapidly on Farmer Clement's Kibarani farm. Bee-mediated fertilization ensures even, well-shaped fruit without deformed shapes.",
       image: "/images/pollination/orange-citrus-fruits-developing.jpg",
       thumbLabel: "Developing Fruits",
       cropType: "Oranges",
       fieldObservations: [
         "Flawless rind surface free of early pest abrasions",
-        "Symmetric fruit profile indicating all carpels fully fertilized",
+        "Symmetric fruit profile indicating fruit growing evenly and round",
         "Consistent fruit diameter across inner and outer canopy branches",
       ],
       agronomicImpact:
@@ -554,7 +554,7 @@ const Media = () => {
       location: "Kiunduani, Makueni",
       acres: 18,
       crop: "Citrus & Oranges",
-      cropScientific: "Citrus sinensis (Bloom Anthesis)",
+      cropScientific: "Citrus sinensis (Bloom Bloom)",
       category: "Peak Bloom Season",
       badge: "Peak Bloom Surge",
       badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
@@ -597,13 +597,13 @@ const Media = () => {
     },
     {
       id: "mango-florets-new",
-      title: "Fresh Mango Inflorescence in Full Anthesis",
+      title: "Fresh Mango Inflorescence in Full Bloom",
       farmer: "Farmer Redempta",
       location: "Mbuinzau, Makueni",
       acres: 15,
       crop: "Mangoes",
-      cropScientific: "Mangifera indica (Peak Anthesis)",
-      category: "Floral Anthesis & Bloom Peak",
+      cropScientific: "Mangifera indica (Peak Bloom)",
+      category: "Floral Bloom & Bloom Peak",
       badge: "Peak Bloom Window",
       badgeColor: "bg-amber-600/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
@@ -676,7 +676,7 @@ const Media = () => {
       crop: "Maize",
       cropScientific: "Zea mays (Tasseling Phase)",
       category: "Tasseling & Pollen Window",
-      badge: "Tassel Anthesis",
+      badge: "Tassel Bloom",
       badgeColor: "bg-lime-600/15 text-lime-800 border-lime-300 dark:text-lime-200",
       description:
         "Down-row perspective of strong maize stalks preparing for full silking on Farmer Mbilu's Mbuinzau farm. Active bee foraging shakes tassels, showering silks with viable pollen.",
@@ -735,7 +735,7 @@ const Media = () => {
       id: "mangoes",
       title: "Mango Pollination & Export Quality",
       category: "Fruit Orchard (58 Total Contracted Acres)",
-      description: "Precision hive placement during floral anthesis drives stigmatic coverage and eliminates fruit drop.",
+      description: "Precision hive placement during flower blooming season drives stigmatic coverage and eliminates fruit drop.",
       stories: [
         {
           farmer: "Farmer Clement",
@@ -743,7 +743,7 @@ const Media = () => {
           role: "Commercial Mango & Citrus Grower • 1st IoT Device Recipient",
           acres: 25,
           description:
-            "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has completely transformed how I farm. For the first time, I truly understand honeybee behavior, floral anthesis timing, and hive acoustics. My 25-acre mango orchard has achieved unprecedented fruit retention, with branches loaded with clean, export-grade fruit.",
+            "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has completely transformed how I farm. For the first time, I truly understand honeybee behavior, flower blooming season timing, and hive acoustics. My 25-acre mango orchard has achieved unprecedented fruit retention, with branches loaded with clean, export-grade fruit.",
           quote:
             "BeeYield's IoT devices taught me how to read the language of the bees. Our mango fruit set has reached levels we had never seen before in Kibarani.",
           stats: [
@@ -752,7 +752,7 @@ const Media = () => {
             { label: "IoT Status", value: "1st Recipient" },
           ],
           image: "/images/pollination/mango-panicles-close-bloom.png",
-          fieldPhotoCaption: "25 Acres Mango Anthesis • Farmer Clement, Kibarani",
+          fieldPhotoCaption: "25 Acres Mango Bloom • Farmer Clement, Kibarani",
         },
         {
           farmer: "Farmer Christopher",
@@ -769,7 +769,7 @@ const Media = () => {
             { label: "Export Grade", value: "96%" },
           ],
           image: "/images/pollination/mango-orchard-pink-panicles.png",
-          fieldPhotoCaption: "18 Acres Canopy Anthesis • Farmer Christopher, Kiunduani",
+          fieldPhotoCaption: "18 Acres Canopy Bloom • Farmer Christopher, Kiunduani",
         },
         {
           farmer: "Farmer Redempta",
@@ -1205,7 +1205,7 @@ const Media = () => {
             </h2>
             <p className="mt-4 text-muted-foreground text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
               Photographic proof from our partner farms in Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.
-              Every image captures our precision apiary deployments and anthesis synchronization.
+              Every image captures our precision apiary deployments and bloom synchronization.
             </p>
           </div>
 

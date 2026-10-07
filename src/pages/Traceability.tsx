@@ -290,10 +290,10 @@ const Traceability = () => {
   }, [traceData]);
 
   const traceabilityFeatures = [
-    { icon: MapPin, label: "Hive-to-Jar Tracking", description: "GPS tracking of every honey batch from the bee farm to the store shelf" },
+    { icon: MapPin, label: "Hive-to-Jar Tracking", description: "Follow every honey batch directly from the bee farm to your kitchen table" },
     { icon: Calendar, label: "Digital Harvest Logbooks", description: "Records of every harvest with moisture levels, weights, and dates" },
     { icon: Shield, label: "Compliance Records", description: "Clear, audit-ready paperwork for food safety and export rules" },
-    { icon: Globe, label: "GPS-Mapped Bee Hives", description: "Exact location recorded for every apiary, hive, and harvest" },
+    { icon: Globe, label: "Mapped Farm Locations", description: "Real farm and apiary location recorded for every hive and harvest" },
     { icon: LockIcon, label: "Permanent Records", description: "Clear history showing who harvested what, when, and where — saved permanently" },
     { icon: Leaf, label: "Real Hive Conditions", description: "Weather, wild flowers, and bee health recorded right at the hive" },
   ];
@@ -309,7 +309,7 @@ const Traceability = () => {
       accent: "text-amber-800 bg-amber-100 border-amber-200",
       points: [
         "Verified proof of who you are and where your hives are located",
-        "GPS location showing your honey comes from wild Kenyan flowers",
+        "Verified farm location showing your honey comes from wild Kenyan flowers",
         "Direct connection to buyers with fair prices and no unfair middlemen",
         "Clear weight and harvest records for fast, honest payments",
       ],
@@ -437,7 +437,7 @@ const Traceability = () => {
       category: "templates",
       title: "Digital Apiary Harvest Logbook",
       format: "Spreadsheet & Printable PDF",
-      description: "A free, standardized field sheet for smallholders to log GPS coordinates, colony health, harvest weight, and moisture percentage without expensive hardware.",
+      description: "A free, simple harvest sheet for local beekeepers to log hive location, colony health, harvest weight, and moisture percentage without expensive hardware.",
       badge: "Free Template",
       downloadText: "Download Field Template",
       href: "/beeyield",
@@ -638,7 +638,7 @@ const Traceability = () => {
               className="flex flex-wrap items-center justify-center gap-4 md:gap-6"
             >
               {[
-                { value: "100%", label: "GPS Farm Location" },
+                { value: "100%", label: "Verified Farm Origin" },
                 { value: "Permanent", label: "Protected Records" },
                 { value: "24/7", label: "Instant Mobile Access" },
                 { value: "Certified", label: "Pure & Safe" },
@@ -702,7 +702,7 @@ const Traceability = () => {
                         <Button
                           type="submit"
                           disabled={loading || !qrCode.trim()}
-                          className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-[#1A1A1A] text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
+                          className="w-full h-16 bg-amber-600 hover:bg-amber-700 text-white text-lg font-black rounded-2xl shadow-xl hover:shadow-amber-500/20 transition-all"
                         >
                           {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "Verify Batch"}
                         </Button>
@@ -1116,7 +1116,7 @@ const Traceability = () => {
                               </Badge>
                             </div>
 
-                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-[#1A1A1A] rounded-[2rem] p-6 overflow-hidden relative border border-[#1B9157] shadow-2xl">
+                            <div className="bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white rounded-[2rem] p-6 overflow-hidden relative border border-emerald-600/40 shadow-2xl">
                               {/* Background Pattern */}
                               <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
                                 <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -1129,45 +1129,45 @@ const Traceability = () => {
 
                               <div className="relative z-10">
                                 {/* Header: Hive ID & Queen Status */}
-                                <div className="flex justify-between items-start mb-6 pb-6 border-b border-[#F4D03F]/20">
+                                <div className="flex justify-between items-start mb-6 pb-6 border-b border-white/10">
                                   <div className="flex items-center gap-4">
                               <div className="relative">
-                                      <div className="absolute -inset-2 bg-[#F4D03F] rounded-full blur-lg opacity-60" />
-                                      <div className="h-14 w-14 bg-[#F4D03F]/10 backdrop-blur-md rounded-2xl border border-[#F4D03F]/40 flex items-center justify-center relative z-10 shadow-lg group-hover:bg-gray-200 transition-all duration-500">
+                                      <div className="absolute -inset-2 bg-[#F4D03F] rounded-full blur-lg opacity-40" />
+                                      <div className="h-14 w-14 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 flex items-center justify-center relative z-10 shadow-lg">
                                         <div className="text-center">
                                           <Cpu className="h-5 w-5 text-[#F4D03F] mb-0.5 mx-auto" />
-                                          <p className="text-[10px] font-black text-[#1A1A1A] leading-none">{traceData.hive.hive_code}</p>
+                                          <p className="text-[10px] font-black text-white leading-none">{traceData.hive.hive_code}</p>
                                         </div>
                                       </div>
                                     </div>
                                     <div>
-                                      <h4 className="text-lg font-black leading-tight tracking-tight flex items-center gap-2">
-                                        Hive <span className="px-1.5 py-0.5 bg-[#1B9157] border border-[#1B9157] text-[10px] rounded text-white font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
+                                      <h4 className="text-lg font-black leading-tight tracking-tight flex items-center gap-2 text-white">
+                                        Hive <span className="px-2 py-0.5 bg-emerald-500 text-[10px] rounded text-neutral-950 font-black font-mono">{traceData.hive.hive_code.replace(/\D/g, '')}</span>
                                       </h4>
                                       <div className="flex items-center gap-2 mt-1">
                                         {traceData.sensor_snapshot?.queen_status === 'present' ? (
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#1B9157] border border-[#1B9157] rounded-full">
-                                            <span className="text-[10px] text-[#1B9157] font-bold leading-none">🛡️</span>
-                                            <span className="text-[9px] font-black text-[#1B9157]">Queen Present</span>
+                                          <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-500/20 border border-emerald-400/30 rounded-full">
+                                            <span className="text-[10px] leading-none">🛡️</span>
+                                            <span className="text-[9px] font-black text-emerald-300">Queen Present</span>
                                           </div>
                                         ) : traceData.sensor_snapshot?.queen_status === 'absent' ? (
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/10 border border-red-500/20 rounded-full">
+                                          <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-red-500/20 border border-red-500/30 rounded-full">
                                             <span className="text-[10px] leading-none">⚠️</span>
                                             <span className="text-[9px] font-black text-red-300">Colony Alert</span>
                                           </div>
                                         ) : (
-                                          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#F9F7F2] border border-[#F4D03F]/20 rounded-full">
-                                            <span className="text-[10px] leading-none text-slate-400 italic">?</span>
-                                            <span className="text-[9px] font-black text-slate-300 italic">State Unknown</span>
+                                          <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-white/10 border border-white/20 rounded-full">
+                                            <span className="text-[10px] leading-none text-slate-300">?</span>
+                                            <span className="text-[9px] font-black text-slate-300">State Unknown</span>
                                           </div>
                                         )}
                                       </div>
                                     </div>
                                   </div>
-                                  <div className="text-right glass-panel p-2 rounded-xl bg-[#1B9157] border border-[#1B9157]">
-                                    <p className="text-[8px] font-black text-[#1B9157] mb-0.5">GPS Location</p>
-                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A] mb-0.5">{textOrMissing(traceData.sensor_snapshot?.latitude)}</p>
-                                    <p className="text-[10px] font-mono font-bold text-[#1A1A1A]">{textOrMissing(traceData.sensor_snapshot?.longitude)}</p>
+                                  <div className="text-right p-2.5 rounded-xl bg-white/10 border border-white/10">
+                                    <p className="text-[9px] font-black text-emerald-300 mb-0.5">Hive Location</p>
+                                    <p className="text-[10px] font-mono font-bold text-white mb-0.5">{textOrMissing(traceData.sensor_snapshot?.latitude)}</p>
+                                    <p className="text-[10px] font-mono font-bold text-white">{textOrMissing(traceData.sensor_snapshot?.longitude)}</p>
                                   </div>
                                 </div>
 
@@ -1343,21 +1343,21 @@ const Traceability = () => {
                     </Card>
 
                     {/* Master Beekeeper Card */}
-                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-[#1A1A1A] p-8 relative overflow-hidden h-full">
-                      <h3 className="text-sm font-semibold opacity-70 mb-8 text-[#1B9157]">Your beekeeper</h3>
+                    <Card className="border-none shadow-xl rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] to-[#042f2e] text-white p-8 relative overflow-hidden h-full">
+                      <h3 className="text-sm font-bold tracking-wider uppercase text-emerald-300 mb-8">Your Beekeeper</h3>
 
                       <div className="flex gap-6 items-start relative z-10 mb-8">
                         {/* Photo & Logo */}
                         <div className="shrink-0 relative">
                           {/* Farmer photo */}
-                          <div className="flex items-center gap-8">
+                          <div className="flex items-center gap-6">
                             <div className="relative group">
                               <div className="absolute -inset-2 bg-gradient-to-tr from-amber-400 to-green-500 rounded-[1.8rem] blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
                               <img src={traceData?.farmer?.photo_url || TIMOTHY_PHOTO || PLACEHOLDER_SVG} alt={traceData?.farmer?.name || "Timothy Nduva"} className="h-24 w-24 md:h-32 md:w-32 rounded-[1.5rem] object-cover border-2 border-[#F4D03F]/40 shadow-2xl relative z-10" />
                             </div>
                             <div className="relative flex flex-col items-center gap-2 group">
                               <img src={LOGO} alt="BeeYield" className="h-20 w-20 md:h-24 md:w-24 object-contain transition-transform group-hover:scale-110 duration-500 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
-                              <span className="text-[10px] font-black text-[#F4D03F]/80">Verified</span>
+                              <span className="text-[10px] font-black text-[#F4D03F]">Verified</span>
                             </div>
                           </div>
 
@@ -1366,42 +1366,42 @@ const Traceability = () => {
 
                       {/* Info */}
                       <div className="space-y-3">
-                        <div className="text-2xl font-black tracking-tighter">{traceData?.farmer?.name || "Timothy Nduva"}</div>
-                        <Badge className="bg-[#F4D03F] hover:bg-amber-600 text-[#1A1A1A] border-none font-bold text-[10px] px-2 py-0.5 inline-flex items-center gap-1">
-                          <Award className="h-3 w-3" /> Head Beekeeper
+                        <div className="text-2xl font-black tracking-tight text-white">{traceData?.farmer?.name || "Timothy Nduva"}</div>
+                        <Badge className="bg-[#F4D03F] text-neutral-900 border-none font-bold text-[10px] px-2.5 py-1 inline-flex items-center gap-1 shadow-sm">
+                          <Award className="h-3.5 w-3.5 text-neutral-900" /> Head Beekeeper
                         </Badge>
-                        <div className="space-y-1 pt-1">
-                          <div className="flex items-center gap-2 text-[#1B9157]">
-                            <MapPin className="h-3.5 w-3.5" />
-                            <span className="text-xs font-bold">{traceData?.farmer?.location_name || "Makueni"}, Kenya</span>
+                        <div className="space-y-1.5 pt-2">
+                          <div className="flex items-center gap-2 text-emerald-200">
+                            <MapPin className="h-4 w-4 text-emerald-400" />
+                            <span className="text-xs font-semibold text-white">{traceData?.farmer?.location_name || "Makueni"}, Kenya</span>
                           </div>
-                          <div className="flex items-center gap-2 text-[#1B9157]">
-                            <div className="h-3.5 w-3.5 flex items-center justify-center font-serif font-black bg-[#1B9157] text-[#1B9157] rounded-full text-[9px]">E</div>
-                            <span className="text-xs font-bold">{traceData?.farmer?.experience_years || "6"}+ Years Experience</span>
+                          <div className="flex items-center gap-2 text-emerald-200">
+                            <div className="h-4 w-4 flex items-center justify-center font-bold bg-emerald-500/30 text-emerald-300 rounded-full text-[10px]">✓</div>
+                            <span className="text-xs font-semibold text-white">{traceData?.farmer?.experience_years || "6"}+ Years Beekeeping</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="pt-8 border-t border-[#1B9157] relative z-10">
-                        <p className="text-[10px] font-black text-[#1B9157] mb-4">Our Commitment</p>
-                        <div className="bg-[#1B9157] rounded-xl p-4 mb-6 backdrop-blur-sm border border-[#1B9157]">
+                      <div className="pt-8 border-t border-white/10 relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-300 mb-3">Our Promise</p>
+                        <div className="bg-emerald-900/50 rounded-2xl p-4 mb-6 backdrop-blur-sm border border-emerald-500/30">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="h-8 w-8 rounded-full bg-[#1B9157] flex items-center justify-center">
-                              <Scale className="h-4 w-4 text-[#1B9157]" />
+                            <div className="h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                              <Scale className="h-4 w-4 text-emerald-300" />
                             </div>
-                            <p className="font-bold text-lg text-[#1A1A1A]">50% Harvest Promise</p>
+                            <p className="font-bold text-base text-white">50% Left For The Bees</p>
                           </div>
-                          <p className="text-xs text-[#1B9157] leading-relaxed">
+                          <p className="text-xs text-emerald-100 leading-relaxed font-medium">
                             {conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value !== missingDataLabel
-                              ? `${conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value} is recorded as the portion left in the hive for colony resilience.`
-                              : "We strictly ensure half of every harvest remains in the hive to nourish the colony through dry seasons."}
+                              ? `${conservationFacts.find((item) => item.label === "50/50 reserve left for bees")?.value} is recorded as the portion left in the hive for colony health.`
+                              : "We strictly leave half of every harvest in the hive so our bees stay strong and well-fed all year."}
                           </p>
                         </div>
 
-                        <p className="text-[10px] font-black text-[#1B9157] mb-4">Our Story</p>
+                        <p className="text-[10px] font-black uppercase tracking-wider text-emerald-300 mb-3">Beekeeper Story</p>
                         <div className="space-y-3">
                           {traceStoryParagraphs.slice(0, 2).map((paragraph) => (
-                            <p key={paragraph} className="text-sm font-medium text-[#1B9157] italic leading-relaxed">
+                            <p key={paragraph} className="text-sm font-medium text-emerald-100/90 leading-relaxed">
                               {paragraph}
                             </p>
                           ))}
@@ -1409,7 +1409,7 @@ const Traceability = () => {
                       </div>
 
                       {/* Decorative BG Blob */}
-                      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
                     </Card>
                   </div>
 
@@ -1699,7 +1699,7 @@ const Traceability = () => {
                         className="w-full sm:flex-1"
                       >
                         {({ loading }) => (
-                          <Button className="w-full bg-amber-600 hover:bg-amber-700 text-[#1A1A1A] font-black h-14 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                          <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black h-14 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
                             {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <FileDown className="h-5 w-5" />}
                             Download Certificate
                           </Button>
@@ -1725,15 +1725,15 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center mb-16">
             <Badge className="bg-amber-500/10 text-amber-800 border-amber-200 px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
-              Global Honey Authenticity Challenge
+              Real Honey Promise
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              End-to-End Traceability for the <br />
-              <span className="text-beeyield-green">Honey Industry</span>
+              Know Exactly Where Your <br />
+              <span className="text-beeyield-green">Honey Comes From</span>
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              Honey is valued by consumers around the world as a high-quality natural product that uniquely reflects the environment it’s produced in. However, honey is one of the most frequently adulterated food products worldwide.
+              Real honey is pure, natural, and healthy. But unfortunately, much of the honey sold in stores is watered down with cheap syrups and artificial sweeteners. We do things differently.
             </p>
           </div>
 
@@ -1747,7 +1747,7 @@ const Traceability = () => {
                   The Growing Challenge
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
-                  Combating Non-Authentic Honey
+                  The Problem With Fake Honey
                 </h3>
                 <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
                   Ensuring the quality and authenticity of honey is a growing challenge for the global food industry. Non-authentic honey regularly appears throughout the supply chain due to blending low-quality batches or the addition of additives such as syrups, colours, and flavours.
@@ -1769,7 +1769,7 @@ const Traceability = () => {
                 </div>
               </div>
               <div className="p-4 bg-white/80 rounded-2xl border border-orange-200/60 text-xs text-neutral-600 font-medium italic">
-                The global honey sector suffers from massive brand erosion, customs rejections, and regulatory penalties due to adulteration.
+                Diluted honey hurts honest farmers and tricks families. Clear records keep everyone honest.
               </div>
             </div>
 
@@ -1779,21 +1779,21 @@ const Traceability = () => {
               <div>
                 <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-100 border border-emerald-300 rounded-full text-emerald-800 text-xs font-bold mb-6">
                   <LockIcon className="h-3.5 w-3.5 text-emerald-700" />
-                  BeeYield Trace • Pure Honey Verification
+                  BeeYield • Pure Honey Guarantee
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 tracking-tight">
-                  Honest Honey Tracking From Hive to Jar
+                  Honest Honey From Hive to Jar
                 </h3>
                 <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
-                  <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> is a verified tracking system that combines years of beekeeping experience to follow real honey from hive to jar.
+                  <strong className="text-neutral-900 font-bold">BeeYield Trace</strong> lets you follow real honey from the hive to your home.
                 </p>
                 <p className="text-neutral-700 leading-relaxed mb-6 font-medium">
-                  Our BeeYield Trace platform gives you clear visibility at every step, so you can trust where your honey came from, how it was made, and that it is 100% pure.
+                  You can see exactly who cared for the bees, when the honey was harvested, and the test results proving it is 100% pure.
                 </p>
                 <div className="space-y-3.5 mb-8">
                   {[
                     "Permanent, tamper-proof records for every single harvest",
-                    "Exact GPS location connecting every jar to real beekeepers and hives",
+                    "Direct records connecting every jar to real beekeepers and hives",
                     "Complete tracking through harvesting, careful handling, and bottling",
                     "Meets strict food safety standards so you can be sure your honey is genuine",
                   ].map((feature, i) => (
@@ -1821,14 +1821,14 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center mb-16">
             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
               <Layers className="h-3.5 w-3.5 text-beeyield-green" />
-              Documented Supply Chain Framework
+              How It Works
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              What is a Honey <span className="text-beeyield-green">Traceability System?</span>
+              How We Track <span className="text-beeyield-green">Every Jar of Honey</span>
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-700 leading-relaxed max-w-3xl mx-auto font-medium">
-              A honey traceability system is a documented framework that tracks the movement of honey throughout the chain from beekeeper to consumer.
+              We keep a clear record at each step—from the bee box to the bottle—so you always know who made your honey and where it came from.
             </p>
           </div>
 
@@ -1840,8 +1840,8 @@ const Traceability = () => {
                   <ArrowLeftRight className="h-7 w-7" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-neutral-900 tracking-tight">The "One Step Forward, One Step Backward" Chain</h3>
-                  <p className="text-sm text-neutral-500 font-medium">Standardized data collection stored by every participant</p>
+                  <h3 className="text-2xl font-bold text-neutral-900 tracking-tight">Tracking Every Step from Hive to Table</h3>
+                  <p className="text-sm text-neutral-500 font-medium">Clear records kept at every single stage</p>
                 </div>
               </div>
               <Badge className="bg-amber-100 text-amber-800 border-amber-200 font-bold px-4 py-1.5 rounded-full text-xs">
@@ -1850,7 +1850,7 @@ const Traceability = () => {
             </div>
 
             <p className="text-base sm:text-lg text-neutral-700 leading-relaxed font-medium mb-8">
-              The system relies on data being collected and stored by each participant in the chain. Each actor will have data one step forward in the chain, and one step backward in the chain, through all stages of production, processing, and distribution. It identifies where honey comes from (suppliers) and where it goes next (processors, traders, customers).
+              Everyone who handles our honey keeps a clear record: the beekeeper logs the hive, the collection center logs the gentle cold spin, and the bottler logs the jar code. Nothing is hidden.
             </p>
 
             {/* Visual Process Flow */}
@@ -1950,7 +1950,7 @@ const Traceability = () => {
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              BeeYield Trace gives you complete peace of mind. With data available 24/7, you can follow your honey at every step—from exact GPS hive locations to healthy hive checks and batch packaging.
+              BeeYield Trace gives you complete peace of mind. With data available 24/7, you can follow your honey at every step—from the farm apiary to healthy hive checks and clean glass bottling.
             </p>
           </div>
 
@@ -1962,9 +1962,9 @@ const Traceability = () => {
                   <MapPin className="h-7 w-7 text-amber-700" />
                 </div>
                 <Badge className="bg-amber-100 text-amber-800 border-amber-200 mb-3 text-[11px] font-bold">Origin Verification</Badge>
-                <h3 className="text-xl font-bold text-neutral-900 mb-3">GPS Beekeeper Verification</h3>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Beekeeper & Farm Verification</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Verify your beekeepers' identity, exact apiary GPS coordinates, and registered hive numbers directly on-site to guarantee true rural origins.
+                  Verify who harvested the honey, their registered apiary location, and hive numbers directly on the farm to guarantee true rural origins.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-amber-800">
@@ -2010,9 +2010,9 @@ const Traceability = () => {
                   <Clock className="h-7 w-7 text-purple-700" />
                 </div>
                 <Badge className="bg-purple-100 text-purple-800 border-purple-200 mb-3 text-[11px] font-bold">Continuous Access</Badge>
-                <h3 className="text-xl font-bold text-neutral-900 mb-3">Immediate 24/7 Visibility</h3>
+                <h3 className="text-xl font-bold text-neutral-900 mb-3">Check Your Jar Anytime</h3>
                 <p className="text-sm text-neutral-600 leading-relaxed font-medium">
-                  Enjoy immediate and 24/7 access to authenticated batch data for importers, auditors, regulators, retailers, and end-consumers worldwide.
+                  Scan the QR code on your jar with any phone. You can see the harvest story, dates, and quality test results anytime.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-neutral-200/60 flex items-center text-xs font-bold text-purple-800">
@@ -2029,14 +2029,14 @@ const Traceability = () => {
           <div className="max-w-4xl mx-auto text-center mb-16">
             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
               <Users className="h-3.5 w-3.5 text-beeyield-green" />
-              Ecosystem Advantages
+              Who Benefits
             </Badge>
             <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              How Does BeeYield Trace <span className="text-beeyield-green">Benefit You?</span>
+              Why Honest Honey <span className="text-beeyield-green">Matters to Everyone</span>
             </h2>
             <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
             <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              Purpose-built value propositions addressing the core operational, quality, and commercial needs of every participant in the honey value chain.
+              Clear honey records protect honest beekeepers, help buyers buy with total confidence, and guarantee that families eat 100% real honey.
             </p>
 
             {/* Role Filter Tabs */}
@@ -2408,7 +2408,7 @@ const Traceability = () => {
             </h2>
             <div className="h-1 w-20 bg-beeyield-green mx-auto mb-6 rounded-full" />
             <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              BeeYield's verified operations platform captures real harvest data where it happens — with GPS verification, instant logging, and automatic compliance documentation for every jar.
+              BeeYield's verified operations platform captures real harvest data where it happens — with verified farm origins, simple logging, and clear quality records for every jar.
             </p>
           </div>
 
@@ -2448,10 +2448,10 @@ const Traceability = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             {[
-              { step: "1", title: "Record Harvest", desc: "Log field activities with GPS location, timestamp, moisture levels, and harvest weight.", icon: ClipboardList },
-              { step: "2", title: "Verify Farm Origin", desc: "Confirm every batch is GPS-verified with hive origin, flower source, and colony health data.", icon: ShieldCheck },
-              { step: "3", title: "Generate Logbooks", desc: "Create comprehensive digital records with the full operational history of each batch.", icon: FileDown },
-              { step: "4", title: "Audit-Ready Reports", desc: "Get compliance documentation ready for regulatory review, export certification, or customer inquiry.", icon: Award },
+              { step: "1", title: "Record Harvest", desc: "Log harvest date, hive location, honey weight, and moisture level.", icon: ClipboardList },
+              { step: "2", title: "Verify Farm Origin", desc: "Confirm every batch comes from registered hives, wild flower sources, and healthy bees.", icon: ShieldCheck },
+              { step: "3", title: "Generate Logbooks", desc: "Create simple, clear records showing the complete journey of each batch.", icon: FileDown },
+              { step: "4", title: "Audit-Ready Reports", desc: "Download clean batch records ready for export checks, food safety audits, or curious customers.", icon: Award },
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -2485,7 +2485,7 @@ const Traceability = () => {
               <span className="text-beeyield-green">Verified</span> Honey Traceability
             </h2>
             <p className="text-lg text-neutral-600 leading-relaxed mb-12 max-w-2xl mx-auto">
-              Deploy BeeYield's hive-to-jar traceability, GPS-verified harvest records, and field logging system for compliance and operational confidence.
+              Enjoy honest honey with verified farm records, wild flower origins, and total transparency from hive to table.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

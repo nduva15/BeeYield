@@ -67,7 +67,7 @@ const CropsWePollinate = () => {
                 <span className="text-[#1B9157]">Crop Pollination</span>
               </h1>
               <p className="max-w-xl text-lg text-neutral-600 font-medium leading-relaxed">
-                Our end-to-end precision pollination solution gives farmers unprecedented control and visibility into floral anthesis, optimizing fruit set and maximizing harvest yields.
+                BeeYield helps farmers bring bees to their crops at the exact right moment when flowers bloom, helping trees grow more and bigger fruit.
               </p>
                             {/* Timothy Nduva Executive Crop Quote */}
               <div className="p-4 sm:p-5 rounded-2xl bg-white/95 border border-[#1B9157]/30 shadow-lg backdrop-blur-sm max-w-xl">
@@ -87,7 +87,7 @@ const CropsWePollinate = () => {
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-[#1A1A1A] font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
+                <Button size="lg" className="rounded-full bg-green-700 hover:bg-green-800 text-white font-bold h-14 px-8 shadow-xl shadow-green-900/10" asChild>
                   <Link to="/contact">Get a Free Consultation</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full border-2 border-neutral-200 text-neutral-900 hover:bg-[#F9F7F2] font-bold h-14 px-8" asChild>

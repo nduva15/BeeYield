@@ -177,7 +177,7 @@ export const buildHarvestFacts = (traceData: TraceResponse | null) => [
 export const buildPurityAssuranceFacts = (traceData: TraceResponse | null) => [
   { label: "Purity", value: "100% Pure Raw Honey (0% Added Sugar)" },
   { label: "Flower origin", value: formatTraceText(traceData?.florage_type, "Wild Acacia Flowers") },
-  { label: "Farm location", value: "GPS Verified" },
+  { label: "Farm location", value: "Verified Farm Origin" },
   { label: "Natural moisture", value: "Under 18% (Naturally Capped)" },
   { label: "Bee reserve", value: "50% Left for Hive Health" },
   { label: "Harvest record", value: "Fully Verified from Hive to Jar" },
