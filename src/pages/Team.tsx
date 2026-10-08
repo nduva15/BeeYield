@@ -45,6 +45,7 @@ const Linkedin = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
 );
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
@@ -205,10 +206,7 @@ const Team = () => {
                  HERO SECTION — Exact Match to Diseases Hero
             ═══════════════════════════════════════════════════════════════ */}
             <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
-                <div className="absolute inset-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
-                    <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-beeyield-green/5 to-transparent pointer-events-none" />
-                </div>
+                <StoryHeroBackground />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                         <motion.img

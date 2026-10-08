@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award, ClipboardList,
   CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock as LockIcon, FileDown, Wheat, TreePine, Scale, Cpu,
@@ -488,7 +489,7 @@ const Traceability = () => {
       />
       {/* ─── HERO ─── */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-white/95" />
+        <StoryHeroBackground />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center flex flex-col items-center">

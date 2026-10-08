@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import beeyieldLogo from "@/assets/beeyield-logo.png";
 import SEO from "@/components/SEO";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 
 /* ------------------------------------------------------------------ */
 /*  Animated counter hook                                              */
@@ -481,34 +482,9 @@ export default function About() {
       {/* ============================================================ */}
       {/*  HERO                                                        */}
       {/* ============================================================ */}
-      <section className="relative overflow-hidden min-h-[90vh] flex items-center justify-center">
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center justify-center border-b border-neutral-100">
         {/* Background layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(24,12%,7%)] via-[hsl(28,30%,10%)] to-[hsl(24,12%,7%)]" />
-        <div className="absolute inset-0 opacity-[0.06]">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <pattern
-              id="hero-hex"
-              x="0"
-              y="0"
-              width="20"
-              height="17.32"
-              patternUnits="userSpaceOnUse"
-            >
-              <polygon
-                points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77"
-                fill="none"
-                stroke="hsl(38 95% 52%)"
-                strokeWidth="0.3"
-              />
-            </pattern>
-            <rect width="100%" height="100%" fill="url(#hero-hex)" />
-          </svg>
-        </div>
-        <div className="absolute top-20 left-10 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl animate-pulse" />
-        <div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-amber-600/8 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}
-        />
+        <StoryHeroBackground />
 
         <div className="relative z-10 container mx-auto px-4 text-center max-w-4xl">
           <FadeIn>
@@ -519,30 +495,30 @@ export default function About() {
             />
           </FadeIn>
           <FadeIn delay={100}>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-sm font-medium mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-700 text-sm font-medium mb-6">
               <Heart className="w-4 h-4" /> Established Dec 2020 • IoT Precision Pollination Co. Founded July 2026 • Kibwezi &amp; Makueni, Kenya
             </div>
           </FadeIn>
           <FadeIn delay={200}>
-            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-amber-100 mb-3">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-neutral-900 mb-3">
               From 4 Hives to{" "}
-              <span className="bg-gradient-to-r from-amber-400 to-yellow-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 to-yellow-500 bg-clip-text text-transparent">
                 184
               </span>
             </h1>
-            <p className="font-display text-lg sm:text-xl md:text-2xl text-amber-300/90 font-semibold mb-6">
+            <p className="font-display text-lg sm:text-xl md:text-2xl text-amber-700 font-semibold mb-6">
               Precision Pollination &amp; Honey Traceability in Makueni &amp; Kibwezi
             </p>
           </FadeIn>
           <FadeIn delay={300}>
-            <p className="text-lg md:text-xl text-amber-200/70 leading-relaxed max-w-2xl mx-auto mb-8">
+            <p className="text-lg md:text-xl text-neutral-600 leading-relaxed max-w-2xl mx-auto mb-8">
               Three siblings. A quarter acre to five fenced acres. Zero external funding — just pure
               grit, savings, and a 50% ethical harvest promise. Reimagining the future of African
               apiculture through IoT and AI.
             </p>
           </FadeIn>
           <FadeIn delay={400}>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-amber-300/60">
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-neutral-500">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-4 h-4" /> Kibwezi &amp; Makueni, Kenya
               </span>
@@ -562,7 +538,7 @@ export default function About() {
               </Link>
               <Link
                 to="/"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-amber-500/30 hover:bg-amber-500/10 text-amber-300 font-semibold text-xs transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-amber-500/40 hover:bg-amber-500/10 text-amber-700 font-semibold text-xs transition-all"
               >
                 Launch BeeGPT AI →
               </Link>
@@ -571,7 +547,7 @@ export default function About() {
           <FadeIn delay={500}>
             <a
               href="#timeline"
-              className="inline-flex flex-col items-center mt-12 text-amber-400/50 hover:text-amber-400 transition-colors"
+              className="inline-flex flex-col items-center mt-12 text-amber-700/60 hover:text-amber-700 transition-colors"
             >
               <span className="text-xs mb-2">Scroll to explore</span>
               <ChevronDown className="w-5 h-5 animate-bounce" />

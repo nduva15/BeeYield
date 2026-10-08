@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -191,7 +192,8 @@ const PollinationSolutions = () => {
         }}
       />
       {/* Hub Hero */}
-      <section className="relative py-24 bg-gradient-to-b from-secondary/30 to-background overflow-hidden">
+      <section className="relative py-24 overflow-hidden border-b border-neutral-100">
+        <StoryHeroBackground />
         <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">
           <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
             End-to-End Visibility

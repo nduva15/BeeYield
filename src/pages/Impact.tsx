@@ -13,6 +13,7 @@ import beeyieldService from "@/services/beeyieldService";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
@@ -357,14 +358,7 @@ const Impact = () => {
           1. HERO SECTION — Real Honeybee Colony on Sensor Background
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={IMPACT_IMAGES.apisenseCluster1}
-            alt="Active bee colony clustered on ApiSense in-hive sensor"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6]/94 via-[#fdfbf6]/90 to-[#fdfbf6]" />
-        </div>
+        <StoryHeroBackground />
 
         <div className="container mx-auto px-4 relative z-10">
           <motion.div

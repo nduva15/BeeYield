@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import {
   Quote, CheckCircle2, ArrowRight, Check,
   Globe, Flower2, MapPin, Mail,
@@ -57,22 +58,8 @@ const CropsWePollinate = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#F0F7F0] py-20 md:py-32">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-40 sm:w-72 h-40 sm:h-72 bg-secondary/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 sm:w-64 h-32 sm:h-64 bg-[#1B9157] rounded-full blur-3xl animate-pulse delay-500" />
-          </div>
-          {/* Honeycomb Pattern */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <pattern id="honeycomb-crops" x="0" y="0" width="20" height="17.32" patternUnits="userSpaceOnUse">
-              <polygon points="10,0 20,5.77 20,17.32 10,23.09 0,17.32 0,5.77" fill="none" stroke="currentColor" strokeWidth="0.5" />
-            </pattern>
-            <rect width="100%" height="100%" fill="url(#honeycomb-crops)" />
-          </svg>
-        </div>
+      <section className="relative overflow-hidden py-20 md:py-32 border-b border-neutral-100">
+        <StoryHeroBackground />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">

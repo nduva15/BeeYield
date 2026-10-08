@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
@@ -120,7 +121,8 @@ const CommitmentPage = () => {
   return (
     <BeeYieldPageShell className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 p-0">
       {/* Hero Header */}
-      <section className="py-20 md:py-28 bg-[#F0F7F0] relative overflow-hidden border-b border-border/40">
+      <section className="py-20 md:py-28 relative overflow-hidden border-b border-border/40">
+        <StoryHeroBackground />
         <div className="container mx-auto px-4 max-w-5xl relative z-10 text-center space-y-6">
           <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
             🌿 United Nations Sustainable Development Goals

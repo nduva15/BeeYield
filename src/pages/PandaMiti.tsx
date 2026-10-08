@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -131,8 +132,7 @@ export default function PandaMitiPage() {
     <div className="min-h-screen bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-300">
       {/* Hero Banner */}
       <section className="relative py-16 sm:py-24 overflow-hidden border-b border-border/40">
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-950/20 via-background to-background pointer-events-none" />
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <StoryHeroBackground />
 
         <div className="container max-w-5xl mx-auto px-4 sm:px-6 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-semibold mb-6">

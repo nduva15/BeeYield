@@ -34,6 +34,7 @@ const Linkedin = ({ className }: { className?: string }) => (
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { HIVE_TO_HONEY_VALUE_CHAIN, BEEYIELD_TRACEABILITY_STORY } from "@/lib/traceabilityNarrative";
 import {
   Carousel,
@@ -947,8 +948,9 @@ const Media = () => {
         }}
       />
       {/* Hero Header with Media Switcher */}
-      <section className="relative py-20 md:py-24 bg-gradient-to-b from-secondary/40 via-background to-background overflow-hidden border-b border-border/40">
-        <div className="container mx-auto px-4 text-center max-w-4xl">
+      <section className="relative py-20 md:py-24 overflow-hidden border-b border-border/40">
+        <StoryHeroBackground />
+        <div className="container mx-auto px-4 text-center max-w-4xl relative z-10">
           {/* Top Primary Tab Switcher: Bee Media vs Honey Media */}
           <div className="inline-flex p-1.5 rounded-2xl bg-secondary/80 border border-border/60 shadow-sm mb-6 max-w-md mx-auto">
             <button

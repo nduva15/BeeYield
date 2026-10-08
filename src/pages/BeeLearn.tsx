@@ -5,6 +5,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -304,12 +305,10 @@ const BeeLearn = () => {
       )}
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[#F0F7F0] pt-8 pb-20 lg:pt-16 lg:pb-32">
-        {/* Background decorative elements */}
-        <div className="absolute top-0 right-0 w-[40%] h-[80%] bg-gradient-to-bl from-green-200/30 to-green-300/20 rounded-bl-[100px] blur-3xl -z-10" />
-        <div className="absolute bottom-0 left-0 w-[30%] h-[50%] bg-gradient-to-tr from-green-100/40 to-transparent rounded-tr-full blur-2xl -z-10" />
+      <section className="relative overflow-hidden pt-8 pb-20 lg:pt-16 lg:pb-32">
+        <StoryHeroBackground />
 
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             {/* Left Content */}
             <div className="text-center lg:text-left order-2 lg:order-1">

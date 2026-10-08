@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
@@ -20,7 +21,6 @@ import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
 // BeeHUB real product & deployment photos
-const BEEHUB_APIARY_HERO = "/images/beehub/apiary-lavender.jpg";
 const BEEHUB_QUEEN_DETAIL = "/images/beehub/queen-product-detail.png";
 const BEEHUB_SENSE_UNIT = "/images/beehub/sense-unit.png";
 const BEEHUB_DEPLOYED = "/images/beehub/deployed-hive-bees.jpg";
@@ -280,10 +280,7 @@ const InLandPollination = () => {
           HERO SECTION
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
-          <div className="absolute inset-0">
-              <img src={BEEHUB_APIARY_HERO} alt="BeeHUB sensors deployed in lavender apiary" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
-          </div>
+          <StoryHeroBackground />
           <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                   <motion.img

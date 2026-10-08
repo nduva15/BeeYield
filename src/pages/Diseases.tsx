@@ -54,6 +54,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { motion } from "framer-motion";
 
 import { submitContactForm } from "@/services/contactService";
@@ -65,7 +66,6 @@ import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow
 import LOGO from "@/assets/Logo.png";
 
 // Apisense partnership & real field inspection images (public/images/diseases/)
-const HIVE_INSPECTION_1 = "/images/diseases/hive-inspection-1.png";
 const HIVE_INSPECTION_2 = "/images/diseases/hive-inspection-2.png";
 const HIVE_INSPECTION_3 = "/images/diseases/hive-inspection-3.png";
 const HIVE_INSPECTION_4 = "/images/diseases/hive-inspection-4.png";
@@ -535,10 +535,7 @@ const Diseases = () => {
             ═══════════════════════════════════════════════════════════════ */}
             <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
                 {/* Hero background image */}
-                <div className="absolute inset-0">
-                    <img src={HIVE_INSPECTION_1} alt="Live in-hive inspection" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
-                </div>
+                <StoryHeroBackground />
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                         <motion.img

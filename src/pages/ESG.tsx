@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@tanstack/react-router";
 import { jsPDF } from "jspdf";
@@ -202,14 +203,7 @@ const ESG = () => {
           HERO SECTION — Real IoT Field Hive Background
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative py-24 md:py-32 overflow-hidden border-b border-neutral-100">
-        <div className="absolute inset-0">
-          <img
-            src={ESG_IMAGES.deployedHive1}
-            alt="BeeYield IoT hive deployed in Kenyan apiary with solar antenna"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/94 via-white/88 to-white/98" />
-        </div>
+        <StoryHeroBackground />
 
         <div className="container relative z-10 mx-auto px-4">
           <div>

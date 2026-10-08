@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import {
   DropdownMenu,
@@ -600,10 +601,7 @@ const PrecisionPollination = () => {
           HERO SECTION
       ═══════════════════════════════════════════════════════════════ */}
       <section className="relative pt-32 pb-24 lg:pt-40 lg:pb-32 overflow-hidden border-b border-neutral-100">
-          <div className="absolute inset-0">
-              <img src={BEEHUB_IMAGES.apiaryHero} alt="In-hive telemetry probes and active bee frames in commercial hive boxes" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-white/95" />
-          </div>
+          <StoryHeroBackground />
           <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
                   <motion.img

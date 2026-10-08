@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -397,7 +398,9 @@ export default function BlogsPage() {
         /* BLOG INDEX LIST VIEW */
         <main className="container mx-auto px-4 py-12 max-w-6xl space-y-12">
           {/* Hero Header */}
-          <section className="text-center space-y-4 max-w-3xl mx-auto">
+          <section className="relative overflow-hidden rounded-3xl border border-neutral-100 py-14 px-6">
+            <StoryHeroBackground />
+            <div className="relative z-10 text-center space-y-4 max-w-3xl mx-auto">
             <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 px-3.5 py-1 rounded-full text-xs font-bold">
               🌿 BeeYield Field Agronomy & Pollination Journal
             </Badge>
@@ -405,6 +408,7 @@ export default function BlogsPage() {
               The Science of Precision <br />
               <span className="text-emerald-600 dark:text-emerald-400">Crop Pollination in Kenya</span>
             </h1>
+            </div>
           </section>
 
           {/* Search and Tag Filter Bar */}

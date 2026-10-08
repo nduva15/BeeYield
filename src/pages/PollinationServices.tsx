@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import {
     Quote, MapPin, CheckCircle2, Sparkles,
@@ -123,10 +124,8 @@ const PollinationServices = () => {
             />
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex items-center overflow-hidden py-24 sm:py-32">
-                <div className="absolute inset-0 bg-gradient-to-b from-[#fdfbf6] to-[#f8faf8]">
-                    <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(circle_at_80%_20%,#fef3c7_0%,transparent_50%)] opacity-40 pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[radial-gradient(circle_at_20%_80%,#ecfdf5_0%,transparent_50%)] opacity-40 pointer-events-none" />
-
+                <StoryHeroBackground />
+                <div className="absolute inset-0 pointer-events-none">
                     {/* Vertical Text Accent */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}

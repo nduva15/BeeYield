@@ -2,6 +2,7 @@
 import { MapPin, Globe, Heart, Zap, Database, Cpu, Sun, Users, Compass, Briefcase, ArrowRight, ArrowLeft, Upload, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { StoryHeroBackground } from "@/components/StoryHeroBackground";
 import { Card, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
@@ -305,7 +306,8 @@ const Careers = () => {
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
       {/* Hero Section */}
-      <section className="relative py-24 bg-gradient-to-br from-secondary via-background to-primary/10 overflow-hidden">
+      <section className="relative py-24 overflow-hidden border-b border-neutral-100">
+        <StoryHeroBackground />
         <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
           <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
             Join the Hive
@@ -320,7 +322,6 @@ const Careers = () => {
             View Openings
           </Button>
         </div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/hexellence.png')] opacity-5"></div>
       </section>
 
       {/* Intro Section */}
