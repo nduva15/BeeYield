@@ -502,23 +502,23 @@ export const add_to_cart = async (item: any) => apiPost<any>("/shop/cart/add", i
 export const DEFAULT_PRODUCTS: Product[] = [
     {
         id: "prod_honey_acacia",
-        name: "Kibwezi Pure Wild Acacia Honey",
-        description: "100% Raw, unfiltered organic honey harvested from pristine acacia woodlands in Kibwezi, Makueni County. Moisture level 16.8%, rich in natural antioxidants and floral nectar.",
+        name: "BeeYield Premium Acacia",
+        description: "100% Raw, unfiltered organic wild Acacia honey harvested from pristine woodlands in Kibwezi, Makueni County. Rich in natural enzymes, light amber clarity, and delicate floral sweetness.",
         category: "honey",
-        badge: "Best Seller",
+        badge: "Bestseller",
         images: [
             "/images/products/beeyield_honey_500g.png",
-            "/images/products/beeyield_honey_1kg.png",
             "/images/products/beeyield_honey_250g.png",
+            "/images/products/beeyield_honey_500g.png",
+            "/images/products/beeyield_honey_1kg.png",
         ],
         rating: 4.9,
-        review_count: 84,
+        review_count: 245,
         is_active: true,
         variants: [
-            { id: "var_honey_500g", size: "500g Glass Jar", price_kes: 550, stock_quantity: 120, is_available: true },
-            { id: "var_honey_1kg", size: "1kg Premium Jar", price_kes: 1000, stock_quantity: 85, is_available: true },
-            { id: "var_honey_250g", size: "250g Taster Jar", price_kes: 300, stock_quantity: 60, is_available: true },
-            { id: "var_honey_5kg", size: "5kg Bulk Bucket", price_kes: 4500, stock_quantity: 25, is_available: true },
+            { id: "var_honey_250g", size: "250g", price_kes: 250, stock_quantity: 120, is_available: true },
+            { id: "var_honey_500g", size: "500g", price_kes: 500, stock_quantity: 84, is_available: true },
+            { id: "var_honey_1kg", size: "1kg", price_kes: 1000, stock_quantity: 36, is_available: true },
         ],
     },
     {

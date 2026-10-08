@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   QrCode, MapPin, Calendar, Leaf, Info, Heart, Shield, Droplets, Home, Users, Award, ClipboardList,
   CheckCircle2, Box, Activity, Thermometer, Waves, Loader2, X, Search, Globe, ShieldCheck, Zap, Lock as LockIcon, FileDown, Wheat, TreePine, Scale, Cpu,
-  Link2, Check, ArrowRight, Building2, Store, Truck, Layers, FileCheck, Sparkles, AlertTriangle, ShieldAlert, FileText, CheckCircle, Eye, Clock, Microscope, Download, ExternalLink, HelpCircle, ChevronRight, BookOpen, FileSpreadsheet, ArrowLeftRight, ChevronDown, CheckCircle as CheckIcon
+  Link2, Check, ArrowRight, Building2, Store, Truck, Layers, FileCheck, Sparkles, AlertTriangle, ShieldAlert, FileText, CheckCircle, Eye, Clock, Microscope, Download, ExternalLink, HelpCircle, ChevronRight, ArrowLeftRight, ChevronDown, CheckCircle as CheckIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Html5QrcodeScanner } from "html5-qrcode";
@@ -61,7 +61,6 @@ const Traceability = () => {
   const [esgMetrics, setEsgMetrics] = useState<ESGMetric[]>([]);
   const [selectedStakeholder, setSelectedStakeholder] = useState<"all" | "beekeepers" | "exporters" | "importers" | "packers">("all");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [activeResourceCategory, setActiveResourceCategory] = useState<"all" | "templates" | "protocols" | "guides">("all");
   const { toast } = useToast();
   const location = useLocation();
   const navigate = useNavigate();
@@ -395,114 +394,6 @@ const Traceability = () => {
       title: "Instant 24/7 Access",
       tag: "Always Online",
       description: "Scan a jar QR code anytime with your phone to see its origin story instantly.",
-    },
-  ];
-
-  const beeyieldTraceBenefits = [
-    {
-      title: "Total Protection for Your Brand",
-      subtitle: "Safe, Honest & Pure",
-      description: "Combine sealed jars, smart hive monitors, and honest records to make sure your honey is always 100% genuine.",
-      icon: Shield,
-    },
-    {
-      title: "Clear History from Hive to Table",
-      subtitle: "Every Step Accounted For",
-      description: "Follow the honey from wild acacia trees through extraction, packing, and all the way to store shelves.",
-      icon: Globe,
-    },
-    {
-      title: "Catch Quality Issues Early",
-      subtitle: "Stop Fakes Early",
-      description: "Catch high moisture or low-grade honey immediately before batches are mixed or bottled.",
-      icon: Scale,
-    },
-    {
-      title: "Build Real Customer Trust",
-      subtitle: "Transparency That Sells",
-      description: "Shoppers can scan any jar to meet the beekeeper and see where the bees made their honey.",
-      icon: Award,
-    },
-    {
-      title: "Everything in One Place",
-      subtitle: "Simple & Complete",
-      description: "A single, easy system for tracking harvests, managing quality, and proving honey purity.",
-      icon: Layers,
-    },
-  ];
-
-  const lowCostResources = [
-    {
-      id: "logbook",
-      category: "templates",
-      title: "Digital Apiary Harvest Logbook",
-      format: "Spreadsheet & Printable PDF",
-      description: "A free, simple harvest sheet for local beekeepers to log hive location, colony health, harvest weight, and moisture percentage without expensive hardware.",
-      badge: "Free Template",
-      downloadText: "Download Field Template",
-      href: "/beeyield",
-      type: "Template",
-      icon: FileSpreadsheet,
-    },
-    {
-      id: "sop",
-      category: "protocols",
-      title: "One-Step-Forward / One-Step-Backward SOP",
-      format: "Standard Operating Procedure",
-      description: "Step-by-step framework detailing how collection centers and processors capture data one step forward to buyers and one step backward to apiary suppliers.",
-      badge: "Operational SOP",
-      downloadText: "View SOP Protocol",
-      href: "/beeyield",
-      type: "Protocol",
-      icon: ArrowLeftRight,
-    },
-    {
-      id: "isolation",
-      category: "protocols",
-      title: "Village-Level Rapid Problem Isolation Protocol",
-      format: "Quality Control Checklist",
-      description: "Action plan to isolate contaminated or off-spec batches back to the exact distant village and individual hive within minutes to protect entire bulk containers.",
-      badge: "Quality Control",
-      downloadText: "Download Isolation Plan",
-      href: "/beeyield",
-      type: "Protocol",
-      icon: AlertTriangle,
-    },
-    {
-      id: "coding",
-      category: "guides",
-      title: "Standard Batch Identification & QR Coding Guide",
-      format: "Implementation Guide",
-      description: "Practical guide to setting up human-readable lot IDs and printable QR seals using free tools to achieve retailer-grade jar traceability at low cost.",
-      badge: "Implementation Guide",
-      downloadText: "Read Coding Guide",
-      href: "/beeyield",
-      type: "Guide",
-      icon: QrCode,
-    },
-    {
-      id: "economics",
-      category: "guides",
-      title: "Honey Authenticity: Random Sampling vs. Complete Tracking",
-      format: "Practical Guide & Comparison",
-      description: "Comparison showing why continuous digital tracking is vastly more reliable and cost-effective than random spot checks alone.",
-      badge: "Industry Guide",
-      downloadText: "Read Comparison",
-      href: "/learn",
-      type: "Whitepaper",
-      icon: BookOpen,
-    },
-    {
-      id: "api",
-      category: "guides",
-      title: "BeeYield Open Tracking API Quickstart",
-      format: "Integration Guide",
-      description: "Simple digital tools to push harvest records directly to BeeYield Trace from any existing farm or inventory software.",
-      badge: "Software Tools",
-      downloadText: "Integration Guide",
-      href: "/beeyield",
-      type: "Integration",
-      icon: Cpu,
     },
   ];
 
@@ -2186,165 +2077,7 @@ const Traceability = () => {
         </div>
       </section>
 
-      {/* ─── SECTION 6: STRATEGIC BENEFITS & 360° APPROACH ─── */}
-      <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
-              <Shield className="h-3.5 w-3.5 text-beeyield-green" />
-              360° Brand Protection
-            </Badge>
-            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              Strategic Benefits: A <span className="text-beeyield-green">360° Approach</span>
-            </h2>
-            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
-            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              Protect your brand with a 360 approach to security and transparency, supported by industry-leading inspection and auditing capabilities.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {beeyieldTraceBenefits.map((benefit, index) => (
-              <motion.div
-                key={benefit.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white p-8 rounded-[2.5rem] border border-neutral-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="h-14 w-14 rounded-2xl bg-emerald-50 text-beeyield-green flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <benefit.icon className="h-7 w-7" />
-                  </div>
-                  <Badge className="bg-neutral-100 text-neutral-700 text-[10px] font-bold px-3 py-1 rounded-full mb-3">
-                    {benefit.subtitle}
-                  </Badge>
-                  <h3 className="text-xl font-bold text-neutral-900 mb-3 tracking-tight">{benefit.title}</h3>
-                  <p className="text-sm text-neutral-600 leading-relaxed font-medium">{benefit.description}</p>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Highlight Banner: One-Stop Shop Advantage */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="bg-gradient-to-br from-amber-500 to-amber-600 p-8 rounded-[2.5rem] text-neutral-900 shadow-xl flex flex-col justify-between"
-            >
-              <div>
-                <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 text-neutral-900">
-                  <Sparkles className="h-7 w-7" />
-                </div>
-                <Badge className="bg-white/30 text-neutral-950 text-[10px] font-black px-3 py-1 rounded-full mb-3">
-                  One-Stop Authenticity
-                </Badge>
-                <h3 className="text-2xl font-black text-neutral-950 mb-3 tracking-tight">Full Authenticity Suite</h3>
-                <p className="text-sm text-neutral-900/90 leading-relaxed font-semibold">
-                  Supports high beekeeping standards in a simple platform to protect honey quality with clear tracking, records, and field inspections.
-                </p>
-              </div>
-              <div className="pt-6 border-t border-black/10 flex items-center justify-between text-xs font-black">
-                <span>360° Risk Mitigation</span>
-                <ArrowRight className="h-4 w-4" />
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 7: LOW-COST HONEY TRACEABILITY RESOURCES & STARTER TOOLKIT ─── */}
-      <section className="py-24 bg-white relative overflow-hidden border-b border-neutral-100" id="traceability-resources">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-16">
-            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none px-5 py-2 font-semibold text-xs rounded-full mb-6 inline-flex items-center gap-2">
-              <BookOpen className="h-3.5 w-3.5 text-beeyield-green" />
-              Free Practical Resources
-            </Badge>
-            <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 tracking-tight mb-6">
-              Establish Honey Traceability at <br />
-              <span className="text-beeyield-green">Relatively Low Cost</span>
-            </h2>
-            <div className="h-1.5 w-24 bg-beeyield-green mx-auto mb-8 rounded-full" />
-            <p className="text-lg sm:text-xl text-neutral-600 leading-relaxed max-w-3xl mx-auto font-medium">
-              Here you will find some resources to help you establish a honey traceability system at relatively low cost — empowering smallholders, cooperative aggregators, and commercial beekeepers.
-            </p>
-
-            {/* Category filter pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
-              {[
-                { id: "all", label: "All Resources" },
-                { id: "templates", label: "Field Templates" },
-                { id: "protocols", label: "Quality Protocols" },
-                { id: "guides", label: "Implementation Guides" },
-              ].map((pill) => (
-                <button
-                  key={pill.id}
-                  onClick={() => setActiveResourceCategory(pill.id as any)}
-                  className={cn(
-                    "px-5 py-2 rounded-full text-xs font-bold transition-all shadow-sm",
-                    activeResourceCategory === pill.id
-                      ? "bg-neutral-900 text-white shadow-md scale-105"
-                      : "bg-neutral-100 hover:bg-neutral-200 text-neutral-700"
-                  )}
-                >
-                  {pill.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {lowCostResources
-              .filter((res) => activeResourceCategory === "all" || activeResourceCategory === res.category)
-              .map((res) => (
-                <motion.div
-                  key={res.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-[#FAF9F5] rounded-[2.5rem] border border-neutral-200/80 p-8 shadow-sm hover:shadow-lg hover:border-beeyield-green/40 transition-all flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="h-14 w-14 rounded-2xl bg-white border border-neutral-200 flex items-center justify-center text-beeyield-green group-hover:scale-110 transition-transform">
-                        <res.icon className="h-7 w-7" />
-                      </div>
-                      <Badge className="bg-amber-100 text-amber-900 border-amber-200 text-[10px] font-bold px-3 py-1 rounded-full">
-                        {res.badge}
-                      </Badge>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">{res.title}</h3>
-                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-4">{res.format}</p>
-                    <p className="text-sm text-neutral-600 leading-relaxed font-medium mb-6">{res.description}</p>
-                  </div>
-
-                  <div className="pt-6 border-t border-neutral-200/60">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        toast({
-                          title: res.title,
-                          description: `Resource ready: ${res.format}. Connecting to BeeYield resource repository.`,
-                        });
-                      }}
-                      className="w-full h-11 rounded-xl font-bold text-xs border-neutral-300 hover:border-beeyield-green hover:bg-white text-neutral-800 transition-all flex items-center justify-center gap-2"
-                    >
-                      <Download className="h-3.5 w-3.5 text-beeyield-green" />
-                      {res.downloadText}
-                    </Button>
-                  </div>
-                </motion.div>
-              ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 8: FAQ & SEO STRUCTURED KNOWLEDGE ─── */}
+      {/* ─── FAQ & SEO STRUCTURED KNOWLEDGE ─── */}
       <section className="py-24 bg-[#FAF9F5] relative overflow-hidden border-b border-neutral-100">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center mb-16">

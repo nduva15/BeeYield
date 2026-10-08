@@ -33,13 +33,13 @@ export interface Product {
  * Exactly 8 items per category: honey, hardware (sensors), education (learn).
  */
 export const CATALOG: Product[] = [
-  // --- HONEY (8 Items - Monofloral & Hive-to-Honey Traceability Verified) ---
+  // --- HONEY (8 Items - All 100% Pure Wild Acacia Honey From Kibwezi) ---
   {
     id: "h1",
-    name: "BeeYield Monofloral Acacia",
+    name: "BeeYield Premium Acacia",
     description: "Harvested during peak blossom in our flagship Kibwezi woodland. Exceptional clarity, delicate sweetness, and 100% pure wild Acacia honey.",
     category: "honey",
-    badge: "Monofloral Verified",
+    badge: "Bestseller",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -54,7 +54,7 @@ export const CATALOG: Product[] = [
     batch_code: "BEE-2026-01-0420",
     hive_code: "KIB-001 (Langstroth 10)",
     purity_guarantee: "100% Raw Unadulterated • 0% Added Sugars • <17% Moisture",
-    traceability_features: ["Direct From Hive", "Wild Flower Honey", "Half Left For Bees", "Cold Spun", "100% Pure Honey"],
+    traceability_features: ["Direct From Hive", "Wild Acacia Honey", "Half Left For Bees", "Cold Spun", "100% Pure Honey"],
     variants: [
       { id: "vh1-1", size: "250g", price_kes: 250, stock_quantity: 120, is_available: true, batch_code: "KIB-ACAC-211-250G" },
       { id: "vh1-2", size: "500g", price_kes: 500, stock_quantity: 84, is_available: true, batch_code: "KIB-ACAC-212-500G" },
@@ -63,10 +63,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h2",
-    name: "BeeYield Monofloral Citrus Blossom",
-    description: "Cold-extracted from bee boxes placed alongside blooming orange and citrus groves in Kiunduani. Bursting with aromatic citrus undertones and active enzymes.",
+    name: "BeeYield Acacia",
+    description: "Pure organic wild Acacia honey cold-extracted from our bee boxes in Kibwezi. Naturally smooth with delicate floral sweetness and active enzymes.",
     category: "honey",
-    badge: "Top Seller",
+    badge: "Classic",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -76,12 +76,12 @@ export const CATALOG: Product[] = [
     rating: 5.0,
     review_count: 182,
     is_active: true,
-    floral_source: "Orange & Citrus Blossom",
-    origin_region: "Kiunduani Orchards, Makueni",
+    floral_source: "Wild Acacia Blossom",
+    origin_region: "Kibwezi Apiary, Makueni",
     batch_code: "BEE-2026-01-0419",
     hive_code: "KIB-014 (Langstroth 10)",
-    purity_guarantee: "100% Pure Raw Honey • Citrus Nectar Monofloral Certified",
-    traceability_features: ["Citrus Flower Honey", "Check Your Jar", "Cold Spun Without Heat", "Half Left For Bees"],
+    purity_guarantee: "100% Pure Raw Honey • Wild Acacia Monofloral Certified",
+    traceability_features: ["Wild Acacia Honey", "Check Your Jar", "Cold Spun Without Heat", "Half Left For Bees"],
     variants: [
       { id: "vh2-1", size: "250g", price_kes: 250, stock_quantity: 95, is_available: true, batch_code: "KIB-ACAC-221-250G" },
       { id: "vh2-2", size: "500g", price_kes: 500, stock_quantity: 66, is_available: true, batch_code: "KIB-ACAC-222-500G" },
@@ -90,10 +90,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h3",
-    name: "BeeYield Mango Bloom Reserve",
-    description: "A rare monofloral extraction from hives deployed during flowering mango blossoms in Kibarani. Rich amber hue, tropical sweetness, and full enzyme preservation.",
+    name: "BeeYield Acacia (Rare)",
+    description: "A rare monofloral extraction from hives deployed during peak flowering acacia trees in Kibwezi. Rich amber hue, warm sweetness, and full enzyme preservation.",
     category: "honey",
-    badge: "Reserve",
+    badge: "Rare Reserve",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -103,12 +103,12 @@ export const CATALOG: Product[] = [
     rating: 4.8,
     review_count: 115,
     is_active: true,
-    floral_source: "Mangifera indica (Mango Flowering Season Monofloral)",
-    origin_region: "Kibarani Orchards, Makueni",
+    floral_source: "Wild Acacia Blossom (Acacia mellifera)",
+    origin_region: "Kibarani Dryland Apiary, Makueni",
     batch_code: "BEE-2026-01-0418",
     hive_code: "KIB-022 (Langstroth 10)",
     purity_guarantee: "Naturally Filtered • Zero Syrups • 100% Pure Honey",
-    traceability_features: ["Local Orchard Honey", "Clean Glass Jars", "Grade A Pure Honey", "Verified Farm Origin"],
+    traceability_features: ["Local Wild Apiary", "Clean Glass Jars", "Grade A Pure Honey", "Verified Farm Origin"],
     variants: [
       { id: "vh3-1", size: "250g", price_kes: 250, stock_quantity: 50, is_available: true, batch_code: "KIB-ACAC-231-250G" },
       { id: "vh3-2", size: "500g", price_kes: 500, stock_quantity: 35, is_available: true, batch_code: "KIB-ACAC-232-500G" },
@@ -117,10 +117,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h4",
-    name: "BeeYield Highland Eucalyptus & Jamun",
-    description: "Bold, medicinal, and mineral-rich honey sourced from highland floral corridors. Tested negative for foreign sugars, with distinct cooling herbal notes.",
+    name: "BeeYield Acacia (Limited Edition)",
+    description: "Small-batch seasonal harvest from protected Acacia woodlands. Tested negative for foreign sugars, with distinct smooth floral notes.",
     category: "honey",
-    badge: "Bioactive",
+    badge: "Limited Edition",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -130,12 +130,12 @@ export const CATALOG: Product[] = [
     rating: 4.7,
     review_count: 92,
     is_active: true,
-    floral_source: "Eucalyptus globulus & Syzygium cumini (Jamun)",
-    origin_region: "Makueni Highland Hills",
+    floral_source: "Wild Acacia Blossom (Acacia tortilis)",
+    origin_region: "Makueni Acacia Woodland Reserve",
     batch_code: "BEE-2026-01-0422",
     hive_code: "KIB-045 (Langstroth 10)",
     purity_guarantee: "Bioactive Antioxidant Density • Zero Added Sugar Guarantee",
-    traceability_features: ["Highland Hills", "Tested 100% Pure", "Cold Extraction Center", "Food Safety Certified"],
+    traceability_features: ["Protected Woodlands", "Tested 100% Pure", "Cold Extraction Center", "Food Safety Certified"],
     variants: [
       { id: "vh4-1", size: "250g", price_kes: 250, stock_quantity: 150, is_available: true, batch_code: "KIB-ACAC-241-250G" },
       { id: "vh4-2", size: "500g", price_kes: 500, stock_quantity: 105, is_available: true, batch_code: "KIB-ACAC-242-500G" },
@@ -144,10 +144,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h5",
-    name: "BeeYield Certified Naturally Grown (CNG) Acacia",
+    name: "BeeYield Acacia (100% Raw)",
     description: "Produced strictly without GMOs, synthetic miticides, or artificial feed. Verifiable 50% reserve retained for colony wintering in pristine Acacia bushlands.",
     category: "honey",
-    badge: "CNG Certified",
+    badge: "Naturally Grown",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -171,10 +171,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h6",
-    name: "BeeYield Monofloral Mustard & Coriander",
-    description: "Golden honey with a light floral aroma and gentle spice note. Extracted at our community collection center from managed smallholder agricultural zones.",
+    name: "BeeYield Acacia (New Arrival)",
+    description: "Golden honey with a light floral aroma and gentle sweetness. Freshly extracted at our community collection center from managed smallholder apiary zones.",
     category: "honey",
-    badge: "Community",
+    badge: "New Harvest",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -184,11 +184,11 @@ export const CATALOG: Product[] = [
     rating: 5.0,
     review_count: 67,
     is_active: true,
-    floral_source: "Mustard & Coriander Blossom",
+    floral_source: "Wild Acacia Blossom",
     origin_region: "Mbuinzau Valley, Makueni",
     batch_code: "BEE-2026-01-0423",
     hive_code: "KIB-063 (Langstroth 10)",
-    purity_guarantee: "Direct Smallholder Fair Pay • 100% Unblended Monofloral",
+    purity_guarantee: "Direct Smallholder Fair Pay • 100% Unblended Monofloral Acacia",
     traceability_features: ["Fair Pay Beekeepers", "Direct Farmer Records", "Kibwezi Center", "Fair Pay To Farmers"],
     variants: [
       { id: "vh6-1", size: "250g", price_kes: 250, stock_quantity: 85, is_available: true, batch_code: "KIB-ACAC-261-250G" },
@@ -198,10 +198,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h7",
-    name: "BeeYield Raw Forest Wildflora",
-    description: "Multifloral raw honey gathered from wild savannah shrubs, baobabs, and desert dates. Preserves natural pollen granulates and floral biodiversity.",
+    name: "BeeYield Acacia (Wellness)",
+    description: "Bioactive raw acacia honey gathered from wild acacia groves in Kibwezi. Preserves natural pollen granulates and immune-supporting antioxidants.",
     category: "honey",
-    badge: "Raw Forest",
+    badge: "Wellness",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -211,7 +211,7 @@ export const CATALOG: Product[] = [
     rating: 4.8,
     review_count: 89,
     is_active: true,
-    floral_source: "Wild Savannah & Baobab Flowers",
+    floral_source: "Wild Acacia Blossom & Savannah Flora",
     origin_region: "Kavita Sanctuary, Kibwezi",
     batch_code: "BEE-2026-01-0424",
     hive_code: "KIB-081 (Langstroth 10)",
@@ -225,10 +225,10 @@ export const CATALOG: Product[] = [
   },
   {
     id: "h8",
-    name: "BeeYield Authentic Mono-Acacia Gold",
+    name: "BeeYield Acacia (Gold Label)",
     description: "Pure liquid gold extracted during the dryland blooming surge. Every jar carries a unique QR code showing exact bee box origin, harvest date, and certified origin metrics.",
     category: "honey",
-    badge: "Authentic",
+    badge: "Gold Label",
     images: [
       "/images/products/beeyield_honey_500g.png",
       "/images/products/beeyield_honey_250g.png",
@@ -238,7 +238,7 @@ export const CATALOG: Product[] = [
     rating: 4.9,
     review_count: 103,
     is_active: true,
-    floral_source: "Wild Acacia Blossom",
+    floral_source: "Wild Acacia Blossom (Acacia senegal)",
     origin_region: "Kibwezi Valley, Makueni",
     batch_code: "BEE-2026-01-0425",
     hive_code: "KIB-099 (Langstroth 10)",
