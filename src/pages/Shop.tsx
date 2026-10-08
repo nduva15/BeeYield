@@ -28,8 +28,6 @@ import {
   Container,
   BookOpen,
   QrCode,
-  MapPin,
-  Sparkles,
   ArrowRight,
   CheckCircle2,
   Check
@@ -479,35 +477,6 @@ const ProductCard = memo(({
           {product.description}
         </p>
 
-        {product.category === "honey" && (
-          <div className="mb-4 space-y-2 pt-1 border-t border-border/40">
-            {product.floral_source && (
-              <div className="flex items-center gap-1.5 text-xs text-amber-900 dark:text-amber-200 bg-amber-500/10 border border-amber-300/40 px-2.5 py-1 rounded-lg">
-                <Sparkles className="w-3 h-3 text-amber-600 shrink-0" />
-                <span className="font-bold truncate">{product.floral_source}</span>
-              </div>
-            )}
-            {product.origin_region && (
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
-                <span className="truncate">{product.origin_region}</span>
-              </div>
-            )}
-            <div className="flex items-center justify-between pt-1">
-              <Link
-                to={`/verify?code=${encodeURIComponent(product.batch_code || "BEE-2026-01-0420")}`}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 hover:underline transition-all"
-              >
-                <QrCode className="w-3.5 h-3.5" />
-                <span>Verify Hive Origin</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">
-                0% Adulteration
-              </span>
-            </div>
-          </div>
-        )}
 
         <div className="space-y-4">
           {!product.variants || product.variants.length === 0 ? (
