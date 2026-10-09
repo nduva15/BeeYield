@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import { PollinationIntelligenceSection } from "@/components/pollination/PollinationIntelligenceSection";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -1105,6 +1106,9 @@ const PrecisionPollination = () => {
           </div>
         </div>
       </section>
+
+      {/* Pollination Intelligence — 3-layer measurement model */}
+      <PollinationIntelligenceSection variant="in_hive" formId="in-hive-form" />
 
       {/* ═══════════════════════════════════════════════════════════════
           CONTACT FORM

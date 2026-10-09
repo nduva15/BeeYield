@@ -15,6 +15,7 @@ import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { CropProgramSection } from "@/components/beeyield/FieldTrustSections";
+import { BiologicalIntelligenceSection } from "@/components/beeyield/BiologicalIntelligenceSection";
 
 
 const CropsWePollinate = () => {
@@ -159,6 +160,9 @@ const CropsWePollinate = () => {
           </div>
         </div>
       </section>
+
+      {/* Turning Nature into Intelligence — Biological Intelligence story */}
+      <BiologicalIntelligenceSection id="crops-biological-intelligence" />
 
       {/* Every crop gets its own program */}
       <CropProgramSection />
