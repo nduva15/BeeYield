@@ -25,12 +25,8 @@ import {
   Truck,
   FileCheck,
   Check,
-  Mail,
 } from "lucide-react";
 
-const Linkedin = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-);
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,7 +42,6 @@ import {
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
-import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 
 const Media = () => {
   const location = useLocation();
@@ -88,10 +83,10 @@ const Media = () => {
       coordinates: "Makueni Center #KIB-CC1",
       beekeeper: "Makueni Extraction Team",
       category: "Cold Extraction",
-      badge: "Cold Spun (<35°C)",
+      badge: "Cold Spun (<35Â°C)",
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
-        "We weigh honeycomb frames and spin them at normal room temperature (below 35°C). We never boil or overheat our honey, so all natural bee enzymes and healthy nutrients stay alive.",
+        "We weigh honeycomb frames and spin them at normal room temperature (below 35Â°C). We never boil or overheat our honey, so all natural bee enzymes and healthy nutrients stay alive.",
       image: "/images/story/hives/yellow-langstroth-closeup.jpg",
       thumbLabel: "Cold Spinning",
       cropType: "Raw Honey",
@@ -252,7 +247,7 @@ const Media = () => {
       acres: 14,
       iotRole: "Restoring Nature & Caring for Bees",
       quote:
-        "Bees are very dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our degraded land. Partnering with BeeYield has made me so happy—our soil is reviving, tree fruit retention is up, and nature is flourishing.",
+        "Bees are very dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our degraded land. Partnering with BeeYield has made me so happyâ€”our soil is reviving, tree fruit retention is up, and nature is flourishing.",
       shortQuote: "I am happy and very dear with bees and restoration. Reviving our land with bees brings unmatched joy.",
       image: "/images/pollination/mango-orange-farm-wide.jpg",
       badgeColor: "bg-teal-500/15 text-teal-800 border-teal-300 dark:text-teal-200",
@@ -278,7 +273,7 @@ const Media = () => {
       thumbLabel: "Fruitlet Set",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Christopher (Kiunduani) — 18-acre orchard showing verified fruit set",
+        "Farmer Christopher (Kiunduani) â€” 18-acre orchard showing verified fruit set",
         "Healthy clusters of young green mangoes growing after successful pollination",
         "Transition from flower blooming season to early fruit expansion without flower abortion",
       ],
@@ -302,7 +297,7 @@ const Media = () => {
       thumbLabel: "Pink Canopy Bloom",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Christopher (Ndeini) — 18-acre orchard under active bloom protection",
+        "Farmer Christopher (Ndeini) â€” 18-acre orchard under active bloom protection",
         "Exceptional blossom density with thousands of florets per major scaffold branch",
         "Active bee pollination throughout the morning when flowers open",
       ],
@@ -326,7 +321,7 @@ const Media = () => {
       thumbLabel: "Orchard & Baobab",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Redempta (Mbuinzau) — 15 acres of coordinated citrus, mango, and companion crops",
+        "Farmer Redempta (Mbuinzau) â€” 15 acres of coordinated citrus, mango, and companion crops",
         "Ancient baobab tree providing wild cavity nesting sites and microclimate stability",
         "Red loam terraces capturing seasonal rainfall while hives provide constant pollination traffic",
       ],
@@ -350,7 +345,7 @@ const Media = () => {
       thumbLabel: "Panicles & Groundcover",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Clement (Kalakalya) — 25 acres utilizing cover crops for soil moisture conservation",
+        "Farmer Clement (Kalakalya) â€” 25 acres utilizing cover crops for soil moisture conservation",
         "Dense pink flower panicles opening synchronously across lower and mid canopy",
         "Cover crop layer retaining soil humidity and cooling root microclimates during dry spells",
       ],
@@ -374,7 +369,7 @@ const Media = () => {
       thumbLabel: "Citrus & Mango Slope",
       cropType: "Citrus",
       fieldObservations: [
-        "Farmer Clement (Kibarani) — 25-acre orchard integrating drip citrus lines with mango rows",
+        "Farmer Clement (Kibarani) â€” 25-acre orchard integrating drip citrus lines with mango rows",
         "Clean under-canopy cultivation optimizing bee flight paths between parallel terraces",
         "Contour hive placement reducing flight distances during intense mid-day heat",
       ],
@@ -398,7 +393,7 @@ const Media = () => {
       thumbLabel: "Terraced Canopy",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Ngumbau (Kaunguni) — 16 acres of terraced hillside fruit tree cultivation",
+        "Farmer Ngumbau (Kaunguni) â€” 16 acres of terraced hillside fruit tree cultivation",
         "Hillside terracing preventing soil erosion while channeling bee flight paths",
         "Indigenous woodland borders providing diverse supplementary nectar and pollen",
       ],
@@ -422,7 +417,7 @@ const Media = () => {
       thumbLabel: "Mango Panicles",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Clement (Kibarani) — 1st IoT device recipient monitoring hive acoustics",
+        "Farmer Clement (Kibarani) â€” 1st IoT device recipient monitoring hive acoustics",
         "Thousands of tiny blossoms on every branch visited by honeybees",
         "Targeting 2.5 - 4.0 hives per acre across Clement's 25-acre orchard",
       ],
@@ -446,7 +441,7 @@ const Media = () => {
       thumbLabel: "Pink Panicles",
       cropType: "Mangoes",
       fieldObservations: [
-        "Farmer Christopher (Kiunduani) — Saved 18-acre pollination run after early varroa detection",
+        "Farmer Christopher (Kiunduani) â€” Saved 18-acre pollination run after early varroa detection",
         "Intense pink floral pigmentation indicating optimal nectar sugar concentration",
         "Hive density of 3.0 hives per acre driving uniform fruitlet sets in upper branches",
       ],
@@ -494,7 +489,7 @@ const Media = () => {
       thumbLabel: "Heavy Fruiting",
       cropType: "Oranges",
       fieldObservations: [
-        "Farmer Ngumbau (Kiunduani) — 2nd IoT device recipient actively tracking hive metrics",
+        "Farmer Ngumbau (Kiunduani) â€” 2nd IoT device recipient actively tracking hive metrics",
         "Average cluster density of 4-7 developing fruits per fruiting terminal",
         "Zero signs of premature physiological fruit drop after complete pollination",
       ],
@@ -542,7 +537,7 @@ const Media = () => {
       thumbLabel: "Grove Rows",
       cropType: "Citrus",
       fieldObservations: [
-        "Farmer Redempta (Mbuinzau) — 15 acres of coordinated citrus, mango and vegetable pollination",
+        "Farmer Redempta (Mbuinzau) â€” 15 acres of coordinated citrus, mango and vegetable pollination",
         "Optimal inter-row spacing allowing low-altitude bee foraging corridors",
         "Managed ground cover providing pollen diversity while citrus flowers develop",
       ],
@@ -662,7 +657,7 @@ const Media = () => {
       thumbLabel: "Horticulture Field",
       cropType: "Maize",
       fieldObservations: [
-        "Farmer Mbilu (Mbuinzau) — 15-acre commercial maize holding achieving full ear fill",
+        "Farmer Mbilu (Mbuinzau) â€” 15-acre commercial maize holding achieving full ear fill",
         "Large-scale drip irrigation infrastructure ensuring unbroken crop growth",
         "Consistent pollinator foraging paths connecting field blocks with nearby apiaries",
       ],
@@ -710,7 +705,7 @@ const Media = () => {
       thumbLabel: "Restoration Farm",
       cropType: "Restoration",
       fieldObservations: [
-        "Farmer Gabriel Kavita (Kavita) — 14 acres dedicated to bees, restoration & fruit trees",
+        "Farmer Gabriel Kavita (Kavita) â€” 14 acres dedicated to bees, restoration & fruit trees",
         "Dual-crop synergistic foraging supporting continuous bee nutrition",
         "Revival of degraded dryland soils into flowering multi-strata agroforest",
       ],
@@ -742,7 +737,7 @@ const Media = () => {
         {
           farmer: "Farmer Clement",
           location: "Kibarani, Makueni",
-          role: "Commercial Mango & Citrus Grower • 1st IoT Device Recipient",
+          role: "Commercial Mango & Citrus Grower â€¢ 1st IoT Device Recipient",
           acres: 25,
           description:
             "Being the first receiver of BeeYield's IoT disease and pollination devices in Kibarani has completely transformed how I farm. For the first time, I truly understand honeybee behavior, flower blooming season timing, and hive acoustics. My 25-acre mango orchard has achieved unprecedented fruit retention, with branches loaded with clean, export-grade fruit.",
@@ -754,12 +749,12 @@ const Media = () => {
             { label: "IoT Status", value: "1st Recipient" },
           ],
           image: "/images/pollination/mango-panicles-close-bloom.png",
-          fieldPhotoCaption: "25 Acres Mango Bloom • Farmer Clement, Kibarani",
+          fieldPhotoCaption: "25 Acres Mango Bloom â€¢ Farmer Clement, Kibarani",
         },
         {
           farmer: "Farmer Christopher",
           location: "Kiunduani, Makueni",
-          role: "Commercial Mango Farmer • ApiSense Partner",
+          role: "Commercial Mango Farmer â€¢ ApiSense Partner",
           acres: 18,
           description:
             "BeeYield has been genuinely life-changing for our family and farm. When Varroa mite threatened our apiaries during the flowering surge, ApiSense technology detected the subtle acoustic frequency shifts inside the brood chamber in time. That early warning allowed us to treat colonies immediately, preserving pollination vigor across all 18 acres of mango blooms.",
@@ -771,7 +766,7 @@ const Media = () => {
             { label: "Export Grade", value: "96%" },
           ],
           image: "/images/pollination/mango-orchard-pink-panicles.png",
-          fieldPhotoCaption: "18 Acres Canopy Bloom • Farmer Christopher, Kiunduani",
+          fieldPhotoCaption: "18 Acres Canopy Bloom â€¢ Farmer Christopher, Kiunduani",
         },
         {
           farmer: "Farmer Redempta",
@@ -788,7 +783,7 @@ const Media = () => {
             { label: "Farm Synergy", value: "Multi-Crop" },
           ],
           image: "/images/pollination/mango-mature-tree-full-bloom.png",
-          fieldPhotoCaption: "15 Acres Full Tree Bloom • Farmer Redempta, Mbuinzau",
+          fieldPhotoCaption: "15 Acres Full Tree Bloom â€¢ Farmer Redempta, Mbuinzau",
         },
       ],
     },
@@ -801,7 +796,7 @@ const Media = () => {
         {
           farmer: "Farmer Clement",
           location: "Kibarani, Makueni",
-          role: "Citrus Orchardist • 1st IoT Device Recipient",
+          role: "Citrus Orchardist â€¢ 1st IoT Device Recipient",
           acres: 25,
           description:
             "In Kibarani, our oranges and citrus groves flowered profusely, but premature blossom drop was always a threat. Through BeeYield's IoT monitoring, I tracked forager arrival times on open blossoms. The bees ensured multiple stigmatic visits per blossom, yielding sweet, juicy, full-sized oranges.",
@@ -813,12 +808,12 @@ const Media = () => {
             { label: "Device Tier", value: "ApiSense IoT" },
           ],
           image: "/images/pollination/citrus-grove-drip-irrigation.jpg",
-          fieldPhotoCaption: "25 Acres Drip Citrus Grove • Farmer Clement, Kibarani",
+          fieldPhotoCaption: "25 Acres Drip Citrus Grove â€¢ Farmer Clement, Kibarani",
         },
         {
           farmer: "Farmer Ngumbau",
           location: "Kiunduani, Makueni",
-          role: "Citrus Grower • 2nd IoT Device Recipient",
+          role: "Citrus Grower â€¢ 2nd IoT Device Recipient",
           acres: 18,
           description:
             "As the second receiver of BeeYield's IoT devices in Kiunduani, I am excited to continue learning every single day. Seeing real-time hive sensor readouts helped me understand how ambient temperature and colony strength influence pollinator traffic on our citrus blossoms. The resulting fruit cluster density is extraordinary.",
@@ -830,7 +825,7 @@ const Media = () => {
             { label: "Recipient", value: "2nd Device Recipient" },
           ],
           image: "/images/pollination/orange-heavy-fruiting-branches.jpg",
-          fieldPhotoCaption: "18 Acres Citrus Fruiting • Farmer Ngumbau, Kiunduani",
+          fieldPhotoCaption: "18 Acres Citrus Fruiting â€¢ Farmer Ngumbau, Kiunduani",
         },
         {
           farmer: "Farmer Redempta",
@@ -844,10 +839,10 @@ const Media = () => {
           stats: [
             { label: "Size Uniformity", value: "98%" },
             { label: "Acres Pollinated", value: "15" },
-            { label: "Brix Sugar", value: "12.8°" },
+            { label: "Brix Sugar", value: "12.8Â°" },
           ],
           image: "/images/pollination/citrus-orchard-structured-rows.jpg",
-          fieldPhotoCaption: "15 Acres Structured Grove • Farmer Redempta, Mbuinzau",
+          fieldPhotoCaption: "15 Acres Structured Grove â€¢ Farmer Redempta, Mbuinzau",
         },
       ],
     },
@@ -872,7 +867,7 @@ const Media = () => {
             { label: "Cob Tip Fill", value: "100%" },
           ],
           image: "/images/pollination/maize-field-panorama-mountain.png",
-          fieldPhotoCaption: "15 Acres Maize Tasseling • Farmer Mbilu, Mbuinzau",
+          fieldPhotoCaption: "15 Acres Maize Tasseling â€¢ Farmer Mbilu, Mbuinzau",
         },
       ],
     },
@@ -897,7 +892,7 @@ const Media = () => {
             { label: "Market Grade", value: "Premium" },
           ],
           image: "/images/pollination/maize-vegetable-intercrop-drip.jpg",
-          fieldPhotoCaption: "15 Acres Vegetable Intercrop • Farmer Redempta, Mbuinzau",
+          fieldPhotoCaption: "15 Acres Vegetable Intercrop â€¢ Farmer Redempta, Mbuinzau",
         },
       ],
     },
@@ -913,7 +908,7 @@ const Media = () => {
           role: "Agroforestry & Conservation Farmer",
           acres: 14,
           description:
-            "Bees are deeply dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our land. Partnering with BeeYield has made me so happy—our soils are regenerating, tree retention is high, and the balance between pollinators and crops is truly beautiful.",
+            "Bees are deeply dear to my heart. Seeing them return and thrive across our 14 acres in Kavita has brought genuine ecological restoration to our land. Partnering with BeeYield has made me so happyâ€”our soils are regenerating, tree retention is high, and the balance between pollinators and crops is truly beautiful.",
           quote:
             "I am happy and very dear with bees and restoration. Working with BeeYield has brought new life to our land in Kavita.",
           stats: [
@@ -922,7 +917,7 @@ const Media = () => {
             { label: "Habitat Status", value: "Thriving" },
           ],
           image: "/images/pollination/mango-orange-farm-wide.jpg",
-          fieldPhotoCaption: "14 Acres Agroforestry Sanctuary • Farmer Gabriel Kavita, Kavita",
+          fieldPhotoCaption: "14 Acres Agroforestry Sanctuary â€¢ Farmer Gabriel Kavita, Kavita",
         },
       ],
     },
@@ -964,7 +959,7 @@ const Media = () => {
               )}
             >
               <Camera className="w-4 h-4" />
-              <span>🐝 Bee Media (Pollination)</span>
+              <span>ðŸ Bee Media (Pollination)</span>
             </button>
             <button
               type="button"
@@ -977,7 +972,7 @@ const Media = () => {
               )}
             >
               <Sparkles className="w-4 h-4" />
-              <span>🍯 Honey Media (Traceability)</span>
+              <span>ðŸ¯ Honey Media (Traceability)</span>
             </button>
           </div>
 
@@ -988,7 +983,7 @@ const Media = () => {
                 className="mb-4 px-4 py-1.5 rounded-full text-[#1B9157] border-[#1B9157]/30 bg-[#1B9157]/10 font-bold uppercase tracking-wider text-xs inline-flex items-center"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-[#1B9157]" />
-                Verified Field Operations • 105 Acres and Counting
+                Verified Field Operations â€¢ 105 Acres and Counting
               </Badge>
               <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
                 Bee Media & <span className="text-[#1B9157]">105 Acres and Counting</span>
@@ -1021,7 +1016,7 @@ const Media = () => {
                     document.getElementById("mangoes")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🥭 Mango Exports
+                  ðŸ¥­ Mango Exports
                 </Button>
                 <Button
                   variant="outline"
@@ -1031,7 +1026,7 @@ const Media = () => {
                     document.getElementById("citrus")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🍊 Citrus & Oranges
+                  ðŸŠ Citrus & Oranges
                 </Button>
                 <Button
                   variant="outline"
@@ -1041,7 +1036,7 @@ const Media = () => {
                     document.getElementById("maize")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🌽 Maize Pollination
+                  ðŸŒ½ Maize Pollination
                 </Button>
                 <Button
                   variant="outline"
@@ -1051,7 +1046,7 @@ const Media = () => {
                     document.getElementById("vegetables")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🥬 Mixed Vegetables
+                  ðŸ¥¬ Mixed Vegetables
                 </Button>
                 <Button
                   variant="outline"
@@ -1061,7 +1056,7 @@ const Media = () => {
                     document.getElementById("restoration")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🌿 Bees & Restoration
+                  ðŸŒ¿ Bees & Restoration
                 </Button>
               </div>
             </>
@@ -1072,7 +1067,7 @@ const Media = () => {
                 className="mb-4 px-4 py-1.5 rounded-full text-amber-700 dark:text-amber-300 border-amber-300 bg-amber-500/10 font-bold uppercase tracking-wider text-xs inline-flex items-center"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
-                From Hive to Jar • 100% Pure Honey
+                From Hive to Jar â€¢ 100% Pure Honey
               </Badge>
               <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tight text-foreground">
                 Honey Media & <span className="text-amber-600">Hive-to-Jar Journey</span>
@@ -1103,7 +1098,7 @@ const Media = () => {
                     document.getElementById("honey-value-chain")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🌱 The 5 Steps
+                  ðŸŒ± The 5 Steps
                 </Button>
                 <Button
                   variant="outline"
@@ -1113,7 +1108,7 @@ const Media = () => {
                     document.getElementById("honey-purity-defense")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  🛡️ 100% Pure Proof
+                  ðŸ›¡ï¸ 100% Pure Proof
                 </Button>
                 <Button
                   variant="outline"
@@ -1123,7 +1118,7 @@ const Media = () => {
                     document.getElementById("honey-ethics-5050")?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
-                  ⚖️ Our 50/50 Promise
+                  âš–ï¸ Our 50/50 Promise
                 </Button>
                 <Button
                   variant="default"
@@ -1151,7 +1146,7 @@ const Media = () => {
           <div className="max-w-4xl mx-auto text-center mb-8">
             <Badge className="bg-primary/15 text-primary border-primary/30 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">
               <Users className="w-3.5 h-3.5 mr-1.5 inline" />
-              Verified Partner Network • 105 Acres and Counting
+              Verified Partner Network â€¢ 105 Acres and Counting
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">
               Meet Our Partner Farmers in Makueni County
@@ -1217,7 +1212,7 @@ const Media = () => {
           <div className="max-w-4xl mx-auto text-center mb-12">
             <Badge className="bg-[#1B9157]/15 text-[#1B9157] hover:bg-[#1B9157]/20 border-[#1B9157]/30 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-4">
               <Camera className="w-3.5 h-3.5 mr-1.5 inline" />
-              Field Photography • Active Pollination Contracts
+              Field Photography â€¢ Active Pollination Contracts
             </Badge>
             <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
               105 Acres and Counting in Active Bloom: <br className="hidden sm:inline" />
@@ -1247,7 +1242,7 @@ const Media = () => {
                     <Badge
                       className={latestPollinationMedia[selectedPhotoIndex].badgeColor + " border px-3 py-1.5 text-xs font-bold backdrop-blur-md"}
                     >
-                      {latestPollinationMedia[selectedPhotoIndex].crop} • {latestPollinationMedia[selectedPhotoIndex].category}
+                      {latestPollinationMedia[selectedPhotoIndex].crop} â€¢ {latestPollinationMedia[selectedPhotoIndex].category}
                     </Badge>
                     <Badge className="bg-background/90 text-foreground border-none backdrop-blur px-3 py-1.5 text-xs font-semibold">
                       Photo {selectedPhotoIndex + 1} of {latestPollinationMedia.length}
@@ -1258,7 +1253,7 @@ const Media = () => {
                   <div className="absolute bottom-4 left-4 right-4 text-white">
                     <div className="flex items-center gap-2 mb-1.5">
                       <Badge className="bg-[#1B9157] text-white border-none px-2.5 py-0.5 text-[11px] font-black">
-                        {latestPollinationMedia[selectedPhotoIndex].farmer} • {latestPollinationMedia[selectedPhotoIndex].acres} Acres
+                        {latestPollinationMedia[selectedPhotoIndex].farmer} â€¢ {latestPollinationMedia[selectedPhotoIndex].acres} Acres
                       </Badge>
                       <span className="text-[11px] text-white/90 font-medium">
                         {latestPollinationMedia[selectedPhotoIndex].location}
@@ -1431,7 +1426,7 @@ const Media = () => {
                                 </p>
                                 {story.fieldPhotoCaption && (
                                   <p className="text-emerald-300 text-[11px] font-bold bg-black/60 border border-emerald-500/40 px-3 py-1 rounded-full backdrop-blur-md truncate max-w-[280px]">
-                                    📸 {story.fieldPhotoCaption}
+                                    ðŸ“¸ {story.fieldPhotoCaption}
                                   </p>
                                 )}
                               </div>
@@ -1836,24 +1831,24 @@ const Media = () => {
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <Card className="border-rose-300/40 bg-rose-50/10 dark:bg-rose-950/10 p-6 md:p-8 rounded-3xl">
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-700 flex items-center justify-center font-bold">✕</span>
+                <span className="w-8 h-8 rounded-xl bg-rose-500/20 text-rose-700 flex items-center justify-center font-bold">âœ•</span>
                 <h3 className="font-black text-xl text-foreground">Problems with Ordinary Honey</h3>
               </div>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span className="text-rose-500 font-bold shrink-0">â€¢</span>
                   <span><strong>Fake blends:</strong> Mixing mystery honey from unknown sources without any origin details.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span className="text-rose-500 font-bold shrink-0">â€¢</span>
                   <span><strong>Added sugars:</strong> Feeding bees artificial sugar syrups or watering down honey after harvest.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span className="text-rose-500 font-bold shrink-0">â€¢</span>
                   <span><strong>Hurting bee colonies:</strong> Taking all the honey from hives and leaving bees to starve.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-rose-500 font-bold shrink-0">•</span>
+                  <span className="text-rose-500 font-bold shrink-0">â€¢</span>
                   <span><strong>Poor quality:</strong> Failing food safety tests due to high moisture or artificial fillers.</span>
                 </li>
               </ul>
@@ -1861,7 +1856,7 @@ const Media = () => {
 
             <Card className="border-emerald-300/40 bg-emerald-50/10 dark:bg-emerald-950/10 p-6 md:p-8 rounded-3xl">
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold">✓</span>
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-700 flex items-center justify-center font-bold">âœ“</span>
                 <h3 className="font-black text-xl text-foreground">The BeeYield Promise</h3>
               </div>
               <ul className="space-y-3 text-sm text-muted-foreground">
@@ -1903,7 +1898,7 @@ const Media = () => {
               </div>
               <h4 className="font-bold text-base text-foreground">Gentle Cold Spin</h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Spun gently under 35°C so the honey keeps its natural enzymes, pleasant aroma, and rich taste.
+                Spun gently under 35Â°C so the honey keeps its natural enzymes, pleasant aroma, and rich taste.
               </p>
             </div>
 
@@ -1950,7 +1945,7 @@ const Media = () => {
                 to={`/traceability?code=${code}`}
                 className="font-mono text-xs font-bold bg-card hover:bg-amber-600 hover:text-white border border-border/60 px-4 py-2 rounded-xl transition-all shadow-sm"
               >
-                🔍 Batch {code}
+                ðŸ” Batch {code}
               </Link>
             ))}
           </div>
@@ -1971,160 +1966,6 @@ const Media = () => {
       </section>
     </div>
   )}
-
-      {/* Executive Leadership & Media Spokespersons Section */}
-      <section className="py-24 bg-card/40 border-t border-border/40 relative">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <Badge className="bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-300 font-bold px-4 py-1.5 text-xs rounded-full uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-amber-600" />
-              Press & Media Contacts
-            </Badge>
-            <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mt-4">
-              Our Leadership
-            </h2>
-            <p className="mt-3 text-base text-muted-foreground leading-relaxed">
-              Connect with BeeYield's co-founders for executive interviews, agricultural telemetry insights, and apiculture innovation briefings.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 lg:gap-10">
-            {[
-              {
-                name: "Timothy Nduva",
-                role: "CEO & Co-Founder",
-                department: "Executive & Directorate",
-                description: "Pioneering the intersection of traditional apiculture and IoT precision. Directs ecosystem strategy, sensor telemetry, and Kibwezi field operations.",
-                image: TIMOTHY_PHOTO,
-                linkedin: "https://linkedin.com/in/timothynduva",
-                email: "timothy@beeyield.com",
-                tags: ["Vision Lead", "Architecture Head", "Global Strategy", "Field Beekeeper"],
-              },
-              {
-                name: "Carole Nduva",
-                role: "Co-Founder & Chief Operating Officer (COO)",
-                department: "Operations & Partnerships",
-                description: "Oversees operational logistics, commercial grower relationships, community expansion, and international honey export channels.",
-                image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
-                linkedin: "https://linkedin.com/company/beeyield",
-                email: "carole@beeyield.com",
-                tags: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"],
-              },
-              {
-                name: "Agatha Nduva",
-                role: "Co-Founder & Chief Technology Officer (CTO)",
-                department: "Engineering & IT Systems",
-                description: "Architects distributed telemetry infrastructure, real-time hive sensor networks, and tamper-proof honey traceability ledgers.",
-                image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600",
-                linkedin: "https://linkedin.com/company/beeyield",
-                email: "agatha@beeyield.com",
-                tags: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"],
-              },
-            ].map((member, i) => (
-              <div
-                key={i}
-                className="group flex flex-col h-full bg-card rounded-[2.5rem] border border-border/80 hover:border-amber-500/40 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden"
-              >
-                {/* Media / Portrait View */}
-                <div className="relative aspect-[4/5] m-3.5 rounded-[2rem] overflow-hidden bg-muted/60 shadow-inner">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                  />
-                  {/* Subtle Gradient Scrim at Bottom of Photo */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-
-                  {/* Top Corner Pill Badges */}
-                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-                    <Badge className="bg-background/90 text-foreground backdrop-blur-md border border-border/40 font-bold text-[10px] tracking-wider px-3 py-1 rounded-full shadow-sm">
-                      {member.department}
-                    </Badge>
-                    <span className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center shadow-sm opacity-90 group-hover:scale-110 transition-transform">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                    </span>
-                  </div>
-
-                  {/* Bottom Micro-Badge on Image */}
-                  <div className="absolute bottom-3.5 left-4 right-4 flex items-center justify-between text-white text-[11px] font-medium pointer-events-none">
-                    <span className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white/95 font-semibold text-[10px] flex items-center gap-1.5 shadow-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Active Co-Founder
-                    </span>
-                    <span className="text-[10px] font-bold text-white/90 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full">
-                      Kibwezi, Kenya
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content Details Section Below Portrait */}
-                <div className="p-6 pt-3 flex flex-col flex-1 justify-between">
-                  <div>
-                    <p className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-1.5">
-                      {member.role}
-                    </p>
-
-                    <h3 className="text-2xl font-black text-foreground tracking-tight group-hover:text-primary transition-colors flex items-center justify-between">
-                      <span>{member.name}</span>
-                      <ArrowRight className="w-4 h-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                    </h3>
-
-                    <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      {member.description}
-                    </p>
-
-                    {/* Key Focus Tags */}
-                    <div className="flex flex-wrap gap-1.5 mt-4">
-                      {member.tags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-[10px] font-semibold py-0.5 px-2.5 rounded-lg bg-muted text-muted-foreground border-none"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Action Bar */}
-                  <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
-                    <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-xs font-bold text-foreground hover:text-primary gap-1">
-                      <Link to="/team">
-                        <span>Meet Full Team</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </Button>
-
-                    <div className="flex items-center gap-2">
-                      {member.linkedin && (
-                        <a
-                          href={member.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`${member.name} LinkedIn`}
-                          className="w-8 h-8 rounded-full bg-muted hover:bg-[#0077B5] hover:text-white text-muted-foreground flex items-center justify-center transition-colors"
-                        >
-                          <Linkedin className="w-4 h-4" />
-                        </a>
-                      )}
-                      {member.email && (
-                        <a
-                          href={`mailto:${member.email}`}
-                          aria-label={`Email ${member.name}`}
-                          className="w-8 h-8 rounded-full bg-muted hover:bg-foreground hover:text-background text-muted-foreground flex items-center justify-center transition-colors"
-                        >
-                          <Mail className="w-4 h-4" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
   {/* Bottom CTA Banner (Adapts for Bee vs Honey) */}
   <section className="py-20 bg-gradient-to-t from-secondary/40 via-background to-background border-t border-border/40 text-center">

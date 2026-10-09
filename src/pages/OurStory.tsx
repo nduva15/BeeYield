@@ -18,6 +18,7 @@ import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow
 import { TechPhilosophySection } from "@/components/beeyield/FieldTrustSections";
 import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 import { GlobalPartnerNetworkSection } from "@/components/beeyield/GlobalPartnerNetworkSection";
+import { LeadershipSection } from "@/components/beeyield/LeadershipSection";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -639,6 +640,9 @@ const OurStory = () => {
           </div>
         </div>
       </section>
+
+      {/* Our Leadership — co-founders & press contacts (moved from Media) */}
+      <LeadershipSection />
 
       {/* ═══════════════════════════════════════════════════════════════
           6. LEADERSHIP & TEAM

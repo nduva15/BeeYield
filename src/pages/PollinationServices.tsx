@@ -20,9 +20,7 @@ import {
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { BetweenVisitsSection, ConnectedSystemSection } from "@/components/beeyield/FieldTrustSections";
 import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
-import { BiologicalIntelligenceSection } from "@/components/beeyield/BiologicalIntelligenceSection";
 
 const PollinationServices = () => {
 
@@ -287,11 +285,6 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Turning Nature into Intelligence — Biological Intelligence story */}
-            <BiologicalIntelligenceSection />
-
-            {/* Technology that earns trust in the field — problem & why it matters */}
-            <BetweenVisitsSection />
 
             {/* ═══════════════════════════════════════════════════════════════
                 ECOLOGICAL PROBLEM STATEMENT: THE DECLINE OF AFRICAN BEES & FOOD SECURITY
@@ -428,9 +421,6 @@ const PollinationServices = () => {
 
             {/* Tech that works for everyone — audience segments */}
             <AudienceSegmentsSection />
-
-            {/* One connected system, from hive to harvest + data you can trust */}
-            <ConnectedSystemSection />
 
             {/* Pollination Stories Section - Replacing Art and Science Section */}
             <section className="py-24 bg-background relative overflow-hidden">
