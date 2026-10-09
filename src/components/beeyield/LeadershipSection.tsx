@@ -30,7 +30,7 @@ const LEADERS = [
     role: "Co-Founder & Chief Operating Officer (COO)",
     department: "Operations & Partnerships",
     description: "Oversees operational logistics, commercial grower relationships, community expansion, and international honey export channels.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+    image: undefined as string | undefined,
     linkedin: "https://linkedin.com/company/beeyield",
     email: "carole@beeyield.com",
     tags: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"],
@@ -40,7 +40,7 @@ const LEADERS = [
     role: "Co-Founder & Chief Technology Officer (CTO)",
     department: "Engineering & IT Systems",
     description: "Architects distributed telemetry infrastructure, real-time hive sensor networks, and tamper-proof honey traceability ledgers.",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600",
+    image: undefined as string | undefined,
     linkedin: "https://linkedin.com/company/beeyield",
     email: "agatha@beeyield.com",
     tags: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"],
@@ -71,11 +71,19 @@ export const LeadershipSection: React.FC = () => (
           >
             {/* Media / Portrait View */}
             <div className="relative aspect-[4/5] m-3.5 rounded-[2rem] overflow-hidden bg-muted/60 shadow-inner">
-              <img
-                src={member.image}
-                alt={member.name}
-                className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-              />
+              {member.image ? (
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-beeyield-green">
+                  <span className="text-6xl font-black text-white">
+                    {member.name.split(" ").map((n) => n[0]).join("")}
+                  </span>
+                </div>
+              )}
               {/* Subtle Gradient Scrim at Bottom of Photo */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
