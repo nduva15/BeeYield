@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -428,7 +429,8 @@ const InLandPollination = () => {
           </div>
       </section>
 
-            
+      {/* Tech that works for everyone — audience segments */}
+      <AudienceSegmentsSection />
 
 {/* ═══════════════════════════════════════════════════════════════
           HOW IT WORKS GRID + PRODUCT SHOWCASE

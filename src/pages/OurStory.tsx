@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import {
   Users, Cpu, Sprout, ArrowRight, Heart, TreePine, Home, Hexagon,
-  Radio, Scale, ShieldCheck, Activity, Zap, CheckCircle2
+  Radio, Scale, ShieldCheck, Activity, Zap, CheckCircle2,
+  GraduationCap, TrendingUp, Network, Quote, ChevronDown, Flower2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Logo from "@/assets/Logo.png";
@@ -14,6 +15,8 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
+import { TechPhilosophySection } from "@/components/beeyield/FieldTrustSections";
+import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -71,6 +74,7 @@ const TIMELINE: YearMilestone[] = [
     highlights: [
       "Received 4 hives from our father — our entire inheritance and the seed of BeeYield",
       "Timothy was in his 2nd year studying Finance & Marketing at Strathmore University",
+      "Honey sales paid for university upkeep — rent, transport and food — sold jar by jar to classmates and neighbours",
       "We were only keeping bees for the honey — no grand plans, just ambition and hope",
       "Grew from 4 to 20 hives by year-end through pure grit",
       "First harvest: 40 kg of pure, traceable honey sold entirely through word of mouth",
@@ -223,7 +227,7 @@ const TIMELINE: YearMilestone[] = [
       "Devices collect temperature, weight, humidity, pressure, outside temp, colony state, and Varroa detection",
       "Also detect Asian hornets — proven incredibly useful for colony protection",
       "Collecting over 2,000 data points daily and growing across all sensor categories — unprecedented for a Kenyan operation",
-      "3 farmers enrolled in IoT device program with 22 devices working in hives right now",
+      "2 farmers enrolled in our IoT partner network, with 22 devices working in hives right now",
       "Pollinated 105 and counting acres — started with a goal of 15 acres, exceeded by 7x",
       "Pioneered our calibrated Hives per Acre (HPA) precision model — matching 1.5 to 4.5 IoT-monitored colonies per acre based on canopy density, bloom phenology, and real-time forager flight hours",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
@@ -254,8 +258,44 @@ const GROWTH_BY_YEAR = [
   { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "1,500+", milestone: "BeeYield officially founded as an IoT precision pollination company (July 2026). 22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
 ];
 
+/* ── Hive count by year — drives the growth bar chart ───────── */
+const HIVE_GROWTH = [
+  { year: "2020", hives: 4, note: "Inherited" },
+  { year: "2020", hives: 20, note: "Year-end" },
+  { year: "2021", hives: 35, note: "" },
+  { year: "2022", hives: 45, note: "" },
+  { year: "2023", hives: 75, note: "" },
+  { year: "2024", hives: 105, note: "" },
+  { year: "2025", hives: 150, note: "" },
+  { year: "2026", hives: 184, note: "Today" },
+];
+
+const TODAY_STATS = [
+  { icon: Hexagon, value: "184", label: "Hives", desc: "Up from the 4 we started with" },
+  { icon: Radio, value: "22", label: "IoT devices", desc: "Live in hives and in the field" },
+  { icon: Flower2, value: "105+", label: "Acres pollinated", desc: "And counting, this season" },
+  { icon: Users, value: "40", label: "Partner farmers", desc: "Hive checks, harvests and training" },
+  { icon: Network, value: "2", label: "IoT partner farmers", desc: "Sensors running on their own hives" },
+];
+
+const TEAM = [
+  { name: "Timothy Nduva", role: "Chief Executive Officer & Co-Founder", photo: TIMOTHY_PHOTO as string | undefined },
+  { name: "Carole Nduva", role: "Chief Operating Officer & Co-Founder" },
+  { name: "Agatha Nduva", role: "Chief Technology Officer & Co-Founder" },
+  { name: "Peter George", role: "Field Operations & Farmer Partnerships" },
+  { name: "Ngumbau", role: "Apiary Technician & Harvesting" },
+] as { name: string; role: string; photo?: string }[];
+
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" },
+  transition: { duration: 0.6, ease: "easeOut" as const },
+};
+
 const OurStory = () => {
-  const [activeTimelineYear, setActiveTimelineYear] = useState<string | null>(null);
+  const [activeTimelineYear, setActiveTimelineYear] = useState<string | null>("2026");
+  const maxHives = Math.max(...HIVE_GROWTH.map((g) => g.hives));
   return (
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
       <SEO
@@ -266,18 +306,17 @@ const OurStory = () => {
         image="/images/story/deployed-hive-antenna-1.png"
       />
       {/* ═══════════════════════════════════════════════════════════════
-          1. HERO SECTION — Real IoT Deployed Hive Background
+          1. HERO — The Story Behind BeeYield
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32 border-b border-neutral-100">
+      <section className="relative overflow-hidden py-24 sm:py-32 lg:py-36 border-b border-neutral-100">
         <div className="absolute inset-0">
           <img
             src={STORY_IMAGES.apiaryLangstrothRow}
             alt="BeeYield Langstroth hive apiary — yellow hives on wooden stands under acacia shade in Kibwezi, Kenya"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/94 via-white/86 to-white/96" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/94 via-white/88 to-white/97" />
         </div>
-
         <div className="absolute top-20 right-10 text-primary/5 animate-pulse">
           <Hexagon size={120} strokeWidth={1} />
         </div>
@@ -286,40 +325,39 @@ const OurStory = () => {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            <div className="text-center lg:text-left">
+          <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-8 items-center">
+            <motion.div {...fadeUp} className="text-center lg:text-left">
               <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm bg-beeyield-green/10 text-beeyield-green font-bold rounded-full">
-                Our Authentic Story
+                Our Story
               </Badge>
-              <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-tight">
-                The Story of <span className="text-primary">BeeYield</span>
+              <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl leading-[1.05]">
+                The Story Behind <span className="text-primary">BeeYield</span>
               </h1>
               <p className="text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8">
-                Born in Kibwezi, Makueni County, Kenya — a story of family, resilience, and 22 IoT devices transforming 105 and counting acres of pollination.
+                Much of the fruit grown in Makueni exists because a bee visited a flower, and that bee usually comes
+                from a hive someone looks after. This is how four inherited hives, kept to pay for university, became a
+                precision pollination company, and why we think those hives and the people who keep them deserve better tools.
               </p>
-              
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
-                  <Radio className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-neutral-900">22 IoT Devices Deployed</span>
-                </div>
-                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
-                  <Scale className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-neutral-900">105 Acres and Counting Pollinated</span>
-                </div>
-                <div className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
-                  <TreePine className="w-4 h-4 text-beeyield-green" />
-                  <span className="text-xs font-bold text-neutral-900">3t Carbon Offset</span>
-                </div>
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                {[
+                  { icon: Hexagon, text: "4 → 184 hives" },
+                  { icon: Radio, text: "22 IoT devices" },
+                  { icon: Scale, text: "105+ acres pollinated" },
+                ].map((chip) => (
+                  <div key={chip.text} className="px-4 py-2 bg-white/80 backdrop-blur rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-2">
+                    <chip.icon className="w-4 h-4 text-beeyield-green" />
+                    <span className="text-xs font-bold text-neutral-900">{chip.text}</span>
+                  </div>
+                ))}
               </div>
-            </div>
+            </motion.div>
 
             <div className="relative mx-auto lg:ml-auto max-w-md lg:max-w-full flex justify-center">
               <div className="absolute -inset-4 bg-gradient-to-r from-primary to-accent opacity-20 blur-2xl rounded-full" />
               <img
                 src={Logo}
                 alt="BeeYield Logo"
-                className="relative w-full max-w-[380px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                className="relative w-full max-w-[340px] h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
               />
             </div>
           </div>
@@ -327,89 +365,336 @@ const OurStory = () => {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          2. ORIGIN STORY — ApiSense PCB In-Hive with Live Worker Bees
+          2. NARRATIVE CHAPTERS — honey → reinvestment → pivot
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-24 lg:py-28 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
-            
-            {/* Visual Photo Card: Real ApiSense Bee Landing */}
-            <div className="relative group">
-              <div className="absolute -inset-2 bg-gradient-to-r from-beeyield-green/20 to-amber-400/20 rounded-[3rem] blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
-              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-950 aspect-[4/3]">
-                <img
-                  src={STORY_IMAGES.apisenseCloseup2}
-                  alt="ApiSense sensor PCB with worker bee landed directly on device inside Kenyan hive"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6">
-                  <Badge className="bg-beeyield-green text-neutral-950 font-bold px-3 py-1 text-[9px] mb-2">Ground Truth</Badge>
-                  <p className="text-white font-bold text-base leading-snug">
-                    Real ApiSense sensor board inside Kenyan log hive with active worker bee on PCB
-                  </p>
+      <section className="py-20 sm:py-28 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-24 lg:space-y-32">
+          {[
+            {
+              kicker: "December 2020 · Kibwezi, Kenya",
+              icon: GraduationCap,
+              title: "BeeYield began with 4 hives and a tuition problem",
+              body: [
+                "BeeYield did not start with pollination. It started with honey and a practical question: how does a second-year student at Strathmore University cover his upkeep?",
+                "Our father gave us four hives on a quarter acre. Timothy harvested them and sold the honey jar by jar to classmates and neighbours, and that paid for rent, transport and food. There was no brand and no plan, just honey people trusted because they knew where it came from.",
+              ],
+              image: "/images/story/2020-humble-beginnings.jpg",
+              alt: "Our first 4 hives on a quarter acre in Kibwezi — where BeeYield started",
+              caption: "4 hives · ¼ acre · 40 kg first harvest",
+            },
+            {
+              kicker: "2021 – 2024 · Reinvesting every shilling",
+              icon: TrendingUp,
+              title: "Then the honey started paying for more hives",
+              body: [
+                "Instead of spending the profit, we put it back into the bees. 4 hives became 20, then 35, then 75, then more than 100. Each harvest paid for another acre, another row of hives and another batch of trees.",
+                "In 2022 Agatha and Carole joined, and a student side income became a family company. We still had no investors and no adverts. Growth came from word of mouth and from Timothy saving almost his entire salary after graduating.",
+              ],
+              image: "/images/story/2022-team-formation.jpg",
+              alt: "Timothy, Agatha and Carole — the three siblings behind BeeYield",
+              caption: "3 siblings · 5 acres · 105+ hives by 2024",
+            },
+            {
+              kicker: "2025 – 2026 · The pivot",
+              icon: ShieldCheck,
+              title: "So we changed course",
+              body: [
+                "In 2025, pesticide spraying on nearby farms started killing our colonies. Everything we needed to know about a hive was hidden inside the box until the next visit, and by then it was often too late.",
+                "Timothy left his job to work on the hives full time. On 28 July 2025 we started offering pollination, and the farms we served got noticeably better yields. In 2026 we partnered with Apisense and Intelligent Hives, put sensors inside our hives and out in the fields, and became an IoT precision pollination company.",
+              ],
+              image: STORY_IMAGES.apisenseCloseup2,
+              alt: "ApiSense sensor PCB with worker bee landed on the device inside a Kenyan hive",
+              caption: "Sensors in the hive · data in the farmer's hands",
+            },
+          ].map((ch, i) => (
+            <motion.div
+              key={ch.title}
+              {...fadeUp}
+              className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center"
+            >
+              <div className={`relative group ${i % 2 === 1 ? "lg:order-2" : ""}`}>
+                <div className="absolute -inset-2 bg-gradient-to-r from-beeyield-green/20 to-amber-400/20 rounded-[3rem] blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
+                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-950 aspect-[4/3]">
+                  <img
+                    src={ch.image}
+                    alt={ch.alt}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/75 via-transparent to-transparent" />
+                  <p className="absolute bottom-6 left-6 right-6 text-white font-bold text-sm sm:text-base">{ch.caption}</p>
                 </div>
               </div>
-            </div>
-
-            <div className="space-y-6">
-              <Badge variant="outline" className="mb-2">
-                <Home className="mr-2 h-3 w-3" />
-                Kibwezi, Kenya • Dec 2020 Origin (IoT Precision Pollination Co. July 2026)
-              </Badge>
-              <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">
-                A Family Mission, a Technological Spark
-              </h2>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
-                <p>
-                  In December 2020, <strong className="text-foreground">Timothy Nduva</strong> began BeeYield in rural Kibwezi, Kenya. With 4 traditional log hives inherited from his father and a passion for technological innovation, Timothy began experimenting with precision sensors inside beehives on the family land. BeeYield was later officially founded as an IoT precision pollination company in July 2026.
-                </p>
-                <p>
-                  BeeYield was built together with Timothy's sisters, <strong className="text-foreground">Agatha</strong> and <strong className="text-foreground">Carole</strong>. Combining software engineering, product architecture, and IoT research, the siblings transformed a small family apiary into a precision pollination engine.
-                </p>
-                <p>
-                  What started with 4 hives on half an acre has grown into 184+ hives, 22 IoT devices deployed, and 105 and counting acres precision-pollinated across Kenya.
-                </p>
+              <div className="space-y-6">
+                <Badge variant="outline" className="px-3 py-1">
+                  <ch.icon className="mr-2 h-3 w-3" />
+                  {ch.kicker}
+                </Badge>
+                <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">{ch.title}</h2>
+                <div className="space-y-4 text-muted-foreground leading-relaxed text-base sm:text-lg">
+                  {ch.body.map((p) => (
+                    <p key={p.slice(0, 24)}>{p}</p>
+                  ))}
+                </div>
               </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          3. WHERE WE ARE TODAY — growth chart + 5 headline numbers
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-neutral-50/70 py-20 sm:py-28 border-y border-neutral-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center mb-14">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+              Where we are today
+            </Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-5xl tracking-tight mb-4">
+              From 4 hives to <span className="text-primary">184</span>
+            </h2>
+            <p className="text-muted-foreground text-lg">
+              A 46× increase in hives, paid for by honey and reinvested profit. Here is the growth year by year.
+            </p>
+          </motion.div>
+
+          {/* Growth bar chart */}
+          <motion.div {...fadeUp} className="bg-white rounded-[2rem] border border-neutral-200/80 shadow-xl shadow-neutral-900/5 p-6 sm:p-10 mb-12">
+            <div className="flex items-end justify-between gap-2 sm:gap-4 h-64 sm:h-72">
+              {HIVE_GROWTH.map((g, i) => {
+                const isLast = i === HIVE_GROWTH.length - 1;
+                return (
+                  <div key={`${g.year}-${g.hives}`} className="flex-1 flex flex-col items-center justify-end h-full">
+                    <span className={`mb-2 text-xs sm:text-sm font-black ${isLast ? "text-primary" : "text-neutral-700"}`}>
+                      {g.hives}
+                    </span>
+                    <motion.div
+                      initial={{ height: 0 }}
+                      whileInView={{ height: `${Math.max((g.hives / maxHives) * 100, 4)}%` }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.9, delay: i * 0.08, ease: "easeOut" }}
+                      className={`w-full max-w-[64px] rounded-t-xl ${
+                        isLast
+                          ? "bg-gradient-to-t from-amber-500 to-yellow-400 shadow-lg shadow-amber-500/30"
+                          : "bg-gradient-to-t from-beeyield-green/80 to-beeyield-green/40"
+                      }`}
+                    />
+                    <span className="mt-3 text-[10px] sm:text-xs font-bold text-neutral-900">{g.year}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground h-3">{g.note}</span>
+                  </div>
+                );
+              })}
             </div>
+            <p className="mt-6 text-center text-xs text-muted-foreground">
+              Hives in our own apiary. We also help manage 205+ hives belonging to partner farmers.
+            </p>
+          </motion.div>
+
+          {/* Headline numbers */}
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+            {TODAY_STATS.map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+              >
+                <Card className="h-full text-center border-border/50 bg-white rounded-3xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="mx-auto mb-4 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <stat.icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-4xl font-black text-primary mb-1 tracking-tight">{stat.value}</p>
+                    <p className="text-base font-bold text-foreground">{stat.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{stat.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
+      {/* ═══════════════════════════════════════════════════════════════
+          4. THE UNCOMFORTABLE TRUTH
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="relative overflow-hidden py-20 sm:py-28 bg-[#0A2612] text-white">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#1B9157] rounded-full blur-3xl -mr-40 -mt-40 opacity-25" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F4D03F] rounded-full blur-3xl -ml-40 -mb-40 opacity-15" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-start">
+            <motion.div {...fadeUp}>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300 mb-5">Here is the uncomfortable truth</p>
+              <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+                We are not only losing bees. <span className="text-[#F4D03F]">We are losing beekeepers.</span>
+              </h2>
+            </motion.div>
+            <motion.div {...fadeUp} className="space-y-5 text-neutral-300 text-base sm:text-lg leading-relaxed">
+              <p>
+                Pesticide drift, drought and unpredictable honey prices make keeping colonies alive harder every year.
+                When a beekeeper gives up, the hives go with them. Fewer hives means less pollination, and less pollination
+                means smaller mango and avocado harvests for the farmers next door.
+              </p>
+              <p className="text-white font-semibold">It is a structural cycle, not a bad season.</p>
+              <p>
+                A gadget will not fix that, and neither will squeezing beekeepers harder. What fixes it is making
+                beekeeping a business worth staying in. That means giving experienced beekeepers better information and
+                more time, keeping the data with the farmers who produce it, and proving everything in our own apiary before
+                we sell it to anyone else.
+              </p>
+              <div className="flex items-start gap-3 pt-4 border-t border-white/10">
+                <Quote className="h-6 w-6 text-[#1B9157] shrink-0 mt-1" />
+                <p className="text-white text-xl font-bold">That is the company we set out to build.</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════
-          3. GROWTH JOURNEY — 4 Verified Metrics + 4 Visual Photos
+          5. DEVELOPMENT TIMELINE — interactive, driven by TIMELINE data
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="bg-neutral-50/70 py-20 sm:py-24 border-y border-neutral-100">
+      <section className="py-20 sm:py-28 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
-              Measurable Progress
-            </Badge>
-            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight mb-4">
-              From 4 Hives to 184 — Our Growth in Numbers & Photos
-            </h2>
-            <p className="text-muted-foreground">
-              Real field milestones achieved across our Kibwezi and Makueni apiaries.
-            </p>
-          </div>
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center mb-14">
+            <Badge variant="outline" className="mb-4">Development timeline</Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">Six years, one hive at a time</h2>
+            <p className="mt-4 text-muted-foreground">Select a year to see what happened.</p>
+          </motion.div>
 
-          {/* Metric Numbers */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-16">
-            {[
-              { number: "184+", label: "Beehives", desc: "Active colony inventory" },
-              { number: "22", label: "IoT Devices", desc: "Live telemetry nodes" },
-              { number: "105+", label: "Acres Pollinated", desc: "Client orchards served (105 and counting)" },
-              { number: "3t", label: "Carbon Offset", desc: "CO₂ sequestered to date" },
-            ].map((stat, i) => (
-              <Card key={i} className="text-center border-border/50 bg-white rounded-3xl shadow-sm hover:shadow-md transition-all">
-                <CardContent className="p-6">
-                  <p className="text-4xl font-black text-primary mb-1 tracking-tight">{stat.number}</p>
-                  <p className="text-lg font-bold text-foreground">{stat.label}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.desc}</p>
-                </CardContent>
-              </Card>
+          <div className="relative max-w-4xl mx-auto">
+            <div className="absolute left-[19px] sm:left-[23px] top-2 bottom-2 w-px bg-gradient-to-b from-amber-400 via-beeyield-green to-violet-500" />
+            <ol className="space-y-4">
+              {TIMELINE.map((m) => {
+                const open = activeTimelineYear === m.year;
+                const hiveStat = m.stats.find((s) => s.label === "Hives");
+                return (
+                  <li key={m.year} className="relative pl-14 sm:pl-16">
+                    <span className={`absolute left-0 top-4 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-gradient-to-br ${m.color} text-white shadow-lg ring-4 ring-white`}>
+                      <Hexagon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    </span>
+                    <button
+                      id={`timeline-${m.year.replace(/\s+/g, "-").toLowerCase()}`}
+                      type="button"
+                      aria-expanded={open}
+                      onClick={() => setActiveTimelineYear(open ? null : m.year)}
+                      className={`w-full text-left rounded-3xl border p-5 sm:p-6 transition-all duration-300 ${
+                        open ? "border-primary/40 bg-primary/[0.03] shadow-lg" : "border-neutral-200 hover:border-primary/30 hover:shadow-md bg-white"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-xs font-black uppercase tracking-wider text-primary">{m.year}</p>
+                          <h3 className="text-lg sm:text-xl font-bold text-foreground mt-1">{m.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{m.subtitle}</p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          {hiveStat && (
+                            <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">
+                              {hiveStat.value} hives
+                            </span>
+                          )}
+                          <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
+                        </div>
+                      </div>
+
+                      {open && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          transition={{ duration: 0.35 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {m.stats.map((s) => (
+                              <div key={s.label} className="rounded-2xl bg-neutral-50 border border-neutral-100 p-3">
+                                <p className="text-sm font-black text-foreground">{s.value}</p>
+                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{s.label}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <ul className="mt-5 space-y-2">
+                            {m.highlights.slice(0, 6).map((h) => (
+                              <li key={h} className="flex gap-2 text-sm text-muted-foreground">
+                                <CheckCircle2 className="h-4 w-4 text-beeyield-green shrink-0 mt-0.5" />
+                                <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          {m.quote && (
+                            <blockquote className="mt-5 border-l-4 border-amber-400 pl-4 italic text-sm text-foreground/80">
+                              “{m.quote}”
+                            </blockquote>
+                          )}
+                        </motion.div>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          6. LEADERSHIP & TEAM
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-24 bg-neutral-50/70 border-y border-neutral-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center mb-14">
+            <Badge variant="outline" className="mb-4">Leadership & team</Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">A small team with an unusual mix</h2>
+            <p className="mt-4 text-muted-foreground">
+              Beekeeping, finance, IT, operations and field work, run by three siblings and the people who work the hives with them.
+            </p>
+          </motion.div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {TEAM.map((p, i) => (
+              <motion.div
+                key={p.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.07 }}
+                className="group text-center rounded-3xl bg-white border border-neutral-200 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="mx-auto mb-4 h-24 w-24 rounded-full overflow-hidden ring-4 ring-primary/10 group-hover:ring-primary/30 transition-all bg-gradient-to-br from-amber-400 to-beeyield-green flex items-center justify-center">
+                  {p.photo ? (
+                    <img src={p.photo} alt={p.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-2xl font-black text-white">
+                      {p.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
+                    </span>
+                  )}
+                </div>
+                <h3 className="font-bold text-foreground">{p.name}</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-snug">{p.role}</p>
+              </motion.div>
             ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Button asChild variant="outline" className="rounded-2xl h-11 px-6 font-bold">
+              <Link to="/team" id="our-story-meet-team">
+                Meet the full team <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          7. HOW WE BUILT IT — 4 field photos
+      ═══════════════════════════════════════════════════════════════ */}
+      <section className="bg-white py-20 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center mb-12">
+            <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+              Proven in the field
+            </Badge>
+            <h2 className="text-3xl font-bold text-foreground sm:text-4xl tracking-tight">How we built it</h2>
           </div>
 
           {/* 4-Photo Growth Grid */}
@@ -704,6 +989,12 @@ const OurStory = () => {
         </div>
       </section>
 
+      {/* Tech that works for everyone — audience segments */}
+      <AudienceSegmentsSection />
+
+      {/* How we think about technology — software & hardware */}
+      <TechPhilosophySection />
+
       {/* ═══════════════════════════════════════════════════════════════
           6. PRECISION POLLINATION SERVICES — Side-by-Side Photo Story
       ═══════════════════════════════════════════════════════════════ */}
@@ -904,10 +1195,10 @@ const OurStory = () => {
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32 opacity-30" />
 
               <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-white">
-                Join Us on Our <span className="text-[#1B9157]">Journey</span>
+                Help shape <span className="text-[#1B9157]">what comes next</span>
               </h2>
               <p className="text-neutral-300 max-w-2xl mx-auto mb-10 text-lg relative z-10">
-                From a family dream in rural Kenya to 22 IoT devices monitoring 105 and counting acres — we're just getting started. Partner with us to modernize agriculture.
+                From 4 hives that paid for university to 184 hives, 22 IoT devices, 40 partner farmers and 105+ acres pollinated. Talk to us about a project, a collaboration or an investment.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                 <Button size="lg" className="bg-white text-neutral-950 hover:bg-neutral-100 font-bold px-8 h-12 rounded-xl" asChild>

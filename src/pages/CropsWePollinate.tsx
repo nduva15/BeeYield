@@ -14,6 +14,7 @@ import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/d
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import { CropProgramSection } from "@/components/beeyield/FieldTrustSections";
 
 
 const CropsWePollinate = () => {
@@ -158,6 +159,9 @@ const CropsWePollinate = () => {
           </div>
         </div>
       </section>
+
+      {/* Every crop gets its own program */}
+      <CropProgramSection />
 
       {/* Expert Section */}
       <section className="py-20 bg-secondary/30">
