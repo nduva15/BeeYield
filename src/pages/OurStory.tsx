@@ -17,6 +17,7 @@ import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
 import { TechPhilosophySection } from "@/components/beeyield/FieldTrustSections";
 import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
+import { GlobalPartnerNetworkSection } from "@/components/beeyield/GlobalPartnerNetworkSection";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -994,6 +995,9 @@ const OurStory = () => {
 
       {/* How we think about technology — software & hardware */}
       <TechPhilosophySection />
+
+      {/* Building a global understanding of pollinators — partner network */}
+      <GlobalPartnerNetworkSection />
 
       {/* ═══════════════════════════════════════════════════════════════
           6. PRECISION POLLINATION SERVICES — Side-by-Side Photo Story
