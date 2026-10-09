@@ -227,7 +227,7 @@ const TIMELINE: YearMilestone[] = [
       "Devices collect temperature, weight, humidity, pressure, outside temp, colony state, and Varroa detection",
       "Also detect Asian hornets — proven incredibly useful for colony protection",
       "Collecting over 2,000 data points daily and growing across all sensor categories — unprecedented for a Kenyan operation",
-      "2 farmers enrolled in our IoT partner network, with 22 devices working in hives right now",
+      "3 farmers enrolled in our IoT partner network, with 22 devices working in hives right now",
       "Pollinated 105 and counting acres — started with a goal of 15 acres, exceeded by 7x",
       "Pioneered our calibrated Hives per Acre (HPA) precision model — matching 1.5 to 4.5 IoT-monitored colonies per acre based on canopy density, bloom phenology, and real-time forager flight hours",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
@@ -236,7 +236,7 @@ const TIMELINE: YearMilestone[] = [
       "Started mobile app development on August 3rd for full audience experience",
       "203 kg honey harvested so far this year, bringing total to 988 kg lifetime",
       "Managing 205+ additional hives from partner farmers",
-      "Planted 1,500 trees total, started own nursery for apiary and partner apiaries",
+      "Planted 2,500 trees so far toward our 45,000-tree goal, and started our own nursery for our apiary and partner apiaries",
       "Got water to apiary (bucket storage — borehole still a dream)",
       "3 tons of CO₂ offset through our tree planting program",
       "Timothy enrolled in his 3rd degree — a Private Pilot License in Aviation",
@@ -255,7 +255,7 @@ const GROWTH_BY_YEAR = [
   { year: "2023", hives: "75", honey: "150 kg", land: "3.5 acres", trees: "113", milestone: "Linear doubling, Timothy graduated Strathmore & saved salary" },
   { year: "2024", hives: "105+", honey: "210 kg", land: "5 acres", trees: "250+", milestone: "Acquired beeyield.com, fully fenced 5 acres, professional harvesting" },
   { year: "2025", hives: "150+", honey: "240 kg", land: "5 acres", trees: "800+", milestone: "Pesticide crisis, Timothy quit job, pivot to pollination, 40 partner farmers" },
-  { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "1,500+", milestone: "BeeYield officially founded as an IoT precision pollination company (July 2026). 22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
+  { year: "2026*", hives: "184 (+205 partner)", honey: "203 kg (988 kg total)", land: "5 acres", trees: "2,500 (goal 45,000)", milestone: "BeeYield officially founded as an IoT precision pollination company (July 2026). 22 IoT devices, Apisense & Intelligent Hives partnerships, 105+ acres" },
 ];
 
 /* ── Hive count by year — drives the growth bar chart ───────── */
@@ -275,7 +275,7 @@ const TODAY_STATS = [
   { icon: Radio, value: "22", label: "IoT devices", desc: "Live in hives and in the field" },
   { icon: Flower2, value: "105+", label: "Acres pollinated", desc: "And counting, this season" },
   { icon: Users, value: "40", label: "Partner farmers", desc: "Hive checks, harvests and training" },
-  { icon: Network, value: "2", label: "IoT partner farmers", desc: "Sensors running on their own hives" },
+  { icon: Network, value: "3", label: "IoT partner farmers", desc: "Sensors running on their own hives" },
 ];
 
 const TEAM = [
@@ -965,7 +965,7 @@ const OurStory = () => {
               {
                 icon: Sprout,
                 title: "Guardians of Biodiversity",
-                desc: "With 2,500+ indigenous trees planted and 3 tons of carbon offset, we're ecosystem builders committed to long-term ecological restoration."
+                desc: "With 2,500 trees planted so far toward our 45,000-tree goal and 3 tons of carbon offset, we're ecosystem builders committed to long-term ecological restoration."
               },
               {
                 icon: Cpu,

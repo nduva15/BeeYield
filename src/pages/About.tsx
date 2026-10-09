@@ -300,7 +300,7 @@ const TIMELINE: YearMilestone[] = [
       "Started mobile app development on August 3rd for full audience experience",
       "203 kg honey harvested so far this year, bringing total to 988 kg lifetime",
       "Managing 205+ additional hives from partner farmers",
-      "Planted 1,500 trees total, started own nursery for apiary and partner apiaries",
+      "Planted 2,500 trees so far toward our 45,000-tree goal, and started our own nursery for our apiary and partner apiaries",
       "Got water to apiary (bucket storage — borehole still a dream)",
       "3 tons of CO₂ offset through our tree planting program",
       "Timothy enrolled in his 3rd degree — a Private Pilot License in Aviation",
@@ -1483,7 +1483,7 @@ export default function About() {
               This Is Just The Beginning
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-              988 kg of honey. 105 and counting acres pollinated. 1,500 trees planted. 3 tons of CO₂ offset. 40
+              988 kg of honey. 105 and counting acres pollinated. 2,500 of 45,000 trees planted. 3 tons of CO₂ offset. 40
               partner farmers. 22 IoT devices. 2 global partnerships. Zero external funding.
               <br />
               <br />
