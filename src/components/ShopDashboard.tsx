@@ -67,6 +67,7 @@ import {
   type SupportTicket,
   type TrackingInfo,
   type MpesaPaymentStatusResponse,
+  isOrderPaid,
 } from "@/services/shopService";
 import { MpesaPaymentModal } from "@/components/payments/MpesaPaymentModal";
 
@@ -449,14 +450,20 @@ function ShopDashboardInner({
     void loadAllData();
   }, [loadAllData]);
 
-  // Derived Stats
-  const activeOrdersCount = useMemo(() => {
-    return orders.filter((o) => ["pending", "processing", "shipped"].includes(o.status.toLowerCase())).length;
+  // Derived Stats — Strictly based on confirmed paid orders
+  const paidOrders = useMemo(() => {
+    return orders.filter(isOrderPaid);
   }, [orders]);
 
+  const activeOrdersCount = useMemo(() => {
+    return paidOrders.filter((o) =>
+      ["processing", "shipped", "in_transit", "dispatched", "confirmed"].includes((o.status || "").toLowerCase())
+    ).length;
+  }, [paidOrders]);
+
   const totalSpentKes = useMemo(() => {
-    return orders.reduce((sum, o) => sum + (o.total_kes || o.total_amount || 0), 0);
-  }, [orders]);
+    return paidOrders.reduce((sum, o) => sum + (o.total_kes || o.total_amount || 0), 0);
+  }, [paidOrders]);
 
   // Cart Calculations
   const cartSubtotal = useMemo(() => {
@@ -1320,7 +1327,7 @@ function ShopDashboardInner({
       {/* 3. Stats Grid Matching InspectionsPage */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Total orders", value: orders.length, icon: Package, tone: "text-honey" },
+          { label: "Total orders", value: paidOrders.length, icon: Package, tone: "text-honey" },
           { label: "Active shipments", value: activeOrdersCount, icon: Truck, tone: "text-emerald-400" },
           { label: "Products catalog", value: products.length, icon: ShoppingBag, tone: "text-blue-400" },
           { label: "Lifetime spent", value: `KES ${totalSpentKes.toLocaleString()}`, icon: CreditCard, tone: "text-purple-400" },
@@ -1468,8 +1475,8 @@ function ShopDashboardInner({
                     className="p-3.5 rounded-xl border border-border bg-card flex flex-wrap items-center justify-between gap-3 text-xs"
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${getStatusBadge(o.status)}`}>
-                        {o.status.toUpperCase()}
+                      <span className={`px-2 py-0.5 rounded-full border text-[10px] font-bold ${isOrderPaid(o) ? getStatusBadge(o.status) : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"}`}>
+                        {isOrderPaid(o) ? `PAID · ${o.status.toUpperCase()}` : "PAYMENT PENDING"}
                       </span>
                       <span className="font-mono font-bold text-foreground">
                         {o.order_number || o.id}
@@ -1482,10 +1489,28 @@ function ShopDashboardInner({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <span className="font-display font-bold text-foreground">
                         KES {(o.total_kes || o.total_amount).toLocaleString()}
                       </span>
+                      {!isOrderPaid(o) && o.status !== "cancelled" && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMpesaModalData({
+                              orderId: o.id,
+                              orderNumber: o.order_number || o.id,
+                              amount: o.total_kes || o.total_amount,
+                              phone: o.shipping_address?.phone || mpesaPhone,
+                              idempotencyKey: o.idempotency_key,
+                            });
+                            setShowMpesaModal(true);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[10px] shadow-xs transition-colors"
+                        >
+                          Pay Now
+                        </button>
+                      )}
                       <button
                         onClick={() => handleDownloadInvoice(o)}
                         className="p-1.5 rounded-lg border border-border hover:bg-card text-honey"
@@ -1569,8 +1594,8 @@ function ShopDashboardInner({
                         onClick={() => setExpandedOrderId(isExpanded ? null : o.id)}
                         className="flex flex-wrap items-center gap-3 text-left flex-1 min-w-0"
                       >
-                        <span className={`px-2 py-0.5 rounded-full border text-[11px] font-bold ${getStatusBadge(o.status)}`}>
-                          {o.status.toUpperCase()}
+                        <span className={`px-2 py-0.5 rounded-full border text-[11px] font-bold ${isOrderPaid(o) ? getStatusBadge(o.status) : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"}`}>
+                          {isOrderPaid(o) ? `PAID · ${o.status.toUpperCase()}` : "PAYMENT PENDING"}
                         </span>
                         <span className="font-mono font-bold text-sm text-foreground">
                           {o.order_number || o.id}
@@ -1691,12 +1716,32 @@ function ShopDashboardInner({
                             </span>
                             <p className="font-bold text-foreground">Method: {(o.payment_method || "mpesa").toUpperCase()}</p>
                             <p className="text-muted-foreground">Order Total: KES {(o.total_kes || o.total_amount).toLocaleString()}</p>
-                            <p className="text-muted-foreground">Direct Apiary Fulfillment Guarantee</p>
+                            <p className={`text-xs font-bold ${isOrderPaid(o) ? "text-emerald-500" : "text-amber-500"}`}>
+                              Status: {isOrderPaid(o) ? `Paid${o.mpesa_code ? ` (Ref: ${o.mpesa_code})` : ""}` : "Awaiting Payment Confirmation"}
+                            </p>
                           </div>
                         </div>
 
                         {/* Order Actions */}
                         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border">
+                          {!isOrderPaid(o) && o.status.toLowerCase() !== "cancelled" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setMpesaModalData({
+                                  orderId: o.id,
+                                  orderNumber: o.order_number || o.id,
+                                  amount: o.total_kes || o.total_amount,
+                                  phone: o.shipping_address?.phone || mpesaPhone,
+                                  idempotencyKey: o.idempotency_key,
+                                });
+                                setShowMpesaModal(true);
+                              }}
+                              className="px-3 py-1.5 rounded-lg border border-amber-500/50 bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-amber-600 transition-colors shadow-xs"
+                            >
+                              <CreditCard className="w-3.5 h-3.5" /> Complete Payment (M-Pesa)
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => handleDownloadInvoice(o)}
@@ -3050,8 +3095,8 @@ function ShopDashboardInner({
               </h4>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
-                  <span className="text-xl font-display font-bold text-honey">{orders.length}</span>
-                  <p className="text-[11px] text-muted-foreground">Orders Processed</p>
+                  <span className="text-xl font-display font-bold text-honey">{paidOrders.length}</span>
+                  <p className="text-[11px] text-muted-foreground">Paid Orders Processed</p>
                 </div>
                 <div className="p-3 rounded-xl border border-border bg-card text-center space-y-1">
                   <span className="text-xl font-display font-bold text-emerald-500">

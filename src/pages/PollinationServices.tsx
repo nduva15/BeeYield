@@ -22,46 +22,6 @@ import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 
 const PollinationServices = () => {
-
-    const differences = [
-        {
-            icon: Cpu,
-            title: "Colony Monitoring",
-            description: "Sensors inside hives track temperature and activity so you can spot changes early.",
-            link: "/precision-pollination"
-        },
-        {
-            icon: Activity,
-            title: "Hive Health Monitoring",
-            description: "Analysis of colony sounds to detect queen presence and general hive productivity levels.",
-            link: "/precision-pollination"
-        },
-        {
-            icon: Eye,
-            title: "Field Coverage Mapping",
-            description: "See where activity is strong or weak across the field so you can adjust placement.",
-            link: "/in-land-pollination"
-        },
-        {
-            icon: Target,
-            title: "Visitation Analytics",
-            description: "Estimate bee visits per flower to understand pollination strength.",
-            link: "/in-land-pollination"
-        },
-        {
-            icon: Shield,
-            title: "Early Disease Detection",
-            description: "Early warning signs from sensors and inspections to catch issues like Varroa sooner.",
-            link: "/diseases"
-        },
-        {
-            icon: Target,
-            title: "Precision Pollination",
-            description: "A practical service: monitoring, placement support, and a record of what happened during bloom.",
-            link: "/precision-pollination"
-        }
-    ];
-
     return (
         <BeeYieldPageShell className="bg-background">
             <SEO
@@ -446,92 +406,6 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* The BeeYield Difference */}
-            <section className="py-32 bg-background relative overflow-hidden">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-24 space-y-4">
-                        <Badge className="bg-amber-100 text-[#F4D03F] px-6">
-                            The Standard
-                        </Badge>
-                        <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter">
-                            BEEYIELD <span className="text-[#F4D03F]">Precision Pollination</span>
-                        </h2>
-                        <p className="text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
-                            We bring a complete ecosystem of technology, expertise, and accountability
-                            that transforms your pollination from a gamble into a data-driven strategy.
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                        {differences.map((diff, index) => (
-                            <Link key={index} to={diff.link} className="block group">
-                                <Card className="h-full bg-muted/5 border-none group-hover:bg-[#FFF9F0]:bg-[#FFF9F0] group-hover:shadow-premium transition-all duration-500 rounded-[2.5rem] p-4">
-                                    <CardContent className="p-8">
-                                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                                            <diff.icon className="h-8 w-8 text-[#1A1A1A]" />
-                                        </div>
-                                        <h3 className="text-2xl font-black text-foreground mb-4 tracking-tight">{diff.title}</h3>
-                                        <p className="text-muted-foreground font-medium leading-relaxed">{diff.description}</p>
-                                        <div className="mt-6 flex items-center text-[#F4D03F] font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                                            Learn More <ChevronRight className="ml-1 h-4 w-4" />
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* AEO: Comparison Table Block */}
-                    <div className="mt-32 max-w-5xl mx-auto">
-                        <div className="text-center mb-12">
-                            <h3 className="text-3xl font-black tracking-tight">Tradition vs. <span className="text-[#F4D03F]">Innovation</span></h3>
-                            <p className="text-muted-foreground mt-4 font-medium">Why data-driven pollination is the only way forward for modern agriculture.</p>
-                        </div>
-                        <div className="overflow-hidden rounded-[2.5rem] border border-border shadow-2xl">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-muted/50">
-                                        <th className="p-6 text-lg font-black border-b border-border">Feature</th>
-                                        <th className="p-6 text-lg font-black border-b border-border text-neutral-400">Traditional Methods</th>
-                                        <th className="p-6 text-lg font-black border-b border-border text-[#F4D03F]">BeeYield Precision</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-background">
-                                    <tr>
-                                        <td className="p-6 font-bold border-b border-border">Monitoring</td>
-                                        <td className="p-6 border-b border-border text-muted-foreground">Visual checks (Weekly/Monthly)</td>
-                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">24/7 IoT Sensor Tracking</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-6 font-bold border-b border-border">Placement</td>
-                                        <td className="p-6 border-b border-border text-muted-foreground">General proximity to field</td>
-                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">Strategic Hive Placement</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-6 font-bold border-b border-border">Colony Data</td>
-                                        <td className="p-6 border-b border-border text-muted-foreground">Guesswork / Estimates</td>
-                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">Real-time population & health</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="p-6 font-bold border-b border-border">Yield Impact</td>
-                                        <td className="p-6 border-b border-border text-muted-foreground">Variable (weather dependent)</td>
-                                        <td className="p-6 border-b border-border font-black text-[#F4D03F]">9–18% Average Increase*</td>
-                                    </tr>
-                                    <tr className="bg-amber-50/30">
-                                        <td className="p-6 font-bold">Best For</td>
-                                        <td className="p-6 text-muted-foreground">Small hobbyist gardens</td>
-                                        <td className="p-6 font-black text-[#F4D03F]">Commercial High-Yield Growers</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="mt-8 text-center text-muted-foreground text-sm">
-                            <strong className="font-bold">Summary</strong>: While traditional methods rely on hope, BeeYield turns pollination into a predictable, measurable engine for growth.
-                            <br /><span className="text-xs">*Results may vary depending on crop type, climate, and field conditions.</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Crops We Pollinate & Voices from the Field (Authentic Media Photos & Farmer Quotes) */}
             <section className="py-24 bg-gradient-to-b from-[#FFFDF9] via-[#FDFBF7] to-background border-t border-border/40 relative overflow-hidden">

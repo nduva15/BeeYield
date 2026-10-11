@@ -965,6 +965,25 @@ export const confirmMpesaPayment = async (
             .from("orders")
             .update({ payment_status: "paid", status: "processing" })
             .match({ id: orderId });
+
+        const { data: authData } = await client.auth.getUser();
+        if (authData?.user?.user_metadata?.orders) {
+            const metaOrders = toArray<any>(authData.user.user_metadata.orders).map((o: any) => {
+                if (o.id === orderId || o.order_number === orderId) {
+                    return {
+                        ...o,
+                        payment_status: 'paid',
+                        status: 'processing',
+                        mpesa_code: code,
+                        notes: `Paid via M-Pesa (${code})`
+                    };
+                }
+                return o;
+            });
+            await client.auth.updateUser({
+                data: { orders: metaOrders },
+            });
+        }
     } catch (_) {}
 
     return {
@@ -975,6 +994,22 @@ export const confirmMpesaPayment = async (
         mpesa_code: code,
         message: `M-Pesa payment confirmed (Ref: ${code})`
     };
+};
+
+export const isOrderPaid = (order: Order): boolean => {
+    if (!order) return false;
+    const payStatus = (order.payment_status || "").toLowerCase().trim();
+    const orderStatus = (order.status || "").toLowerCase().trim();
+    if (payStatus === "paid" || payStatus === "completed" || payStatus === "success") {
+        return true;
+    }
+    if (Boolean(order.mpesa_code && order.mpesa_code.trim())) {
+        return true;
+    }
+    if (["delivered", "completed"].includes(orderStatus) && payStatus !== "pending" && payStatus !== "unpaid" && payStatus !== "failed") {
+        return true;
+    }
+    return false;
 };
 
 export const getUserOrders = async (_email?: string): Promise<Order[]> => {
@@ -1061,12 +1096,13 @@ export const getShopDashboard = async (): Promise<ShopDashboardSummary> => {
             getWishlist(),
             getProducts(),
         ]);
+        const paidOrders = recent_orders.filter(isOrderPaid);
         return {
             stats: {
-                total_orders: recent_orders.length,
-                active_orders: recent_orders.filter((order) => ["pending", "processing", "shipped"].includes(order.status)).length,
-                completed_orders: recent_orders.filter((order) => ["completed", "delivered"].includes(order.status)).length,
-                total_spent_kes: recent_orders.reduce((sum, order) => sum + order.total_amount, 0),
+                total_orders: paidOrders.length,
+                active_orders: paidOrders.filter((order) => ["processing", "shipped", "in_transit", "dispatched", "confirmed"].includes((order.status || "").toLowerCase())).length,
+                completed_orders: paidOrders.filter((order) => ["completed", "delivered"].includes((order.status || "").toLowerCase())).length,
+                total_spent_kes: paidOrders.reduce((sum, order) => sum + (order.total_kes || order.total_amount || 0), 0),
                 wishlist_items: wishlist.length,
                 saved_addresses: addresses.length,
                 saved_payment_methods: payment_methods.length,
