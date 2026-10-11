@@ -309,7 +309,7 @@ export default function BlogsPage() {
           )}
 
           {/* In-Article IoT Tech Highlight Card */}
-          <section className="my-10 p-6 rounded-3xl bg-gradient-to-br from-emerald-950/20 via-muted/40 to-background border border-emerald-500/20 flex flex-col sm:flex-row items-center gap-6">
+          <section className="my-10 p-6 rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-background border border-emerald-500/20 flex flex-col sm:flex-row items-center gap-6">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-500 shadow-inner">
               <Cpu className="w-8 h-8" />
             </div>
@@ -577,7 +577,7 @@ export default function BlogsPage() {
           <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>
 
           {/* Farmer Consultation CTA Section */}
-          <section className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-emerald-950/40 via-emerald-900/20 to-amber-950/30 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-center space-y-6">
+          <section className="rounded-3xl p-8 sm:p-12 bg-gradient-to-r from-emerald-50 via-white to-amber-50 border border-emerald-500/30 shadow-2xl relative overflow-hidden text-center space-y-6">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               <Leaf className="w-7 h-7" />
             </div>

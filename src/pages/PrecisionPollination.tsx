@@ -549,19 +549,19 @@ const InHiveHivesPerAcreSection = () => {
         </div>
 
         {/* ── Why 2 Strong Hives Beat 4 Weak Hives Callout ── */}
-        <div className="p-8 rounded-3xl bg-neutral-900 text-white flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
+        <div className="p-8 rounded-3xl bg-emerald-50/70 border border-emerald-100 text-neutral-900 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
           <div className="space-y-2 max-w-2xl">
-            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none text-[10px] font-bold px-3 py-1">
+            <Badge className="bg-beeyield-green/15 text-emerald-700 border-none text-[10px] font-bold px-3 py-1">
               Agronomic Efficiency Rule
             </Badge>
-            <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
               Why 2 Strong Hives Always Beat 4 Weak Hives
             </h4>
-            <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
               In a 4-frame colony, up to 70% of bees are trapped inside warming the brood. In a certified 10-frame colony, over 65% of the population acts as surplus foragers visiting thousands of blossoms per hour. That’s why our model prices by <strong>verified frames per acre</strong>, saving growers up to 30% in rental costs while delivering superior fruit set.
             </p>
           </div>
-          <Button asChild className="shrink-0 h-12 px-8 bg-beeyield-green text-neutral-950 hover:bg-emerald-400 font-bold text-xs rounded-2xl">
+          <Button asChild className="shrink-0 h-12 px-8 bg-beeyield-green text-white hover:bg-emerald-600 font-bold text-xs rounded-2xl">
             <Link to="/pollination-request">
               Calculate Your Orchard HPA <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

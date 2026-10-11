@@ -632,19 +632,19 @@ const InLandPollination = () => {
                     </div>
 
                     {/* ── Visual Closed-Loop Pipeline Banner ── */}
-                    <div className="bg-neutral-950 text-white rounded-3xl p-8 sm:p-10 border border-neutral-800 shadow-2xl relative overflow-hidden">
+                    <div className="bg-emerald-50/60 text-neutral-900 rounded-3xl p-8 sm:p-10 border border-emerald-100 shadow-xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl pointer-events-none" />
                         <div className="relative z-10">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
                                 <div>
-                                    <Badge className="bg-beeyield-green/20 text-beeyield-green border-none text-[10px] font-bold px-3 py-1 mb-2">
+                                    <Badge className="bg-beeyield-green/15 text-emerald-700 border-none text-[10px] font-bold px-3 py-1 mb-2">
                                         Closed-Loop Architecture
                                     </Badge>
-                                    <h3 className="text-2xl font-bold tracking-tight text-white">
+                                    <h3 className="text-2xl font-bold tracking-tight text-neutral-900">
                                         How In-Hive &amp; In-Land Sensors Co-Calculate HPA
                                     </h3>
                                 </div>
-                                <Button asChild className="h-11 px-6 bg-beeyield-green text-neutral-950 hover:bg-emerald-400 font-bold text-xs rounded-xl">
+                                <Button asChild className="h-11 px-6 bg-beeyield-green text-white hover:bg-emerald-600 font-bold text-xs rounded-xl">
                                     <Link to="/precision-pollination">
                                         Explore In-Hive Sensors <ArrowRight className="ml-2 h-4 w-4" />
                                     </Link>
@@ -652,34 +652,34 @@ const InLandPollination = () => {
                             </div>
 
                             <div className="grid md:grid-cols-4 gap-4 text-center">
-                                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="text-xs font-bold text-beeyield-green uppercase tracking-wider mb-1">Step 1: In-Hive</div>
-                                    <div className="text-sm font-bold text-white mb-2">Frame Strength Verification</div>
-                                    <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                <div className="p-5 rounded-2xl bg-white border border-emerald-100">
+                                    <div className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Step 1: In-Hive</div>
+                                    <div className="text-sm font-bold text-neutral-900 mb-2">Frame Strength Verification</div>
+                                    <p className="text-[11px] text-neutral-600 leading-relaxed">
                                         Brood core (34.8°C) and scales confirm colony is Queen-right with &ge;14 effective frames/acre.
                                     </p>
                                 </div>
 
-                                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Step 2: In-Land</div>
-                                    <div className="text-sm font-bold text-white mb-2">Canopy Visit Auditing</div>
-                                    <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                <div className="p-5 rounded-2xl bg-white border border-emerald-100">
+                                    <div className="text-xs font-bold text-amber-600 uppercase tracking-wider mb-1">Step 2: In-Land</div>
+                                    <div className="text-sm font-bold text-neutral-900 mb-2">Canopy Visit Auditing</div>
+                                    <p className="text-[11px] text-neutral-600 leading-relaxed">
                                         Acoustic sensors measure flower landing rates across blocks, validating if 2.0–4.5 HPA is delivering target visits.
                                     </p>
                                 </div>
 
-                                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Step 3: Algorithm</div>
-                                    <div className="text-sm font-bold text-white mb-2">Dynamic Re-Distribution</div>
-                                    <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                <div className="p-5 rounded-2xl bg-white border border-emerald-100">
+                                    <div className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Step 3: Algorithm</div>
+                                    <div className="text-sm font-bold text-neutral-900 mb-2">Dynamic Re-Distribution</div>
+                                    <p className="text-[11px] text-neutral-600 leading-relaxed">
                                         If canopy visits drop in remote orchard corners, mobile hives are repositioned to eliminate cold spots.
                                     </p>
                                 </div>
 
-                                <div className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                                    <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Step 4: Outcome</div>
-                                    <div className="text-sm font-bold text-white mb-2">9%–18%+ Certified Yield</div>
-                                    <p className="text-[11px] text-neutral-400 leading-relaxed">
+                                <div className="p-5 rounded-2xl bg-white border border-emerald-100">
+                                    <div className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">Step 4: Outcome</div>
+                                    <div className="text-sm font-bold text-neutral-900 mb-2">9%–18%+ Certified Yield</div>
+                                    <p className="text-[11px] text-neutral-600 leading-relaxed">
                                         Maximum fruitlet set, uniform export fruit geometry, and complete colony health protection.
                                     </p>
                                 </div>

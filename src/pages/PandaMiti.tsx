@@ -408,7 +408,7 @@ export default function PandaMitiPage() {
           </div>
 
           {/* The Closed-Loop Cycle Diagram Card */}
-          <div className="rounded-3xl bg-gradient-to-br from-emerald-950/20 via-card to-amber-950/20 border border-border/70 p-6 sm:p-8 mb-16 shadow-md">
+          <div className="rounded-3xl bg-gradient-to-br from-emerald-50 via-card to-amber-50 border border-border/70 p-6 sm:p-8 mb-16 shadow-md">
             <h4 className="text-center text-sm font-bold uppercase tracking-wider text-muted-foreground mb-6">
               The Closed-Loop Ecological Restoration Cycle
             </h4>
@@ -459,7 +459,7 @@ export default function PandaMitiPage() {
           {/* Interactive Seedling Pledge Section */}
           <div
             id="support"
-            className="rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/30 via-card to-amber-950/20 p-6 sm:p-12 shadow-2xl relative overflow-hidden"
+            className="rounded-3xl border border-emerald-500/40 bg-gradient-to-r from-emerald-50 via-card to-amber-50 p-6 sm:p-12 shadow-2xl relative overflow-hidden"
           >
             <div className="max-w-2xl mx-auto text-center space-y-4 mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
