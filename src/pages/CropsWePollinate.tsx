@@ -161,8 +161,6 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      {/* Turning Nature into Intelligence — Biological Intelligence story */}
-      <BiologicalIntelligenceSection id="crops-biological-intelligence" />
 
       {/* Every crop gets its own program */}
       <CropProgramSection />
@@ -370,6 +368,8 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
+      {/* Turning Nature into Intelligence — Biological Intelligence story */}
+      <BiologicalIntelligenceSection id="crops-biological-intelligence" />
 
       {/* Missing Crop CTA */}
       <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">

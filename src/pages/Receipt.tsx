@@ -86,7 +86,7 @@ const Receipt = () => {
                 <div className="flex gap-3">
                     <Button 
                         variant="outline" 
-                        onClick={() => navigate(`/shop-dashboard?tab=orders&track=${order.order_number || order.id || id}`)} 
+                        onClick={() => navigate(`/shop-dashboard?tab=orders&track=${order.order_number || order.id || orderId || ''}`)} 
                         className="gap-2 rounded-full border-amber-300 bg-amber-50/70 hover:bg-amber-100 text-[#1A1A1A] font-bold shadow-sm"
                     >
                         <Truck className="w-4 h-4 text-amber-600" /> Track Shipment

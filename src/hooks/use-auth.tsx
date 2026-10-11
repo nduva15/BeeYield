@@ -333,18 +333,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-const defaultAuth: AuthContextType = {
+const defaultAuth: AuthCtx = {
   user: null,
   session: null,
   profile: null,
   loading: false,
   signOut: async () => {},
-  signInWithGoogle: async () => {},
-  signInWithApple: async () => {},
+  refreshProfile: async () => {},
   signInDemoOwner: () => {},
-  updateProfile: async () => {},
-  updateAvatar: async () => {},
-  isDemo: false,
+  updateAvatar: async () => false,
   beeyieldUser: null,
 };
 
