@@ -154,13 +154,13 @@ const LocationLandingPage: React.FC<LocationProps> = ({
                                 </div>
                                 <p className="font-black text-green-900">Resource <br /> Efficiency</p>
                             </Card>
-                            <Card className="bg-neutral-900 border-none rounded-3xl p-4 col-span-2 text-white flex items-center gap-6">
-                                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center shrink-0">
+                            <Card className="bg-amber-50 border border-amber-100 rounded-3xl p-4 col-span-2 text-neutral-900 flex items-center gap-6">
+                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shrink-0">
                                     <Target className="text-amber-500 h-8 w-8" />
                                 </div>
                                 <div>
                                     <p className="text-2xl font-black">98%</p>
-                                    <p className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Colony Success Rate</p>
+                                    <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Colony Success Rate</p>
                                 </div>
                             </Card>
                         </div>
@@ -169,7 +169,7 @@ const LocationLandingPage: React.FC<LocationProps> = ({
             </section>
 
             {/* Local Presence Block */}
-            <section className="py-24 bg-neutral-900 text-white overflow-hidden relative">
+            <section className="py-24 bg-emerald-50/50 border-y border-emerald-100 text-neutral-900 overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-amber-500/10 blur-[120px] -mr-32" />
 
                 <div className="container mx-auto px-4 relative z-10">
@@ -177,22 +177,22 @@ const LocationLandingPage: React.FC<LocationProps> = ({
                         <div className="space-y-6">
                             <h2 className="text-4xl md:text-5xl font-black tracking-tight">Visit Our {cityName} <br /> Headquarters</h2>
                             <div className="space-y-4 font-medium">
-                                <div className="flex items-start gap-4 text-neutral-300">
+                                <div className="flex items-start gap-4 text-neutral-600">
                                     <MapPin className="h-6 w-6 text-amber-500 shrink-0 mt-1" />
                                     <span>{address}</span>
                                 </div>
-                                <div className="flex items-center gap-4 text-neutral-300">
+                                <div className="flex items-center gap-4 text-neutral-600">
                                     <Phone className="h-6 w-6 text-amber-500 shrink-0" />
                                     <span>+254 (0) 700 000 000</span>
                                 </div>
-                                <div className="flex items-center gap-4 text-neutral-300">
+                                <div className="flex items-center gap-4 text-neutral-600">
                                     <MessageSquare className="h-6 w-6 text-amber-500 shrink-0" />
                                     <span>{cityName.toLowerCase()}@beeyield.com</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 text-neutral-900 space-y-6">
+                        <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 text-neutral-900 space-y-6 border border-emerald-100 shadow-xl">
                             <h3 className="text-2xl font-black tracking-tight">Service Availability</h3>
                             <div className="space-y-4">
                                 {crops.map((crop, i) => (

@@ -459,7 +459,7 @@ const OurStory = () => {
               <p>
                 Pesticide drift, drought and unpredictable honey prices make keeping colonies alive harder every year.
                 When a beekeeper gives up, the hives go with them. Fewer hives means less pollination, and less pollination
-                means smaller mango and avocado harvests for the farmers next door.
+                means smaller mango, citrus, sunflower and bean harvests for the farmers next door.
               </p>
               <p className="text-foreground font-semibold">It is a structural cycle, not a bad season.</p>
               <p>
@@ -800,22 +800,22 @@ const OurStory = () => {
       ═══════════════════════════════════════════════════════════════ */}
       <section className="py-20 sm:py-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-[#0A2612] text-white border-none shadow-2xl rounded-[3rem] overflow-hidden">
+          <Card className="bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-neutral-900 border border-emerald-100 shadow-xl rounded-[3rem] overflow-hidden">
             <CardContent className="p-8 sm:p-14 text-center relative">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -mr-32 -mt-32 opacity-30" />
-              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32 opacity-30" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#1B9157] rounded-full blur-3xl -mr-32 -mt-32 opacity-10" />
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F4D03F] rounded-full blur-3xl -ml-32 -mb-32 opacity-20" />
 
-              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-white">
+              <h2 className="text-3xl font-bold sm:text-5xl mb-6 relative z-10 text-neutral-900">
                 Help shape <span className="text-[#1B9157]">what comes next</span>
               </h2>
-              <p className="text-neutral-300 max-w-2xl mx-auto mb-10 text-lg relative z-10">
+              <p className="text-neutral-600 max-w-2xl mx-auto mb-10 text-lg relative z-10">
                 From a small honey business with 4 hives to 184 hives, 22 IoT devices, 40 partner farmers and 105+ acres pollinated. Talk to us about a project, a collaboration or an investment.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-                <Button size="lg" className="bg-white text-neutral-950 hover:bg-neutral-100 font-bold px-8 h-12 rounded-xl" asChild>
+                <Button size="lg" className="bg-[#1B9157] text-white hover:bg-[#157a48] font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/contact">Get In Touch</Link>
                 </Button>
-                <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10 font-bold px-8 h-12 rounded-xl" asChild>
+                <Button variant="outline" size="lg" className="border-emerald-300 text-emerald-800 bg-white hover:bg-emerald-50 font-bold px-8 h-12 rounded-xl" asChild>
                   <Link to="/careers">Join Our Team</Link>
                 </Button>
               </div>

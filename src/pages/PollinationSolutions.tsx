@@ -39,7 +39,7 @@ const GATEWAY_STAND_SLIDES: SlideItem[] = [
     title: 'Kenyan Top-Bar Hive Station',
     subtitle: 'Weatherproof antenna unit on commercial hive stand',
     badge: '45 Acres Served',
-    description: 'Field station deployed at avocado and mango orchard boundaries to monitor pollinator foraging density in real time.',
+    description: 'Field station deployed at mango and citrus orchard boundaries to monitor pollinator foraging density in real time.',
   },
 ];
 
@@ -563,7 +563,7 @@ const PollinationSolutions = () => {
                 <p className="text-sm font-bold text-primary uppercase tracking-wider mb-2">Goal 3</p>
                 <h3 className="text-2xl font-bold mb-4 text-foreground">Farmer Education</h3>
                 <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Target: 50K farmers</p>
-                <p className="text-muted-foreground text-sm leading-relaxed">Training local farmers and beekeepers in sustainable pollination practices, improving yields for mangoes, beans, tomatoes, and sisal.</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">Training local farmers and beekeepers in sustainable pollination practices, improving yields for mango, oranges, citrus, maize, vegetables, beans and sunflower.</p>
               </CardContent>
             </Card>
           </div>

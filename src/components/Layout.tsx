@@ -46,6 +46,15 @@ const Layout = ({ children }: LayoutProps) => {
     standaloneExactPaths.has(pathname) ||
     standalonePrefixes.some((prefix) => pathname.startsWith(prefix));
 
+  // "Building a Global Network of Partners" only shows on these pages.
+  const partnersPaths = new Set([
+    '/diseases',
+    '/ourstory',
+    '/about',
+    '/commitment',
+    '/sdg',
+  ]);
+
   if (isStandalone) {
     return (
       <>
@@ -70,7 +79,7 @@ const Layout = ({ children }: LayoutProps) => {
 
 
 
-      <PartnersMarquee />
+      {partnersPaths.has(pathname.replace(/\/+$/, "") || "/") && <PartnersMarquee />}
       <Footer />
     </div>
   );

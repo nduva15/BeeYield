@@ -442,7 +442,7 @@ const ESG = () => {
             {/* Pillar 2: Social Impact & Smallholder Inclusion */}
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="order-2 lg:order-1 relative group">
-                <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
+                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
                   <img
                     src="/images/pollination/mango-orange-farm-wide.jpg"
                     alt="BeeYield partner mango and citrus plantation in Makueni, Kenya, with a baobab on the boundary"
@@ -471,7 +471,7 @@ const ESG = () => {
                   Farmer Prosperity & Women-Led Innovation
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Founded in Kibwezi by siblings Timothy, Agatha, and Carole Nduva, BeeYield champions inclusive technology. With 66% women leadership in founding engineering, we empower smallholder mango and avocado growers with precision pollination that increases crop yields by 9–18%.
+                  Founded in Kibwezi by siblings Timothy, Agatha, and Carole Nduva, BeeYield champions inclusive technology. With 66% women leadership in founding engineering, we empower smallholder mango, citrus, sunflower and bean growers with precision pollination that increases crop yields by 9–18%.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
@@ -525,78 +525,78 @@ const ESG = () => {
             {/* ─────────────────────────────────────────────────────────────
           PROJECT PANDA MITI: ENVIRONMENTAL CORRIDOR (E IN ESG)
       ───────────────────────────────────────────────────────────── */}
-      <section className="py-20 bg-emerald-950 text-white relative overflow-hidden border-t border-emerald-900">
+      <section className="py-20 bg-emerald-50/50 text-neutral-900 relative overflow-hidden border-t border-emerald-100">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 max-w-6xl relative z-10">
-          <div className="rounded-[2.5rem] bg-gradient-to-br from-emerald-900/60 via-neutral-900/90 to-emerald-950/80 border border-emerald-500/30 p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
+          <div className="rounded-[2.5rem] bg-white border border-emerald-200 p-8 sm:p-12 shadow-xl">
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
-                <TreesIcon className="w-4 h-4 text-emerald-400" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
+                <TreesIcon className="w-4 h-4 text-emerald-600" />
                 <span>Environmental Pillar • Panda Miti Ecological Corridors</span>
               </div>
-              <Badge variant="outline" className="border-emerald-500/40 text-emerald-300 bg-emerald-500/10 font-bold text-xs px-3 py-1">
+              <Badge variant="outline" className="border-emerald-500/40 text-emerald-800 bg-emerald-500/10 font-bold text-xs px-3 py-1">
                 2,500 / 45,000 Seedlings Planted (5.6%)
               </Badge>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-8">
               <div className="lg:col-span-7 space-y-4">
-                <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-                  Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">45,000 Indigenous Trees</span> for Bee Survival & Aquifer Restoration
+                <h3 className="text-3xl sm:text-4xl font-black text-neutral-900 tracking-tight leading-tight">
+                  Panda Miti: <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">45,000 Indigenous Trees</span> for Bee Survival & Aquifer Restoration
                 </h3>
-                <p className="text-emerald-100/90 text-sm sm:text-base leading-relaxed">
+                <p className="text-neutral-600 text-sm sm:text-base leading-relaxed">
                   As our primary Environmental stewardship initiative, Panda Miti (<em>"Plant Trees"</em>) restores degraded semi-arid landscapes in Kibwezi, Makueni County. By planting drought-resilient indigenous trees (Acacia, Mukau, Moringa, Baobab), we replenish aquifers, eliminate seasonal bee famine, and create perpetual floral nectar corridors.
                 </p>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-emerald-200/90 text-xs sm:text-sm italic">
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-900 text-xs sm:text-sm italic">
                   “Every seedling is nurtured by local youth beekeepers for ecosystem restoration to guarantee survival and perennial blossom.”
                 </div>
               </div>
 
               {/* Progress & 3 Pillars preview */}
-              <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-emerald-200 shadow-sm space-y-4 text-neutral-900">
+              <div className="lg:col-span-5 bg-emerald-50/60 p-6 rounded-2xl border border-emerald-200 shadow-sm space-y-4 text-neutral-900">
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-semibold text-emerald-800">
                     <span>Reforestation Progress</span>
-                    <span className="text-emerald-400 font-bold">2,500 of 45,000 Goal</span>
+                    <span className="text-emerald-700 font-bold">2,500 of 45,000 Goal</span>
                   </div>
-                  <div className="h-3 w-full bg-neutral-800 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
+                  <div className="h-3 w-full bg-emerald-100 rounded-full overflow-hidden p-0.5 border border-emerald-500/20">
                     <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 rounded-full w-[5.6%]" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center text-[11px] pt-2 border-t border-emerald-100">
-                  <div className="p-2.5 rounded-xl bg-white/5">
-                    <TreePine className="w-4 h-4 text-emerald-400 mx-auto mb-1" />
+                  <div className="p-2.5 rounded-xl bg-white">
+                    <TreePine className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Tree Restoration</span>
-                    <span className="text-[10px] text-emerald-200/70">Aquifer recharge</span>
+                    <span className="text-[10px] text-emerald-700">Aquifer recharge</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5">
-                    <Heart className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                  <div className="p-2.5 rounded-xl bg-white">
+                    <Heart className="w-4 h-4 text-amber-500 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Bees Saved</span>
-                    <span className="text-[10px] text-amber-200/70">Zero dry famine</span>
+                    <span className="text-[10px] text-amber-700">Zero dry famine</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5">
-                    <Flower2Icon className="w-4 h-4 text-teal-400 mx-auto mb-1" />
+                  <div className="p-2.5 rounded-xl bg-white">
+                    <Flower2Icon className="w-4 h-4 text-teal-600 mx-auto mb-1" />
                     <span className="font-bold text-neutral-900 block">Flowers Needing Bees</span>
-                    <span className="text-[10px] text-teal-200/70">85%+ pollination</span>
+                    <span className="text-[10px] text-teal-700">85%+ pollination</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-emerald-500/20">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-emerald-100">
               <div className="flex flex-wrap gap-2 text-xs">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 font-semibold border border-emerald-500/20">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-800 font-semibold border border-emerald-500/20">
                   🌱 1 Tree = ~250 Bees Nourished
                 </span>
-                <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-300 font-semibold border border-teal-500/20">
+                <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-800 font-semibold border border-teal-500/20">
                   🌸 1 Tree = ~5,000 Blossoms Pollinated
                 </span>
-                <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/20">
+                <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-800 font-semibold border border-amber-500/20">
                   🌱 Ecosystem Restoration
                 </span>
               </div>
-              <Button asChild size="lg" className="bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold rounded-full px-6 shadow-lg shadow-emerald-500/20">
+              <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full px-6 shadow-lg shadow-emerald-600/20">
                 <Link to="/panda-miti">
                   Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
@@ -620,7 +620,7 @@ const ESG = () => {
                 Data-Driven <br />Food Security.
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
-                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 intelligent hives across 105 and counting acres of smallholder avocado and mango farms to maximize fruit set and yield.
+                In semi-arid Makueni, pollination isn't just a service—it's food security. We deploy 22 intelligent hives across 105 and counting acres of smallholder mango, citrus, sunflower and bean farms to maximize fruit set and yield.
               </p>
 
               <div className="grid grid-cols-2 gap-10">

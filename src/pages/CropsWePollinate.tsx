@@ -42,8 +42,8 @@ const CropsWePollinate = () => {
     <BeeYieldPageShell className="min-h-screen bg-background p-0">
       <SEO
         title="Crops We Pollinate | Hives Per Acre Model & Precision Pollination"
-        description="Scientific crop pollination recommendations and hives per acre models for macadamia, avocado, mango, watermelon, sunflower, and coffee. Protecting bees while increasing export yields."
-        keywords="crops we pollinate, precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, avocado pollination, macadamia pollination Kenya"
+        description="Scientific crop pollination recommendations and hives per acre models for mango, oranges, citrus, maize, vegetables, beans and sunflower. Protecting bees while increasing export yields."
+        keywords="crops we pollinate, precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, mango pollination, citrus pollination, sunflower pollination Kenya"
         url="/crops-we-pollinate"
         image="/logo.png"
         schema={{

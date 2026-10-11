@@ -57,7 +57,7 @@ const HARDWARE_SLIDES: SlideItem[] = [
     title: 'Kenyan Top-Bar Hive Stand Deployment',
     subtitle: 'Anti-termite pole mount with solar transmission unit',
     badge: '45 Acres Served',
-    description: 'Field station deployed at avocado and mango orchard boundaries to monitor foraging flight density during peak flowering.',
+    description: 'Field station deployed at mango and citrus orchard boundaries to monitor foraging flight density during peak flowering.',
   },
 ];
 

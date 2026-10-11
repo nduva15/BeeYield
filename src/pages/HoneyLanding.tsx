@@ -640,7 +640,7 @@ const FlashSaleSection = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="bg-neutral-900 rounded-[3rem] p-10 md:p-20 relative overflow-hidden shadow-2xl"
+          className="bg-gradient-to-br from-amber-50 via-white to-emerald-50 border border-amber-100 rounded-[3rem] p-10 md:p-20 relative overflow-hidden shadow-xl"
         >
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-beeyield-gold/20 to-transparent pointer-events-none" />
@@ -651,10 +651,10 @@ const FlashSaleSection = () => {
               <Badge className="bg-beeyield-gold text-neutral-900 border-none mb-8 px-6 py-2 font-black text-[10px] shadow-glow">
                 Special Welcome Gift
               </Badge>
-              <h2 className="text-4xl md:text-6xl font-black text-white mb-8 leading-[0.9] tracking-tighter">
-                Get <span className="text-beeyield-gold">20% Off</span> Your First Jar
+              <h2 className="text-4xl md:text-6xl font-black text-neutral-900 mb-8 leading-[0.9] tracking-tighter">
+                Get <span className="text-amber-600">20% Off</span> Your First Jar
               </h2>
-              <p className="text-neutral-300 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
+              <p className="text-neutral-600 text-lg mb-10 max-w-lg leading-relaxed font-medium mx-auto lg:mx-0">
                 Join BeeYield today and enjoy 20% off your first order of fresh, natural honey straight from the farm.
               </p>
 
@@ -675,9 +675,9 @@ const FlashSaleSection = () => {
                 { label: "Seconds", value: timeLeft.seconds }
               ].map((time, i) => (
                 <div key={i} className="flex flex-col items-center group">
-                  <div className="bg-[#F9F7F2] backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-[#F4D03F]/20 mb-3 shadow-lg group-hover:border-beeyield-gold/50 transition-colors duration-500 relative overflow-hidden">
+                  <div className="bg-white backdrop-blur-xl rounded-3xl w-24 h-24 sm:w-32 sm:h-32 flex items-center justify-center border border-[#F4D03F]/40 mb-3 shadow-lg group-hover:border-beeyield-gold/70 transition-colors duration-500 relative overflow-hidden">
                     <div className="absolute inset-0 bg-beeyield-gold/0 group-hover:bg-beeyield-gold/5 transition-colors duration-500" />
-                    <span className="text-4xl sm:text-5xl font-black text-white tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
+                    <span className="text-4xl sm:text-5xl font-black text-neutral-900 tabular-nums relative z-10">{String(time.value).padStart(2, "0")}</span>
                   </div>
                   <span className="text-[10px] text-neutral-500 font-black group-hover:text-beeyield-gold transition-colors">{time.label}</span>
                 </div>

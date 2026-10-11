@@ -586,7 +586,7 @@ export default function BlogsPage() {
                 Ready to Maximize Fruit Set on Your Orchard?
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Whether you cultivate Apple Mangoes in Makueni, Hass Avocados in Murang'a, or Citrus & Oranges in Kibwezi, our intelligent hive precision pollination teams deliver verified yield improvements.
+                Whether you grow mango, oranges, citrus, maize, vegetables, beans or sunflower in Makueni, our intelligent hive precision pollination teams deliver verified yield improvements.
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-4">

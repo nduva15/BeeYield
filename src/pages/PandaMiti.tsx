@@ -321,7 +321,7 @@ export default function PandaMitiPage() {
                 <h3 className="font-bold text-foreground text-lg mb-2">3. Flowers Needing Bees</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   Over 85% of dryland trees, flowering shrubs, and surrounding smallholder crops
-                  (mango, avocado, citrus, pigeon peas) cannot reproduce or set fruit without insect
+                  (mango, oranges, citrus, beans, sunflower and vegetables) cannot reproduce or set fruit without insect
                   pollination. Honeybees deliver the vital pollen transfer that turns flowers into
                   bountiful seeds and harvests.
                 </p>

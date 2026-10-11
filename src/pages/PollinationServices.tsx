@@ -369,7 +369,7 @@ const PollinationServices = () => {
                             <div className="text-4xl sm:text-5xl font-black text-teal-800 mb-2 tracking-tight">75%+</div>
                             <h3 className="text-sm font-bold text-stone-900 mb-1">Crops Pollinator-Dependent</h3>
                             <p className="text-xs text-stone-600 leading-relaxed font-medium">
-                                Commercial crops—including mangoes, avocados, sunflowers, and legumes—requiring bee visitation for fruit set.
+                                Commercial crops—including mango, oranges and other citrus, sunflower, beans and vegetables—requiring bee visitation for fruit set.
                             </p>
                         </div>
                     </div>

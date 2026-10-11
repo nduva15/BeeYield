@@ -58,7 +58,7 @@ const CommitmentPage = () => {
       description:
         "75% of food crops rely on pollinators. Our pollination services directly boost agricultural yields, ensuring food security for communities across Africa.",
       impact:
-        "105 and counting acres pollinated across 1 county (Makueni & counting) for 9+ crops & counting, increasing crop yields by 9–18%",
+        "105 and counting acres pollinated across 1 county (Makueni & counting) for 7 crops (mango, oranges, citrus, maize, vegetables, beans and sunflower), increasing crop yields by 9–18%",
       color: "from-amber-500 to-amber-600",
       icon: Wheat,
     },

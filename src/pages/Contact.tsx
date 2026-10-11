@@ -505,15 +505,13 @@ const Contact = () => {
                             <SelectValue placeholder="Select Crop" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="Mango">Mango</SelectItem>
+                            <SelectItem value="Oranges">Oranges</SelectItem>
+                            <SelectItem value="Citrus">Citrus</SelectItem>
                             <SelectItem value="Maize">Maize</SelectItem>
-                            <SelectItem value="Sisal">Sisal</SelectItem>
-                            <SelectItem value="Mangoes">Mangoes</SelectItem>
+                            <SelectItem value="Vegetables">Vegetables</SelectItem>
                             <SelectItem value="Beans">Beans</SelectItem>
                             <SelectItem value="Sunflower">Sunflower</SelectItem>
-                            <SelectItem value="Oranges">Oranges</SelectItem>
-                            <SelectItem value="Vegetables">Vegetables</SelectItem>
-                            <SelectItem value="Tomatoes">Tomatoes</SelectItem>
-                            <SelectItem value="Onions">Onions</SelectItem>
                             <SelectItem value="Other">Other</SelectItem>
                           </SelectContent>
                         </Select>

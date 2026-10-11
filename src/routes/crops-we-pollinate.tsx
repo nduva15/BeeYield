@@ -8,7 +8,7 @@ export const Route = createFileRoute("/crops-we-pollinate")({
       {
         name: "description",
         content:
-          "Discover the 9+ high-value crops BeeYield pollinates across Kenya, including Avocado, Apple Mango, Citrus, Oranges, Sisal, and Sunflower.",
+          "The crops BeeYield pollinates in Makueni County: mango, oranges, citrus, maize, vegetables, beans and sunflower.",
       },
       {
         property: "og:title",

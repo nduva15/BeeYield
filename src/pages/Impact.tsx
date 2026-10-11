@@ -82,7 +82,7 @@ const Impact = () => {
       doc.setFontSize(9.5);
       doc.setTextColor(75, 85, 99);
       const summaryText =
-        'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 105 acres and counting of pollinated farmland (Lead Farmer: Timothy Nduva) across 1 county (Makueni & counting) with 9+ crops & counting, we deliver precision agriculture through real-time telemetry while offsetting 3 tons of carbon through native tree restoration. Our data-informed stocking protocols increase crop yields by 9–18% while safeguarding wild and managed pollinators.';
+        'BeeYield supports healthier hives, stronger pollination, and traceable harvests. With 22 IoT devices deployed across 105 acres and counting of pollinated farmland (Lead Farmer: Timothy Nduva) across 1 county (Makueni & counting) with 7 crops (mango, oranges, citrus, maize, vegetables, beans and sunflower), we deliver precision agriculture through real-time telemetry while offsetting 3 tons of carbon through native tree restoration. Our data-informed stocking protocols increase crop yields by 9–18% while safeguarding wild and managed pollinators.';
       const summaryLines = doc.splitTextToSize(summaryText, pageWidth - 28);
       doc.text(summaryLines, 14, yPos);
       yPos += summaryLines.length * 5 + 6;
@@ -104,7 +104,7 @@ const Impact = () => {
         '• IoT Telemetry Nodes: 22 Live Nodes (Apisense & Intelligent Hives)',
         '• Land Under Pollination: 105 acres and counting (Verified • Lead Farmer: Timothy Nduva)',
         '• Counties Served: 1 County (Makueni & Counting)',
-        '• Crop Varieties Covered: 9+ Crops & Counting (Mango, Avocado, Macadamia, Coffee, Sunflower, etc.)',
+        '• Crops Covered: Mango, Oranges, Citrus, Maize, Vegetables, Beans and Sunflower',
         '• Telemetry Ingestion: Over 2,000 data points daily & growing',
         '• Documented Crop Yield Uplift: 9–18% average increase observed in partner orchards',
         '• Indigenous Flora Restored: 2,500+ Indigenous Trees Planted',
@@ -175,7 +175,7 @@ const Impact = () => {
         {
           id: 'Batch MAK-FLOR-2026-02',
           name: 'Multi-Flora Orchard Blossom Honey',
-          details: 'Origin: Makueni Orchard Corridor | Pollination: Apple Mango & Hass Avocado Anthesis | Acres: 105 and counting | Verified Yield Uplift: 9–18% | 100% Chemical-Free Standard | Batch QR Encoded',
+          details: 'Origin: Makueni Orchard Corridor | Pollination: Mango & Citrus Bloom | Acres: 105 and counting | Verified Yield Uplift: 9–18% | 100% Chemical-Free Standard | Batch QR Encoded',
         },
         {
           id: 'Batch KIB-COMB-125',
@@ -227,7 +227,7 @@ const Impact = () => {
         '• December 2020: Founded by siblings Timothy, Agatha, and Carole Nduva with 4 hives on ¼ acre in Kibwezi.',
         '• 2021–2023: Scaled to 75 hives, planted first 113 indigenous trees, initiated pollination trials.',
         '• 2024–2025: Surpassed 150 hives, enrolled 40 partner beekeepers, established BeeYield traceability.',
-        '• 2026 (The Tech Year): BeeYield officially founded as an IoT precision pollination company in July 2026. 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 9+ crops & counting, over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
+        '• 2026 (The Tech Year): BeeYield officially founded as an IoT precision pollination company in July 2026. 184 hives, 22 IoT devices deployed with global partners (Apisense & Intelligent Hives Poland), 105 acres and counting precision-pollinated across 1 county (Makueni & counting) for 7 crops (mango, oranges, citrus, maize, vegetables, beans and sunflower), over 2,000 data points daily & growing, 988 kg lifetime honey, 100% reinvested with zero external capital.',
       ];
 
       doc.setFontSize(9);
@@ -265,7 +265,7 @@ const Impact = () => {
 
       const sdgs = [
         '• SDG 1 - No Poverty: Trained 50+ local smallholders in modern beekeeping and disease prevention.',
-        '• SDG 2 - Zero Hunger: 105 acres and counting pollinated across 1 county (Makueni & counting) for 9+ crops & counting, increasing crop yields by 9–18%.',
+        '• SDG 2 - Zero Hunger: 105 acres and counting pollinated across 1 county (Makueni & counting) for 7 crops (mango, oranges, citrus, maize, vegetables, beans and sunflower), increasing crop yields by 9–18%.',
         '• SDG 6 - Clean Water: 2,500+ indigenous trees planted, stabilizing catchment soil and protecting groundwater.',
         '• SDG 7 - Clean Energy: 100% solar-powered IoT micro-grids and low-power telemetry nodes.',
         '• SDG 8 - Decent Work: Fair-trade farmer pricing; 66% women leadership in founding engineering.',
@@ -337,12 +337,12 @@ const Impact = () => {
   };
 
   const stats = [
-    { label: "IoT Devices Deployed", value: "22", icon: Radio, color: "text-[#1B9157]", bg: "bg-green-100" },
-    { label: "Acres Pollinated", value: "105+", icon: Sprout, color: "text-yellow-600", bg: "bg-yellow-100" },
-    { label: "Carbon Offset", value: "3t", icon: TreePine, color: "text-indigo-600", bg: "bg-indigo-100" },
-    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-orange-600", bg: "bg-orange-100" },
-    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-purple-600", bg: "bg-purple-100" },
-    { label: "Integrity Score", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-100" },
+    { label: "Sensors in hives", value: "22", icon: Radio, color: "text-[#1B9157]", bg: "bg-green-100" },
+    { label: "Acres pollinated", value: "105+", icon: Sprout, color: "text-yellow-600", bg: "bg-yellow-100" },
+    { label: "Tons of carbon offset", value: "3", icon: TreePine, color: "text-indigo-600", bg: "bg-indigo-100" },
+    { label: "Bees protected", value: "2.4M+", icon: Bug, color: "text-orange-600", bg: "bg-orange-100" },
+    { label: "Trees planted", value: "2,500+", icon: TreePine, color: "text-purple-600", bg: "bg-purple-100" },
+    { label: "Data uptime", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-100" },
   ];
 
   return (
@@ -368,25 +368,25 @@ const Impact = () => {
           >
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Globe className="w-3 h-3 mr-2" />
-              Verified Impact Data
+              Our Impact
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
-              Ecological Impact, <br /> Quantified
+              What We've Done <br /> So Far
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
-              22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries.
+              22 sensors in hives. Over 105 acres pollinated. 2,500+ trees planted. These numbers come from our own apiaries in Kenya.
             </p>
 
             <Button size="lg" className="shadow-xl h-14 text-lg" onClick={handleDownloadImpactReport} disabled={downloading}>
               {downloading ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Verifying Data...
+                  Preparing report...
                 </>
               ) : (
                 <>
                   <Download className="mr-2 h-5 w-5" />
-                  Download Official Record
+                  Download Impact Report
                 </>
               )}
             </Button>
@@ -400,7 +400,7 @@ const Impact = () => {
       <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4 text-foreground">Our impact in numbers</h2>
+            <h2 className="text-3xl font-bold mb-4 text-foreground">Our numbers</h2>
             <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
@@ -434,13 +434,13 @@ const Impact = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-              100% Authentic Photography
+              Real Photos
             </Badge>
             <h2 className="text-4xl font-bold mb-4 text-foreground">
-              Real Field Evidence
+              See It in the Field
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              4 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, in-hive bio-sensors, and precision continuous scales across Kenya.
+              Photos from our hives in Kenya: the sensors we use, the bees living with them, and the scales that weigh each hive.
             </p>
           </div>
 
@@ -451,29 +451,29 @@ const Impact = () => {
               slides={[
                 {
                   image: IMPACT_IMAGES.deployedHive1,
-                  title: "Nighttime Apiary Field Telemetry",
-                  subtitle: "Solar antenna module on galvanized tin roof",
-                  badge: "22 Deployed Hives",
-                  description: "Autonomous transmission node standing on metal pole in Kenyan apiary during nighttime field check."
+                  title: "Night Check at the Apiary",
+                  subtitle: "Solar sensor on a hive roof",
+                  badge: "22 Hives",
+                  description: "A solar-powered sensor on a hive, sending readings through the night."
                 },
                 {
                   image: IMPACT_IMAGES.deployedHive2,
-                  title: "Kenyan Top-Bar Hive Stand",
-                  subtitle: "Weatherproof antenna unit mounted on lid",
-                  badge: "105+ Acres Served (and counting)",
-                  description: "Robust solar-powered node operating at commercial orchard boundaries to monitor pollinator foraging density."
+                  title: "Hive on a Stand",
+                  subtitle: "Antenna fixed to the hive lid",
+                  badge: "105+ Acres",
+                  description: "Placed at the edge of a farm to count how many bees are flying."
                 },
                 {
                   image: IMPACT_IMAGES.solarGateway,
-                  title: "Solar LTE Field Gateway",
-                  subtitle: "High-gain dual antenna LTE gateway",
-                  badge: "Zero-Watt Grid",
-                  description: "Self-powered gateway aggregating data from all local hive sensors and relaying to cloud dashboards in real time."
+                  title: "Solar Gateway",
+                  subtitle: "Sends data to the internet",
+                  badge: "Solar Powered",
+                  description: "Collects readings from nearby hives and sends them to our app."
                 }
               ]}
-              badge="Hardware Grid"
-              title="22 IoT Deployed Stations"
-              subtitle="Solar antennas & hive stands"
+              badge="Sensors"
+              title="22 Hives with Sensors"
+              subtitle="Solar sensors on hive stands"
               dark={false}
             />
 
@@ -482,29 +482,29 @@ const Impact = () => {
               slides={[
                 {
                   image: IMPACT_IMAGES.apisenseCloseup2,
-                  title: "In-Hive Hardware Acceptance",
-                  subtitle: "Live forager on non-toxic sensor board",
-                  badge: "Zero Rejection",
-                  description: "Worker bees accept the electronic hardware immediately, navigating the sensor board without alarm responses."
+                  title: "Bees Accept the Sensor",
+                  subtitle: "A bee walking on the sensor board",
+                  badge: "Bee Safe",
+                  description: "Bees walk over the sensor calmly. It doesn't disturb them."
                 },
                 {
                   image: IMPACT_IMAGES.apisenseCluster1,
-                  title: "Active Colony Surrounding Probe",
-                  subtitle: "Hundreds of bees clustered on sensor",
-                  badge: "Colony Vitality",
-                  description: "Dense bee cluster surrounding the in-hive ApiSense probe, showing zero repellent behavior."
+                  title: "Bees Around the Sensor",
+                  subtitle: "Hundreds of bees on the probe",
+                  badge: "Healthy Colony",
+                  description: "The colony gathers around the sensor and carries on as normal."
                 },
                 {
                   image: IMPACT_IMAGES.beeColonyWide,
-                  title: "Thriving African Bee Colony",
-                  subtitle: "Full-depth cluster density",
-                  badge: "2.4M+ Bees Protected",
-                  description: "Demonstrates vigorous colony health, high worker population density, and healthy brood rearing."
+                  title: "A Strong Colony",
+                  subtitle: "A full, busy hive",
+                  badge: "2.4M+ Bees",
+                  description: "Lots of worker bees and healthy young bees growing in the comb."
                 }
               ]}
-              badge="Colony Health"
-              title="Bio-Sensors & Bees"
-              subtitle="Colony vitality & zero rejection"
+              badge="Bee Health"
+              title="Bees & Sensors"
+              subtitle="Bees live happily with our sensors"
               dark={false}
             />
 
@@ -513,29 +513,29 @@ const Impact = () => {
               slides={[
                 {
                   image: IMPACT_IMAGES.apisenseCloseup1,
-                  title: "ApiSense Bio-Sensor Probe",
-                  subtitle: "In-hive probe installed inside log cavity",
-                  badge: "Log Hive Validated",
-                  description: "Real-time acoustic and temperature tracking inside occupied traditional log hives with full biocompatibility."
+                  title: "Sensor in a Log Hive",
+                  subtitle: "Fitted inside a traditional hive",
+                  badge: "Works in Log Hives",
+                  description: "Measures sound and temperature inside traditional Kenyan log hives."
                 },
                 {
                   image: IMPACT_IMAGES.apisenseCluster2,
-                  title: "Dense Bee Cluster Telemetry",
-                  subtitle: "Worker bees covering vertical sensor node",
-                  badge: "Bee Behavior",
-                  description: "Proves complete biological acceptance with bees moving freely across probe surface."
+                  title: "Bees Covering the Sensor",
+                  subtitle: "Worker bees on the sensor",
+                  badge: "Normal Behaviour",
+                  description: "Bees move freely over the sensor. They don't avoid it."
                 },
                 {
                   image: IMPACT_IMAGES.combProbe1,
-                  title: "In-Hive Acoustic Sampling",
-                  subtitle: "Acoustic diagnostic sampling frame",
-                  badge: "Acoustic AI",
-                  description: "High-fidelity bio-acoustic spectrum tracking for swarm prediction and colony stress monitoring."
+                  title: "Listening to the Hive",
+                  subtitle: "Recording hive sounds",
+                  badge: "Sound Checks",
+                  description: "Hive sounds help us spot stress or a colony getting ready to swarm."
                 }
               ]}
-              badge="Bio-Telemetry"
-              title="In-Hive Bio-Sensors"
-              subtitle="Acoustic & thermal sampling"
+              badge="Inside the Hive"
+              title="Sensors Inside the Hive"
+              subtitle="Sound & temperature"
               dark={false}
             />
 
@@ -544,29 +544,29 @@ const Impact = () => {
               slides={[
                 {
                   image: IMPACT_IMAGES.hiveScale,
-                  title: "Continuous Scale Telemetry",
-                  subtitle: "Sub-milligram load cell telemetry",
-                  badge: "Weight Delta",
-                  description: "Industrial load cell bar mounted under hive base tracking diurnal weight changes down to sub-grams."
+                  title: "Hive Scale",
+                  subtitle: "A scale under the hive",
+                  badge: "Weight",
+                  description: "Weighs the hive every day so we can see how much nectar the bees bring in."
                 },
                 {
                   image: IMPACT_IMAGES.combProbe2,
-                  title: "Detect Bee Diseases & Brood Health",
-                  subtitle: "Early pathogen screening on drawn brood comb",
-                  badge: "Disease Detection",
-                  description: "Sensor-equipped frames enable early identification of American Foulbrood, chalkbrood, and Varroa-related brood abnormalities."
+                  title: "Spotting Disease Early",
+                  subtitle: "Checking the comb",
+                  badge: "Disease Checks",
+                  description: "Helps us catch problems like foulbrood, chalkbrood and Varroa mites early."
                 },
                 {
                   image: IMPACT_IMAGES.combProbe3,
-                  title: "Multi-Frame Brood Coverage",
-                  subtitle: "Top-down commercial hive inspection",
-                  badge: "3t Carbon Offset",
-                  description: "Parallel active frames showing full brood vitality and verified strength across precision-pollinated client orchards."
+                  title: "Full Frames",
+                  subtitle: "Looking down into a hive",
+                  badge: "Strong Hives",
+                  description: "Frames full of young bees in hives used to pollinate farms."
                 }
               ]}
-              badge="Disease Defense"
-              title="Scales & Disease Detection"
-              subtitle="Continuous weighing & pathogen defense"
+              badge="Scales & Disease"
+              title="Weighing & Disease Checks"
+              subtitle="Daily weight & early warnings"
               dark={false}
             />
 
@@ -590,13 +590,13 @@ const Impact = () => {
                 <div className="aspect-[4/5] bg-muted">
                   <img
                     src={IMPACT_IMAGES.deployedHive2}
-                    alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
+                    alt="BeeYield sensor fitted on a traditional Kenyan beehive"
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <CardContent className="p-6">
-                  <p className="text-sm text-muted-foreground mb-1">Location: Makueni, Kenya</p>
-                  <h4 className="text-xl font-bold text-foreground">22 Devices. 105+ Acres. Real Impact.</h4>
+                  <p className="text-sm text-muted-foreground mb-1">Makueni, Kenya</p>
+                  <h4 className="text-xl font-bold text-foreground">22 sensors. 105+ acres.</h4>
                 </CardContent>
               </Card>
             </motion.div>
@@ -609,18 +609,18 @@ const Impact = () => {
             >
               <div>
                 <h2 className="text-4xl font-bold mb-6 text-foreground">
-                  Radical Ecological Transparency
+                  Open About Our Numbers
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 105 and counting acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
+                  We do more than make honey. We look after the land around our hives too. We have sensors in 22 hives, we've helped pollinate over 105 acres of farms, and we've planted more than 2,500 native trees.
                 </p>
               </div>
 
               <div className="space-y-4">
                 {[
-                  { label: "Habitat health", value: 95 },
-                  { label: "Chemical-free index", value: 100 },
-                  { label: "Acoustic health baseline", value: 88 },
+                  { label: "Healthy habitat around our hives", value: 95 },
+                  { label: "Hives kept free of chemicals", value: 100 },
+                  { label: "Hives with normal sound levels", value: 88 },
                 ].map((m) => (
                   <div key={m.label} className="bg-card p-6 rounded-2xl border border-border shadow-sm">
                     <div className="flex items-center justify-between mb-3">
@@ -637,8 +637,8 @@ const Impact = () => {
                   <Zap className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Live data sync</p>
-                  <p className="text-xs text-muted-foreground">Data synced from 22 IoT sensor nodes</p>
+                  <p className="text-sm font-semibold">Updated live</p>
+                  <p className="text-xs text-muted-foreground">Data comes straight from our 22 hive sensors</p>
                 </div>
               </div>
             </motion.div>
@@ -654,14 +654,14 @@ const Impact = () => {
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <div className="inline-flex items-center gap-2 mb-4 text-sm font-medium opacity-90">
             <TreePine className="h-4 w-4" />
-            Featured Ecological Initiative
+            Tree Planting
           </div>
-          <h2 className="text-3xl font-bold mb-6">Project Panda Miti: 45,000 Trees for Kibwezi</h2>
+          <h2 className="text-3xl font-bold mb-6">Panda Miti: 45,000 Trees for Kibwezi</h2>
           <p className="text-lg opacity-90 leading-relaxed mb-8">
-            2,500+ indigenous trees already planted to revive microclimates, recharge groundwater, and provide continuous nectar and pollen sanctuaries for bees.
+            We've planted over 2,500 native trees so far. They cool the land, help hold water in the soil, and give bees flowers to feed on all year.
           </p>
           <Button variant="secondary" asChild className="gap-2 font-bold">
-            <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="h-4 w-4" /></Link>
+            <Link to="/panda-miti">Learn about Panda Miti <ArrowRight className="h-4 w-4" /></Link>
           </Button>
         </div>
       </section>
@@ -672,18 +672,18 @@ const Impact = () => {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="text-4xl font-bold mb-4 text-foreground">The 2030 Biosphere Roadmap</h2>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">Our Goals for 2030</h2>
             <p className="text-muted-foreground">
-              Our architecture is designed for scale. Building on 22 deployed devices, 105 and counting acres pollinated, and 3 tons of carbon offset, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
+              We want to grow from where we are today and help many more beekeepers and farmers across Africa.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {[
-              { title: "Scale up", desc: "Support 10,000 additional beehives with real-time IoT monitoring.", icon: Bug, bg: "bg-orange-100", color: "text-orange-600" },
-              { title: "Tree tracking", desc: "Track 100k native trees with ground sensor nodes and satellite telemetry.", icon: TreePine, bg: "bg-green-100", color: "text-[#1B9157]" },
-              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar IoT micro-grids.", icon: Zap, bg: "bg-yellow-100", color: "text-yellow-600" },
-              { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe, bg: "bg-blue-100", color: "text-blue-600" },
+              { title: "More hives", desc: "Put sensors in 10,000 more beehives.", icon: Bug, bg: "bg-orange-100", color: "text-orange-600" },
+              { title: "More trees", desc: "Plant and track 100,000 native trees.", icon: TreePine, bg: "bg-green-100", color: "text-[#1B9157]" },
+              { title: "Solar power", desc: "Run all our sensors and equipment on solar power.", icon: Zap, bg: "bg-yellow-100", color: "text-yellow-600" },
+              { title: "More beekeepers", desc: "Work with over 200 partner beekeepers in rural areas.", icon: Globe, bg: "bg-blue-100", color: "text-blue-600" },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -716,16 +716,16 @@ const Impact = () => {
             <div className="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6">
               <Heart className="h-7 w-7 text-[#1B9157]" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Invest in Planetary Health</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Help Us Protect Bees</h2>
             <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 105 and counting acres served. 3 tons of carbon offset. Let's make every drop count.
+              Whether you buy our honey, farm with us, or study bees, you can be part of this. Get in touch and let's work together.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" asChild className="shadow-xl gap-2">
-                <Link to="/contact">Contact the Hive <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/contact">Contact Us <ArrowRight className="h-4 w-4" /></Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/global-hive-network">Join our Global Hive Network</Link>
+                <Link to="/global-hive-network">Join Our Beekeeper Network</Link>
               </Button>
             </div>
           </div>

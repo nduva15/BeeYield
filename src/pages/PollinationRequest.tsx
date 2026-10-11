@@ -184,15 +184,13 @@ const PollinationRequest = () => {
                           <SelectValue placeholder="Select crop type" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="mango">Mango</SelectItem>
+                          <SelectItem value="oranges">Oranges</SelectItem>
+                          <SelectItem value="citrus">Citrus</SelectItem>
                           <SelectItem value="maize">Maize</SelectItem>
-                          <SelectItem value="sisal">Sisal</SelectItem>
-                          <SelectItem value="mangoes">Mangoes</SelectItem>
+                          <SelectItem value="vegetables">Vegetables</SelectItem>
                           <SelectItem value="beans">Beans</SelectItem>
                           <SelectItem value="sunflower">Sunflower</SelectItem>
-                          <SelectItem value="oranges">Oranges</SelectItem>
-                          <SelectItem value="vegetables">Vegetables</SelectItem>
-                          <SelectItem value="tomatoes">Tomatoes</SelectItem>
-                          <SelectItem value="onions">Onions</SelectItem>
                           <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                       </Select>

@@ -94,7 +94,7 @@ const OUTCOMES: IconCard[] = [
   {
     icon: Apple,
     title: "Food on Kenyan tables",
-    body: "Mangoes, avocados, citrus, sunflower and beans all lean on pollinators. When pollination weakens, harvests and rural incomes follow.",
+    body: "Mango, oranges, citrus, sunflower, beans and vegetables all lean on pollinators. When pollination weakens, harvests and rural incomes follow.",
   },
 ];
 
@@ -490,7 +490,7 @@ export const CropProgramSection = () => (
           </h2>
         </motion.div>
         <motion.p {...fadeUp} transition={{ duration: 0.7, delay: 0.1 }} className="text-lg font-medium leading-relaxed text-neutral-600">
-          A mango panicle, an avocado flower and a sunflower head do not pollinate the same way. Each crop we
+          A mango panicle, an orange blossom and a sunflower head do not pollinate the same way. Each crop we
           serve gets its own plan: timed to its bloom, sized to its canopy, and monitored until the last petal falls.
         </motion.p>
       </div>

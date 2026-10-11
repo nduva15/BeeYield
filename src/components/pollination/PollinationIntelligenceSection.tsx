@@ -152,7 +152,7 @@ const TODAY = [
 ];
 const VALIDATING = [
   "Models linking visitation with fruit set",
-  "Crop-specific pollination targets (avocado, macadamia, coffee…)",
+  "Crop-specific pollination targets (mango, citrus, sunflower…)",
   "Yield and crop-quality forecasting",
 ];
 
@@ -212,17 +212,17 @@ const PollinationMap = () => {
   const cold = cells.filter((x) => x.v <= 0.22).length;
 
   return (
-    <div className="rounded-[2rem] bg-neutral-950 p-5 sm:p-7 border border-neutral-800 shadow-2xl relative overflow-hidden">
+    <div className="rounded-[2rem] bg-white p-5 sm:p-7 border border-neutral-200 shadow-xl relative overflow-hidden">
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="flex items-center justify-between mb-4 relative">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
-          <span className="text-[11px] font-mono text-neutral-400">plip://block-A · avocado · 42 ac</span>
+          <span className="text-[11px] font-mono text-neutral-500">plip://block-A · mango · 42 ac</span>
         </div>
-        <Badge className="bg-emerald-500/15 text-emerald-300 border-none text-[10px]">Live demo</Badge>
+        <Badge className="bg-emerald-500/10 text-emerald-700 border-none text-[10px]">Live demo</Badge>
       </div>
 
       <div
@@ -249,23 +249,23 @@ const PollinationMap = () => {
       </div>
 
       <div className="mt-5 grid grid-cols-3 gap-3 relative">
-        <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
           <div className="text-[10px] uppercase tracking-wider text-neutral-500">Field index</div>
-          <div className="text-xl font-bold text-white tabular-nums">{Math.round(avg * 100)}</div>
+          <div className="text-xl font-bold text-neutral-900 tabular-nums">{Math.round(avg * 100)}</div>
         </div>
-        <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
           <div className="text-[10px] uppercase tracking-wider text-neutral-500">Cold zones</div>
-          <div className="text-xl font-bold text-rose-300 tabular-nums">{cold}</div>
+          <div className="text-xl font-bold text-rose-600 tabular-nums">{cold}</div>
         </div>
-        <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
           <div className="text-[10px] uppercase tracking-wider text-neutral-500">Flight window</div>
-          <div className="text-xl font-bold text-emerald-300">Open</div>
+          <div className="text-xl font-bold text-emerald-600">Open</div>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-[10px] text-neutral-400 relative">
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-[10px] text-neutral-500 relative">
         <span className="flex items-center gap-1.5"><Hexagon className="w-3 h-3 fill-amber-400 text-neutral-900" /> Hive drop</span>
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-neutral-300" /> PLIP node</span>
+        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-neutral-700" /> PLIP node</span>
         <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-rose-300" />Low</span>
         <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-amber-300" /></span>
         <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-lime-300" /></span>
@@ -320,11 +320,11 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="p-8 rounded-3xl bg-neutral-950 text-white border border-neutral-800"
+            className="p-8 rounded-3xl bg-emerald-50 text-neutral-900 border border-emerald-200"
           >
-            <div className="text-[10px] uppercase tracking-wider font-bold text-emerald-400 mb-3">The BeeYield approach</div>
+            <div className="text-[10px] uppercase tracking-wider font-bold text-emerald-700 mb-3">The BeeYield approach</div>
             <h3 className="text-xl font-bold mb-3">Measure inside the pollination window.</h3>
-            <p className="text-sm text-neutral-400 leading-relaxed">
+            <p className="text-sm text-neutral-600 leading-relaxed">
               {variant === "in_hive"
                 ? "BeeHUB sensors verify colony strength in every hive while PLIP nodes confirm those bees are reaching the flowers — while there's still time to act."
                 : "PLIP nodes measure bee visits in the canopy while BeeHUB confirms colony strength — so you see what's happening and can respond while flowers are still open."}
@@ -567,27 +567,27 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
 
       {/* ── Validation programme CTA ── */}
       <div className="container mx-auto px-4 max-w-6xl pb-28">
-        <div className="relative rounded-[2.5rem] bg-neutral-950 text-white p-10 sm:p-14 overflow-hidden">
-          <img src={PHOTOS.acaciaCanopy} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-25" />
-          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
-          <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-beeyield-green/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -top-24 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative rounded-[2.5rem] bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-neutral-900 border border-emerald-100 shadow-xl p-10 sm:p-14 overflow-hidden">
+          <img src={PHOTOS.acaciaCanopy} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/50" />
+          <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 right-0 w-80 h-80 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
           <div className="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">
             <div>
-              <div className="flex items-center gap-2 mb-4 text-emerald-300 text-xs font-bold uppercase tracking-wider">
+              <div className="flex items-center gap-2 mb-4 text-emerald-700 text-xs font-bold uppercase tracking-wider">
                 <Sprout className="w-4 h-4" /> 2027 validation programme
               </div>
               <h3 className="text-3xl lg:text-4xl font-bold tracking-tight mb-3">Let's prove it on your fields.</h3>
-              <p className="text-neutral-400 max-w-xl">
+              <p className="text-neutral-600 max-w-xl">
                 We're selecting growers and research partners to validate BeeYield Pollination Intelligence — including
-                the yield-forecasting layer — across avocado, macadamia, coffee and horticulture.
+                the yield-forecasting layer — across mango, oranges, citrus, maize, vegetables, beans and sunflower.
               </p>
             </div>
             <Button
               id="pi-join-programme"
               size="lg"
               onClick={scrollToForm}
-              className="h-14 px-8 bg-beeyield-green text-neutral-950 hover:bg-emerald-400 font-bold text-sm rounded-2xl shadow-xl shadow-beeyield-green/20"
+              className="h-14 px-8 bg-beeyield-green text-white hover:bg-emerald-600 font-bold text-sm rounded-2xl shadow-xl shadow-beeyield-green/20"
             >
               <Eye className="w-4 h-4 mr-2" /> Join the 2027 programme <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
