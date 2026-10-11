@@ -14,7 +14,6 @@ import { dashboardPollinationCropDetails, type PollinationCropDetail } from "@/d
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
-import { CropProgramSection } from "@/components/beeyield/FieldTrustSections";
 import { BiologicalIntelligenceSection } from "@/components/beeyield/BiologicalIntelligenceSection";
 
 
