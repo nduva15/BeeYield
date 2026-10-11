@@ -37,15 +37,17 @@ const LEADERS: Leader[] = [
     tags: ["Vision Lead", "Architecture Head", "Global Strategy", "Field Beekeeper"],
   },
   {
-    name: "Carole Nduva",
+    name: "Carole Mumbe",
     role: "Co-Founder & Chief Operating Officer (COO)",
     department: "Operations & Partnerships",
+    description: "Finance graduate on a mission to save bees.",
     linkedin: "https://linkedin.com/company/beeyield",
   },
   {
-    name: "Agatha Nduva",
+    name: "Agatha Mathuva",
     role: "Co-Founder & Chief Technology Officer (CTO)",
     department: "Engineering & IT Systems",
+    description: "IT graduate on a mission to save bees.",
     linkedin: "https://linkedin.com/company/beeyield",
   },
 ];

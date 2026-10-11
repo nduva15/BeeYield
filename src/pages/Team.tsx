@@ -164,23 +164,23 @@ const Team = () => {
             achievements: ["Vision Lead", "Architecture Head", "Global Strategy", "Field Beekeeper"]
         },
         {
-            name: "Carole Nduva",
+            name: "Carole Mumbe",
             role: "Co-Founder & Chief Operating Officer (COO)",
             department: "Operations & Partnerships",
-            description: "Master of operational logistics, partner engineering, and agricultural scaling. Carole leads BeeYield's community expansion, smallholder fair-pay contracts, and international export channels.",
+            description: "Finance graduate on a mission to save bees.",
             image: undefined as string | undefined,
             linkedin: "https://linkedin.com/company/beeyield",
-            email: "carole@beeyield.com",
+            email: undefined as string | undefined,
             achievements: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"]
         },
         {
-            name: "Agatha Nduva",
+            name: "Agatha Mathuva",
             role: "Co-Founder & Chief Technology Officer (CTO)",
             department: "Engineering & IT Systems",
-            description: "Pioneer in distributed systems, hive sensor telemetry, and cryptographic data security. Agatha ensures every byte of bee telemetry from Kibwezi bee boxes is secured, verified, and mapped with high fidelity.",
+            description: "IT graduate on a mission to save bees.",
             image: undefined as string | undefined,
             linkedin: "https://linkedin.com/company/beeyield",
-            email: "agatha@beeyield.com",
+            email: undefined as string | undefined,
             achievements: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"]
         },
     ];
@@ -820,9 +820,11 @@ const Team = () => {
                                         <Button asChild className="h-14 px-8 rounded-2xl bg-neutral-900 text-white font-bold shadow-xl">
                                             <a href={selectedMember.linkedin}>Connect</a>
                                         </Button>
-                                        <Button asChild variant="outline" className="h-14 w-14 p-0 rounded-2xl border-neutral-100">
-                                            <a href={`mailto:${selectedMember.email}`}><Mail className="w-5 h-5" /></a>
-                                        </Button>
+                                        {selectedMember.email && (
+                                            <Button asChild variant="outline" className="h-14 w-14 p-0 rounded-2xl border-neutral-100">
+                                                <a href={`mailto:${selectedMember.email}`}><Mail className="w-5 h-5" /></a>
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
