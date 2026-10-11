@@ -290,7 +290,7 @@ const Impact = () => {
       doc.setFontSize(9.5);
       doc.setTextColor(75, 85, 99);
       const mediaText =
-        'BeeYield maintains a strict 100% authentic field photography standard — zero AI renders, 100% real ground truth. Our media archive includes acoustic frequency spectrograms trained on 350,000+ bee sound samples, time-lapse anthesis imagery, and live telemetry feeds.';
+        'BeeYield maintains a strict authentic field photography standard. Our media archive includes acoustic frequency spectrograms trained on 350,000+ bee sound samples, time-lapse anthesis imagery, and live telemetry feeds.';
       const mediaLines = doc.splitTextToSize(mediaText, pageWidth - 28);
       doc.text(mediaLines, 14, yPos);
       yPos += mediaLines.length * 5 + 6;

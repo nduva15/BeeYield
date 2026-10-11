@@ -140,7 +140,7 @@ const ESG = () => {
           `Precision Pollination: 105 acres and counting (Verified)`,
           `Carbon Sequestration: 3.0 Tons CO₂ Offset`,
           `Indigenous Flora Restored: 2,500+ Native Trees`,
-          `Managed Inventory: ${liveStats?.hive_count || "184"} Intelligent Hives`,
+          `Managed Inventory: ${liveStats?.hive_count || "184"} Hives in our own apiary`,
           `Pollinators Protected: 2.4M+ Active Bees`
         ];
 
@@ -193,7 +193,7 @@ const ESG = () => {
     { value: "105+", label: "Acres Pollinated", icon: MapPin, description: "Bio-verified coverage" },
     { value: "3t", label: "Carbon Offset", icon: TreePine, description: "CO₂ sequestered to date" },
     { value: "2,500+", label: "Trees Planted", icon: Sprout, description: "Flora restoration" },
-    { value: "184+", label: "Intelligent Hives", icon: Bug, description: "Active colony inventory" },
+    { value: "184", label: "Hives", icon: Bug, description: "In our own apiary" },
     { value: "2.4M+", label: "Pollinators", icon: Heart, description: "Estimated bees supported" },
   ];
 
@@ -216,7 +216,7 @@ const ESG = () => {
               <span className="text-beeyield-green">by Integrity.</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12">
-              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 105 and counting pollinated acres and 3 tons of carbon offset — zero AI imagery, 100% ground truth.
+              Every ESG metric at BeeYield is backed by authentic field telemetry from 22 deployed IoT devices across 105 and counting pollinated acres and 3 tons of carbon offset.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
