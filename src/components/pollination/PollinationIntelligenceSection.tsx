@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Signal, Cpu, Satellite, CloudSun, Map as MapIcon, Activity, Layers,
-  Compass, History, GitCompare, ArrowRight, CheckCircle2, FlaskConical,
-  Hexagon, Sprout, TrendingUp, Eye,
+  Signal, Cpu, Satellite, CloudSun,
+  FlaskConical, Hexagon, TrendingUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 /* ────────────────────────────────────────────────────────────────────
    Pollination Intelligence — BeeYield
@@ -145,135 +143,7 @@ const SIGNALS = [
   },
 ] as const;
 
-const TODAY = [
-  "Direct in-canopy pollinator activity measurement",
-  "In-hive colony health & strength monitoring",
-  "Satellite, bloom and weather context",
-];
-const VALIDATING = [
-  "Models linking visitation with fruit set",
-  "Crop-specific pollination targets (mango, citrus, sunflower…)",
-  "Yield and crop-quality forecasting",
-];
 
-const SEASON_FEATURES = [
-  { icon: MapIcon, title: "Live field map", body: "Hive drops, PLIP nodes and bee activity across every block." },
-  { icon: Activity, title: "Activity indicators", body: "How visitation shifts across zones and through the day." },
-  { icon: Layers, title: "Environmental context", body: "Weather, bloom stage and NDVI side-by-side with activity." },
-  { icon: Compass, title: "Actionable guidance", body: "Where to inspect, re-position hives or intervene next." },
-  { icon: History, title: "Season history", body: "A pollination record to compare against fruit set and harvest." },
-  { icon: GitCompare, title: "Cross-field comparison", body: "Benchmark farms, varieties and blocks to see where performance differs." },
-];
-
-/* ── Deterministic pseudo-random field for the heat map ─────────────── */
-const COLS = 14;
-const ROWS = 8;
-function seeded(i: number) {
-  const x = Math.sin(i * 12.9898) * 43758.5453;
-  return x - Math.floor(x);
-}
-const HIVES = [
-  { c: 2, r: 2 }, { c: 6, r: 1 }, { c: 11, r: 3 }, { c: 4, r: 6 },
-];
-
-function activityAt(c: number, r: number, t: number) {
-  // Activity decays with distance from hives + gentle diurnal pulse + noise.
-  let v = 0;
-  for (const h of HIVES) {
-    const d = Math.hypot(c - h.c, r - h.r);
-    v += Math.exp(-d / 3.2);
-  }
-  const pulse = 0.85 + 0.15 * Math.sin(t / 2 + c * 0.4 + r * 0.3);
-  return Math.min(1, (v * 0.75 + seeded(c * 31 + r) * 0.2) * pulse);
-}
-
-function cellColor(v: number) {
-  if (v > 0.7) return "bg-emerald-500";
-  if (v > 0.5) return "bg-emerald-400/80";
-  if (v > 0.35) return "bg-lime-300/80";
-  if (v > 0.22) return "bg-amber-300/80";
-  return "bg-rose-300/80";
-}
-
-const PollinationMap = () => {
-  const [t, setT] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setT((p) => p + 1), 1400);
-    return () => clearInterval(id);
-  }, []);
-
-  const cells = useMemo(() => {
-    const out: { c: number; r: number; v: number }[] = [];
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) out.push({ c, r, v: activityAt(c, r, t) });
-    return out;
-  }, [t]);
-
-  const avg = cells.reduce((s, x) => s + x.v, 0) / cells.length;
-  const cold = cells.filter((x) => x.v <= 0.22).length;
-
-  return (
-    <div className="rounded-[2rem] bg-white p-5 sm:p-7 border border-neutral-200 shadow-xl relative overflow-hidden">
-      <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="flex items-center justify-between mb-4 relative">
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-          </span>
-          <span className="text-[11px] font-mono text-neutral-500">plip://block-A · mango · 42 ac</span>
-        </div>
-        <Badge className="bg-emerald-500/10 text-emerald-700 border-none text-[10px]">Live demo</Badge>
-      </div>
-
-      <div
-        className="grid gap-1 relative"
-        style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
-        role="img"
-        aria-label="Simulated pollination heat map showing bee activity across a field"
-      >
-        {cells.map(({ c, r, v }) => {
-          const hive = HIVES.some((h) => h.c === c && h.r === r);
-          const node = (c + r * 3) % 5 === 0;
-          return (
-            <motion.div
-              key={`${c}-${r}`}
-              animate={{ opacity: 0.55 + v * 0.45 }}
-              transition={{ duration: 1.2 }}
-              className={`aspect-square rounded-[4px] ${cellColor(v)} relative flex items-center justify-center`}
-            >
-              {hive && <Hexagon className="w-3/4 h-3/4 text-neutral-950 fill-amber-400" strokeWidth={2.5} />}
-              {!hive && node && <span className="w-1.5 h-1.5 rounded-full bg-neutral-950/70" />}
-            </motion.div>
-          );
-        })}
-      </div>
-
-      <div className="mt-5 grid grid-cols-3 gap-3 relative">
-        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
-          <div className="text-[10px] uppercase tracking-wider text-neutral-500">Field index</div>
-          <div className="text-xl font-bold text-neutral-900 tabular-nums">{Math.round(avg * 100)}</div>
-        </div>
-        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
-          <div className="text-[10px] uppercase tracking-wider text-neutral-500">Cold zones</div>
-          <div className="text-xl font-bold text-rose-600 tabular-nums">{cold}</div>
-        </div>
-        <div className="rounded-xl bg-neutral-50 border border-neutral-200 p-3">
-          <div className="text-[10px] uppercase tracking-wider text-neutral-500">Flight window</div>
-          <div className="text-xl font-bold text-emerald-600">Open</div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-[10px] text-neutral-500 relative">
-        <span className="flex items-center gap-1.5"><Hexagon className="w-3 h-3 fill-amber-400 text-neutral-900" /> Hive drop</span>
-        <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-neutral-700" /> PLIP node</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-rose-300" />Low</span>
-        <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-amber-300" /></span>
-        <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-lime-300" /></span>
-        <span className="flex items-center gap-1"><span className="w-3 h-2 rounded-sm bg-emerald-500" />High</span>
-      </div>
-    </div>
-  );
-};
 
 const accentClasses: Record<string, { ring: string; chip: string; icon: string }> = {
   emerald: { ring: "hover:border-emerald-300", chip: "bg-emerald-500/10 text-emerald-700", icon: "bg-emerald-500/10 text-emerald-600" },
@@ -281,13 +151,9 @@ const accentClasses: Record<string, { ring: string; chip: string; icon: string }
   violet: { ring: "hover:border-violet-300", chip: "bg-violet-500/10 text-violet-700", icon: "bg-violet-500/10 text-violet-600" },
 };
 
-export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: Props) => {
+export const PollinationIntelligenceSection = ({ variant = "in_land" }: Props) => {
   const [signal, setSignal] = useState<string>(variant === "in_hive" ? "hive" : "field");
   const active = SIGNALS.find((s) => s.id === signal) ?? SIGNALS[0];
-
-  const scrollToForm = () => {
-    if (formId) document.getElementById(formId)?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section id="pollination-intelligence" className="relative overflow-hidden bg-[#FBFAF6] border-y border-neutral-200/70">
@@ -484,118 +350,9 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
         </div>
       </div>
 
-      {/* ── Map + pipeline ── */}
-      <div className="container mx-auto px-4 max-w-6xl py-24">
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
-          <div>
-            <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 mb-5 text-[10px]">Spatial intelligence</Badge>
-            <h3 className="text-2xl lg:text-4xl font-bold tracking-tight text-neutral-900 mb-5">
-              From individual bee flights to a <span className="text-beeyield-green">pollination map</span>
-            </h3>
-            <p className="text-muted-foreground leading-relaxed mb-8">
-              Each PLIP node measures activity at one point in the crop. Combined across the field, those readings become a
-              spatial picture — showing where bees are working hard, where visitation is thin, and where a hive move or a
-              closer look is needed.
-            </p>
-            <div className="flex flex-wrap items-center gap-2">
-              {["Bee flights", "Field pattern", "Pollination map", "Actionable insight"].map((s, i, arr) => (
-                <div key={s} className="flex items-center gap-2">
-                  <span className={`px-3 py-1.5 rounded-full text-xs font-bold ${i === arr.length - 1 ? "bg-beeyield-green text-neutral-950" : "bg-neutral-100 text-neutral-700"}`}>{s}</span>
-                  {i < arr.length - 1 && <ArrowRight className="w-3.5 h-3.5 text-neutral-300" />}
-                </div>
-              ))}
-            </div>
-          </div>
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-            <PollinationMap />
-          </motion.div>
-        </div>
-      </div>
-
-      {/* ── Roadmap ── */}
-      <div className="container mx-auto px-4 max-w-5xl pb-24">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-8 rounded-3xl bg-white border border-emerald-200/70">
-            <div className="flex items-center gap-2 mb-5">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-              <h4 className="font-bold text-neutral-900">Available today</h4>
-            </div>
-            <ul className="space-y-3">
-              {TODAY.map((x) => (
-                <li key={x} className="flex gap-3 text-sm text-neutral-600"><span className="w-1.5 h-1.5 mt-2 rounded-full bg-emerald-500 shrink-0" />{x}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="p-8 rounded-3xl bg-white border border-dashed border-violet-200">
-            <div className="flex items-center gap-2 mb-5">
-              <FlaskConical className="w-5 h-5 text-violet-600" />
-              <h4 className="font-bold text-neutral-900">Being developed & validated</h4>
-            </div>
-            <ul className="space-y-3">
-              {VALIDATING.map((x) => (
-                <li key={x} className="flex gap-3 text-sm text-neutral-600"><span className="w-1.5 h-1.5 mt-2 rounded-full bg-violet-400 shrink-0" />{x}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Season at a glance ── */}
-      <div className="bg-white border-t border-neutral-200/70">
-        <div className="container mx-auto px-4 max-w-6xl py-24">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <h3 className="text-2xl lg:text-4xl font-bold tracking-tight text-neutral-900 mb-4">The pollination season at a glance</h3>
-            <p className="text-muted-foreground">Bee activity, colony condition and environmental context in one BeeYield dashboard.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {SEASON_FEATURES.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }}
-                className="group p-7 rounded-3xl bg-neutral-50 border border-neutral-100 hover:bg-white hover:border-beeyield-green/30 hover:shadow-lg transition-all"
-              >
-                <div className="w-11 h-11 rounded-2xl bg-beeyield-green/10 text-beeyield-green flex items-center justify-center mb-5 group-hover:bg-beeyield-green group-hover:text-white transition-colors">
-                  <f.icon className="w-5 h-5" />
-                </div>
-                <h4 className="font-bold text-neutral-900 mb-1.5">{f.title}</h4>
-                <p className="text-sm text-neutral-500 leading-relaxed">{f.body}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Validation programme CTA ── */}
-      <div className="container mx-auto px-4 max-w-6xl pb-28">
-        <div className="relative rounded-[2.5rem] bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-neutral-900 border border-emerald-100 shadow-xl p-10 sm:p-14 overflow-hidden">
-          <img src={PHOTOS.acaciaCanopy} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/50" />
-          <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -top-24 right-0 w-80 h-80 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">
-            <div>
-              <div className="flex items-center gap-2 mb-4 text-emerald-700 text-xs font-bold uppercase tracking-wider">
-                <Sprout className="w-4 h-4" /> 2027 validation programme
-              </div>
-              <h3 className="text-3xl lg:text-4xl font-bold tracking-tight mb-3">Let's prove it on your fields.</h3>
-              <p className="text-neutral-600 max-w-xl">
-                We're selecting growers and research partners to validate BeeYield Pollination Intelligence — including
-                the yield-forecasting layer — across mango, oranges, citrus, maize, vegetables, beans and sunflower.
-              </p>
-            </div>
-            <Button
-              id="pi-join-programme"
-              size="lg"
-              onClick={scrollToForm}
-              className="h-14 px-8 bg-beeyield-green text-white hover:bg-emerald-600 font-bold text-sm rounded-2xl shadow-xl shadow-beeyield-green/20"
-            >
-              <Eye className="w-4 h-4 mr-2" /> Join the 2027 programme <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </div>
     </section>
   );
 };
 
 export default PollinationIntelligenceSection;
+
