@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   EyeOff, TrendingDown, CircleHelp, Route, Scale, Apple,
   KeyRound, ShieldCheck, BadgeCheck, Hexagon, Thermometer, BellRing,
-  Users, Flower2, ArrowRight, CalendarDays, Gauge, Activity, ClipboardCheck,
+  Users, Flower2, ArrowRight, Activity,
   Eye, Truck, HandHeart,
 } from "lucide-react";
 
