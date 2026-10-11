@@ -109,25 +109,25 @@ export const PILLAR_META: Record<ContentPillar, { label: string; color: string; 
     bee_biology_behavior: {
         label: 'Bee Biology & Behavior',
         color: '#F59E0B',
-        icon: 'ðŸ',
+        icon: '🐝',
         target: 'Researchers, Students, Hobbyists'
     },
     honey_hive_products: {
         label: 'Honey & Hive Products',
         color: '#D97706',
-        icon: 'ðŸ¯',
+        icon: '🍯',
         target: 'Consumers, Wholesalers, Health Enthusiasts'
     },
     apiary_management_tech: {
         label: 'Apiary Management & Tech',
         color: '#059669',
-        icon: 'ðŸ“¡',
+        icon: '📡',
         target: 'Commercial Beekeepers (B2B)'
     },
     diseases_pests: {
         label: 'Diseases & Pests',
         color: '#DC2626',
-        icon: 'ðŸ”¬',
+        icon: '🔬',
         target: 'Veterinarians, Government, Farmers'
     }
 };

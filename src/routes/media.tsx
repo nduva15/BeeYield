@@ -8,7 +8,7 @@ export const Route = createFileRoute("/media")({
       {
         name: "description",
         content:
-          "Photographic proof and verified dispatches across 105 acres and counting in Makueni County. Featuring our partner farmers across Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.",
+          "BeeYield at work during the mango and citrus blooms across 105 acres and counting in Makueni County. We pollinate mango, oranges, citrus, maize, vegetables, beans and sunflower with partner farmers in Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni and Ndeini.",
       },
       {
         property: "og:title",
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/media")({
       {
         property: "og:description",
         content:
-          "Photographic proof and verified dispatches across 105 acres and counting in Makueni County. Featuring our partner farmers across Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni, and Ndeini areas.",
+          "BeeYield at work during the mango and citrus blooms across 105 acres and counting in Makueni County. We pollinate mango, oranges, citrus, maize, vegetables, beans and sunflower with partner farmers in Kalakalya, Mbuinzau, Kiunduani, Kibarani, Kaunguni and Ndeini.",
       },
     ],
   }),

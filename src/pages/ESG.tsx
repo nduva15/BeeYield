@@ -206,7 +206,7 @@ const ESG = () => {
         <StoryHeroBackground />
 
         <div className="container relative z-10 mx-auto px-4">
-          <div>
+          <div className="mx-auto max-w-4xl text-center">
             <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-6 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
               <Globe className="w-3 h-3 mr-2" />
               Verified ESG Framework
