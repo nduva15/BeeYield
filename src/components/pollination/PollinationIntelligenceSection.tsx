@@ -24,6 +24,31 @@ interface Props {
   formId?: string;
 }
 
+/* ── Authentic BeeYield field photos (same archive as Our Story) ───── */
+const PHOTOS = {
+  apiaryRow: "/images/story/hives/apiary-langstroth-row.jpg",
+  langstrothCloseup: "/images/story/hives/yellow-langstroth-closeup.jpg",
+  apiaryField1: "/images/story/hives/apiary-hive-field-1.jpg",
+  apiaryField2: "/images/story/hives/apiary-hive-field-2.jpg",
+  beekeeperTwilight: "/images/story/hives/beekeeper-inspection-twilight.jpg",
+  acaciaCanopy: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
+  deployedHive1: "/images/story/deployed-hive-antenna-1.png",
+  deployedHive2: "/images/story/deployed-hive-antenna-2.png",
+  apisenseCluster: "/images/story/apisense-bees-cluster-1.png",
+  apisenseCloseup: "/images/story/apisense-bees-closeup-2.png",
+  solarGateway: "/images/pollination/gateway-solar-node.png",
+  hiveScale: "/images/pollination/hive-scale-loadcell.png",
+  combProbe: "/images/pollination/hive-comb-inspection-8.png",
+};
+
+const MOSAIC = [
+  { src: PHOTOS.apiaryRow, tag: "Our apiary", caption: "Langstroth colonies on raised stands, Makueni", big: true },
+  { src: PHOTOS.deployedHive1, tag: "Deployed tech", caption: "Solar telemetry module on a field hive" },
+  { src: PHOTOS.hiveScale, tag: "In-hive", caption: "Load-cell scale tracking nectar flow" },
+  { src: PHOTOS.langstrothCloseup, tag: "Our hives", caption: "Locally built, painted for thermal control" },
+  { src: PHOTOS.beekeeperTwilight, tag: "Field team", caption: "Evening colony inspection" },
+];
+
 const LAYERS = [
   {
     tag: "Layer 1",
@@ -38,6 +63,8 @@ const LAYERS = [
     ],
     body: "PLIP acoustic nodes count bee flights in the canopy while BeeHUB units report brood temperature, weight and colony sound. Together they show whether hives are working the crop — not just whether boxes were dropped off.",
     accent: "emerald",
+    image: PHOTOS.apisenseCluster,
+    imageAlt: "Worker bees clustered around a BeeYield in-hive sensor probe",
   },
   {
     tag: "Layer 2",
@@ -53,6 +80,8 @@ const LAYERS = [
     ],
     body: "Sentinel-2 vegetation indices, bloom phenology and Open-Meteo flight-window data are layered over activity, so growers can separate a weak colony from a cold morning or a late bloom.",
     accent: "amber",
+    image: PHOTOS.apiaryField2,
+    imageAlt: "BeeYield hives placed in the surrounding forage landscape",
   },
   {
     tag: "Layer 3 · R&D",
@@ -68,6 +97,8 @@ const LAYERS = [
     ],
     body: "We are building crop-specific models that link measured visitation and conditions to fruit set, tonnage and export grade — moving from \"were bees active?\" to \"what will that pollination deliver?\".",
     accent: "violet",
+    image: PHOTOS.combProbe,
+    imageAlt: "Top-down view of brood frames in a precision-pollination hive",
   },
 ];
 
@@ -79,6 +110,8 @@ const SIGNALS = [
     icon: Signal,
     body: "Solar-powered PLIP acoustic nodes sit in the crop canopy and isolate bee wingbeat signatures (≈180–240 Hz) from tractors, wind and other insects — giving visit counts where pollination actually happens.",
     metrics: [["Flights / min", "Per node"], ["Coverage", "Per block"], ["Peak hours", "Daily curve"]],
+    image: PHOTOS.deployedHive2,
+    caption: "Solar node on a hive stand at an orchard boundary",
   },
   {
     id: "hive",
@@ -87,6 +120,8 @@ const SIGNALS = [
     icon: Cpu,
     body: "BeeHUB Queen and Sense units track brood-nest temperature, humidity, hive weight and acoustic state, flagging queenless, weak or pre-swarm colonies before they cost you pollination days.",
     metrics: [["Brood core", "34–35 °C"], ["Weight Δ", "Nectar flow"], ["Acoustics", "Queen state"]],
+    image: PHOTOS.apisenseCloseup,
+    caption: "Forager bee walking across a BeeYield sensor board",
   },
   {
     id: "space",
@@ -95,6 +130,8 @@ const SIGNALS = [
     icon: Satellite,
     body: "Sentinel-2 NDVI and bloom-stage signals show crop vigour, flowering progress and surrounding forage — revealing when nearby vegetation competes with your crop for foragers.",
     metrics: [["NDVI", "5-day revisit"], ["Bloom stage", "% anthesis"], ["Forage", "2 km radius"]],
+    image: PHOTOS.apiaryField1,
+    caption: "Apiary and surrounding forage — what the satellite sees",
   },
   {
     id: "weather",
@@ -103,6 +140,8 @@ const SIGNALS = [
     icon: CloudSun,
     body: "Hourly Open-Meteo temperature, wind, solar radiation and rainfall compute effective flight hours, so low activity on a cold, windy morning is not mistaken for a colony problem.",
     metrics: [["Flight hours", "Per day"], ["Wind", "< 18 km/h"], ["Temp", "> 13 °C"]],
+    image: PHOTOS.solarGateway,
+    caption: "Autonomous solar LTE gateway in the apiary yard",
   },
 ] as const;
 
@@ -292,6 +331,30 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
             </p>
           </motion.div>
         </div>
+
+        {/* ── Field photo mosaic ── */}
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 md:grid-rows-2 gap-4 md:h-[440px]">
+          {MOSAIC.map((p, i) => (
+            <motion.figure
+              key={p.src}
+              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.07 }}
+              className={`group relative overflow-hidden rounded-3xl bg-neutral-200 ${p.big ? "col-span-2 md:row-span-2 aspect-[4/3] md:aspect-auto" : "aspect-square md:aspect-auto"}`}
+            >
+              <img
+                src={p.src}
+                alt={p.caption}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/10 to-transparent" />
+              <figcaption className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                <span className="inline-block mb-2 px-2.5 py-1 rounded-full bg-beeyield-green text-neutral-950 text-[9px] font-bold uppercase tracking-wider">{p.tag}</span>
+                <p className={`text-white font-semibold leading-snug ${p.big ? "text-base sm:text-lg" : "text-xs sm:text-sm"}`}>{p.caption}</p>
+              </figcaption>
+            </motion.figure>
+          ))}
+        </div>
+        <p className="text-[11px] text-neutral-400 mt-3 text-center">Real photos from BeeYield apiaries and deployments in Kenya.</p>
       </div>
 
       {/* ── Three layers ── */}
@@ -310,8 +373,17 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
               <motion.div
                 key={l.tag}
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className={`relative p-8 rounded-[2rem] bg-white border ${l.status === "rnd" ? "border-dashed border-violet-200" : "border-neutral-200/80"} ${a.ring} hover:shadow-xl transition-all flex flex-col`}
+                className={`group relative p-8 pt-0 rounded-[2rem] bg-white border overflow-hidden ${l.status === "rnd" ? "border-dashed border-violet-200" : "border-neutral-200/80"} ${a.ring} hover:shadow-xl transition-all flex flex-col`}
               >
+                <div className="relative -mx-8 mb-6 h-44 overflow-hidden">
+                  <img
+                    src={l.image}
+                    alt={l.imageAlt}
+                    loading="lazy"
+                    className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${l.status === "rnd" ? "saturate-[0.6]" : ""}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-white/0 to-transparent" />
+                </div>
                 <div className="flex items-center justify-between mb-6">
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${a.icon}`}>
                     <l.icon className="w-6 h-6" />
@@ -386,11 +458,20 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
                 className="p-8 sm:p-10 rounded-[2rem] bg-gradient-to-br from-neutral-50 to-emerald-50/40 border border-neutral-100"
                 role="tabpanel"
               >
-                <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 text-[10px]">{active.where}</Badge>
-                <h4 className="text-2xl lg:text-3xl font-bold text-neutral-900 tracking-tight mb-4">{active.title}</h4>
-                <p className="text-neutral-600 leading-relaxed mb-8 max-w-2xl">{active.body}</p>
+                <div className="grid xl:grid-cols-[1fr_260px] gap-8 items-start mb-8">
+                  <div>
+                    <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-4 text-[10px]">{active.where}</Badge>
+                    <h4 className="text-2xl lg:text-3xl font-bold text-neutral-900 tracking-tight mb-4">{active.title}</h4>
+                    <p className="text-neutral-600 leading-relaxed max-w-2xl">{active.body}</p>
+                  </div>
+                  <figure className="relative rounded-2xl overflow-hidden aspect-[4/3] xl:aspect-[4/5] shadow-lg ring-1 ring-black/5">
+                    <img src={active.image} alt={active.caption} loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/75 to-transparent" />
+                    <figcaption className="absolute bottom-0 p-3 text-[11px] font-medium text-white leading-snug">{active.caption}</figcaption>
+                  </figure>
+                </div>
                 <div className="grid grid-cols-3 gap-4">
-                  {active.metrics.map(([k, v]) => (
+                  {(active.metrics as ReadonlyArray<readonly [string, string]>).map(([k, v]) => (
                     <div key={k} className="p-4 rounded-2xl bg-white border border-neutral-100">
                       <div className="text-sm font-bold text-neutral-900">{k}</div>
                       <div className="text-xs text-neutral-500">{v}</div>
@@ -487,6 +568,8 @@ export const PollinationIntelligenceSection = ({ variant = "in_land", formId }: 
       {/* ── Validation programme CTA ── */}
       <div className="container mx-auto px-4 max-w-6xl pb-28">
         <div className="relative rounded-[2.5rem] bg-neutral-950 text-white p-10 sm:p-14 overflow-hidden">
+          <img src={PHOTOS.acaciaCanopy} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-950/85 to-neutral-950/40" />
           <div className="absolute -bottom-32 -left-20 w-96 h-96 bg-beeyield-green/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -top-24 right-0 w-80 h-80 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative grid lg:grid-cols-[1fr_auto] gap-8 items-center">

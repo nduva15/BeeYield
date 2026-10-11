@@ -13,7 +13,6 @@ import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
-import { TechPhilosophySection } from "@/components/beeyield/FieldTrustSections";
 import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 import { GlobalPartnerNetworkSection } from "@/components/beeyield/GlobalPartnerNetworkSection";
 import { LeadershipSection } from "@/components/beeyield/LeadershipSection";
@@ -745,9 +744,6 @@ const OurStory = () => {
 
       {/* Tech that works for everyone — audience segments */}
       <AudienceSegmentsSection />
-
-      {/* How we think about technology — software & hardware */}
-      <TechPhilosophySection />
 
       {/* Building a global understanding of pollinators — partner network */}
       <GlobalPartnerNetworkSection />

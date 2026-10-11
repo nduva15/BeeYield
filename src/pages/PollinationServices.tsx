@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/accordion";
 import SEO from "@/components/SEO";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
-import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 
 const PollinationServices = () => {
 
@@ -65,7 +64,7 @@ const PollinationServices = () => {
 
     return (
         <BeeYieldPageShell className="bg-background">
-            <SEO 
+            <SEO
                 title="Precision Pollination & In-Land Pollination | Hives Per Acre Model"
                 description="BeeYield delivers precision pollination and in-land pollination across East Africa. Data-backed hives per acre models and in-hive pollination monitoring protecting bees and boosting crop yields."
                 keywords="precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, commercial pollination services, bee colony health, crop yield optimization"
@@ -286,6 +285,7 @@ const PollinationServices = () => {
             </section>
 
 
+
             {/* ═══════════════════════════════════════════════════════════════
                 ECOLOGICAL PROBLEM STATEMENT: THE DECLINE OF AFRICAN BEES & FOOD SECURITY
                 Clean Warm Ecological Theme (Non-Black, Premium Surface)
@@ -419,8 +419,6 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-            {/* Tech that works for everyone — audience segments */}
-            <AudienceSegmentsSection />
 
             {/* Pollination Stories Section - Replacing Art and Science Section */}
             <section className="py-24 bg-background relative overflow-hidden">
@@ -453,7 +451,7 @@ const PollinationServices = () => {
                 </div>
             </section>
 
-{/* The BeeYield Difference */}
+            {/* The BeeYield Difference */}
             <section className="py-32 bg-background relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-24 space-y-4">

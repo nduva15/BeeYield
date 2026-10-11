@@ -76,7 +76,7 @@ const CropsWePollinate = () => {
               <p className="max-w-xl text-lg text-neutral-600 font-medium leading-relaxed">
                 BeeYield helps farmers bring bees to their crops at the exact right moment when flowers bloom, helping trees grow more and bigger fruit.
               </p>
-                            {/* Timothy Nduva Executive Crop Quote */}
+              {/* Timothy Nduva Executive Crop Quote */}
               <div className="p-4 sm:p-5 rounded-2xl bg-white/95 border border-[#1B9157]/30 shadow-lg backdrop-blur-sm max-w-xl">
                 <div className="flex items-start gap-3">
                   <Quote className="w-5 h-5 text-[#1B9157] shrink-0 mt-0.5 fill-[#1B9157]/20" />
@@ -399,7 +399,7 @@ const CropsWePollinate = () => {
         </div>
       </section>
 
-      
+
     </BeeYieldPageShell>
   );
 };

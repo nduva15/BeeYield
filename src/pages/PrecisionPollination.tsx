@@ -18,6 +18,7 @@ import {
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { PollinationIntelligenceSection } from "@/components/pollination/PollinationIntelligenceSection";
+import { FramesPerAcreExplainer } from "@/components/FramesPerAcreExplainer";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -810,6 +811,9 @@ const PrecisionPollination = () => {
               </div>
           </div>
       </section>
+
+      {/* Frames per Acre — plain-language explainer (before the technical deep dive) */}
+      <FramesPerAcreExplainer variant="in_hive" />
 
       {/* ═══════════════════════════════════════════════════════════════
           IN-HIVE HIVES PER ACRE (HPA) MODEL DEEP DIVE

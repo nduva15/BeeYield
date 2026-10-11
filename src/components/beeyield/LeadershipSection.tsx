@@ -14,7 +14,18 @@ const Linkedin = ({ className }: { className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
 );
 
-const LEADERS = [
+type Leader = {
+  name: string;
+  role: string;
+  department: string;
+  description?: string;
+  image?: string;
+  linkedin: string;
+  email?: string;
+  tags?: string[];
+};
+
+const LEADERS: Leader[] = [
   {
     name: "Timothy Nduva",
     role: "CEO & Co-Founder",
@@ -29,21 +40,13 @@ const LEADERS = [
     name: "Carole Nduva",
     role: "Co-Founder & Chief Operating Officer (COO)",
     department: "Operations & Partnerships",
-    description: "Oversees operational logistics, commercial grower relationships, community expansion, and international honey export channels.",
-    image: undefined as string | undefined,
     linkedin: "https://linkedin.com/company/beeyield",
-    email: "carole@beeyield.com",
-    tags: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"],
   },
   {
     name: "Agatha Nduva",
     role: "Co-Founder & Chief Technology Officer (CTO)",
     department: "Engineering & IT Systems",
-    description: "Architects distributed telemetry infrastructure, real-time hive sensor networks, and tamper-proof honey traceability ledgers.",
-    image: undefined as string | undefined,
     linkedin: "https://linkedin.com/company/beeyield",
-    email: "agatha@beeyield.com",
-    tags: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"],
   },
 ];
 
@@ -121,11 +124,14 @@ export const LeadershipSection: React.FC = () => (
                   <ArrowRight className="w-4 h-4 text-primary opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </h3>
 
-                <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                  {member.description}
-                </p>
+                {member.description && (
+                  <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                    {member.description}
+                  </p>
+                )}
 
                 {/* Key Focus Tags */}
+                {member.tags && member.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-4">
                   {member.tags.map((tag) => (
                     <Badge
@@ -137,6 +143,7 @@ export const LeadershipSection: React.FC = () => (
                     </Badge>
                   ))}
                 </div>
+                )}
               </div>
 
               {/* Action Bar */}
@@ -158,13 +165,15 @@ export const LeadershipSection: React.FC = () => (
                   >
                     <Linkedin className="w-4 h-4" />
                   </a>
-                  <a
-                    href={`mailto:${member.email}`}
-                    aria-label={`Email ${member.name}`}
-                    className="w-8 h-8 rounded-full bg-muted hover:bg-foreground hover:text-background text-muted-foreground flex items-center justify-center transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </a>
+                  {member.email && (
+                    <a
+                      href={`mailto:${member.email}`}
+                      aria-label={`Email ${member.name}`}
+                      className="w-8 h-8 rounded-full bg-muted hover:bg-foreground hover:text-background text-muted-foreground flex items-center justify-center transition-colors"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
