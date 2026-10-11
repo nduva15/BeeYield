@@ -33,7 +33,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import beeyieldService, { Apiary, Hive } from '@/services/beeyieldService';
 import { useAuth } from '@/hooks/use-auth';
-import { BeeYieldOnboardingStep } from '@/lib/beeyieldOnboarding';
+import { BeeYieldOnboardingStep, isBeeYieldNewSignup } from '@/lib/beeyieldOnboarding';
 import { DeviceQrCameraScanner } from '@/components/common/DeviceQrCameraScanner';
 import { RecentDeviceReadingsView } from '@/components/common/RecentDeviceReadingsView';
 import {
@@ -186,6 +186,13 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   const [createdApiaryName, setCreatedApiaryName] = useState<string>(apiaries[0]?.name || '');
   const [createdHiveId, setCreatedHiveId] = useState<string>(hives[0]?.id || '');
   const [createdHiveCode, setCreatedHiveCode] = useState<string>(hives[0]?.hive_code || 'KIB-001');
+
+  // Safety: Existing clients as of today must never see this onboarding wizard
+  useEffect(() => {
+    if (user && !isBeeYieldNewSignup(user)) {
+      onComplete?.();
+    }
+  }, [user, onComplete]);
 
   useEffect(() => {
     setCurrentStep(initialStep);

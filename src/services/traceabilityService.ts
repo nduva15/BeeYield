@@ -235,9 +235,9 @@ export interface PublicTraceabilityBatch {
 
 const SPECIAL_CATALOG_PRODUCTS: Record<number, { name: string; flora: string; notes: string }> = {
     18: {
-        name: "BeeYield Acacia (Rare)",
-        flora: "Wild Acacia Blossom (Acacia mellifera)",
-        notes: "A rare monofloral extraction from hives deployed during peak flowering acacia trees in Kibwezi. Full enzyme preservation."
+        name: "BeeYield Acacia",
+        flora: "Wild Acacia Blossom",
+        notes: "A monofloral extraction from hives deployed during peak flowering acacia trees in Kibwezi. Full enzyme preservation."
     },
     19: {
         name: "BeeYield Acacia",
@@ -250,27 +250,27 @@ const SPECIAL_CATALOG_PRODUCTS: Record<number, { name: string; flora: string; no
         notes: "Harvested during peak blossom in our flagship Kibwezi woodland. Exceptional clarity and delicate sweetness."
     },
     21: {
-        name: "BeeYield Acacia (100% Raw)",
+        name: "BeeYield Premium Acacia",
         flora: "Wild Acacia Blossom (Naturally Grown)",
         notes: "Produced strictly without GMOs, synthetic miticides, or artificial feed. Verifiable 50% reserve retained for colony wintering."
     },
     22: {
-        name: "BeeYield Acacia (Limited Edition)",
+        name: "BeeYield Premium Acacia",
         flora: "Wild Acacia Blossom (Acacia tortilis)",
         notes: "Small-batch seasonal Acacia harvest from protected woodland corridors in Makueni."
     },
     23: {
-        name: "BeeYield Acacia (New Arrival)",
+        name: "BeeYield Acacia",
         flora: "Wild Acacia Blossom",
         notes: "Golden honey with a light floral aroma and gentle sweetness from managed smallholder apiary zones."
     },
     24: {
-        name: "BeeYield Acacia (Wellness)",
-        flora: "Wild Acacia Blossom & Savannah Flora",
-        notes: "Bioactive raw acacia honey gathered from wild acacia groves in Kibwezi. Preserves natural pollen granulates."
+        name: "BeeYield Acacia",
+        flora: "Wild Acacia Blossom",
+        notes: "Raw acacia honey gathered from wild acacia groves in Kibwezi. Preserves natural pollen granulates."
     },
     25: {
-        name: "BeeYield Acacia (Gold Label)",
+        name: "BeeYield Premium Acacia",
         flora: "Wild Acacia Blossom (Acacia senegal)",
         notes: "Pure liquid gold extracted during the dryland blooming surge with full hive-to-jar provenance."
     }

@@ -793,16 +793,10 @@ Team Page (beeyield.com/team):
 
 Shop Page (beeyield.com/shop):
 - Product categories: Honey, Hardware, Merch, Education.
-- HONEY PRODUCTS (8 items, all Acacia honey from Kibwezi):
+- HONEY PRODUCTS (All pure Acacia honey from Kibwezi):
   1. BeeYield Premium Acacia (Bestseller) — Batch: KIB-ACAC-121/111/101, Rating: 4.9 (245 reviews)
-  2. BeeYield Acacia (Premium) — Batch: KIB-WILD-122/112/102, Rating: 5.0 (182 reviews)
-  3. BeeYield Acacia (Rare) — Batch: KIB-FOR-123/113/103, Rating: 4.8 (96 reviews)
-  4. BeeYield Acacia (Limited Edition) — Batch: KIB-THORN-124/114/104, Rating: 4.9 (54 reviews)
-  5. BeeYield Acacia (100% Raw) — Batch: KIB-COMB-125/115/105, Rating: 5.0 (312 reviews)
-  6. BeeYield Acacia (New Arrival) — Batch: KIB-LAV-126/116/106, Rating: 4.7 (42 reviews)
-  7. BeeYield Acacia (Wellness) — Batch: KIB-GINGER-127/117/107, Rating: 4.8 (128 reviews)
-  8. BeeYield Acacia (Gold Label) — Batch: KIB-SIGN-128/118/108, Rating: 5.0 (15 reviews)
-- Honey Pricing: 250g at 250 KES, 500g at 500 KES, 1kg at 1,000 KES (all varieties same price).
+  2. BeeYield Acacia (Classic) — Batch: KIB-WILD-122/112/102, Rating: 5.0 (182 reviews)
+- Honey Pricing: 250g at 250 KES, 500g at 500 KES, 1kg at 1,000 KES (both varieties same price).
 - HARDWARE PRODUCTS (BeeHUB IoT Ecosystem, 8 items):
   1. BeeHUB Queen - Lora Pro (Gateway) — 38,500 KES. Primary gateway, manages multiple sensors, transmits via Satellite or GSM, solar charging.
   2. BeeHUB Sense Node (Sensor Node) — 12,500 KES. Internal hive monitoring, tracks temperature and humidity.

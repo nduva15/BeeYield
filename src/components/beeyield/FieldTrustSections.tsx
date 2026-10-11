@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   EyeOff, TrendingDown, CircleHelp, Route, Scale, Apple,
   KeyRound, ShieldCheck, BadgeCheck, Hexagon, Thermometer, BellRing,
-  Users, Flower2, ArrowRight, Activity,
+  Users, Flower2, ArrowRight,
   Eye, Truck, HandHeart,
 } from "lucide-react";
 
@@ -445,94 +445,4 @@ export const TechPhilosophySection = () => (
   </section>
 );
 
-/* ─────────────────────────────────────────────────────────────────────
-   4. CROPS — Every crop gets its own program
-───────────────────────────────────────────────────────────────────── */
 
-const PROGRAM_STEPS: IconCard[] = [
-  {
-    icon: CalendarDays,
-    title: "Timed to the bloom",
-    body: "We track each crop's flowering window so colonies arrive as the first flowers open, not a week early or a week late.",
-  },
-  {
-    icon: Gauge,
-    title: "Sized to the canopy",
-    body: "Our Hives per Acre model sets colony numbers by crop, flower density and tree age, so you pay for the bees the crop actually needs.",
-  },
-  {
-    icon: Activity,
-    title: "Watched through bloom",
-    body: "Sensor-equipped hives report colony strength and activity while they work, so a weak colony is spotted and swapped before it costs fruit set.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Recorded at petal fall",
-    body: "At the end of bloom you get a record of what was delivered: how many hives, for how long, and how they performed.",
-  },
-];
-
-export const CropProgramSection = () => (
-  <section
-    id="crop-programs"
-    aria-labelledby="crop-programs-title"
-    className="relative overflow-hidden bg-gradient-to-b from-white via-[#FFF7F9] to-[#FFF9F0] py-24 sm:py-28"
-  >
-    <div className="pointer-events-none absolute -right-32 -top-32 h-[460px] w-[460px] rounded-full bg-pink-100/60 blur-[120px]" />
-    <div className="pointer-events-none absolute -bottom-32 -left-32 h-[420px] w-[420px] rounded-full bg-amber-100/60 blur-[120px]" />
-
-    <div className="container relative z-10 mx-auto px-4">
-      <div className="mb-16 grid items-end gap-10 lg:grid-cols-2">
-        <motion.div {...fadeUp} transition={{ duration: 0.7 }} className="space-y-5">
-          <SectionEyebrow>Crop-Specific Pollination</SectionEyebrow>
-          <h2 id="crop-programs-title" className="text-4xl font-black leading-tight tracking-tighter text-neutral-900 md:text-5xl">
-            Every crop gets <span className="text-[#1B9157]">its own program.</span>
-          </h2>
-        </motion.div>
-        <motion.p {...fadeUp} transition={{ duration: 0.7, delay: 0.1 }} className="text-lg font-medium leading-relaxed text-neutral-600">
-          A mango panicle, an orange blossom and a sunflower head do not pollinate the same way. Each crop we
-          serve gets its own plan: timed to its bloom, sized to its canopy, and monitored until the last petal falls.
-        </motion.p>
-      </div>
-
-      <div className="mb-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {PROGRAM_STEPS.map((card, i) => (
-          <NumberedCard key={card.title} card={card} index={i} accent={i % 2 === 0 ? "green" : "amber"} />
-        ))}
-      </div>
-
-      {/* Grower visibility panel */}
-      <motion.div
-        {...fadeUp}
-        transition={{ duration: 0.7 }}
-        className="grid items-center gap-8 overflow-hidden rounded-[2.5rem] border border-[#1B9157]/20 bg-white p-8 shadow-xl shadow-emerald-900/5 sm:p-12 lg:grid-cols-[1.4fr_1fr]"
-      >
-        <div className="space-y-4">
-          <span className="text-xs font-black uppercase tracking-[0.2em] text-amber-700">For Growers</span>
-          <h3 className="text-2xl font-black tracking-tight text-neutral-900 md:text-3xl">
-            See what you paid for.
-          </h3>
-          <p className="font-medium leading-relaxed text-neutral-600">
-            Most farms rent hives without any objective way to know what they received. Under-pollinate and you
-            lose harvest. Over-spend and you never find out. With BeeYield you follow the colonies on your own
-            farm through the season, looking at the same data your beekeeper sees.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-          <Link
-            to="/pollination-request"
-            className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-[#1B9157] px-8 font-bold text-white shadow-lg shadow-[#1B9157]/20 transition-all hover:scale-[1.02] hover:bg-[#157746]"
-          >
-            Plan My Crop's Program <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            to="/precision-pollination"
-            className="inline-flex h-14 items-center justify-center rounded-full border-2 border-neutral-200 px-8 font-bold text-neutral-900 transition-colors hover:bg-[#F9F7F2]"
-          >
-            How Monitoring Works
-          </Link>
-        </div>
-      </motion.div>
-    </div>
-  </section>
-);
