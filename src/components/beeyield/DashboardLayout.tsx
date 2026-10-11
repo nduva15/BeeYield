@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import GlassSidebar from './GlassSidebar';
 import { NavItem } from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
-import DashboardFooter from './DashboardFooter';
 import QuickActionModal from './QuickActionModal';
 import FirstStepsBanner from './FirstStepsBanner';
 import ToolSidebar, { type ToolGroup } from './lovable_ai/ToolSidebar';
@@ -203,8 +202,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         >
                             {children}
                         </motion.div>
-                        {/* Full Dashboard Footer */}
-                        <DashboardFooter onTabChange={onTabChange} />
                     </div>
                 </div>
             </main>
