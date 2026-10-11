@@ -416,7 +416,7 @@ const ESG = () => {
                   Biodiversity Stewardship & Carbon Offsets
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Through precision pollination across 105 and counting client acres and the restoration of 2,500+ indigenous trees in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
+                  Through precision pollination across 105 and counting client acres and 2,500 indigenous trees planted so far toward our 45,000-tree goal in Makueni County, we have sequestered 3 tons of CO₂. Continuous under-hive load-cell telemetry verifies nectar flow rates without disrupting colony homeostasis.
                 </p>
                 <div className="grid grid-cols-2 gap-6 pt-4 border-t border-neutral-200">
                   <div>
@@ -424,28 +424,44 @@ const ESG = () => {
                     <p className="text-xs font-semibold text-neutral-500 mt-1">Carbon Sequestered</p>
                   </div>
                   <div>
-                    <span className="text-3xl font-black text-beeyield-green">2,500+</span>
-                    <p className="text-xs font-semibold text-neutral-500 mt-1">Indigenous Trees Planted</p>
+                    <span className="text-3xl font-black text-beeyield-green">2,500</span>
+                    <p className="text-xs font-semibold text-neutral-500 mt-1">Trees Planted of 45,000 Goal</p>
                   </div>
                 </div>
               </div>
-              <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
+              <div className="group rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
                 <img
-                  src={ESG_IMAGES.hiveScale}
-                  alt="Precision electronic hive scale load cell mounted under wooden hive"
-                  className="w-full h-full object-cover"
+                  src="/images/story/hives/hanging-log-hives-canopy.jpg"
+                  alt="Traditional log hives hanging from the branches of an acacia tree at our Kibwezi apiary"
+                  loading="lazy"
+                  className="w-full h-full object-cover object-[center_40%] group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
             </div>
 
             {/* Pillar 2: Social Impact & Smallholder Inclusion */}
             <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="order-2 lg:order-1 rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
-                <img
-                  src={ESG_IMAGES.beeColonyWide}
-                  alt="Dense African bee colony thriving around in-hive sensor probe"
-                  className="w-full h-full object-cover"
-                />
+              <div className="order-2 lg:order-1 relative group">
+                <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border border-neutral-200 aspect-[4/3] bg-neutral-900">
+                  <img
+                    src="/images/pollination/mango-orange-farm-wide.jpg"
+                    alt="BeeYield partner mango and citrus plantation in Makueni, Kenya, with a baobab on the boundary"
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-t from-neutral-950/60 via-transparent to-transparent" />
+                  <p className="absolute bottom-6 left-6 text-white font-bold text-sm sm:text-base">
+                    Mango plantation · Makueni, Kenya
+                  </p>
+                </div>
+                <div className="hidden sm:block absolute -bottom-6 -right-4 w-32 md:w-40 aspect-[3/4] rounded-3xl overflow-hidden border-4 border-white shadow-xl">
+                  <img
+                    src="/images/pollination/mango-bloom-canopy-wide.jpg"
+                    alt="Mango tree in full bloom with flowering panicles ready for pollination"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
               <div className="order-1 lg:order-2 space-y-6">
                 <Badge className="bg-amber-100 text-amber-800 border-none font-bold text-[10px]">

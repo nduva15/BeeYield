@@ -337,16 +337,16 @@ const Impact = () => {
   };
 
   const stats = [
-    { label: "IoT Devices Deployed", value: "22", icon: Radio, color: "text-[#1B9157]", bg: "bg-emerald-50" },
-    { label: "Acres Pollinated", value: "105+", icon: Sprout, color: "text-[#F4D03F]", bg: "bg-amber-50" },
-    { label: "Carbon Offset", value: "3t", icon: TreePine, color: "text-lime-600", bg: "bg-lime-50" },
-    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-amber-600", bg: "bg-amber-50" },
-    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-[#1B9157]", bg: "bg-emerald-50" },
-    { label: "Integrity Score", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "IoT Devices Deployed", value: "22", icon: Radio, color: "text-[#1B9157]", bg: "bg-green-100" },
+    { label: "Acres Pollinated", value: "105+", icon: Sprout, color: "text-yellow-600", bg: "bg-yellow-100" },
+    { label: "Carbon Offset", value: "3t", icon: TreePine, color: "text-indigo-600", bg: "bg-indigo-100" },
+    { label: "Bees Protected", value: "2.4M+", icon: Bug, color: "text-orange-600", bg: "bg-orange-100" },
+    { label: "Trees Planted", value: "2,500+", icon: TreePine, color: "text-purple-600", bg: "bg-purple-100" },
+    { label: "Integrity Score", value: "99.9%", icon: ShieldCheck, color: "text-blue-600", bg: "bg-blue-100" },
   ];
 
   return (
-    <BeeYieldPageShell className="min-h-screen bg-[#fdfbf6] p-0">
+    <BeeYieldPageShell className="min-h-screen bg-background p-0">
       <SEO
         title="Ecological & Agricultural Impact | Protecting Bees"
         description="Measurable impact of BeeYield: 2.4M+ bees protected, 105+ acres pollinated with calibrated hives per acre models, 2,500+ trees planted, and sustainable apiary support."
@@ -357,7 +357,7 @@ const Impact = () => {
       {/* ═══════════════════════════════════════════════════════════════
           1. HERO SECTION — Real Honeybee Colony on Sensor Background
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative py-24 overflow-hidden border-b border-neutral-100">
         <StoryHeroBackground />
 
         <div className="container mx-auto px-4 relative z-10">
@@ -366,38 +366,30 @@ const Impact = () => {
             animate={{ opacity: 1, y: 0 }}
             className="max-w-4xl mx-auto text-center"
           >
-            <Badge variant="outline" className="mb-6 px-4 py-1.5 border-beeyield-gold/30 text-beeyield-gold bg-beeyield-gold/5 font-semibold text-sm">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               <Globe className="w-3 h-3 mr-2" />
               Verified Impact Data
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] mb-8 tracking-tighter leading-[0.95]">
-              Ecological <span className="text-beeyield-green">Impact.</span> <br />
-              <span className="text-beeyield-gold italic">Quantified.</span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight text-foreground">
+              Ecological Impact, <br /> Quantified
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium mb-12">
-              22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries — zero AI imagery.
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed mb-8">
+              22 IoT devices deployed. 105 and counting acres precision-pollinated. 3 tons of carbon offset. Every metric is backed by authentic sensor data from our Kenyan apiaries.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <button
-                onClick={handleDownloadImpactReport}
-                disabled={downloading}
-                className="group relative inline-flex items-center gap-3 bg-[#FFF9F0] text-[#1A1A1A] px-8 py-4 rounded-2xl font-black shadow-2xl hover:bg-slate-800 transition-all disabled:opacity-50 h-16"
-              >
-                <div className="absolute -inset-1 bg-gradient-to-r from-beeyield-gold to-beeyield-green rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
-                {downloading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Verifying Data...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-5 w-5" />
-                    Download Official Record
-                  </>
-                )}
-              </button>
-            </div>
+            <Button size="lg" className="shadow-xl h-14 text-lg" onClick={handleDownloadImpactReport} disabled={downloading}>
+              {downloading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Verifying Data...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-5 w-5" />
+                  Download Official Record
+                </>
+              )}
+            </Button>
           </motion.div>
         </div>
       </section>
@@ -405,9 +397,13 @@ const Impact = () => {
       {/* ═══════════════════════════════════════════════════════════════
           2. LIVE METRICS GRID (6 Verified Metrics)
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="pb-24">
+      <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4 text-foreground">Our impact in numbers</h2>
+            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -416,13 +412,13 @@ const Impact = () => {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="border-none shadow-soft rounded-[2.5rem] bg-[#FFF9F0] overflow-hidden group hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
-                  <CardContent className="p-8">
-                    <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
-                      <stat.icon className="h-7 w-7" />
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
+                  <CardContent className="p-6">
+                    <div className={`${stat.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}>
+                      <stat.icon className={`h-6 w-6 ${stat.color}`} />
                     </div>
-                    <h3 className="text-4xl font-black text-[#1A1A1A] mb-2 tracking-tighter">{stat.value}</h3>
-                    <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
+                    <h3 className="text-3xl font-bold mb-1 text-foreground">{stat.value}</h3>
+                    <p className="text-muted-foreground text-sm">{stat.label}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -434,16 +430,16 @@ const Impact = () => {
       {/* ═══════════════════════════════════════════════════════════════
           3. REAL FIELD EVIDENCE — Multiple 3-Photo Slideshows
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-neutral-950 text-white">
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge className="bg-beeyield-green/20 text-beeyield-green border-none mb-4 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+            <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
               100% Authentic Photography
             </Badge>
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">
-              Real Field <span className="text-beeyield-green">Evidence.</span>
+            <h2 className="text-4xl font-bold mb-4 text-foreground">
+              Real Field Evidence
             </h2>
-            <p className="text-neutral-400 text-lg font-medium">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               4 curated 3-photo slideshows documenting 22 deployed IoT hardware stations, live colony populations, in-hive bio-sensors, and precision continuous scales across Kenya.
             </p>
           </div>
@@ -478,7 +474,7 @@ const Impact = () => {
               badge="Hardware Grid"
               title="22 IoT Deployed Stations"
               subtitle="Solar antennas & hive stands"
-              dark={true}
+              dark={false}
             />
 
             {/* Slideshow 2: Colony Health & Biocompatibility */}
@@ -509,7 +505,7 @@ const Impact = () => {
               badge="Colony Health"
               title="Bio-Sensors & Bees"
               subtitle="Colony vitality & zero rejection"
-              dark={true}
+              dark={false}
             />
 
             {/* Slideshow 3: Bio-Telemetry Diagnostics */}
@@ -540,7 +536,7 @@ const Impact = () => {
               badge="Bio-Telemetry"
               title="In-Hive Bio-Sensors"
               subtitle="Acoustic & thermal sampling"
-              dark={true}
+              dark={false}
             />
 
             {/* Slideshow 4: Scales, Comb & Disease Detection */}
@@ -571,7 +567,7 @@ const Impact = () => {
               badge="Disease Defense"
               title="Scales & Disease Detection"
               subtitle="Continuous weighing & pathogen defense"
-              dark={true}
+              dark={false}
             />
 
           </div>
@@ -581,8 +577,8 @@ const Impact = () => {
       {/* ═══════════════════════════════════════════════════════════════
           4. NARRATIVE SECTION (Radical Ecological Transparency)
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-[#FFF9F0]">
-        <div className="container mx-auto px-4">
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
             <motion.div
@@ -590,18 +586,19 @@ const Impact = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl group aspect-[4/5] bg-neutral-900">
-                <img
-                  src={IMPACT_IMAGES.deployedHive2}
-                  alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
-                <div className="absolute bottom-10 left-10 text-white">
-                  <p className="text-sm font-semibold mb-2">Location: Makueni, Kenya</p>
-                  <h4 className="text-2xl font-bold">22 Devices. 105+ Acres. Real Impact.</h4>
+              <Card className="border-none shadow-lg overflow-hidden">
+                <div className="aspect-[4/5] bg-muted">
+                  <img
+                    src={IMPACT_IMAGES.deployedHive2}
+                    alt="BeeYield IoT hive with antenna device deployed on traditional Kenyan beehive"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              </div>
+                <CardContent className="p-6">
+                  <p className="text-sm text-muted-foreground mb-1">Location: Makueni, Kenya</p>
+                  <h4 className="text-xl font-bold text-foreground">22 Devices. 105+ Acres. Real Impact.</h4>
+                </CardContent>
+              </Card>
             </motion.div>
 
             <motion.div
@@ -611,47 +608,37 @@ const Impact = () => {
               className="space-y-10"
             >
               <div>
-                <h2 className="text-3xl md:text-5xl font-black text-[#1A1A1A] mb-6 tracking-tighter">
-                  Radical Ecological <br />Transparency.
+                <h2 className="text-4xl font-bold mb-6 text-foreground">
+                  Radical Ecological Transparency
                 </h2>
-                <p className="text-lg text-slate-600 leading-relaxed font-medium">
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   We don't just harvest honey; we steward a biome. With 22 IoT devices deployed across 105 and counting acres of precision-pollinated farmland and 3 tons of carbon offset through 2,500+ native trees, our impact is verifiable from satellite to in-hive sensor.
                 </p>
               </div>
 
-              <div className="space-y-8">
-                <div className="p-6 rounded-[2.5rem] bg-emerald-50 border border-[#1B9157]">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-[#1B9157] text-sm">Habitat health</span>
-                    <span className="font-black text-[#1B9157]">95%</span>
+              <div className="space-y-4">
+                {[
+                  { label: "Habitat health", value: 95 },
+                  { label: "Chemical-free index", value: 100 },
+                  { label: "Acoustic health baseline", value: 88 },
+                ].map((m) => (
+                  <div key={m.label} className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-medium text-foreground text-sm">{m.label}</span>
+                      <span className="font-bold text-primary">{m.value}%</span>
+                    </div>
+                    <Progress value={m.value} className="h-2" />
                   </div>
-                  <Progress value={95} className="h-3 bg-emerald-100" />
-                </div>
-
-                <div className="p-6 rounded-[2.5rem] bg-beeyield-gold/5 border border-beeyield-gold/10">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-[#D4AC0D] text-sm">Chemical-free index</span>
-                    <span className="font-black text-beeyield-gold">100%</span>
-                  </div>
-                  <Progress value={100} className="h-3 bg-amber-100" />
-                </div>
-
-                <div className="p-6 rounded-[2.5rem] bg-blue-50 border border-blue-100">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="font-semibold text-blue-800 text-sm">Acoustic health baseline</span>
-                    <span className="font-black text-blue-700">88%</span>
-                  </div>
-                  <Progress value={88} className="h-3 bg-blue-100" />
-                </div>
+                ))}
               </div>
 
-              <div className="flex items-center gap-6 pt-6">
-                <div className="h-14 w-14 rounded-2xl bg-[#FFF9F0] flex items-center justify-center text-[#1A1A1A] shadow-xl">
-                  <Zap className="w-6 h-6" />
+              <div className="flex items-center gap-3 font-medium text-foreground">
+                <div className="bg-orange-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                  <Zap className="h-6 w-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#1A1A1A]">Live data sync</p>
-                  <p className="text-xs text-slate-400 font-medium">Data synced from 22 IoT sensor nodes</p>
+                  <p className="text-sm font-semibold">Live data sync</p>
+                  <p className="text-xs text-muted-foreground">Data synced from 22 IoT sensor nodes</p>
                 </div>
               </div>
             </motion.div>
@@ -663,85 +650,83 @@ const Impact = () => {
       {/* ───────────────────────────────────────────────────────────────
           DEDICATED REFORESTATION LINK: PROJECT PANDA MITI
       ─────────────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-neutral-950 text-white border-y border-neutral-800">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="p-8 sm:p-10 rounded-[2.5rem] bg-gradient-to-r from-emerald-950 via-neutral-900 to-emerald-950 border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="space-y-3 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold uppercase tracking-wider">
-                <TreePine className="w-3.5 h-3.5 text-emerald-400" />
-                Featured Ecological Initiative
-              </div>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Project Panda Miti: 45,000 Trees for Kibwezi
-              </h3>
-              <p className="text-sm sm:text-base text-neutral-300 max-w-xl leading-relaxed">
-                2,500+ indigenous trees already planted to revive microclimates, recharge groundwater, and provide continuous nectar and pollen sanctuaries for bees.
-              </p>
-            </div>
-            <Button size="lg" asChild className="bg-beeyield-green text-neutral-950 font-bold hover:bg-emerald-400 rounded-full px-8 shrink-0 shadow-lg">
-              <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="w-4 h-4 ml-2" /></Link>
-            </Button>
+      <section className="py-20 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 mb-4 text-sm font-medium opacity-90">
+            <TreePine className="h-4 w-4" />
+            Featured Ecological Initiative
           </div>
+          <h2 className="text-3xl font-bold mb-6">Project Panda Miti: 45,000 Trees for Kibwezi</h2>
+          <p className="text-lg opacity-90 leading-relaxed mb-8">
+            2,500+ indigenous trees already planted to revive microclimates, recharge groundwater, and provide continuous nectar and pollen sanctuaries for bees.
+          </p>
+          <Button variant="secondary" asChild className="gap-2 font-bold">
+            <Link to="/panda-miti">Explore Project Panda Miti <ArrowRight className="h-4 w-4" /></Link>
+          </Button>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           5. 2030 BIOSPHERE ROADMAP
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-[#FFF9F0] text-[#1A1A1A] overflow-hidden relative">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mb-20">
-            <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter">The 2030 <br />Biosphere Roadmap.</h2>
-            <p className="text-slate-400 text-lg font-medium leading-relaxed">
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold mb-4 text-foreground">The 2030 Biosphere Roadmap</h2>
+            <p className="text-muted-foreground">
               Our architecture is designed for scale. Building on 22 deployed devices, 105 and counting acres pollinated, and 3 tons of carbon offset, we aim to be the digital backbone for ethical apiculture across Sub-Saharan Africa.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {[
-              { title: "Scale up", desc: "Support 10,000 additional beehives with real-time IoT monitoring.", icon: Bug },
-              { title: "Tree tracking", desc: "Track 100k native trees with ground sensor nodes and satellite telemetry.", icon: TreePine },
-              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar IoT micro-grids.", icon: Zap },
-              { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe },
+              { title: "Scale up", desc: "Support 10,000 additional beehives with real-time IoT monitoring.", icon: Bug, bg: "bg-orange-100", color: "text-orange-600" },
+              { title: "Tree tracking", desc: "Track 100k native trees with ground sensor nodes and satellite telemetry.", icon: TreePine, bg: "bg-green-100", color: "text-[#1B9157]" },
+              { title: "Zero-Watt", desc: "100% carbon-neutral processing through solar IoT micro-grids.", icon: Zap, bg: "bg-yellow-100", color: "text-yellow-600" },
+              { title: "Global Hive", desc: "Expand to 200+ partner beekeepers in rural emerging markets.", icon: Globe, bg: "bg-blue-100", color: "text-blue-600" },
             ].map((item, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-[2.5rem] bg-[#F9F7F2] border border-[#F4D03F]/20 backdrop-blur-md"
               >
-                <item.icon className="h-8 w-8 text-beeyield-gold mb-6" />
-                <h4 className="text-xl font-bold mb-4">{item.title}</h4>
-                <p className="text-sm text-gray-700 leading-relaxed font-medium">{item.desc}</p>
+                <Card className="border-none shadow-lg hover:shadow-xl transition-all h-full">
+                  <CardContent className="p-6">
+                    <div className={`${item.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}>
+                      <item.icon className={`h-6 w-6 ${item.color}`} />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-foreground">{item.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
           </div>
         </div>
-
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-beeyield-green/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════
           6. IMPACT CTA
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-24 bg-[#FFF9F0] border-b border-slate-100">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto">
-            <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-8">
-              <Heart className="w-10 h-10 text-beeyield-green" />
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="bg-secondary/30 p-10 md:p-12 rounded-2xl border border-secondary text-center max-w-3xl mx-auto">
+            <div className="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Heart className="h-7 w-7 text-[#1B9157]" />
             </div>
-            <h3 className="text-3xl md:text-4xl font-black text-[#1A1A1A] mb-6">Invest in Planetary Health.</h3>
-            <p className="text-slate-500 mb-10 text-lg">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Invest in Planetary Health</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
               Whether you're a consumer, partner, or researcher, you're part of this ecosystem. 22 devices deployed. 105 and counting acres served. 3 tons of carbon offset. Let's make every drop count.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/contact" className="px-8 py-4 bg-neutral-900 text-white rounded-2xl font-black shadow-xl hover:bg-neutral-800 transition-all flex items-center gap-2">
-                Contact the Hive <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link to="/global-hive-network" className="px-8 py-4 bg-white text-neutral-900 border-2 border-neutral-200 rounded-2xl font-black hover:bg-neutral-50 transition-all">
-                Join our Global Hive Network
-              </Link>
+              <Button size="lg" asChild className="shadow-xl gap-2">
+                <Link to="/contact">Contact the Hive <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link to="/global-hive-network">Join our Global Hive Network</Link>
+              </Button>
             </div>
           </div>
         </div>
