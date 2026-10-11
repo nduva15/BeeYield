@@ -439,34 +439,50 @@ const OurStory = () => {
       {/* ═══════════════════════════════════════════════════════════════
           4. THE UNCOMFORTABLE TRUTH
       ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden py-20 sm:py-28 bg-[#0A2612] text-white">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#1B9157] rounded-full blur-3xl -mr-40 -mt-40 opacity-25" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F4D03F] rounded-full blur-3xl -ml-40 -mb-40 opacity-15" />
+      <section className="relative overflow-hidden py-20 sm:py-28 bg-white border-b border-neutral-100">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-beeyield-green/10 rounded-full blur-3xl -mr-40 -mt-40" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-amber-300/20 rounded-full blur-3xl -ml-40 -mb-40" />
+        <div className="absolute top-16 left-1/2 text-primary/5 hidden lg:block">
+          <Hexagon size={140} strokeWidth={1} />
+        </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-start">
             <motion.div {...fadeUp}>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-300 mb-5">Here is the uncomfortable truth</p>
-              <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-                We are not only losing bees. <span className="text-[#F4D03F]">We are losing beekeepers.</span>
+              <Badge className="bg-beeyield-green/10 text-beeyield-green border-none mb-5 px-4 py-1.5 font-semibold text-[10px] uppercase tracking-wider">
+                Here is the uncomfortable truth
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-foreground">
+                We are not only losing bees. <span className="text-primary">We are losing beekeepers.</span>
               </h2>
             </motion.div>
-            <motion.div {...fadeUp} className="space-y-5 text-neutral-300 text-base sm:text-lg leading-relaxed">
+            <motion.div {...fadeUp} className="space-y-5 text-muted-foreground text-base sm:text-lg leading-relaxed">
               <p>
                 Pesticide drift, drought and unpredictable honey prices make keeping colonies alive harder every year.
                 When a beekeeper gives up, the hives go with them. Fewer hives means less pollination, and less pollination
                 means smaller mango and avocado harvests for the farmers next door.
               </p>
-              <p className="text-white font-semibold">It is a structural cycle, not a bad season.</p>
+              <p className="text-foreground font-semibold">It is a structural cycle, not a bad season.</p>
               <p>
                 A gadget will not fix that, and neither will squeezing beekeepers harder. What fixes it is making
                 beekeeping a business worth staying in. That means giving experienced beekeepers better information and
                 more time, keeping the data with the farmers who produce it, and proving everything in our own apiary before
                 we sell it to anyone else.
               </p>
-              <div className="flex items-start gap-3 pt-4 border-t border-white/10">
-                <Quote className="h-6 w-6 text-[#1B9157] shrink-0 mt-1" />
-                <p className="text-white text-xl font-bold">That is the company we set out to build.</p>
-              </div>
+              <figure className="relative mt-2 rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-beeyield-green/5 p-6 shadow-sm">
+                <Quote className="absolute -top-4 left-6 h-8 w-8 p-1.5 rounded-full bg-beeyield-green text-white shadow-md" />
+                <blockquote className="text-foreground text-xl font-bold pt-2">
+                  “That is the company we set out to build.”
+                </blockquote>
+                <figcaption className="mt-4 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-beeyield-green text-white font-black text-sm">
+                    TN
+                  </span>
+                  <span className="leading-tight">
+                    <span className="block text-sm font-bold text-foreground">Timothy Nduva</span>
+                    <span className="block text-xs text-muted-foreground">Co-founder, BeeYield</span>
+                  </span>
+                </figcaption>
+              </figure>
             </motion.div>
           </div>
         </div>
