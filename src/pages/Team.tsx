@@ -168,7 +168,7 @@ const Team = () => {
             role: "Co-Founder & Chief Operating Officer (COO)",
             department: "Operations & Partnerships",
             description: "Master of operational logistics, partner engineering, and agricultural scaling. Carole leads BeeYield's community expansion, smallholder fair-pay contracts, and international export channels.",
-            image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
+            image: undefined as string | undefined,
             linkedin: "https://linkedin.com/company/beeyield",
             email: "carole@beeyield.com",
             achievements: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"]
@@ -178,7 +178,7 @@ const Team = () => {
             role: "Co-Founder & Chief Technology Officer (CTO)",
             department: "Engineering & IT Systems",
             description: "Pioneer in distributed systems, hive sensor telemetry, and cryptographic data security. Agatha ensures every byte of bee telemetry from Kibwezi bee boxes is secured, verified, and mapped with high fidelity.",
-            image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=600",
+            image: undefined as string | undefined,
             linkedin: "https://linkedin.com/company/beeyield",
             email: "agatha@beeyield.com",
             achievements: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"]
@@ -592,14 +592,22 @@ const Team = () => {
                             >
                                 {/* Media / Portrait View */}
                                 <div className="relative aspect-[4/5] m-3.5 rounded-[2rem] overflow-hidden bg-neutral-100 dark:bg-neutral-800 shadow-inner">
-                                    <img 
-                                        src={member.image} 
-                                        alt={member.name} 
-                                        className={cn(
-                                            "w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105",
-                                            member.image === LOGO ? "opacity-10 p-12" : ""
-                                        )}
-                                    />
+                                    {member.image ? (
+                                        <img 
+                                            src={member.image} 
+                                            alt={member.name} 
+                                            className={cn(
+                                                "w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105",
+                                                member.image === LOGO ? "opacity-10 p-12" : ""
+                                            )}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-beeyield-green">
+                                            <span className="text-6xl font-black text-white">
+                                                {member.name.split(" ").map((n: string) => n[0]).join("")}
+                                            </span>
+                                        </div>
+                                    )}
                                     {/* Subtle Gradient Scrim at Bottom of Photo */}
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
@@ -738,14 +746,22 @@ const Team = () => {
                         {selectedMember && (
                             <div className="flex flex-col md:flex-row bg-white">
                                 <div className="md:w-5/12 relative aspect-[4/5] bg-neutral-900 shrink-0 overflow-hidden">
-                                    <img 
-                                        src={selectedMember.fieldImage && memberPhotoTab === "field" ? selectedMember.fieldImage : selectedMember.image} 
-                                        alt={selectedMember.name} 
-                                        className={cn(
-                                            "w-full h-full object-cover transition-all duration-500",
-                                            selectedMember.image === LOGO ? "opacity-10 p-12" : ""
-                                        )}
-                                    />
+                                    {selectedMember.image || (selectedMember.fieldImage && memberPhotoTab === "field") ? (
+                                        <img 
+                                            src={selectedMember.fieldImage && memberPhotoTab === "field" ? selectedMember.fieldImage : selectedMember.image} 
+                                            alt={selectedMember.name} 
+                                            className={cn(
+                                                "w-full h-full object-cover transition-all duration-500",
+                                                selectedMember.image === LOGO ? "opacity-10 p-12" : ""
+                                            )}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-beeyield-green">
+                                            <span className="text-7xl font-black text-white">
+                                                {selectedMember.name.split(" ").map((n: string) => n[0]).join("")}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent pointer-events-none" />
                                     
                                     {selectedMember.fieldImage && (
