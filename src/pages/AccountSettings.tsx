@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import TwoFactorSetup from '@/components/auth/TwoFactorSetup';
 import BeeYieldLoginForm from '@/components/auth/beeyield/BeeYieldLoginForm';
 import BeeYieldRegisterForm from '@/components/auth/beeyield/BeeYieldRegisterForm';

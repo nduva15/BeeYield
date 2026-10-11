@@ -9,7 +9,8 @@ import {
     ShieldCheck,
     Flower2,
     Activity,
-    Gauge
+    Gauge,
+    TrendingUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { calculatePollinationMetrics, CalculationInputs } from '@/lib/pollinationCalculations';

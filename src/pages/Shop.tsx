@@ -30,7 +30,8 @@ import {
   QrCode,
   ArrowRight,
   CheckCircle2,
-  Check
+  Check,
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandedProductImage } from "@/components/BrandedProductImage";

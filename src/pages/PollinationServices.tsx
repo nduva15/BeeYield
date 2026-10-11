@@ -290,13 +290,8 @@ const PollinationServices = () => {
                 ECOLOGICAL PROBLEM STATEMENT: THE DECLINE OF AFRICAN BEES & FOOD SECURITY
                 Clean Warm Ecological Theme (Non-Black, Premium Surface)
             ═══════════════════════════════════════════════════════════════ */}
-            <section id="african-pollinator-crisis" className="py-24 sm:py-32 bg-gradient-to-b from-[#F5FAF5] via-[#EDF6EC] to-[#E5F2E4] text-stone-900 relative overflow-hidden border-y border-emerald-100/90" aria-label="African Bee Decline and Ecological Emergency Problem Statement">
-                {/* Soft ambient natural luminous orbs */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    <div className="absolute -top-32 left-1/4 w-[600px] h-[600px] bg-emerald-200/40 rounded-full blur-[130px]" />
-                    <div className="absolute top-1/2 -right-32 w-[550px] h-[550px] bg-amber-200/35 rounded-full blur-[140px]" />
-                    <div className="absolute -bottom-24 left-1/3 w-[500px] h-[500px] bg-teal-100/50 rounded-full blur-[120px]" />
-                </div>
+            <section id="african-pollinator-crisis" className="py-24 sm:py-32 bg-white text-stone-900 relative overflow-hidden border-y border-stone-100" aria-label="African Bee Decline and Ecological Emergency Problem Statement">
+
 
                 <div className="container mx-auto px-4 sm:px-6 relative z-10">
                     <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
