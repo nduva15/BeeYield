@@ -4,7 +4,7 @@
  * Strict User Isolation & Domain Synthesis:
  * 1. User-Aware Context Resolution:
  *    - If Timothy Nduva: Full canonical portfolio (184 Managed Langstroth Hives in Kibwezi,
- *      150 active producing colonies, 34 standby stands, exactly 843.0 kg KEBS export certified
+ *      184 active producing colonies, exactly 843.0 kg KEBS export certified
  *      raw honey across 423 batches 2020–2026, IoT Apisense nodes).
  *    - If a New User / Other User: Strictly loads and displays THEIR OWN records (their apiaries,
  *      their hives, their harvest batches, their sensor nodes). NEVER leaks Timothy's data
@@ -230,7 +230,7 @@ export async function getCebaTelemetryContext(
     });
     apiaries = Array.from(apiaryMap.values());
 
-    // Map Timothy's full 184 Langstroth stands (150 active producing colonies, 34 standby stands)
+    // Map Timothy's full 184 Langstroth stands (184 active producing colonies)
     const canonicalHives: Hive[] = CANONICAL_TIMOTHY_HIVES.map((uh, idx) => ({
       id: uh.id,
       hive_code: uh.code || uh.hive_code || `KIB-${String(idx + 1).padStart(3, "0")}`,
@@ -331,7 +331,7 @@ export async function getCebaTelemetryContext(
     isTimothy,
     isGuest,
     totalHives: hives.length,
-    activeHives: isTimothy ? 150 : activeHivesCount,
+    activeHives: isTimothy ? 184 : activeHivesCount,
     totalYieldKg: isTimothy ? 843.0 : Number(totalYieldKg.toFixed(2)),
     totalBatches: isTimothy ? 423 : (batches.length || harvests.length),
   };
@@ -605,7 +605,7 @@ export function buildCebaContextPrompt(ctx: CebaTelemetryContext): string {
 [CURRENT CEBA AI LIVE APICULTURAL CONTEXT]:
 AUTHENTICATED USER: Timothy Nduva (info@beeyield.com) — Master Apiculturist & Lead Commercial Beekeeper
 APIARY SCOPE: BeeYield Apiary in Kibwezi, Makueni County, Kenya
-COMMERCIAL PORTFOLIO: 184 Managed Langstroth Hives (150 Active Producing Colonies, 34 Standby Stands)
+COMMERCIAL PORTFOLIO: 184 Managed Langstroth Hives (184 Active Producing Colonies)
 CERTIFIED HARVEST YIELD: Exactly 843.0 kg KEBS Export Certified Raw Honey across 423 Batches (2020–2026)
 ANNUAL PROGRESSION BREAKDOWN:
 - 2020: 13.0 kg (7 batches) — Wildflower Pioneer
@@ -617,7 +617,7 @@ ANNUAL PROGRESSION BREAKDOWN:
 - 2026: 60.0 kg (30 batches, Jan 3–10 extraction window) — Early Spring Acacia Blossom
 - Cumulative Grand Total: EXACTLY 843.0 kg (<18% moisture index, cold-extracted <34°C, SHA-256 Ledger Verified).
 
-### 🐝 1. ACTIVE HIVES & FLEET STATUS (184 TOTAL STANDS, 150 ACTIVE COLONIES)
+### 🐝 1. ACTIVE HIVES & FLEET STATUS (184 TOTAL STANDS, 184 ACTIVE COLONIES)
 ${sampleHives}
 *(Showing sample of 184 managed Langstroth hive stands: KIB-001 to KIB-184 in Kibwezi)*
 

@@ -9372,6 +9372,8 @@ export default function ApiariesPage({
   onSelectApiary?: (apiary: ApiarySite) => void;
 }) {
   const { user, profile } = useAuth();
+  const isTimothy = isTimothyUser(user, profile);
+  const authenticatedUserName = getAuthenticatedUserName(user, profile);
   const deviceId = useDeviceId();
   const userKey = user?.id || deviceId || "default_user";
 
@@ -9396,7 +9398,7 @@ export default function ApiariesPage({
     } catch {
       // fallback
     }
-    return (isTimothyUser(user, profile) || !user?.id)
+    return (isTimothy || !user?.id)
       ? deduplicateApiaries(
           DEFAULT_APIARIES.map((item) => {
             const normalized = normalizeApiarySite(item);
@@ -9473,12 +9475,12 @@ export default function ApiariesPage({
     latitude: -2.409,
     longitude: 37.967,
     type: "Commercial Apiary",
-    active_hives: 150,
+    active_hives: 184,
     total_hives: 184,
     size_acres: 5,
     forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     status: "Optimal" as "Optimal" | "Threatened" | "Watch" | "Maintenance",
-    notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
+    notes: "Lead Beekeeper: Timothy Nduva. 184 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya.",
   });
 
   // Load user apiaries from Supabase and sync with localStorage
@@ -9894,7 +9896,7 @@ export default function ApiariesPage({
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h1 className="font-display text-lg sm:text-xl font-bold tracking-tight text-foreground">
-                      Apisense • Apiary Stations
+                      {isTimothy ? "Timothy's BeeYield Apiary Stations" : (authenticatedUserName ? `${authenticatedUserName}'s BeeYield Apiary Stations` : "BeeYield • Apiary Stations")}
                     </h1>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                       Open-Meteo Live API
@@ -9930,12 +9932,12 @@ export default function ApiariesPage({
                       latitude: -2.409,
                       longitude: 37.967,
                       type: "Commercial Apiary",
-                      active_hives: 150,
+                      active_hives: 184,
                       total_hives: 184,
                       size_acres: 5,
                       forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",
                       status: "Optimal",
-                      notes: "Lead Beekeeper: Timothy Nduva. 150 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya (34 standby stands awaiting swarm colonization).",
+                      notes: "Lead Beekeeper: Timothy Nduva. 184 active producing colonies across 184 managed Langstroth hive stands in Kibwezi ecosystem, Kenya.",
                     });
                     setShowAddModal(true);
                   }}
