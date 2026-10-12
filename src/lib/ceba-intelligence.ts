@@ -1301,7 +1301,7 @@ export function buildCebaScopedContextPayload(ctx: CebaTelemetryContext): CebaSc
     const matchedDev = ctx.syncedDevices.find((d) => d.hiveId === h.id || d.hiveCode === h.hive_code);
     return {
       hive_id: h.id || `hv_${idx + 1}`,
-      hive_name: (h as any).nickname || h.hive_name || (h as any).name || h.hive_code || `Hive #${idx + 1}`,
+      hive_name: (h as any).hive_name || (h as any).nickname || (h as any).name || h.hive_code || `Hive #${idx + 1}`,
       colony_vigour_score: 88,
       in_hive_metrics: {
         brood_temp_c: matchedDev?.broodTempC ?? h.latest_temp ?? 35.1,
