@@ -58,6 +58,7 @@ class Settings(BaseSettings):
     
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     GOOGLE_API_KEY: Optional[str] = Field(default=None)
+    ANTHROPIC_API_KEY: Optional[str] = Field(default=None)
     
     # Postgres direct connection (for migrations/legacy sqlalchemy)
     POSTGRES_URL: Optional[str] = Field(default=None)
