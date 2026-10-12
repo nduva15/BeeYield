@@ -47,7 +47,6 @@ def build_real_distillation_records() -> List[Dict[str, Any]]:
     diseases = encyclopedia.get("diseases_and_pests", {})
     species = encyclopedia.get("bee_species", {})
     pollination = encyclopedia.get("pollination_crops", {})
-    dna = project_data["knowledge"].get("dna", {})
 
     records: List[Dict[str, Any]] = []
 
@@ -67,7 +66,6 @@ def build_real_distillation_records() -> List[Dict[str, Any]]:
         # Real telemetry context based on disease mechanics
         is_fever = "foulbrood" in disease_name.lower() or "paralysis" in disease_name.lower()
         is_chilled = "chilled" in disease_name.lower()
-        is_varroa = "varroa" in disease_name.lower() or "dwv" in disease_name.lower()
 
         telemetry_payload = {
             "apiary": "Kibwezi East Sector (5-acre apiary, Makueni County)",

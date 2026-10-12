@@ -169,7 +169,7 @@ class ComplexityRouter:
             confidence=0.92,
         )
 
-    async def execute_student_inference(
+    async def execute_student(
         self,
         query: str,
         context: ScopedContextPayload
@@ -219,8 +219,13 @@ class ComplexityRouter:
 
         return None
 
-    # Alias for backward compatibility
-    execute_student = execute_student_inference
+    async def execute_student_inference(
+        self,
+        query: str,
+        context: ScopedContextPayload
+    ) -> Optional[str]:
+        """Delegates to execute_student ensuring test patches apply consistently."""
+        return await self.execute_student(query, context)
 
     async def log_distillation_candidate(
         self,

@@ -6,7 +6,9 @@ ANALYTICS_URL = f"{BASE_URL}/analytics"
 
 def get_json(url):
     try:
-        with urllib.request.urlopen(url) as response:
+        if not url.startswith(("http://", "https://")):
+            return None
+        with urllib.request.urlopen(url) as response:  # noqa: S310
             if response.status == 200:
                 return json.loads(response.read().decode())
             return None

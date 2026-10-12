@@ -7,7 +7,8 @@ Validates:
 """
 
 import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock
 
 from app.services.ceba_context_engine import (
     AccountContext,
@@ -190,8 +191,13 @@ def test_biosecurity_rejects_cold_weather_inspection():
 @pytest.mark.asyncio
 async def test_route_and_execute_student_flow(base_context):
     """Verifies route_and_execute handles student requests and returns proper structure."""
-    router = ComplexityRouter()
-    with patch.object(router, "execute_student", new=AsyncMock(return_value="CEBA AI Student: Current brood temperature is 34.8°C across active hives.")):
+    from unittest.mock import MagicMock
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"response": "CEBA AI Student: Current brood temperature is 34.8°C across active hives."}
+
+    with patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_resp)):
+        router = ComplexityRouter()
         result = await router.route_and_execute("What is the current brood temperature?", base_context)
         assert result["decision"] == "STUDENT"
         assert "student" in result["model"].lower()
