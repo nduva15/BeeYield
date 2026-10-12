@@ -4,10 +4,11 @@
 -- 1. Ensure public.harvests has both quantity_kg and weight_kg, harvest_date and date
 -- 2. Establish automatic bi-directional sync trigger between redundant columns
 -- 3. Normalize Timothy Nduva's harvests to EXACTLY 843.00 kg:
---    - Historical (2020-2025): exactly 783.00 kg
---    - Current (Jan 2026):      exactly 60.00 kg
+--    - Historical (2020-2025): exactly 783.00 kg (sold inventory records)
+--    - Current (Jan 2026):      exactly 60.00 kg (active reserve for verify/traceability)
 --    - Grand Total:             exactly 843.00 kg
--- 4. Uses dynamic SQL inside PL/pgSQL to avoid compile-time SQLSTATE 42703
+-- 4. Purge pre-2026 batches from public.honey_batches (only 2026 batches/60kg active in verify)
+-- 5. Uses dynamic SQL inside PL/pgSQL to avoid compile-time SQLSTATE 42703
 -- ==============================================================================
 
 BEGIN;
@@ -181,12 +182,43 @@ BEGIN
         RAISE NOTICE '2026 harvests normalized to % kg', v_target_2026;
     END IF;
 
+    -- (C) Ensure public.honey_batches only retains 2026 batches (60kg season yield)
+    -- Historical harvests (2020-2025 = 783kg) are already sold, so ONLY 2026 batches exist for verification/traceability
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables 
+        WHERE table_schema = 'public' AND table_name = 'honey_batches'
+    ) THEN
+        -- Remove pre-2026 batches from honey_batches table
+        EXECUTE 'DELETE FROM public.honey_batches 
+                 WHERE harvest_date < ''2026-01-01'' 
+                    OR batch_code LIKE ''BEE-2020%''
+                    OR batch_code LIKE ''BEE-2021%''
+                    OR batch_code LIKE ''BEE-2022%''
+                    OR batch_code LIKE ''BEE-2023%''
+                    OR batch_code LIKE ''BEE-2024%''
+                    OR batch_code LIKE ''BEE-2025%''';
+
+        -- If 2026 batches exist in honey_batches, ensure their total quantity_kg is normalized to exactly 60.00 kg
+        EXECUTE 'SELECT COALESCE(SUM(quantity_kg), 0) FROM public.honey_batches WHERE harvest_date >= ''2026-01-01'' AND harvest_date < ''2027-01-01'''
+        INTO v_2026_current_total;
+
+        IF v_2026_current_total > 0 AND v_2026_current_total <> 60.00 THEN
+            v_factor := 60.00 / v_2026_current_total;
+            EXECUTE 'UPDATE public.honey_batches 
+                     SET quantity_kg = round((quantity_kg * $1)::numeric, 2)
+                     WHERE harvest_date >= ''2026-01-01'' AND harvest_date < ''2027-01-01'''
+            USING v_factor;
+        END IF;
+
+        RAISE NOTICE 'Cleaned honey_batches: only 2026 active batches (60kg) retained for verification/traceability.';
+    END IF;
+
     RAISE NOTICE 'Successfully updated harvests for %: Grand Total is exactly % kg.', v_user_email, v_target_total;
 END $$;
 
 COMMIT;
 
--- 5. Final Verification Query
+-- 5. Final Verification Query - Harvests (843kg Total = 783kg historical + 60kg 2026)
 SELECT 
     COALESCE(u.email, 'Unassigned') AS user_email,
     COUNT(h.id) AS total_batches,
@@ -199,3 +231,12 @@ WHERE u.email = 'timothynduva349@gmail.com' OR h.user_id IN (
     SELECT id FROM auth.users WHERE lower(email) = 'timothynduva349@gmail.com'
 )
 GROUP BY u.email;
+
+-- 6. Verification Query - Active Traceability Batches in honey_batches (strictly 2026, 60kg)
+SELECT 
+    'honey_batches' AS table_name,
+    COUNT(*) AS total_2026_batches,
+    ROUND(COALESCE(SUM(quantity_kg), 0), 2) AS total_kg,
+    MIN(harvest_date) AS min_date,
+    MAX(harvest_date) AS max_date
+FROM public.honey_batches;

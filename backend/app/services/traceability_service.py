@@ -339,8 +339,8 @@ class TraceabilityService:
         return record
 
     @staticmethod
-    async def get_all_batches(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
-        return await get_all_batch_views(token=token, limit=limit)
+    async def get_all_batches(limit: int = 100, token: Optional[str] = None, year: Optional[int] = 2026) -> list[dict[str, Any]]:
+        return await get_all_batch_views(token=token, limit=limit, year=year)
 
     @staticmethod
     async def get_public_batches(
@@ -432,8 +432,8 @@ async def create_batch(batch_in: Any, token: Optional[str] = None) -> dict[str, 
     return await TraceabilityService.create_batch(batch_in, token=token)
 
 
-async def get_all_batches(limit: int = 100, token: Optional[str] = None) -> list[dict[str, Any]]:
-    return await TraceabilityService.get_all_batches(limit=limit, token=token)
+async def get_all_batches(limit: int = 100, token: Optional[str] = None, year: Optional[int] = 2026) -> list[dict[str, Any]]:
+    return await TraceabilityService.get_all_batches(limit=limit, token=token, year=year)
 
 
 async def audit_account(email: Optional[str] = None, user_id: Optional[str] = None, token: Optional[str] = None) -> dict[str, Any]:

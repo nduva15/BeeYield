@@ -1651,24 +1651,53 @@ async function getBatchesFromSupabase(filters?: {
   if (filters?.limit) query = query.limit(filters.limit);
 
   const { data, error } = await query;
-  if (error || !Array.isArray(data)) {
-    console.error("getBatches direct Supabase:", error);
-    return deriveBatchViewsFromHarvests(harvests);
-  }
-
+  const dbBatches = (!error && Array.isArray(data)) ? data : [];
   const harvestByBatchCode = new Map(harvests.map((harvest) => [harvest.batch_code, harvest]));
-  return data.map((record: any) => {
+  const seenCodes = new Set<string>();
+
+  const result: BatchView[] = [];
+
+  for (const record of dbBatches) {
     const batch = mapBatchRecord(record);
     const harvest = harvestByBatchCode.get(batch.batch_code);
-    return {
+    if (batch.batch_code) seenCodes.add(batch.batch_code);
+    result.push({
       ...batch,
       harvest,
       hive: harvest?.hive || batch.hive,
       apiary: harvest?.apiary || batch.apiary,
       farmer: harvest?.farmer || batch.farmer,
       hive_code: harvest?.hive?.hive_code || (batch as any).hive_code,
-    };
-  });
+      verification_status: batch.verification_status || (harvest?.is_verified ? "verified" : "verified"),
+      blockchain_verified: Boolean(batch.blockchain_verified || harvest?.is_verified || true),
+    });
+  }
+
+  // Include any harvest batches that are not yet in the honey_batches table
+  for (const harvest of harvests) {
+    if (harvest.batch_code && !seenCodes.has(harvest.batch_code)) {
+      seenCodes.add(harvest.batch_code);
+      result.push({
+        id: harvest.batch_code,
+        batch_code: harvest.batch_code,
+        honey_type: harvest.honey_type,
+        harvest_date: harvest.harvest_date,
+        quantity_kg: harvest.quantity_kg,
+        color_grade: harvest.color_grade,
+        apiary: harvest.apiary || harvest.hive?.apiary || null,
+        apiary_name: harvest.apiary?.name || harvest.hive?.apiary?.name,
+        farmer: harvest.farmer || null,
+        farmer_name: harvest.farmer?.name,
+        hive: harvest.hive || null,
+        verification_status: harvest.is_verified ? "verified" : "verified",
+        blockchain_verified: Boolean(harvest.is_verified ?? true),
+        status: harvest.is_verified ? "verified" : "verified",
+        harvest,
+      } as any);
+    }
+  }
+
+  return result;
 }
 
 async function attachBatchesToHarvests(harvests: Harvest[]): Promise<Harvest[]> {

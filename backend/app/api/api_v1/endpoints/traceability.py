@@ -25,13 +25,19 @@ async def get_trace_by_code(code: str, request: Request, background_tasks: Backg
     if pre_2026:
         raise HTTPException(
             status_code=400,
-            detail=f"Batch Archive Policy: Only new 2026 season batches can be scanned. Batches from {pre_2026.group(0)} and earlier are archived and no longer eligible for active retail scanning.",
+            detail=f"Batch Archive Policy: Only new 2026 season batches (60kg season yield) can be scanned. Batches from {pre_2026.group(0)} and earlier are already sold and archived.",
         )
 
     try:
         result = await traceability_service.get_trace_journey(code, token=token)
 
         if result:
+            harvest_date = str(result.harvest_date or "")
+            if harvest_date and not harvest_date.startswith("2026"):
+                raise HTTPException(
+                    status_code=400,
+                    detail="Batch Archive Policy: This batch is from an earlier season that was already sold. Only 2026 season batches (60kg active reserve) are available for verification.",
+                )
             return result
 
     except HTTPException:

@@ -608,7 +608,7 @@ async def get_batch_views_for_user(
 async def get_all_batch_views(
     token: Optional[str] = None,
     honey_type: Optional[str] = None,
-    year: Optional[int] = None,
+    year: Optional[int] = 2026,
     limit: int = 1000,
 ) -> list[dict[str, Any]]:
     lookup_token = _lookup_token(token)
@@ -668,6 +668,11 @@ async def sync_public_batch_from_harvest(
     harvest = _normalize_harvest(harvest_row)
     batch_code = harvest.get("batch_code")
     if not batch_code:
+        return None
+
+    # Pre-2026 harvests were already sold; only 2026 season harvests are synced into active verify batches
+    harvest_date = str(harvest.get("harvest_date") or "")
+    if harvest_date and not harvest_date.startswith("2026"):
         return None
 
     lookup_token = _lookup_token(token)
@@ -800,6 +805,16 @@ async def get_public_batch_views(
             continue
         if verified_only and not _is_publicly_verified(view):
             continue
+
+        # Enforce: Only 2026 batches and harvest records are used in verify/traceability (prior years already sold)
+        h_date = str(view.get("harvest_date") or "")
+        code_str = str(view.get("batch_code") or "")
+        if h_date:
+            if not h_date.startswith("2026"):
+                continue
+        elif "2026" not in code_str:
+            continue
+
         views.append(view)
 
     views.sort(

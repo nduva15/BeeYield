@@ -12,13 +12,13 @@ export const DISTRIBUTION_HUBS = [
 export const YEAR_PLANS = [
   {
     year: 2026,
-    totalKg: 120.0,
+    totalKg: 60.0,
     start: "2026-01-03",
     end: "2026-01-10",
     honeyType: "Early Spring Acacia Blossom",
     nectarSource: "Acacia, Neem, Maize, Mango & Forest Multifloral",
     colorGrade: "Extra Light Amber",
-    batchesCount: 60,
+    batchesCount: 30,
   },
   {
     year: 2025,
@@ -107,7 +107,7 @@ export function generateTimothyHarvestBatches(): Harvest[] {
       let distributionDate: string | undefined;
 
       if (plan.year === 2026) {
-        hiveIndex = (seq - 1) % 60; // KIB-001 to KIB-060 (Jan 2026 current season: 60 batches = 120kg)
+        hiveIndex = (seq - 1) % 30; // KIB-001 to KIB-030 (Jan 2026 current season: 30 batches = 60kg)
         distributionHub = DISTRIBUTION_HUBS[(seq - 1) % DISTRIBUTION_HUBS.length];
         const dayOffset = 11 + ((seq - 1) % 5);
         distributionDate = `2026-01-${String(dayOffset).padStart(2, "0")}`;
@@ -198,50 +198,8 @@ export const CANONICAL_TIMOTHY_HARVESTS: Harvest[] = generateTimothyHarvestBatch
 export function getNormalizedHarvestKey(h: any): string {
   if (!h) return "";
 
-  // 1. Check for canonical date (YYYY-MM-DD)
-  const rawDate = String(h.harvest_date || h.harvested_on || h.date || h.created_at || "").slice(0, 10);
-  const dateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const dateStr = dateMatch ? rawDate : "";
-
-  // 2. Extract hive number (1..184) from any hive reference or batch string
-  const hiveSources = [
-    h.hive_code,
-    h.hive_label,
-    h.hive?.hive_code,
-    h.hive?.name,
-    h.batch_code,
-    h.batch,
-    h.notes,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const hiveMatch =
-    hiveSources.match(/BEE-?(\d{1,3})/i) ||
-    hiveSources.match(/KIB-?(\d{1,3})/i) ||
-    hiveSources.match(/E(\d{3})/i) ||
-    hiveSources.match(/(\d{1,3})\b/);
-
-  const hiveNum = hiveMatch ? parseInt(hiveMatch[1], 10) : null;
-
-  if (dateStr && hiveNum !== null) {
-    return `HARV_${dateStr}_HIVE_${hiveNum}`;
-  }
-
-  // 3. Fallback: Year & Sequence (e.g. harv-2026-001, BEE-2026-01-001, TRC-2026-001-001)
-  const allIdSources = [h.id, h.batch_id, h.batch_code, h.retail_batch_code, h.batch, h.traceability_code, h.notes]
-    .filter(Boolean)
-    .join(" ");
-  const seqMatch =
-    allIdSources.match(/(?:harv|TRC|BEE)[-_](\d{4})[-_](\d{1,4})/i) ||
-    allIdSources.match(/(\d{4})[-_]\d{1,2}[-_](\d{1,4})/);
-
-  if (seqMatch) {
-    return `SEQ_${seqMatch[1]}_${parseInt(seqMatch[2], 10)}`;
-  }
-
-  // 4. Batch Code match (BEE-YYYYMMDD-001)
-  const rawBatch = String(h.batch_code || h.batch || "").trim().toUpperCase();
+  // 1. Primary identifier: distinct batch code or retail batch code
+  const rawBatch = String(h.batch_code || h.batch || h.retail_batch_code || "").trim().toUpperCase();
   if (rawBatch) {
     const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
     if (m) {
@@ -250,5 +208,47 @@ export function getNormalizedHarvestKey(h: any): string {
     return `BATCH_${rawBatch}`;
   }
 
-  return `ID_${String(h.id || "")}`;
+  // 2. Explicit ID if available
+  if (h.id && String(h.id).trim()) {
+    return `ID_${String(h.id).trim()}`;
+  }
+
+  // 3. Fallback: Year & Sequence (e.g. harv-2026-001, TRC-2026-001-001)
+  const allIdSources = [h.id, h.batch_id, h.traceability_code, h.notes]
+    .filter(Boolean)
+    .join(" ");
+  const seqMatch =
+    allIdSources.match(/(?:harv|TRC)[-_](\d{4})[-_](\d{1,4})/i) ||
+    allIdSources.match(/(\d{4})[-_]\d{1,2}[-_](\d{1,4})/);
+
+  if (seqMatch) {
+    return `SEQ_${seqMatch[1]}_${parseInt(seqMatch[2], 10)}`;
+  }
+
+  // 4. Fallback: Canonical date & specific hive code
+  const rawDate = String(h.harvest_date || h.harvested_on || h.date || h.created_at || "").slice(0, 10);
+  const dateMatch = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const dateStr = dateMatch ? rawDate : "";
+
+  const hiveSources = [
+    h.hive_code,
+    h.hive_label,
+    h.hive?.hive_code,
+    h.hive?.name,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const hiveMatch =
+    hiveSources.match(/KIB-?(\d{1,3})\b/i) ||
+    hiveSources.match(/(?:^|\s)BEE-?(\d{1,3})\b/i) ||
+    hiveSources.match(/E(\d{3})\b/i);
+
+  const hiveNum = hiveMatch ? parseInt(hiveMatch[1], 10) : null;
+
+  if (dateStr && hiveNum !== null) {
+    return `HARV_${dateStr}_HIVE_${hiveNum}`;
+  }
+
+  return `RAW_${dateStr}_${String(h.id || Math.random())}`;
 }
