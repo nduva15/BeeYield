@@ -29,6 +29,7 @@ class Apiary(ApiaryBase, table=True):
     
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: UUID = Field(foreign_key="auth.users.id", index=True)
+    tenant_id: Optional[str] = Field(default=None, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     hives: List["Hive"] = Relationship(back_populates="apiary")
@@ -39,6 +40,7 @@ class Hive(HiveBase, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     apiary_id: UUID = Field(foreign_key="apiaries.id")
     user_id: UUID = Field(foreign_key="auth.users.id", index=True)
+    tenant_id: Optional[str] = Field(default=None, index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     
     apiary: Optional[Apiary] = Relationship(back_populates="hives")

@@ -96,7 +96,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                             required
                             value={formData.firstName}
                             onChange={(e) => handleChange("firstName", e.target.value)}
-                            placeholder="Jane"
+                            placeholder="Timothy"
                         />
                     </div>
                     <div className="space-y-2">
@@ -107,7 +107,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                             required
                             value={formData.lastName}
                             onChange={(e) => handleChange("lastName", e.target.value)}
-                            placeholder="Doe"
+                            placeholder="Nduva"
                         />
                     </div>
                 </div>
@@ -137,7 +137,7 @@ export const PollinationContactForm = ({ type, title, description }: Pollination
                             required
                             value={formData.email}
                             onChange={(e) => handleChange("email", e.target.value)}
-                            placeholder="jane@example.com"
+                            placeholder="timothy@beeyield.com"
                         />
                     </div>
                     <div className="space-y-2">

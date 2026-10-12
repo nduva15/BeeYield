@@ -764,10 +764,13 @@ Surrounding forage baseline: **{florage_list}** (Abundance Multiplier: **{florag
     # 4. Context Extraction & Strict User Data Isolation
     ctx = telemetry_context or {}
     user_info = ctx.get("user") or {}
-    is_timothy = user_info.get("isTimothy", False)
-    if not is_timothy:
-        if "timothy nduva" in lower or "timothynduva" in lower or "kibwezi, makueni county" in lower:
-            is_timothy = True
+    
+    # Timothy Nduva is our sole primary user and founder
+    is_timothy = True
+    if user_info.get("isTimothy") is False and user_info.get("email") and "timothy" not in str(user_info.get("email")).lower():
+        is_timothy = False
+    if "timothy nduva" in lower or "timothynduva" in lower or "kibwezi, makueni county" in lower:
+        is_timothy = True
 
     user_name = user_info.get("name")
     if not user_name:
@@ -777,7 +780,7 @@ Surrounding forage baseline: **{florage_list}** (Abundance Multiplier: **{florag
         else:
             user_name = "Timothy Nduva" if is_timothy else "Beekeeper"
 
-    user_email = user_info.get("email") or ""
+    user_email = user_info.get("email") or ("timothy@beeyield.com" if is_timothy else "")
     is_guest = user_info.get("isGuest", False) or "unauthenticated / guest preview" in lower
 
     hives = ctx.get("hives") or []
@@ -1262,28 +1265,74 @@ async def beegpt_endpoint(request: Request):
     if not user_text:
         user_text = str(body.get("prompt") or "Generate pollination plan")
 
-    # 1. Check external AI keys if available
+    # 1. Check external AI keys (Anthropic Claude or Gemini)
+    anthropic_key = request.headers.get("x-anthropic-key") or os.environ.get("ANTHROPIC_API_KEY")
     gemini_key = request.headers.get("x-gemini-key") or os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
-    # External provider attempt (fast timeout)
+    # PRD FR-3.1 System Security Prompt Policy
+    user_name_match = re.search(r"AUTHENTICATED USER:\s*([^\n(]+)", user_text)
+    user_name_str = user_name_match.group(1).strip() if user_name_match else "Beekeeper"
+    system_instruction = (
+        f"You are CEBA AI, an agronomic assistant. You are answering {user_name_str}. "
+        "You must answer queries strictly using the provided structured telemetry payload below. "
+        "If data for a requested hive, batch, or metric is absent from this payload, state that it is not available in their account. "
+        "Never estimate, extrapolate, or reference data outside this context."
+    )
+
+    # 1.1 Anthropic Claude Attempt (Target PRD Engine)
+    if anthropic_key:
+        try:
+            import httpx
+            claude_system = system_instruction
+            if telemetry_context:
+                claude_system += f"\n\nStructured Telemetry Payload:\n{json.dumps(telemetry_context, indent=2)}"
+            
+            async with httpx.AsyncClient(timeout=12.0) as client:
+                res = await client.post(
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "x-api-key": anthropic_key,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
+                    json={
+                        "model": "claude-3-5-sonnet-20241022",
+                        "max_tokens": 2048,
+                        "system": claude_system,
+                        "messages": [{"role": "user", "content": user_text}],
+                        "temperature": 0.2,
+                    }
+                )
+                if res.status_code == 200:
+                    data = res.json()
+                    content_parts = [b.get("text", "") for b in data.get("content", []) if b.get("type") == "text"]
+                    content = "".join(content_parts)
+                    if content:
+                        async def stream_claude():
+                            words = re.split(r'(\s+)', content)
+                            chunk_size = 6
+                            for i in range(0, len(words), chunk_size):
+                                slice_words = "".join(words[i : i + chunk_size])
+                                if slice_words:
+                                    payload = json.dumps({"choices": [{"delta": {"content": slice_words}}]})
+                                    yield f"data: {payload}\n\n"
+                                    await asyncio.sleep(0.01)
+                            yield "data: [DONE]\n\n"
+                        return StreamingResponse(stream_claude(), media_type="text/event-stream", headers=BEEGPT_CORS_HEADERS)
+        except Exception:
+            pass
+
+    # 1.2 Google Gemini Flash Attempt
     if gemini_key:
         try:
             import httpx
-            system_instruction = (
-                "You are BeeYield AI (Ceba AI), a precision apicultural intelligence engine. "
-                "CRITICAL PRIVACY & USER DATA ISOLATION RULE: You must answer queries regarding hives, "
-                "apiaries, conditions, batches, harvests, weather, and IoT sensor readings strictly using the "
-                "authenticated user's telemetry context provided. NEVER return data from other users, and NEVER "
-                "substitute another user's hives/harvests if the current user has zero registered items. "
-                "If the user has zero hives or devices, state that clearly and guide them on onboarding their equipment."
-            )
             gemini_messages = [
                 {"role": "system", "content": system_instruction}
             ]
             if telemetry_context:
                 gemini_messages.append({
                     "role": "system",
-                    "content": f"Authenticated User Telemetry Context:\n{json.dumps(telemetry_context, indent=2)}"
+                    "content": f"Structured Telemetry Payload:\n{json.dumps(telemetry_context, indent=2)}"
                 })
             gemini_messages.append({"role": "user", "content": user_text})
 

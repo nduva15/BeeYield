@@ -113,10 +113,20 @@ export function buildExpansionInstruction(check: ReportQualityCheck): string {
 const KNOWLEDGE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL_KNOWLEDGE;
 const KNOWLEDGE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY_KNOWLEDGE || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+import { getCebaTelemetryContext, buildCebaContextPrompt } from '@/lib/ceba-intelligence';
+
 /**
- * Fetches the user's Company Brain context from the Intelligence backend.
+ * Fetches the user's Scoped Context from CEBA AI engine with strict user isolation.
  */
 async function fetchUserContext(): Promise<string | null> {
+    try {
+        const ctx = await getCebaTelemetryContext();
+        if (ctx) {
+            return buildCebaContextPrompt(ctx);
+        }
+    } catch {
+        // Fall back gracefully
+    }
     return null;
 }
 

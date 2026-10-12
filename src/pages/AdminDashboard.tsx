@@ -2057,7 +2057,7 @@ const AdminDashboard: React.FC = () => {
                                                         name="batch-beekeeper-name"
                                                         value={(batchForm as any).beekeeper_name || ''}
                                                         onChange={e => setBatchForm({ ...batchForm, beekeeper_name: e.target.value } as any)}
-                                                        placeholder="e.g. Jane Smith"
+                                                        placeholder="e.g. Timothy Nduva"
                                                         className="rounded-xl h-11 bg-muted/50"
                                                     />
                                                 </div>

@@ -46,9 +46,9 @@ describe("contactService fallback handling", () => {
     apiPostMock.mockRejectedValueOnce(new TypeError("Failed to fetch"));
 
     const response = await submitContactForm({
-      first_name: "Jane",
-      last_name: "Doe",
-      email: "jane@example.com",
+      first_name: "Timothy",
+      last_name: "Nduva",
+      email: "timothy@beeyield.com",
       phone: "+254700000001",
       city: "Nairobi",
       state: "Nairobi",
@@ -61,9 +61,9 @@ describe("contactService fallback handling", () => {
     expect(insertMock).toHaveBeenCalledWith(
       "contact_submissions",
       expect.objectContaining({
-        first_name: "Jane",
-        last_name: "Doe",
-        name: "Jane Doe",
+        first_name: "Timothy",
+        last_name: "Nduva",
+        name: "Timothy Nduva",
         subject: "GENERAL: Support",
         status: "new",
       }),
@@ -144,8 +144,8 @@ describe("contactService fallback handling", () => {
 
     await expect(
       submitContactForm({
-        first_name: "Jane",
-        last_name: "Doe",
+        first_name: "Timothy",
+        last_name: "Nduva",
         email: "broken",
         phone: "+254700000001",
         city: "Nairobi",

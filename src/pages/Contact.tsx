@@ -304,7 +304,7 @@ const Contact = () => {
                       required
                       value={quickForm.fullName}
                       onChange={(e) => handleQuickChange("fullName", e.target.value)}
-                      placeholder="Jane Doe"
+                      placeholder="Timothy Nduva"
                       autoComplete="name"
                     />
                   </div>
@@ -318,7 +318,7 @@ const Contact = () => {
                       required
                       value={quickForm.email}
                       onChange={(e) => handleQuickChange("email", e.target.value)}
-                      placeholder="jane@example.com"
+                      placeholder="timothy@beeyield.com"
                       autoComplete="email"
                     />
                   </div>
@@ -389,7 +389,7 @@ const Contact = () => {
                       required
                       value={formData.firstName}
                       onChange={(e) => handleChange("firstName", e.target.value)}
-                      placeholder="Jane"
+                      placeholder="Timothy"
                     />
                   </div>
                   <div className="space-y-2">
@@ -402,7 +402,7 @@ const Contact = () => {
                       required
                       value={formData.lastName}
                       onChange={(e) => handleChange("lastName", e.target.value)}
-                      placeholder="Doe"
+                      placeholder="Nduva"
                     />
                   </div>
 

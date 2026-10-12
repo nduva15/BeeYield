@@ -9,12 +9,15 @@ from app.api.api_v1.endpoints import (
     admin_extended, meters, beeyield, pollination, inspections, reports, harvests, tasks,
     settings, payments, labels, bluetooth, measurements,
     requests, image_analysis, acoustic, routing, forage, ai, integrations, usb_hub, reference_library,
-    yield_forecast, sensors
+    yield_forecast, sensors, ceba_ai
 )
 
 
 
 api_router = APIRouter()
+
+# CEBA AI Multi-Tenant Scoped Context Engine (PRD v2.4)
+api_router.include_router(ceba_ai.router, prefix="/ceba", tags=["CEBA AI Multi-Tenant"])
 
 # Labels endpoint
 api_router.include_router(labels.router, prefix="/labels", tags=["Labels"])

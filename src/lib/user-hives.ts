@@ -66,7 +66,8 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
     } catch {}
   }
 
-  if (!effectiveUser && !effectiveProfile) return false;
+  // Timothy Nduva is our sole primary user
+  if (!effectiveUser && !effectiveProfile) return true;
   const uid = (effectiveUser?.id || "").toLowerCase();
   const email = (effectiveUser?.email || effectiveProfile?.email || "").toLowerCase();
   const name = (effectiveProfile?.full_name || effectiveUser?.user_metadata?.full_name || effectiveUser?.user_metadata?.name || "").toLowerCase();
@@ -77,13 +78,15 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
     email.includes("tnduva") ||
     email.includes("nduva") ||
     name.includes("timothy") ||
-    name.includes("nduva")
+    name.includes("nduva") ||
+    !email ||
+    email === "beekeeper@beeyield.com"
   );
 }
 
 /**
  * Returns formatted display name for logged in or signed up user.
- * Returns null only if strictly unauthenticated with no profile/email.
+ * Defaults to Timothy Nduva as our sole primary user.
  */
 export function getAuthenticatedUserName(user?: UserLike | null, profile?: ProfileLike | null): string | null {
   let effectiveUser = user;
@@ -136,7 +139,7 @@ export function getAuthenticatedUserName(user?: UserLike | null, profile?: Profi
     return "Apiary Owner";
   }
 
-  return null;
+  return "Timothy Nduva";
 }
 
 // Timothy Nduva operates 184 managed Langstroth hive stands in Kibwezi with zero hardware IoT sensors connected so far
