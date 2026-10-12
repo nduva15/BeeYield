@@ -141,6 +141,12 @@ function ShopDashboardInner({
             const sanitized = parsed.map((ord: any) => {
               const paySt = String(ord?.payment_status || "").toLowerCase().trim();
               const hasRef = ord?.mpesa_code && String(ord.mpesa_code).trim().length >= 8;
+              const payMethod = String(ord?.payment_method || "mpesa").toLowerCase().trim();
+              // If an M-Pesa order does not have an authentic confirmation reference (>= 8 chars), it cannot be considered paid or confirmed
+              if ((payMethod === "mpesa" || !payMethod) && !hasRef && (paySt === "paid" || paySt === "completed" || ord.status === "confirmed" || ord.status === "completed")) {
+                changed = true;
+                return { ...ord, status: "pending", payment_status: "pending" };
+              }
               if (!hasRef && (paySt === "" || paySt === "pending" || paySt === "unpaid") && ord.status === "confirmed") {
                 changed = true;
                 return { ...ord, status: "pending", payment_status: "pending" };

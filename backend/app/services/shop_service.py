@@ -320,9 +320,11 @@ async def _hydrate_order_items(order: dict[str, Any], token: Optional[str] = Non
     return order
 
 async def get_user_orders(user_id: str, token: Optional[str] = None) -> list[dict[str, Any]]:
+    if not user_id or not str(user_id).strip():
+        return []
     from app.db.supabase_db import db_select
     columns = "*,items:order_items(*,product:products(*,variants:product_variants(*)))"
-    orders = await db_select("orders", columns=columns, filters={"user_id": user_id}, token=token)
+    orders = await db_select("orders", columns=columns, filters={"user_id": str(user_id).strip()}, token=token)
     hydrated_orders = [await _hydrate_order_items(dict(order), token=token) for order in orders]
     return sorted(hydrated_orders, key=lambda row: row.get("created_at", ""), reverse=True)
 
@@ -1055,16 +1057,23 @@ async def get_dashboard_summary(user_id: str, token: Optional[str] = None) -> di
     def is_order_paid(order: dict) -> bool:
         pay_st = str(order.get("payment_status") or "").strip().lower()
         ord_st = str(order.get("status") or "").strip().lower()
-        if pay_st in {"pending", "unpaid", "failed", "cancelled"} or ord_st in {"cancelled", "failed"}:
-            return False
-        if pay_st in {"paid", "completed", "succeeded", "success"}:
-            return True
+        pay_method = str(order.get("payment_method") or "").strip().lower()
         mpesa_ref = str(order.get("mpesa_code") or "").strip()
-        if mpesa_ref and len(mpesa_ref) >= 8 and pay_st not in {"pending", "unpaid", "failed"}:
-            return True
-        if ord_st in {"completed", "delivered"} and pay_st not in {"pending", "unpaid", "failed"}:
-            return True
-        return False
+
+        # Immediate rejection: pending, unpaid, failed, cancelled
+        if (
+            not pay_st
+            or pay_st in {"pending", "unpaid", "failed", "cancelled"}
+            or ord_st in {"cancelled", "failed"}
+        ):
+            return False
+
+        # For M-Pesa payments (or empty default): strictly require confirmed receipt (>= 8 chars) AND confirmed paid status
+        if pay_method in {"mpesa", ""} or not pay_method:
+            return bool(mpesa_ref and len(mpesa_ref) >= 8 and pay_st in {"paid", "completed", "succeeded", "success"})
+
+        # For other payment methods: require confirmed paid status
+        return pay_st in {"paid", "completed", "succeeded", "success"}
 
     paid_orders = [o for o in orders if is_order_paid(o)]
     active_statuses = {"processing", "shipped", "in_transit", "dispatched", "confirmed"}

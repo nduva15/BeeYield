@@ -976,7 +976,7 @@ export const confirmMpesaPayment = async (
         const client = getShopClient();
         await (client as any)
             .from("orders")
-            .update({ payment_status: "paid", status: "processing" })
+            .update({ payment_status: "paid", status: "processing", mpesa_code: code, notes: `Paid via M-Pesa (${code})` })
             .match({ id: orderId });
 
         const { data: authData } = await client.auth.getUser();
@@ -1013,9 +1013,12 @@ export const isOrderPaid = (order: Order): boolean => {
     if (!order) return false;
     const payStatus = (order.payment_status || "").toLowerCase().trim();
     const orderStatus = (order.status || "").toLowerCase().trim();
+    const payMethod = (order.payment_method || "").toLowerCase().trim();
+    const mpesaRef = (order.mpesa_code || "").trim();
 
     // Never consider pending, unpaid, failed, or cancelled orders as paid
     if (
+        !payStatus ||
         payStatus === "pending" ||
         payStatus === "unpaid" ||
         payStatus === "failed" ||
@@ -1026,16 +1029,17 @@ export const isOrderPaid = (order: Order): boolean => {
         return false;
     }
 
-    if (payStatus === "paid" || payStatus === "completed" || payStatus === "success" || payStatus === "settled") {
-        return true;
+    // For M-Pesa payments (or default empty method in Kenya):
+    // Strictly require a valid Safaricom confirmation code (min 8 chars) AND confirmed paid status.
+    // Never guess or mark paid without explicit confirmation from M-Pesa.
+    if (payMethod === "mpesa" || !payMethod) {
+        const hasValidMpesaCode = mpesaRef.length >= 8;
+        const isConfirmedPaid = ["paid", "completed", "success", "settled"].includes(payStatus);
+        return hasValidMpesaCode && isConfirmedPaid;
     }
-    if (order.mpesa_code && order.mpesa_code.trim().length >= 8) {
-        return true;
-    }
-    if (["delivered", "completed"].includes(orderStatus) && !["pending", "unpaid", "failed"].includes(payStatus)) {
-        return true;
-    }
-    return false;
+
+    // For other methods (e.g. card/bank): must have verified paid status
+    return ["paid", "completed", "success", "settled"].includes(payStatus);
 };
 
 export const getUserOrders = async (_email?: string): Promise<Order[]> => {
@@ -1050,7 +1054,7 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
 
     const map = new Map<string, Order>();
 
-    // 1. Read locally cached orders
+    // 1. Read locally cached orders (created in this browser session)
     getLocalOrders().forEach(o => map.set(o.id, o));
 
     // 2. Try REST API
@@ -1073,22 +1077,29 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
             metaOrders.forEach(o => map.set(o.id, o));
         }
 
-        // B. Read from orders table if available
-        try {
-            let query = (client as any)
-                .from("orders")
-                .select("*, items:order_items(*, product:products(*))")
-                .order("created_at", { ascending: false });
+        // B. Read from orders table ONLY IF we have an authenticated user ID or verified email.
+        // DO NOT execute unbounded query on orders table for guest or unauthenticated users!
+        if (user?.id || user?.email || _email) {
+            try {
+                let query = (client as any)
+                    .from("orders")
+                    .select("*, items:order_items(*, product:products(*))")
+                    .order("created_at", { ascending: false });
 
-            if (user?.id) {
-                query = query.eq("user_id", user.id);
-            }
+                if (user?.id) {
+                    query = query.eq("user_id", user.id);
+                } else if (_email && _email.includes("@")) {
+                    query = query.eq("shipping_address->>email", _email.toLowerCase().trim());
+                } else if (user?.email) {
+                    query = query.eq("shipping_address->>email", user.email.toLowerCase().trim());
+                }
 
-            const { data, error: sbError } = await query;
-            if (!sbError && data) {
-                toArray<any>(data).map(normalizeOrder).forEach(o => map.set(o.id, o));
-            }
-        } catch (_) {}
+                const { data, error: sbError } = await query;
+                if (!sbError && data) {
+                    toArray<any>(data).map(normalizeOrder).forEach(o => map.set(o.id, o));
+                }
+            } catch (_) {}
+        }
     } catch (_) {}
 
     return sortOrders(Array.from(map.values()));
