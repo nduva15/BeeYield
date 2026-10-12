@@ -616,7 +616,6 @@ async def confirm_mpesa_payment(
     Confirms M-Pesa payment and marks order as paid and processing.
     """
     from app.db.supabase_db import db_select, db_update
-    import uuid
     from datetime import datetime
 
     # 1. Resolve order
