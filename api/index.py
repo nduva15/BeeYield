@@ -780,7 +780,7 @@ Surrounding forage baseline: **{florage_list}** (Abundance Multiplier: **{florag
         else:
             user_name = "Timothy Nduva" if is_timothy else "Beekeeper"
 
-    user_email = user_info.get("email") or ("timothy@beeyield.com" if is_timothy else "")
+    user_email = user_info.get("email") or ("info@beeyield.com" if is_timothy else "")
     is_guest = user_info.get("isGuest", False) or "unauthenticated / guest preview" in lower
 
     hives = ctx.get("hives") or []

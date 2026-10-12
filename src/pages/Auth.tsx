@@ -120,7 +120,7 @@ export default function Auth() {
 
   // Fast demo / owner login handler
   function handleFastOwnerLogin() {
-    signInDemoOwner("timothy@beeyield.com", "Timothy (Apiary Owner)");
+    signInDemoOwner("info@beeyield.com", "Timothy (Apiary Owner)");
     toast.success("Signed in as Timothy (Kibwezi Apiary Owner)");
     nav(next, { replace: true });
   }

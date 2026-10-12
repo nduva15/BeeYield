@@ -259,7 +259,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signInDemoOwner = (email = "timothy@beeyield.com", name = "Timothy (Owner)") => {
+  const signInDemoOwner = (email = "info@beeyield.com", name = "Timothy (Owner)") => {
     const cachedAvatar =
       localStorage.getItem("beeyield_user_avatar_usr_kibwezi_owner_01") ||
       localStorage.getItem("beeyield_user_avatar") ||
