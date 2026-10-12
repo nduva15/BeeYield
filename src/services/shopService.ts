@@ -173,6 +173,9 @@ export interface Order {
     payment_method: string;
     created_at: string;
     payment_status?: string;
+    mpesa_code?: string;
+    idempotency_key?: string;
+    notes?: string;
     shipping_address: {
         first_name?: string;
         last_name?: string;
@@ -417,6 +420,9 @@ const normalizeOrder = (order: any): Order => {
         payment_method: toString(order?.payment_method, "mpesa"),
         created_at: toString(order?.created_at, new Date().toISOString()),
         payment_status: order?.payment_status ? toString(order.payment_status) : undefined,
+        mpesa_code: order?.mpesa_code ? toString(order.mpesa_code) : undefined,
+        idempotency_key: order?.idempotency_key ? toString(order.idempotency_key) : undefined,
+        notes: order?.notes ? toString(order.notes) : undefined,
         shipping_address: {
             first_name: shippingAddress?.first_name ? toString(shippingAddress.first_name) : undefined,
             last_name: shippingAddress?.last_name ? toString(shippingAddress.last_name) : undefined,
@@ -773,7 +779,8 @@ export const initializeCheckout = async (orderData: CheckoutOrder, _accessToken?
             .insert({
                 user_id: authUser?.id || null,
                 total_kes: orderData.total_kes,
-                status: "confirmed",
+                status: "pending",
+                payment_status: "pending",
                 shipping_address: orderData.shipping_address,
                 payment_method: orderData.payment_method,
                 delivery_method: orderData.delivery_method || "delivery",
@@ -806,11 +813,13 @@ export const initializeCheckout = async (orderData: CheckoutOrder, _accessToken?
         id: generatedId,
         order_id: generatedId,
         order_number: generatedNum,
-        status: orderData.payment_method === "mpesa" ? "pending" : "confirmed",
+        status: "pending",
         total_kes: orderData.total_kes,
         total_amount: orderData.total_kes,
         payment_method: orderData.payment_method,
-        payment_status: orderData.payment_method === "mpesa" ? "pending" : "paid",
+        payment_status: "pending",
+        idempotency_key: orderData.idempotency_key,
+        notes: orderData.notes,
         created_at: new Date().toISOString(),
         shipping_address: {
             name: `${orderData.shipping_address.first_name} ${orderData.shipping_address.last_name}`.trim(),
@@ -895,7 +904,7 @@ export const checkMpesaPaymentStatus = async (idOrKey: string): Promise<MpesaPay
                 order_id: match.id,
                 order_number: match.order_number,
                 amount: match.total_kes,
-                mpesa_code: match.mpesa_code || 'CONFIRMED'
+                mpesa_code: match.mpesa_code || undefined
             };
         }
     } catch (_) {}
@@ -927,7 +936,11 @@ export const confirmMpesaPayment = async (
     mpesaCode?: string,
     checkoutRequestId?: string
 ): Promise<MpesaPaymentStatusResponse> => {
-    const code = (mpesaCode || `QA${Math.random().toString(36).substring(2, 9).toUpperCase()}`).trim().toUpperCase();
+    const rawCode = (mpesaCode || "").trim().toUpperCase();
+    if (!rawCode || rawCode.length < 8) {
+        throw new Error("A valid M-Pesa transaction reference (minimum 8 characters from your Safaricom SMS) is required to confirm payment.");
+    }
+    const code = rawCode;
     let result: any = null;
 
     try {
@@ -1000,13 +1013,26 @@ export const isOrderPaid = (order: Order): boolean => {
     if (!order) return false;
     const payStatus = (order.payment_status || "").toLowerCase().trim();
     const orderStatus = (order.status || "").toLowerCase().trim();
-    if (payStatus === "paid" || payStatus === "completed" || payStatus === "success") {
+
+    // Never consider pending, unpaid, failed, or cancelled orders as paid
+    if (
+        payStatus === "pending" ||
+        payStatus === "unpaid" ||
+        payStatus === "failed" ||
+        payStatus === "cancelled" ||
+        orderStatus === "cancelled" ||
+        orderStatus === "failed"
+    ) {
+        return false;
+    }
+
+    if (payStatus === "paid" || payStatus === "completed" || payStatus === "success" || payStatus === "settled") {
         return true;
     }
-    if (order.mpesa_code && order.mpesa_code.trim()) {
+    if (order.mpesa_code && order.mpesa_code.trim().length >= 8) {
         return true;
     }
-    if (["delivered", "completed"].includes(orderStatus) && payStatus !== "pending" && payStatus !== "unpaid" && payStatus !== "failed") {
+    if (["delivered", "completed"].includes(orderStatus) && !["pending", "unpaid", "failed"].includes(payStatus)) {
         return true;
     }
     return false;
@@ -1071,17 +1097,19 @@ export const getUserOrders = async (_email?: string): Promise<Order[]> => {
 export const getShopDashboard = async (): Promise<ShopDashboardSummary> => {
     try {
         const data = await apiGet<any>("/shop/dashboard");
+        const recentOrders = sortOrders(toArray<any>(data?.recent_orders).map(normalizeOrder));
+        const paidOrders = recentOrders.filter(isOrderPaid);
         return {
             stats: {
-                total_orders: toNumber(data?.stats?.total_orders),
-                active_orders: toNumber(data?.stats?.active_orders),
-                completed_orders: toNumber(data?.stats?.completed_orders),
-                total_spent_kes: toNumber(data?.stats?.total_spent_kes),
+                total_orders: toNumber(data?.stats?.total_orders, paidOrders.length),
+                active_orders: toNumber(data?.stats?.active_orders, paidOrders.filter((order) => ["processing", "shipped", "in_transit", "dispatched", "confirmed"].includes((order.status || "").toLowerCase())).length),
+                completed_orders: toNumber(data?.stats?.completed_orders, paidOrders.filter((order) => ["completed", "delivered"].includes((order.status || "").toLowerCase())).length),
+                total_spent_kes: toNumber(data?.stats?.total_spent_kes, paidOrders.reduce((sum, order) => sum + (order.total_kes || order.total_amount || 0), 0)),
                 wishlist_items: toNumber(data?.stats?.wishlist_items),
                 saved_addresses: toNumber(data?.stats?.saved_addresses),
                 saved_payment_methods: toNumber(data?.stats?.saved_payment_methods),
             },
-            recent_orders: sortOrders(toArray<any>(data?.recent_orders).map(normalizeOrder)),
+            recent_orders: recentOrders,
             addresses: toArray<any>(data?.addresses).map(normalizeAddress),
             payment_methods: toArray<any>(data?.payment_methods).map(normalizePaymentMethod),
             wishlist: toArray<any>(data?.wishlist).map(normalizeWishlistItem),

@@ -131,6 +131,28 @@ function ShopDashboardInner({
       if (ticketsStored && ticketsStored.includes("tkt_welcome_01")) {
         localStorage.removeItem("beeyield_support_tickets");
       }
+      // Sanitize any local orders that lacked actual M-Pesa confirmation
+      const storedOrdersRaw = localStorage.getItem("beeyield_customer_orders");
+      if (storedOrdersRaw) {
+        try {
+          const parsed = JSON.parse(storedOrdersRaw);
+          if (Array.isArray(parsed)) {
+            let changed = false;
+            const sanitized = parsed.map((ord: any) => {
+              const paySt = String(ord?.payment_status || "").toLowerCase().trim();
+              const hasRef = ord?.mpesa_code && String(ord.mpesa_code).trim().length >= 8;
+              if (!hasRef && (paySt === "" || paySt === "pending" || paySt === "unpaid") && ord.status === "confirmed") {
+                changed = true;
+                return { ...ord, status: "pending", payment_status: "pending" };
+              }
+              return ord;
+            });
+            if (changed) {
+              localStorage.setItem("beeyield_customer_orders", JSON.stringify(sanitized));
+            }
+          }
+        } catch (_) {}
+      }
     } catch {}
   }, []);
 

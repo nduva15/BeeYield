@@ -426,10 +426,29 @@ async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
             logger.error(f"Callback missing checkout_request_id: {payload}")
             return {"success": False, "error": "Missing checkout_request_id"}
 
+        # Extract MpesaReceiptNumber if present in CallbackMetadata
+        mpesa_code = None
+        try:
+            items = (
+                payload.get("Body", {})
+                .get("stkCallback", {})
+                .get("CallbackMetadata", {})
+                .get("Item", [])
+            )
+            for it in items:
+                if isinstance(it, dict) and it.get("Name") == "MpesaReceiptNumber":
+                    mpesa_code = str(it.get("Value") or "").strip().upper()
+                    break
+        except Exception:
+            pass
+
         # 1. Update Ledger status
         status = "completed" if res_code == 0 else "failed"
+        ledger_update = {"payment_status": status}
+        if mpesa_code:
+            ledger_update["trans_id"] = mpesa_code
         await db_update("billing_ledger", 
-            {"payment_status": status}, 
+            ledger_update, 
             {"checkout_request_id": checkout_id}
         )
         
@@ -444,8 +463,11 @@ async def process_mpesa_callback(payload: Dict[str, Any]) -> dict:
                     "payment_status": "paid" if res_code == 0 else "failed",
                     "status": "processing" if res_code == 0 else "pending"
                 }
+                if res_code == 0 and mpesa_code:
+                    order_update["mpesa_code"] = mpesa_code
+                    order_update["notes"] = f"M-Pesa payment confirmed (Ref: {mpesa_code})"
                 await db_update("orders", order_update, {"id": order_id})
-                logger.info(f"Payment {status} for Order {order_id} (CheckoutID: {checkout_id})")
+                logger.info(f"Payment {status} for Order {order_id} (CheckoutID: {checkout_id}, Ref: {mpesa_code})")
         
         return {"success": res_code == 0}
     except Exception as e:
@@ -610,13 +632,38 @@ async def confirm_mpesa_payment(
     if not order:
         return {"status": "error", "message": f"Order {order_id} not found."}
 
-    # Generate or format M-Pesa receipt code
-    code = (mpesa_code or f"QA{uuid.uuid4().hex[:8].upper()}").strip().upper()
+    # Resolve M-Pesa receipt reference without guessing
+    code = (mpesa_code or "").strip().upper()
+    if not code:
+        req_id = checkout_request_id or order.get("idempotency_key")
+        ledger_tx = None
+        if req_id:
+            ledger_rows = await db_select("billing_ledger", filters={"checkout_request_id": req_id}, token=settings.SUPABASE_SERVICE_ROLE_KEY)
+            if not ledger_rows:
+                ledger_rows = await db_select("billing_ledger", filters={"idempotency_key": req_id}, token=settings.SUPABASE_SERVICE_ROLE_KEY)
+            if ledger_rows:
+                ledger_tx = ledger_rows[0]
+        
+        if ledger_tx and ledger_tx.get("payment_status") == "completed" and ledger_tx.get("trans_id"):
+            code = str(ledger_tx.get("trans_id")).strip().upper()
+        else:
+            return {
+                "status": "error",
+                "paid": False,
+                "message": "Payment confirmation pending. Please enter your 10-character M-Pesa receipt reference from SMS or wait for STK Push callback.",
+            }
+    elif len(code) < 8:
+        return {
+            "status": "error",
+            "paid": False,
+            "message": "Invalid M-Pesa transaction reference. Valid receipts are at least 8 characters (e.g. QAF4529KL1).",
+        }
 
     # 2. Update order to paid & processing
     update_data = {
         "payment_status": "paid",
         "status": "processing",
+        "mpesa_code": code,
         "notes": f"M-Pesa Confirmed. Receipt #{code} on {datetime.now().strftime('%Y-%m-%d %H:%M')}"
     }
     await db_update("orders", update_data, {"id": order_id}, token=settings.SUPABASE_SERVICE_ROLE_KEY)
@@ -677,6 +724,7 @@ async def get_payment_status(key_or_id: str, token: Optional[str] = None) -> dic
             "order_id": ord_obj.get("id"),
             "order_number": ord_obj.get("order_number"),
             "amount": ord_obj.get("total_kes"),
+            "mpesa_code": ord_obj.get("mpesa_code"),
             "payment_method": ord_obj.get("payment_method")
         }
 
@@ -693,6 +741,7 @@ async def get_payment_status(key_or_id: str, token: Optional[str] = None) -> dic
             "paid": st in ["completed", "paid", "succeeded"],
             "transaction_id": tx.get("id"),
             "checkout_request_id": tx.get("checkout_request_id"),
+            "mpesa_code": tx.get("trans_id"),
         }
 
     return {"status": "pending", "paid": False}
@@ -1004,14 +1053,29 @@ async def get_dashboard_summary(user_id: str, token: Optional[str] = None) -> di
     wishlist = await get_user_wishlist(user_id, token=token)
     recommendations = (await get_products(token=token))[:4]
 
+    def is_order_paid(order: dict) -> bool:
+        pay_st = str(order.get("payment_status") or "").strip().lower()
+        ord_st = str(order.get("status") or "").strip().lower()
+        if pay_st in {"pending", "unpaid", "failed", "cancelled"} or ord_st in {"cancelled", "failed"}:
+            return False
+        if pay_st in {"paid", "completed", "succeeded", "success"}:
+            return True
+        mpesa_ref = str(order.get("mpesa_code") or "").strip()
+        if mpesa_ref and len(mpesa_ref) >= 8 and pay_st not in {"pending", "unpaid", "failed"}:
+            return True
+        if ord_st in {"completed", "delivered"} and pay_st not in {"pending", "unpaid", "failed"}:
+            return True
+        return False
+
+    paid_orders = [o for o in orders if is_order_paid(o)]
+    active_statuses = {"processing", "shipped", "in_transit", "dispatched", "confirmed"}
     completed_statuses = {"completed", "delivered"}
-    active_statuses = {"pending", "processing", "shipped"}
 
     stats = {
-        "total_orders": len(orders),
-        "active_orders": len([order for order in orders if str(order.get("status", "")).lower() in active_statuses]),
-        "completed_orders": len([order for order in orders if str(order.get("status", "")).lower() in completed_statuses]),
-        "total_spent_kes": sum(float(order.get("total_kes", 0) or 0) for order in orders if str(order.get("status", "")).lower() not in {"cancelled", "failed"}),
+        "total_orders": len(paid_orders),
+        "active_orders": len([o for o in paid_orders if str(o.get("status", "")).lower() in active_statuses]),
+        "completed_orders": len([o for o in paid_orders if str(o.get("status", "")).lower() in completed_statuses]),
+        "total_spent_kes": sum(float(o.get("total_kes", 0) or 0) for o in paid_orders),
         "wishlist_items": len(wishlist),
         "saved_addresses": len(addresses),
         "saved_payment_methods": len(payment_methods),

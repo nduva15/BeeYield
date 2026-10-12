@@ -3,6 +3,7 @@ import {
   getCebaTelemetryContext,
   matchCebaQueryDomain,
   synthesizeCebaAnswer,
+  buildCebaContextPrompt,
 } from "./ceba-intelligence";
 
 export type StreamVariant = "baseline" | "bloom-only" | "flight-only" | "bloom-flight";
@@ -171,9 +172,17 @@ export async function streamBeeGpt(
   onChunk: (text: string) => void,
   opts: { variant?: StreamVariant; signal?: AbortSignal; telemetryContext?: CebaTelemetryContext } = {},
 ): Promise<string> {
+  const ctx = opts.telemetryContext || (await getCebaTelemetryContext().catch(() => undefined));
+  const contextPrompt = ctx ? `\n\n${buildCebaContextPrompt(ctx)}` : "";
+  const fullPrompt =
+    contextPrompt && !prompt.includes("[CURRENT CEBA AI LIVE APICULTURAL CONTEXT]:")
+      ? `${prompt}${contextPrompt}`
+      : prompt;
+
   const payload = JSON.stringify({
-    messages: [{ role: "user", content: prompt }],
+    messages: [{ role: "user", content: fullPrompt }],
     promptVariant: opts.variant ?? "baseline",
+    telemetryContext: ctx,
   });
 
   const endpoints = [
@@ -237,7 +246,6 @@ export async function streamBeeGpt(
   }
 
   // Autonomous Zero-Error Fallback: Stream intelligent client-side analysis
-  const ctx = opts.telemetryContext || (await getCebaTelemetryContext().catch(() => undefined));
   const fallbackAnalysis = generateClientAutonomousBeeAnalysis(prompt, opts.variant, ctx);
   return await streamTextLocally(fallbackAnalysis, onChunk);
 }

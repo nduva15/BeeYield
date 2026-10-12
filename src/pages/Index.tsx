@@ -157,6 +157,7 @@ async function streamBeeyield(
       audioBase64,
       audioType,
       promptVariant,
+      telemetryContext,
     }),
   });
 

@@ -127,11 +127,11 @@ export const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({
   const handlePaymentCompleted = (result: MpesaPaymentStatusResponse) => {
     stopPolling();
     setIsConfirmed(true);
-    const code = result.mpesa_code || `QA${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-    setConfirmedReceipt(code);
+    const code = (result.mpesa_code || '').trim().toUpperCase();
+    setConfirmedReceipt(code || 'CONFIRMED');
     setConfirmedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
     toast.success('M-Pesa payment confirmed successfully!');
-    onPaymentSuccess({ ...result, mpesa_code: code });
+    onPaymentSuccess({ ...result, mpesa_code: code || 'CONFIRMED' });
   };
 
   const startPolling = () => {
@@ -182,21 +182,22 @@ export const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({
 
   // User confirms with M-Pesa SMS Code (e.g. "QAF452...")
   const handleManualConfirm = async () => {
-    if (!mpesaCodeInput.trim()) {
-      toast.error('Please enter the M-Pesa reference code from your SMS.');
+    const rawCode = mpesaCodeInput.trim().toUpperCase();
+    if (!rawCode || rawCode.length < 8) {
+      toast.error('Please enter the 10-character M-Pesa reference code from your Safaricom SMS (e.g. QAF4529KL1).');
       return;
     }
     setIsManualConfirming(true);
     setErrorMessage(null);
     try {
-      const res = await confirmMpesaPayment(orderId, mpesaCodeInput.trim(), checkoutRequestId);
+      const res = await confirmMpesaPayment(orderId, rawCode, checkoutRequestId);
       if (res && res.paid) {
         handlePaymentCompleted(res);
       } else {
-        throw new Error(res?.message || 'Could not verify M-Pesa code');
+        throw new Error(res?.message || 'Could not verify M-Pesa code with network.');
       }
     } catch (err: any) {
-      setErrorMessage(err.message || 'Could not verify payment code. Please check and retry.');
+      setErrorMessage(err.message || 'Could not verify payment code. Please check your SMS and retry.');
       toast.error(err.message || 'Payment confirmation failed');
     } finally {
       setIsManualConfirming(false);
@@ -224,20 +225,6 @@ export const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({
       toast.error(err?.message || 'Failed to send prompt');
     } finally {
       setIsResending(false);
-    }
-  };
-
-  // Instant simulator verification for dev/test
-  const handleInstantSimulateSuccess = async () => {
-    setIsManualConfirming(true);
-    try {
-      const simCode = `QA${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
-      const res = await confirmMpesaPayment(orderId, simCode, checkoutRequestId);
-      handlePaymentCompleted(res);
-    } catch (err: any) {
-      toast.error(err.message || 'Simulation error');
-    } finally {
-      setIsManualConfirming(false);
     }
   };
 
@@ -489,17 +476,6 @@ export const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({
                   >
                     Cancel
                   </Button>
-                </div>
-
-                {/* Instant Dev Simulation button */}
-                <div className="pt-2 text-center">
-                  <button
-                    type="button"
-                    onClick={handleInstantSimulateSuccess}
-                    className="text-[11px] text-muted-foreground hover:text-foreground underline decoration-dotted transition-colors"
-                  >
-                    ⚡ Test Simulator: Confirm M-Pesa Instantly
-                  </button>
                 </div>
               </div>
             </>

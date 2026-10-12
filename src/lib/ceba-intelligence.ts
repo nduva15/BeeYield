@@ -119,9 +119,21 @@ async function resolveActiveUser(
 
     // 2. Check supabase auth tokens in localStorage
     try {
+      const extraKeys = ["beeyield_user", "beeyield_auth_user", "supabase.auth.token"];
+      for (const ek of extraKeys) {
+        const raw = localStorage.getItem(ek);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const u = parsed?.user || parsed?.currentSession?.user || parsed;
+          if (u?.id || u?.email) {
+            return { user: u, profile: parsed?.profile || null };
+          }
+        }
+      }
+
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k && k.startsWith("sb-") && k.endsWith("-auth-token")) {
+        if (k && (k.startsWith("sb-") && k.endsWith("-auth-token"))) {
           const raw = localStorage.getItem(k);
           if (raw) {
             const parsed = JSON.parse(raw);
@@ -403,24 +415,91 @@ export async function getCebaTelemetryContext(
         lastReport: nowIso,
       });
     }
-  } else if (!isGuest && Array.isArray(devicesRes) && devicesRes.length > 0) {
-    devicesRes.forEach((d: any) => {
-      syncedDevices.push({
-        serial: d.serial_number || d.serial || d.id,
-        name: d.name || `Device ${d.id}`,
-        hiveId: d.hive_id,
-        hiveCode: d.hive_code,
-        syncStatus: d.status || "active",
-        connectionType: d.connection_type || "BLE",
-        batteryPct: d.battery_level || 90,
-        rssiDbm: d.rssi || -68,
-        broodTempC: d.temp_c || 34.7,
-        internalHumidityPct: d.humidity_pct || 53.0,
-        hiveWeightKg: d.weight_kg || 42.0,
-        acousticHz: 240,
-        acousticVerdict: "Normal colony activity",
-        lastReport: d.last_seen || nowIso,
+  } else if (!isGuest) {
+    const userHiveIds = new Set(hives.map((h) => h.id));
+    const userHiveCodes = new Set(hives.map((h) => (h.hive_code || "").toLowerCase()));
+
+    // 1. Paired Apisense hardware from apisenseSyncManager
+    try {
+      const pairedApisense = apisenseSyncManager.getAllDevices();
+      if (Array.isArray(pairedApisense)) {
+        pairedApisense.forEach((d) => {
+          const isLinkedToUser =
+            !d.hiveId ||
+            userHiveIds.has(d.hiveId) ||
+            userHiveCodes.has((d.hiveCode || "").toLowerCase()) ||
+            hives.length === 0;
+
+          if (isLinkedToUser && !syncedDevices.some((s) => s.serial === d.serial)) {
+            syncedDevices.push({
+              serial: d.serial,
+              name: d.name,
+              hiveId: d.hiveId,
+              hiveCode: d.hiveCode || hives.find((h) => h.id === d.hiveId)?.hive_code || "Assigned",
+              syncStatus: d.syncStatus,
+              connectionType: d.connectionType,
+              batteryPct: d.batteryPct,
+              rssiDbm: d.rssiDbm,
+              broodTempC: d.telemetry?.broodTemperatureC ?? 34.8,
+              internalHumidityPct: d.telemetry?.internalHumidityPct ?? 54.0,
+              hiveWeightKg: d.telemetry?.hiveWeightKg ?? 42.0,
+              acousticHz: d.telemetry?.dominantAcousticHz ?? 245,
+              acousticVerdict: d.telemetry?.acousticDiagnosticVerdict || "Optimal colony acoustics",
+              lastReport: d.lastSyncTime || nowIso,
+            });
+          }
+        });
+      }
+    } catch {}
+
+    // 2. Database IoT devices from /iot/devices
+    if (Array.isArray(devicesRes) && devicesRes.length > 0) {
+      devicesRes.forEach((d: any) => {
+        const serial = d.device_code || d.serial_number || d.serial || d.id;
+        if (!syncedDevices.some((s) => s.serial === serial)) {
+          const matchingReading = (Array.isArray(readingsRes) ? readingsRes : []).find(
+            (r: any) => r.hive_id === d.hive_id || r.device_id === d.id
+          );
+          syncedDevices.push({
+            serial,
+            name: d.device_name || d.name || `Apisense Node ${serial}`,
+            hiveId: d.hive_id,
+            hiveCode: d.hive_code || hives.find((h) => h.id === d.hive_id)?.hive_code || "Assigned",
+            syncStatus: d.status || "active",
+            connectionType: d.connection_type || "BLE / Gateway",
+            batteryPct: d.battery_level ?? 90,
+            rssiDbm: d.rssi ?? -68,
+            broodTempC: matchingReading?.temperature ?? d.temp_c ?? 34.7,
+            internalHumidityPct: matchingReading?.humidity ?? d.humidity_pct ?? 53.0,
+            hiveWeightKg: matchingReading?.weight ?? d.weight_kg ?? 42.0,
+            acousticHz: matchingReading?.acoustics?.frequency ?? 242,
+            acousticVerdict: matchingReading?.acoustics?.status || "Normal colony activity",
+            lastReport: matchingReading?.recorded_at || d.last_ping || d.last_seen || nowIso,
+          });
+        }
       });
+    }
+
+    // 3. Synthesize device telemetry from hives with sensors
+    hives.forEach((h) => {
+      if (h.has_sensors && !syncedDevices.some((s) => s.hiveId === h.id || s.hiveCode === h.hive_code)) {
+        syncedDevices.push({
+          serial: `SEN-${h.hive_code || h.id.slice(0, 6)}`,
+          name: `Sentinel Sensor (${h.hive_code})`,
+          hiveId: h.id,
+          hiveCode: h.hive_code,
+          syncStatus: "active",
+          connectionType: "Telemetry Sentinel",
+          batteryPct: 92,
+          rssiDbm: -65,
+          broodTempC: h.latest_temp ?? 34.7,
+          internalHumidityPct: h.latest_humidity ?? 53.0,
+          hiveWeightKg: h.latest_weight ?? 42.0,
+          acousticHz: 245,
+          acousticVerdict: "Queenright colony status",
+          lastReport: nowIso,
+        });
+      }
     });
   }
 
@@ -610,11 +689,12 @@ NOTE: No private user data is loaded. Advise the user to sign in or register to 
 /**
  * Classifies query intent
  */
-export function matchCebaQueryDomain(query: string): "hives" | "harvests" | "weather" | "sensors" | "general" {
+export function matchCebaQueryDomain(
+  query: string
+): "overview" | "hives" | "harvests" | "weather" | "sensors" | "general" {
   const q = (query || "").toLowerCase();
 
-  // Sensors & IoT Telemetry
-  if (
+  const isSensor =
     q.includes("sensor") ||
     q.includes("iot") ||
     q.includes("apisense") ||
@@ -628,13 +708,11 @@ export function matchCebaQueryDomain(query: string): "hives" | "harvests" | "wea
     q.includes("frequency") ||
     q.includes("hz") ||
     q.includes("battery") ||
-    q.includes("sync")
-  ) {
-    return "sensors";
-  }
+    q.includes("reading") ||
+    q.includes("readings") ||
+    q.includes("sync");
 
-  // Outside Weather
-  if (
+  const isWeather =
     q.includes("weather") ||
     q.includes("outside") ||
     q.includes("forecast") ||
@@ -643,15 +721,12 @@ export function matchCebaQueryDomain(query: string): "hives" | "harvests" | "wea
     q.includes("ambient") ||
     q.includes("climate") ||
     q.includes("flight viability") ||
-    q.includes("can bees fly")
-  ) {
-    return "weather";
-  }
+    q.includes("can bees fly");
 
-  // Harvests & Batches
-  if (
+  const isHarvest =
     q.includes("harvest") ||
     q.includes("batch") ||
+    q.includes("btch") ||
     q.includes("honey yield") ||
     q.includes("total yield") ||
     q.includes("kg") ||
@@ -660,28 +735,44 @@ export function matchCebaQueryDomain(query: string): "hives" | "harvests" | "wea
     q.includes("traceability") ||
     q.includes("floral source") ||
     q.includes("843") ||
-    q.includes("certified yield")
-  ) {
-    return "harvests";
-  }
+    q.includes("certified yield");
 
-  // Hives Activity & Information
-  if (
+  const isHive =
     q.includes("hive") ||
     q.includes("colony") ||
+    q.includes("colonies") ||
     q.includes("queen") ||
     q.includes("frame") ||
+    q.includes("frames") ||
     q.includes("activity") ||
     q.includes("inspection") ||
     q.includes("brood") ||
     q.includes("apiary") ||
+    q.includes("apiaries") ||
     q.includes("h-00") ||
     q.includes("vitality") ||
     q.includes("stands") ||
-    q.includes("184")
-  ) {
-    return "hives";
-  }
+    q.includes("184");
+
+  const matchCount = [isSensor, isWeather, isHarvest, isHive].filter(Boolean).length;
+
+  const isOverview =
+    matchCount >= 2 ||
+    q.includes("condition") ||
+    q.includes("conditions") ||
+    q.includes("overview") ||
+    q.includes("summary") ||
+    q.includes("status") ||
+    q.includes("dashboard") ||
+    q.includes("all my") ||
+    q.includes("how are my");
+
+  if (isOverview && matchCount >= 1) return "overview";
+  if (isSensor) return "sensors";
+  if (isWeather) return "weather";
+  if (isHarvest) return "harvests";
+  if (isHive) return "hives";
+  if (isOverview) return "overview";
 
   return "general";
 }
@@ -693,6 +784,152 @@ export function matchCebaQueryDomain(query: string): "hives" | "harvests" | "wea
 export function synthesizeCebaAnswer(query: string, ctx: CebaTelemetryContext): string {
   const domain = matchCebaQueryDomain(query);
   const { user } = ctx;
+
+  // ---------------------------------------------------------------
+  // 0. COMPREHENSIVE OVERVIEW (Apiary Conditions, Hives, Batches, Weather, IoT Sensors)
+  // ---------------------------------------------------------------
+  if (domain === "overview") {
+    if (user.isTimothy) {
+      const weatherList = Object.values(ctx.weatherByApiary);
+      const primaryWeather = weatherList[0] || {
+        apiaryName: "BeeYield Apiary in Kibwezi",
+        outsideTemp: 27.4,
+        outsideHumidity: 48,
+        outsideWind: 9.5,
+        todayMin: 18.2,
+        todayMax: 29.5,
+        flightViability: "optimal",
+        flightViabilityReason: "Temperature >18°C and wind speed <15 km/h provide prime foraging flight dynamics.",
+      };
+
+      const deviceRows = ctx.syncedDevices.map((d) => {
+        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz (${d.acousticVerdict}) |`;
+      }).join("\n");
+
+      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
+
+**Master Apiculturist**: Timothy Nduva (Commercial Lead)  
+**Primary Apiary**: **BeeYield Apiary in Kibwezi**, Makueni County, Kenya  
+**Commercial Fleet**: **184 Managed Langstroth Hives** (150 Active Producing Colonies, 34 Standby Stands)  
+**Total Certified Harvest**: **843.0 kg KEBS Export Certified Raw Honey** across **423 Batches** (2020–2026)  
+**Hardware Network**: **Apisense Sentinel Core 01 (H26110038001)** Synced to KIB-001  
+
+---
+
+#### 1. Apiary & Hives Fleet Status (184 Stands, 150 Active Colonies)
+| Stand Code | Architecture | Status | Frames (Brood) | Internal Temp | Scale Weight | Sensor Link |
+|:---|:---|:---|:---|:---|:---|:---|
+| **KIB-001** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.8°C | 44.5 kg | ✅ H26110038001 |
+| **KIB-002** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 35.1°C | 42.1 kg | ✅ Apisense Core |
+| **KIB-003** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.6°C | 43.8 kg | Manual Sentinel |
+| **KIB-030** | Langstroth 10-Frame | ✅ Active Production | 10 (8 Brood) | 34.9°C | 45.2 kg | Manual Sentinel |
+| **KIB-060** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 35.0°C | 44.0 kg | Manual Sentinel |
+| **KIB-150** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 34.7°C | 41.5 kg | Manual Sentinel |
+| **KIB-151–184** | Langstroth 10-Frame | ⏳ Standby Stands (34) | 10 Frames Drawn | Ambient | Empty Stand | Ready for splits |
+
+---
+
+#### 2. Certified Batches & Harvest Extraction Logs (843.0 kg Total)
+* **Historical Cumulative (2020–2025)**: **783.0 kg** across 393 certified export batches.
+* **Current Season (Jan 2026 Window)**: **60.0 kg** across 30 batches (2.0 kg per colony extraction from 30 hives).
+* **Quality Benchmark**: Moisture index **17.2%**, cold-extracted (<34°C), SHA-256 Golden Thread blockchain verified.
+
+---
+
+#### 3. Outside Weather & Foraging Flight Viability (Kibwezi Apiary)
+* **Location**: Lat -2.409, Lon 37.967 (Kibwezi, Makueni County)
+* **Microclimate**: Outside temp **${primaryWeather.outsideTemp}°C** (${primaryWeather.todayMin}°C–${primaryWeather.todayMax}°C) | Humidity: **${primaryWeather.outsideHumidity}%** | Wind: **${primaryWeather.outsideWind} km/h**
+* **Foraging Flight Status**: **${primaryWeather.flightViability.toUpperCase()}** — ${primaryWeather.flightViabilityReason}
+
+---
+
+#### 4. IoT Sensor Telemetry & Synced Apisense Devices
+| Device Serial | Assigned Hive | Link Status | Battery | Brood Temp | Core Humidity | Hive Scale Weight | Acoustic Frequency |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+${deviceRows || "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"}
+
+---
+
+#### 5. 48-Hour Apiary Management Directives
+1. **Super Expansion:** Honey flow is active in Kibwezi; monitor top super fills on KIB-001 through KIB-030.
+2. **Device Maintenance:** Anchor Node H26110038001 battery is at 42% (~45 days autonomous runtime remaining).`;
+    }
+
+    if (!user.isGuest && user.totalHives === 0) {
+      return `### 🐝 Ceba AI Apiary Workspace — Welcome ${user.name}
+
+**Account**: ${user.name} (${user.email || "Registered"})  
+**Apiary Portfolio**: **0 Hives Configured** | **0 Batches Logged** | **0 IoT Sensors Paired**  
+
+Welcome to your personalized BeeYield operating system. Ceba AI is ready to monitor your colony conditions, frame inspections, certified honey extractions, and sensor telemetry as soon as you deploy your first stands.
+
+---
+
+#### 🚀 3 Quick Steps to Activate Your Apiary
+1. **Register Your Apiary:** Open **Apiaries** in the dashboard and add your site coordinates. This enables automated local weather forecasting and flight viability calculation.
+2. **Add Your Hives:** Register your hive codes (e.g. Langstroth or Top-Bar) with frame capacity and queen records.
+3. **Pair Apisense Hardware:** Attach an Apisense Brood Sentinel node to stream core temperature, weight changes, and swarming acoustics directly into Ceba AI.`;
+    }
+
+    if (!user.isGuest) {
+      const hiveRows = ctx.hives.slice(0, 12).map((h) => {
+        const apiary = ctx.apiaries.find((a) => a.id === h.apiary_id)?.name || h.apiary_name || "Primary Apiary";
+        return `| **${h.hive_code}** | ${apiary} | ${h.hive_type || "Langstroth"} | ${h.status || "Active"} | ${h.frame_count || 10} (${h.brood_frames || 0} brood) | ${h.has_sensors ? "✅ Synced" : "Manual"} | ${h.latest_temp ? `${h.latest_temp}°C` : "N/A"} | ${h.latest_weight ? `${h.latest_weight} kg` : "N/A"} |`;
+      }).join("\n");
+
+      const harvestRows = ctx.harvests.slice(0, 6).map((h) => {
+        return `| **${h.batch_code || h.id}** | ${h.harvest_date} | **${h.quantity_kg} kg** | ${h.moisture_content_percent ? `${h.moisture_content_percent}%` : "N/A"} | ${h.nectar_source || "Wildflower"} | ${h.honey_type || "Raw Honey"} |`;
+      }).join("\n");
+
+      const weatherRows = Object.values(ctx.weatherByApiary).map((w) => {
+        return `| **${w.apiaryName}** | **${w.outsideTemp}°C** (${w.todayMin}°C–${w.todayMax}°C) | **${w.outsideHumidity}%** | **${w.outsideWind} km/h** | ${w.conditionText} | **${w.flightViability.toUpperCase()}** |`;
+      }).join("\n");
+
+      const sensorRows = ctx.syncedDevices.map((d) => {
+        return `| **${d.serial}** | ${d.hiveCode || "Assigned"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz |`;
+      }).join("\n");
+
+      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — ${user.name}
+
+**Beekeeper**: ${user.name} (${user.email || "Beekeeper"})  
+**Registered Apiaries**: **${ctx.apiaries.length} Sites**  
+**Managed Fleet**: **${user.totalHives} Hives** (${user.activeHives} Active Colonies)  
+**Recorded Harvests**: **${user.totalYieldKg.toFixed(1)} kg** across **${user.totalBatches} Batches**  
+**IoT Hardware**: **${ctx.syncedDevices.length} Synced Sensor Nodes**  
+
+---
+
+#### 1. Apiary & Hives Fleet Status
+| Hive Code | Apiary | Architecture | Status | Frames (Brood) | Sensor Telemetry | Brood Temp | Scale Weight |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+${hiveRows || "| — | No hives registered yet | — | — | — | — | — | — |"}
+
+---
+
+#### 2. Certified Batches & Harvest Extraction Logs
+${harvestRows ? `| Batch Code | Harvest Date | Net Yield | Moisture Index | Floral Source | Honey Profile |\n|:---|:---|:---|:---|:---|:---|\n${harvestRows}` : "No harvest records logged yet for this account."}
+
+---
+
+#### 3. Outside Weather for Apiary Locations
+${weatherRows ? `| Apiary Site | Ambient Temp | Relative Humidity | Wind Velocity | Sky Condition | Flight Viability |\n|:---|:---|:---|:---|:---|:---|\n${weatherRows}` : "No apiary locations configured yet. Add your apiary coordinates to view microclimate weather."}
+
+---
+
+#### 4. IoT Sensor Telemetry & Synced Hardware
+${sensorRows ? `| Device Serial | Linked Stand | Status | Battery | Brood Temp | Core Humidity | Hive Weight | Acoustic Frequency |\n|:---|:---|:---|:---|:---|:---|:---|:---|\n${sensorRows}` : "No active Apisense hardware sensors paired. Pair devices in the Devices menu to stream real-time telemetry."}
+
+---
+
+#### 5. Apiary Management Directives
+1. **Colony Inspections:** Maintain routine frame checks during active forage flows.
+2. **Telemetry Synchronization:** Keep Apisense Sentinel nodes charged for continuous temperature and acoustic diagnostics.`;
+    }
+
+    return `### 🐝 Ceba AI Apiary Intelligence (Guest Preview)
+
+You are currently in guest preview mode. Sign in to your BeeYield account to view your personalized apiary fleet, hive health diagnostics, harvest batches, and live IoT sensor telemetry.`;
+  }
 
   // ---------------------------------------------------------------
   // 1. HIVES DOMAIN
@@ -896,6 +1133,10 @@ To receive live microclimate telemetry, ambient temperature ranges, and foraging
   // ---------------------------------------------------------------
   if (domain === "sensors") {
     if (user.isTimothy) {
+      const deviceRows = ctx.syncedDevices.map((d) => {
+        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz (${d.acousticVerdict}) |`;
+      }).join("\n");
+
       return `### 📡 Ceba AI IoT Sensor Telemetry & Hardware — Timothy Nduva
 
 **Hardware Network**: Apisense Brood Sentinels & Scale Gateway  
@@ -903,7 +1144,14 @@ To receive live microclimate telemetry, ambient temperature ranges, and foraging
 
 ---
 
-#### 1. Live Telemetry Readings (Node H26110038001)
+#### 1. Live Telemetry Readings
+| Device Serial | Linked Stand | Status | Battery | Brood Temp | Core Humidity | Hive Weight | Acoustic Diagnostics |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+${deviceRows || "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"}
+
+---
+
+#### 2. Biometric Vital Signs Interpretation
 * **Brood Core Temperature**: **34.8°C** (Optimal brood nest range: 34.5°C – 35.5°C; zero chilling risk)
 * **Internal Relative Humidity**: **54.0% RH** (Prevents comb dry-out while averting condensation)
 * **Scale Weight**: **44.5 kg** (Net positive daily trajectory during active acacia nectar flow)
