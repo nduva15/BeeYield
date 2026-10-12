@@ -110,19 +110,19 @@ async def create_batch(batch_in: dict[str, Any], token: Optional[str] = Depends(
     return await traceability_service.create_batch(batch_in, token=token)
 
 @router.get("/batches", response_model=list[dict[str, Any]])
-async def get_batches(limit: int = 100, token: Optional[str] = Depends(get_token)):
-    """Get all honey batches."""
-    return await traceability_service.get_all_batches(limit=limit, token=token)
+async def get_batches(limit: int = 100, year: Optional[int] = 2026, token: Optional[str] = Depends(get_token)):
+    """Get active honey batches (defaulting strictly to 2026 season)."""
+    return await traceability_service.get_all_batches(limit=limit, token=token, year=year or 2026)
 
 
 @router.get("/public-batches", response_model=list[dict[str, Any]])
 async def get_public_batches(
     owner_name: str = "Timothy Nduva",
     verified_only: bool = True,
-    limit: int = 3,
+    limit: int = 60,
     token: Optional[str] = Depends(get_token),
 ):
-    """Get deterministic public traceability batches filtered to a named beekeeper."""
+    """Get deterministic public traceability batches filtered to 2026 season (60kg active reserve)."""
     return await traceability_service.get_public_batches(
         owner_name=owner_name,
         verified_only=verified_only,

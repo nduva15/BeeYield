@@ -798,7 +798,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
     const pre2026Match = normalizedCode.match(/20(1\d|2[0-5])/);
     if (pre2026Match) {
         throw new Error(
-            `Batch Archive Policy: Only new 2026 harvest batches can be scanned. Batches from ${pre2026Match[0]} and prior years are archived and no longer eligible for active retail scanning.`
+            `Batch Archive Policy: Honey batches from ${pre2026Match[0]} and prior years have already been sold. Only 2026 season batches (60kg season yield) are active in verify/traceability.`
         );
     }
 
@@ -825,7 +825,7 @@ export const traceBatch = async (code: string): Promise<TraceResponse | null> =>
             const harvestYear = parseInt(String(data.harvest_date || "").slice(0, 4), 10);
             if (harvestYear && harvestYear < 2026) {
                 throw new Error(
-                    `Batch Archive Policy: Only new 2026 harvest batches can be scanned. This batch is from ${harvestYear} and has been archived.`
+                    `Batch Archive Policy: This batch is from the ${harvestYear} harvest season and has already been sold. Only 2026 season batches (60kg season yield) are active in verify/traceability.`
                 );
             }
             return data;
@@ -902,12 +902,14 @@ export const getPublicTraceabilityBatches = async (limit = 60): Promise<PublicTr
             limit,
             owner_name: "Timothy Nduva",
             verified_only: true,
+            year: 2026,
         });
         if (Array.isArray(data) && data.length > 0) {
-            // Strictly filter for 2026 batches
+            // Strictly filter for 2026 batches only (the 60kg season yield; prior seasons already sold)
             const only2026 = data.filter((b) => {
-                const year = (b.harvest_date || b.batch_code || "").match(/20\d{2}/);
-                return !year || parseInt(year[0], 10) >= 2026;
+                const dateStr = String(b.harvest_date || "");
+                const codeStr = String(b.batch_code || "");
+                return dateStr.startsWith("2026") || codeStr.includes("2026");
             });
             if (only2026.length > 0) {
                 console.log(`[Batches] ✓ Backend returned ${only2026.length} 2026 batches`);

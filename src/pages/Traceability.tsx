@@ -602,13 +602,13 @@ const Traceability = () => {
 
                       <div className="mt-8 pt-8 border-t border-slate-100">
                         <div className="flex items-center justify-between mb-3">
-                          <p className="text-xs font-black text-slate-400">2026 Harvest Season • Distributed Batches</p>
+                          <p className="text-xs font-black text-slate-400">2026 Harvest Season • Active Batches</p>
                           <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                            {exampleCodes.length} Batches (2026 Only)
+                            {exampleCodes.length} Batches (60kg • 2026 Only)
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500 mb-3 font-medium">
-                          Active scanning is restricted to new 2026 batches. All 60 batches have been cold-extracted, quality-sealed, and distributed to regional retail hubs:
+                          Active verification is restricted to 2026 harvest batches (60kg season reserve). Pre-2026 harvests have already been sold and are archived:
                         </p>
                         <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
                           {exampleCodes.map(code => (

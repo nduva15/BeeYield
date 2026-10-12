@@ -17,95 +17,76 @@ export function generateClientAutonomousBeeAnalysis(
 ): string {
   const lower = (prompt || "").toLowerCase();
 
-  // If telemetry context is provided or query matches core telemetry domains, synthesize with real telemetry data
-  const domain = matchCebaQueryDomain(lower);
-  if (telemetryCtx && domain !== "general") {
+  // If telemetry context is provided, delegate to synthesizeCebaAnswer which enforces strict user isolation
+  if (telemetryCtx) {
     return synthesizeCebaAnswer(prompt, telemetryCtx);
   }
 
+  // Fallback when no telemetry context is supplied (e.g. unauthenticated general queries)
+  const domain = matchCebaQueryDomain(lower);
+
   // 1. Specific Hives & Colonies Activity
   if (domain === "hives" || lower.includes("hive activity") || lower.includes("my hives")) {
-    if (telemetryCtx) {
-      return synthesizeCebaAnswer(prompt, telemetryCtx);
-    }
     return `### 🐝 Ceba AI Hive Activity & Colony Diagnostic
 
-#### 1. Hive Fleet Overview & Activity Matrix
-* **Active Colonies:** 3 Managed Production Colonies (Hive 001, Hive 002, Hive 003) in Kibwezi Dryland Apiary.
-* **Queen Vitality:** Concentric brood patterns across 6–8 deep frames; active laying queen verified.
-* **Flight Velocity:** Entrance traffic averaging 38–46 visits per minute with active acacia pollen collection.
-* **Internal Cluster Stability:** Core brood nest maintaining 34.6°C–35.1°C with zero brood chilling.
+#### 1. Hive Fleet Diagnostic Protocol
+* **Colony Turnaround:** Maintain routine 7–10 day frame inspections during active nectar flows to verify queen laying patterns and supersedure cups.
+* **Flight Entrance Activity:** Healthy commercial colonies exhibit entrance traffic averaging 30–45 forager returns per minute during peak midday solar windows.
+* **Thermoregulation Standard:** The brood nest cluster maintains 34.5°C–35.5°C; sudden drops indicate cluster contraction or brood chilling.
 
 ---
 
 #### 2. Tactical Recommendations
-1. **Super Expansion:** Provide honey super with queen excluder on Hive 001.
-2. **Bottom Board Inspection:** Verify debris and confirm zero Varroa mite buildup.
-3. **Telemetry Tracking:** Sensor nodes report stable acoustics (245 Hz).`;
+1. **Super Expansion:** Provide a shallow honey super with a queen excluder as soon as 8 of 10 brood chamber frames are drawn and covered with worker bees.
+2. **Bottom Board Inspection:** Verify debris daily for early signs of Varroa mite accumulation or wax moth larvae.
+3. **Telemetry Tracking:** Connect Apisense Sentinel hardware nodes to stream real-time brood temperature and weight dynamics.`;
   }
 
   // 2. Harvest Records & Batches
   if (domain === "harvests" || lower.includes("harvest") || lower.includes("batch") || lower.includes("yield") || lower.includes("kg")) {
-    if (telemetryCtx) {
-      return synthesizeCebaAnswer(prompt, telemetryCtx);
-    }
     return `### 🍯 Ceba AI Harvest Records & Extraction Intelligence
 
-#### 1. Certified Harvest & Batch Summary
-* **Batch Lot:** **BATCH-KBZ-2026-08** (Raw Acacia Blossom Honey)
-* **Net Output:** **21.5 kg certified yield** (Hive 001) | 5.0 kg preserved for brood nest reserves.
-* **Moisture Compliance:** **17.2% Moisture Index** (Export Grade Compliance < 18.0%).
-* **Traceability Ledger:** SHA-256 Verified Golden Thread Record (Block #418902).
+#### 1. Certified Harvest & Quality Standards
+* **Moisture Compliance:** Standard export-grade raw honey requires moisture content <18.0% (Codex Alimentarius allows up to 20.0%).
+* **Extraction Protocol:** Cold centrifugal extraction (<34°C) preserves thermolabile diastase and invertase enzymes.
+* **Traceability Ledger:** Every recorded harvest batch receives a unique cryptographic Golden Thread QR identifier for batch verification.
 
 ---
 
-#### 2. Extraction & Quality Assurance
-1. **Cold Centrifugation:** Processed at <34°C through 200 µm stainless steel filtration.
-2. **Quality Benchmark:** Diastase index >12.5 Schade units; zero fermentation risk.
-3. **Packaging:** Digital QR traceability code anchored to each lot jar.`;
+#### 2. Quality Assurance Protocol
+1. **Capped Comb Ratio:** Only extract frames that are at least 75% capped with ripe wax to ensure low moisture and zero fermentation risk.
+2. **Filtration:** Double stainless steel straining (200 µm) removes wax particles while retaining microscopic pollen grains for floral verification.
+3. **Lot Documentation:** Log batch codes, net extraction weight, and floral forage corridors directly in the BeeYield Harvests portal.`;
   }
 
   // 3. Outside Weather for Each Hive
   if (domain === "weather" || lower.includes("outside weather") || lower.includes("weather for each hive")) {
-    if (telemetryCtx) {
-      return synthesizeCebaAnswer(prompt, telemetryCtx);
-    }
     return `### 🌦️ Ceba AI Outside Weather & Foraging Viability
 
-#### 1. Microclimate Weather Summary (Kibwezi Dryland Apiary)
-* **Outside Temperature:** **27.4°C** (Daily range: 18.2°C – 29.5°C)
-* **Outside Humidity:** **48% RH** (Optimal dryland nectar preservation)
-* **Wind Speed & Direction:** **9.5 km/h** ESE (Below 20 km/h flight disruption ceiling)
-* **Sky Conditions:** Clear sky with solar irradiance supporting full flight range
+#### 1. Microclimate Weather & Foraging Index
+* **Temperature Threshold:** Active foraging flight commences at >15°C and peaks between 18°C and 32°C. Above 38°C, bees shift workforce toward hive water cooling.
+* **Wind Disruption:** Wind velocity below 18 km/h allows full 3.0 km flight radius; winds exceeding 24 km/h restrict flight to immediate apiary perimeter.
+* **Relative Humidity:** Ambient humidity between 40% and 65% prevents premature nectar drying in floral cups.
 
 ---
 
-#### 2. Foraging Flight Viability
-* **Verdict:** **OPTIMAL FORAGING WINDOW ACTIVE**.
-* Ambient temperatures (>18°C) and gentle winds enable bees to maintain full 3.0 km flight perimeter.
-* Nectar inflow from surrounding Acacia tortilis is at peak morning-to-midday availability.`;
+#### 2. Apiary Weather Directives
+* Ensure your apiary location is configured in BeeYield to enable automated local Open-Meteo microclimate forecasting.`;
   }
 
   // 4. IoT Sensor Data & Synced Devices
   if (domain === "sensors" || lower.includes("iot sensor") || lower.includes("synced device") || lower.includes("apisense")) {
-    if (telemetryCtx) {
-      return synthesizeCebaAnswer(prompt, telemetryCtx);
-    }
-    return `### 📡 Ceba AI IoT Sensor Telemetry & Synced Hardware
+    return `### 📡 Ceba AI IoT Sensor Telemetry & Hardware
 
-#### 1. Live Hardware Nodes (Apisense H26110038001 -> Hive 001)
-* **Sync Status:** **FULLY SYNCED (Bluetooth LE / Cloud Proxy)**
-* **Battery Level:** **42%** (~45 days autonomous runtime remaining)
-* **Signal Strength:** **-70 dBm RSSI**
-* **Brood Chamber Temp:** **34.6°C** (Benchmark: 34.5°C–35.5°C)
-* **Core Humidity:** **54.0% RH**
-* **Hive Scale Weight:** **44.2 kg** (+0.42 kg daily nectar surge)
-* **Acoustics:** **245 Hz** (Calm queenright cluster, swarming risk < 10%)
+#### 1. Hardware Architecture (Apisense & LoRaWAN)
+* **Brood Chamber Sentinel:** Measures core brood nest temperature (ideal: 34.5°C–35.5°C) and relative humidity.
+* **Acoustic Frequency Monitor:** Captures harmonic vibrations; fundamental hive hum between 230–250 Hz indicates calm queenright status. Frequencies exceeding 285 Hz signal swarming agitation.
+* **Continuous Scale:** Tracks daily net nectar gains vs colony caloric consumption.
 
 ---
 
-#### 2. Telemetry Directives
-* Maintain standard telemetry polling; battery top-up recommended within 30 days.`;
+#### 2. Device Pairing
+* Open **Devices** in the BeeYield dashboard to scan and pair Apisense hardware via Bluetooth LE or cloud gateway.`;
   }
 
   // 5. Pollination Planning & Contracting

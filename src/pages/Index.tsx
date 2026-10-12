@@ -496,7 +496,7 @@ export default function Index() {
     let telemetryContext: CebaTelemetryContext | undefined;
     let telemetryPrompt = "";
     try {
-      telemetryContext = await getCebaTelemetryContext();
+      telemetryContext = await getCebaTelemetryContext(user, profile);
       telemetryPrompt = `\n\n${buildCebaContextPrompt(telemetryContext)}`;
     } catch (e) {
       console.warn("Failed to get Ceba telemetry context:", e);
