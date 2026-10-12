@@ -7,8 +7,7 @@ Validates:
 """
 
 import pytest
-from unittest.mock import AsyncMock
-from unittest.mock import AsyncMock
+from unittest.mock import patch, AsyncMock, MagicMock
 
 from app.services.ceba_context_engine import (
     AccountContext,
@@ -191,7 +190,6 @@ def test_biosecurity_rejects_cold_weather_inspection():
 @pytest.mark.asyncio
 async def test_route_and_execute_student_flow(base_context):
     """Verifies route_and_execute handles student requests and returns proper structure."""
-    from unittest.mock import MagicMock
     mock_resp = MagicMock()
     mock_resp.status_code = 200
     mock_resp.json.return_value = {"response": "CEBA AI Student: Current brood temperature is 34.8°C across active hives."}
