@@ -7,8 +7,6 @@ strict RLS scoping, and Claude API execution with system security instructions.
 import os
 import re
 import json
-import time
-from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional
 from pydantic import BaseModel, Field
 from fastapi import HTTPException, status
@@ -29,10 +27,13 @@ class AccountContext(BaseModel):
 
 class InlandWeatherNode(BaseModel):
     node_id: str
+class InlandWeatherNode(BaseModel):
+    node_id: str
     temp_c: float
     humidity_pct: float
     barometric_press_hpa: float
     bloom_status: str
+    recorded_at: Optional[str] = Field(default_factory=lambda: (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat())
 
 class ActiveApiary(BaseModel):
     apiary_id: str
@@ -47,6 +48,7 @@ class InHiveMetrics(BaseModel):
     daily_weight_delta_kg: float
     acoustic_frequency_hz: float
     pest_flag: str
+    recorded_at: Optional[str] = Field(default_factory=lambda: (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat())
 
 class QueriedHiveTelemetry(BaseModel):
     hive_id: str
@@ -128,7 +130,7 @@ def extract_tenant_context(current_user: Optional[Dict[str, Any]]) -> AccountCon
     user_name = (
         current_user.get("user_metadata", {}).get("full_name") or
         current_user.get("name") or
-        ("Timothy Mathuva" if is_timothy else f"Beekeeper {user_id[:8]}")
+        ("Timothy Nduva" if is_timothy else f"Beekeeper {user_id[:8]}")
     )
 
     role = (
