@@ -253,6 +253,8 @@ export interface IoTDevice {
   device_type: "infield" | "inland" | "disease";
   status: "active" | "inactive";
   battery_level: number;
+  signal_dbm?: number;
+  signal_strength?: number;
   firmware_version: string;
   last_ping: string;
   location_name: string;

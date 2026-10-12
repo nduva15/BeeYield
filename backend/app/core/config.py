@@ -56,6 +56,12 @@ class Settings(BaseSettings):
     SUPABASE_KEY_CEBA: Optional[str] = Field(default=None)
     SUPABASE_SERVICE_ROLE_KEY_CEBA: Optional[str] = Field(default=None)
     
+    # CEBA AI Distillation & Local Student Inference
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
+    CEBA_STUDENT_MODEL: str = Field(default="ceba-ai-student-8b")
+    CEBA_ROUTER_ENABLED: bool = Field(default=True)
+    CEBA_ROUTER_MODE: str = Field(default="hybrid")  # hybrid, teacher_only, student_only
+    
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     GOOGLE_API_KEY: Optional[str] = Field(default=None)
     ANTHROPIC_API_KEY: Optional[str] = Field(default=None)

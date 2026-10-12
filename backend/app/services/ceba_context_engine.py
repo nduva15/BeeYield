@@ -77,6 +77,8 @@ class CebaChatResponse(BaseModel):
     latency_ms: int
     model: str = "claude-3-5-sonnet"
     audit_logged: bool = True
+    target_decision: Optional[str] = None
+    routing_reason: Optional[str] = None
 
 # ==============================================================================
 # 2. FR-1: AUTH GUARD & TENANT RESOLUTION

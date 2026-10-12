@@ -149,12 +149,11 @@ const KIBWEZI_DEVICE_MAP: Record<string, { serial: string; hasSensor: boolean }>
 
 /**
  * Timothy Nduva's 184 Managed Langstroth Hives in Kibwezi, Makueni County
- * Note: Based on verified production records, 150 stands have active producing colonies,
- * and 34 stands (KIB-151 to KIB-184) are standby boxes / awaiting swarms.
+ * All 184 stands are active producing colonies dedicated to honey production.
  */
 export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }, (_, i) => {
   const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  const hasColony = i < 150;
+  const hasColony = true;
   const dev = KIBWEZI_DEVICE_MAP[code];
 
   return {
@@ -162,17 +161,17 @@ export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }
     code,
     hive_code: code,
     name: `${code} (Langstroth 10)`,
-    status: hasColony ? "ACTIVE" : "STANDBY",
-    hasColony,
+    status: "ACTIVE",
+    hasColony: true,
     apiary_id: "apiary-kibwezi",
     apiary_name: CANONICAL_APIARY_NAME,
     apiary: CANONICAL_APIARY_NAME,
     hasSensor: Boolean(dev?.hasSensor),
     sensorSerial: dev?.serial,
     colonyStrength: undefined,
-    colonyAvailability: hasColony ? "Dedicated Honey Production" : "Standby Stand (Unoccupied)",
+    colonyAvailability: "Dedicated Honey Production",
     queenBreedingYear: undefined,
-    queenStatus: hasColony ? "Active Colony" : "No Queen (Standby Box)",
+    queenStatus: "Active Colony",
     max_brood_frames: undefined,
     frame_count: 10,
   };
@@ -180,7 +179,7 @@ export const CANONICAL_TIMOTHY_HIVES: UnifiedHive[] = Array.from({ length: 184 }
 
 /**
  * Timothy Nduva's Canonical Apiary in Kibwezi:
- * 150 Active Producing Colonies across 184 Managed Langstroth Hive Stands
+ * 184 Active Producing Colonies across 184 Managed Langstroth Hive Stands
  */
 export const CANONICAL_TIMOTHY_APIARY: UnifiedApiary = {
   id: "apiary-kibwezi",
@@ -191,7 +190,7 @@ export const CANONICAL_TIMOTHY_APIARY: UnifiedApiary = {
   county: "Kibwezi",
   latitude: -2.409,
   longitude: 37.967,
-  active_hives: 150,
+  active_hives: 184,
   total_hives: 184,
   acres: 5,
   forage_type: "Acacia, Neem, Maize, Mango & Forest Multifloral",

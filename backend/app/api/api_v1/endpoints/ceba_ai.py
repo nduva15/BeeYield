@@ -9,6 +9,7 @@ from typing import Dict, Any
 from fastapi import APIRouter, Depends
 
 from app.core import security
+from app.core.config import settings
 from app.services.ceba_context_engine import (
     ScopedContextPayload,
     CebaChatRequest,
@@ -19,6 +20,7 @@ from app.services.ceba_context_engine import (
     execute_ceba_ai_engine,
     log_ceba_audit,
 )
+from app.services.ceba_router import get_complexity_router
 
 router = APIRouter()
 
@@ -46,8 +48,14 @@ async def ceba_scoped_chat(
     # 3. Scoped Context Resolution (Sub-200ms target SLA)
     context_payload = await fetch_scoped_context(tenant, sanitized_query)
 
-    # 4. CEBA AI Engine Execution with System Security Instructions
-    ai_response = await execute_ceba_ai_engine(sanitized_query, context_payload)
+    # 4. CEBA AI Engine Execution (Edge Student vs Cloud Teacher via Complexity Router)
+    model_used = "claude-3-5-sonnet"
+    if getattr(settings, "CEBA_ROUTER_ENABLED", True):
+        router_result = await get_complexity_router().route_and_execute(sanitized_query, context_payload)
+        ai_response = router_result.get("response") or ""
+        model_used = router_result.get("model_used", "claude-3-5-sonnet")
+    else:
+        ai_response = await execute_ceba_ai_engine(sanitized_query, context_payload)
 
     latency_ms = int((time.perf_counter() - start_time) * 1000)
 
@@ -66,7 +74,7 @@ async def ceba_scoped_chat(
         response=ai_response,
         context_payload=context_payload,
         latency_ms=latency_ms,
-        model="claude-3-5-sonnet",
+        model=model_used,
         audit_logged=True,
     )
 
