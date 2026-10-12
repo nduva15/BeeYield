@@ -39,8 +39,9 @@ import { CANONICAL_TIMOTHY_APIARY } from "@/lib/user-hives";
 import { normalizeApiaryName, CANONICAL_APIARY_NAME } from "@/lib/apiary-normalization";
 
 // International Queen Marking Color Codes
-export function getQueenYearColor(year: number) {
-  const lastDigit = Math.abs(year) % 10;
+export function getQueenYearColor(year?: number | null) {
+  const safeYear = Number(year) || new Date().getFullYear();
+  const lastDigit = Math.abs(safeYear) % 10;
   if (lastDigit === 1 || lastDigit === 6) {
     return {
       name: "White",

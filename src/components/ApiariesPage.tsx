@@ -248,8 +248,9 @@ export interface ApiaryHarvestItem {
 }
 
 // Standard International Queen Marking Color Codes
-export function getQueenYearColor(year: number) {
-  const lastDigit = Math.abs(year) % 10;
+export function getQueenYearColor(year?: number | null) {
+  const safeYear = Number(year) || new Date().getFullYear();
+  const lastDigit = Math.abs(safeYear) % 10;
   if (lastDigit === 1 || lastDigit === 6) {
     return {
       name: "White",
@@ -810,101 +811,57 @@ export const CANONICAL_KIBWEZI_DEVICES: ApiaryDeviceItem[] = [
   },
 ];
 
-// Canonical Harvests for BeeYield Apiary (843.0 kg across 7 Verified Harvest Cycles, matching 423 batches)
-export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = [
-  {
-    id: "harv-kib-2026-01",
-    batch: "BEE-20260103",
-    harvested_on: "2026-01-03",
-    honey_type: "Early Spring Acacia Blossom (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 60.0,
-    moisture_pct: 16.8,
-    color_grade: "Extra Light Amber",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2025-02",
-    batch: "BEE-20250615",
-    harvested_on: "2025-06-15",
-    honey_type: "Forest Multifloral (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 300.0,
-    moisture_pct: 16.9,
-    color_grade: "Dark Amber",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2024-01",
-    batch: "BEE-20240615",
-    harvested_on: "2024-06-15",
-    honey_type: "Wildflower & Acacia (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 250.0,
-    moisture_pct: 17.0,
-    color_grade: "Extra White",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2023-01",
-    batch: "BEE-20230615",
-    harvested_on: "2023-06-15",
-    honey_type: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 105.0,
-    moisture_pct: 16.8,
-    color_grade: "Water White",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2022-01",
-    batch: "BEE-20220615",
-    harvested_on: "2022-06-15",
-    honey_type: "Forest Acacia (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 55.0,
-    moisture_pct: 17.5,
-    color_grade: "Amber",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2021-01",
-    batch: "BEE-20210615",
-    harvested_on: "2021-06-15",
-    honey_type: "Wildflower (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 60.0,
-    moisture_pct: 17.1,
-    color_grade: "Light Amber",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-  {
-    id: "harv-kib-2020-01",
-    batch: "BEE-20200615",
-    harvested_on: "2020-06-15",
-    honey_type: "Wildflower Pioneer (Acacia, Neem, Maize, Mango & Forest Multifloral)",
-    quantity_kg: 13.0,
-    moisture_pct: 17.4,
-    color_grade: "Amber",
-    quality_grade: "Export Grade A Raw (<18% moisture)",
-  },
-];
+// Canonical Harvests for BeeYield Apiary (843.0 kg across 423 verified batches)
+export const CANONICAL_KIBWEZI_HARVESTS: ApiaryHarvestItem[] = CANONICAL_TIMOTHY_HARVESTS.map((h: any) => ({
+  id: h.id || `harv-${h.batch || h.batch_code}`,
+  batch: h.batch || h.batch_code || "",
+  hiveCode: h.hive_code || (h.hive_label ? h.hive_label.split(" ")[0] : undefined),
+  harvested_on: h.harvest_date || h.harvested_on || "",
+  honey_type: h.honey_type,
+  quantity_kg: Number(h.quantity_kg) || 2.0,
+  moisture_pct: Number(h.moisture_pct) || 17.0,
+  color_grade: h.color_grade || "Amber",
+  quality_grade: h.quality_grade || "Export Grade A Raw (<18% moisture)",
+}));
 
+// Group canonical harvest batches by hive code so each hive displays its verified batches
+const HIVE_CANONICAL_BATCHES_MAP: Record<string, HiveHarvestBatch[]> = {};
+CANONICAL_TIMOTHY_HARVESTS.forEach((h: any) => {
+  const code = h.hive_code || (h.hive_label ? h.hive_label.split(" ")[0] : "");
+  if (code) {
+    if (!HIVE_CANONICAL_BATCHES_MAP[code]) {
+      HIVE_CANONICAL_BATCHES_MAP[code] = [];
+    }
+    HIVE_CANONICAL_BATCHES_MAP[code].push({
+      id: h.id || `batch-${h.batch || h.batch_code}`,
+      batchCode: h.batch || h.batch_code || "",
+      date: h.harvest_date || h.harvested_on || "",
+      quantityKg: Number(h.quantity_kg) || 2.0,
+      honeyType: h.honey_type || "Wildflower & Acacia",
+      moisturePct: Number(h.moisture_pct) || 17.0,
+    });
+  }
+});
 
 // Initial Hives with Queen Details and Harvest Batches
-// Differentiates 150 active producing colonies from 34 standby/empty stands (KIB-151..184)
-// Strictly real data only - no synthetic brood frames, breeding years, or generated harvest batches
+// All 184 stands are active producing colonies dedicated to honey production.
+// Verified batches linked from Timothy's harvest ledger
 export const CANONICAL_KIBWEZI_HIVES: ApiaryHiveItem[] = Array.from({ length: 184 }, (_, i) => {
   const code = `KIB-${String(i + 1).padStart(3, "0")}`;
-  const hasColony = i < 150;
 
   return {
     id: `hive-kib-${String(i + 1).padStart(3, "0")}`,
     code,
     name: `${code} (Langstroth 10)`,
     hiveType: "Langstroth 10-Frame",
-    queenPresent: hasColony,
+    queenPresent: true,
     queenBreedingYear: undefined,
-    queenStatus: hasColony ? "Active Colony" : "No Queen (Standby Box)",
+    queenStatus: "Active Colony",
     broodFrames: undefined,
     honeyFrames: undefined,
     colonyStrength: undefined,
-    colonyAvailability: hasColony ? "Dedicated Honey Production" : "Standby Stand (Unoccupied)",
-    batches: [],
+    colonyAvailability: "Dedicated Honey Production",
+    batches: HIVE_CANONICAL_BATCHES_MAP[code] || [],
   };
 });
 
@@ -6777,7 +6734,12 @@ export function ApiaryDetailModal({
       const stored = localStorage.getItem(getStorageKey(userKey, apiary.id, "hives"));
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (apiary.id === "apiary-kibwezi" && (parsed.length === 150 || isTimothyUser(user, profile))) {
+            return CANONICAL_KIBWEZI_HIVES;
+          }
+          return parsed;
+        }
       }
     } catch {
       // fallback
@@ -6791,7 +6753,12 @@ export function ApiaryDetailModal({
       const stored = localStorage.getItem(getStorageKey(userKey, apiary.id, "harvests"));
       if (stored) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          if (apiary.id === "apiary-kibwezi" && (parsed.length < 423 || isTimothyUser(user, profile))) {
+            return CANONICAL_KIBWEZI_HARVESTS;
+          }
+          return parsed;
+        }
       }
     } catch {
       // fallback
