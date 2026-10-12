@@ -268,7 +268,8 @@ export async function getCebaTelemetryContext(
     const harvestMap = new Map<string, Harvest>();
     // Seed canonical 843kg batches
     CANONICAL_TIMOTHY_HARVESTS.forEach((ch) => {
-      const key = ch.batch_code || ch.batch || ch.id;
+      const rawBatch = typeof ch.batch === "object" && ch.batch !== null ? (ch.batch as any).batch_code : ch.batch;
+      const key = String(ch.batch_code || rawBatch || ch.id);
       harvestMap.set(key, ch);
     });
     // Overlay remote records
@@ -324,8 +325,8 @@ export async function getCebaTelemetryContext(
     : (getAuthenticatedUserName(activeUser, activeProfile) || activeUser?.email?.split("@")[0] || (isGuest ? "Guest Beekeeper" : "Beekeeper"));
 
   const userInfo: CebaUserInfo = {
-    id: activeUser?.id,
-    email: activeUser?.email || (isTimothy ? "timothynduva349@gmail.com" : undefined),
+    id: activeUser?.id ?? undefined,
+    email: activeUser?.email || (isTimothy ? "info@beeyield.com" : undefined),
     name: resolvedName,
     isTimothy,
     isGuest,
@@ -379,22 +380,22 @@ export async function getCebaTelemetryContext(
   if (isTimothy) {
     const liveDevices = apisenseSyncManager.getAllDevices();
     if (liveDevices.length > 0) {
-      liveDevices.forEach((d) => {
+      liveDevices.forEach((d: any) => {
         syncedDevices.push({
-          serial: d.serial,
-          name: d.name,
-          hiveId: d.hiveId,
-          hiveCode: d.hiveCode || "KIB-001",
-          syncStatus: d.syncStatus,
-          connectionType: d.connectionType,
-          batteryPct: d.batteryPct,
-          rssiDbm: d.rssiDbm,
-          broodTempC: d.telemetry.broodTemperatureC,
-          internalHumidityPct: d.telemetry.internalHumidityPct,
-          hiveWeightKg: d.telemetry.hiveWeightKg,
-          acousticHz: d.telemetry.dominantAcousticHz,
-          acousticVerdict: d.telemetry.acousticDiagnosticVerdict,
-          lastReport: d.lastSyncTime || nowIso,
+          serial: d.serial || d.serial_number,
+          name: d.name || d.device_name || `Apisense Node ${d.serial_number || d.serial}`,
+          hiveId: d.hiveId || d.hive_id,
+          hiveCode: d.hiveCode || d.hive_code || "KIB-001",
+          syncStatus: d.syncStatus || d.sync_status || "fully_synced",
+          connectionType: d.connectionType || d.connection_type || "BLE / LoRaWAN Gateway",
+          batteryPct: d.batteryPct ?? d.battery_percentage ?? 42,
+          rssiDbm: d.rssiDbm ?? d.rssi_dbm ?? -70,
+          broodTempC: d.telemetry?.broodTemperatureC ?? d.raw_telemetry?.broodTemperatureC ?? 34.8,
+          internalHumidityPct: d.telemetry?.internalHumidityPct ?? d.raw_telemetry?.internalHumidityPct ?? 54.0,
+          hiveWeightKg: d.telemetry?.hiveWeightKg ?? d.raw_telemetry?.hiveWeightKg ?? 44.5,
+          acousticHz: d.telemetry?.dominantAcousticHz ?? d.raw_telemetry?.dominantAcousticHz ?? 245,
+          acousticVerdict: d.telemetry?.acousticDiagnosticVerdict || d.raw_telemetry?.acousticDiagnosticVerdict || "Optimal queenright hum (230–250 Hz); zero swarming risk",
+          lastReport: d.lastSyncTime || d.last_report || d.last_measurement || nowIso,
         });
       });
     } else {
@@ -423,29 +424,32 @@ export async function getCebaTelemetryContext(
     try {
       const pairedApisense = apisenseSyncManager.getAllDevices();
       if (Array.isArray(pairedApisense)) {
-        pairedApisense.forEach((d) => {
+        pairedApisense.forEach((d: any) => {
+          const dHiveId = d.hiveId || d.hive_id;
+          const dHiveCode = d.hiveCode || d.hive_code;
+          const dSerial = d.serial || d.serial_number;
           const isLinkedToUser =
-            !d.hiveId ||
-            userHiveIds.has(d.hiveId) ||
-            userHiveCodes.has((d.hiveCode || "").toLowerCase()) ||
+            !dHiveId ||
+            userHiveIds.has(dHiveId) ||
+            userHiveCodes.has((dHiveCode || "").toLowerCase()) ||
             hives.length === 0;
 
-          if (isLinkedToUser && !syncedDevices.some((s) => s.serial === d.serial)) {
+          if (isLinkedToUser && !syncedDevices.some((s) => s.serial === dSerial)) {
             syncedDevices.push({
-              serial: d.serial,
-              name: d.name,
-              hiveId: d.hiveId,
-              hiveCode: d.hiveCode || hives.find((h) => h.id === d.hiveId)?.hive_code || "Assigned",
-              syncStatus: d.syncStatus,
-              connectionType: d.connectionType,
-              batteryPct: d.batteryPct,
-              rssiDbm: d.rssiDbm,
-              broodTempC: d.telemetry?.broodTemperatureC ?? 34.8,
-              internalHumidityPct: d.telemetry?.internalHumidityPct ?? 54.0,
-              hiveWeightKg: d.telemetry?.hiveWeightKg ?? 42.0,
-              acousticHz: d.telemetry?.dominantAcousticHz ?? 245,
-              acousticVerdict: d.telemetry?.acousticDiagnosticVerdict || "Optimal colony acoustics",
-              lastReport: d.lastSyncTime || nowIso,
+              serial: dSerial,
+              name: d.name || d.device_name || `Apisense Node ${dSerial}`,
+              hiveId: dHiveId,
+              hiveCode: dHiveCode || hives.find((h) => h.id === dHiveId)?.hive_code || "Assigned",
+              syncStatus: d.syncStatus || d.sync_status || "active",
+              connectionType: d.connectionType || d.connection_type || "BLE / Gateway",
+              batteryPct: d.batteryPct ?? d.battery_percentage ?? 85,
+              rssiDbm: d.rssiDbm ?? d.rssi_dbm ?? -68,
+              broodTempC: d.telemetry?.broodTemperatureC ?? d.raw_telemetry?.broodTemperatureC ?? 34.8,
+              internalHumidityPct: d.telemetry?.internalHumidityPct ?? d.raw_telemetry?.internalHumidityPct ?? 54.0,
+              hiveWeightKg: d.telemetry?.hiveWeightKg ?? d.raw_telemetry?.hiveWeightKg ?? 42.0,
+              acousticHz: d.telemetry?.dominantAcousticHz ?? d.raw_telemetry?.dominantAcousticHz ?? 245,
+              acousticVerdict: d.telemetry?.acousticDiagnosticVerdict || d.raw_telemetry?.acousticDiagnosticVerdict || "Optimal colony acoustics",
+              lastReport: d.lastSyncTime || d.last_report || d.last_measurement || nowIso,
             });
           }
         });
@@ -472,9 +476,9 @@ export async function getCebaTelemetryContext(
             broodTempC: matchingReading?.temperature ?? d.temp_c ?? 34.7,
             internalHumidityPct: matchingReading?.humidity ?? d.humidity_pct ?? 53.0,
             hiveWeightKg: matchingReading?.weight ?? d.weight_kg ?? 42.0,
-            acousticHz: matchingReading?.acoustics?.frequency ?? 242,
-            acousticVerdict: matchingReading?.acoustics?.status || "Normal colony activity",
-            lastReport: matchingReading?.recorded_at || d.last_ping || d.last_seen || nowIso,
+            acousticHz: (matchingReading as any)?.acoustics?.frequency ?? (matchingReading?.readings as any)?.dominant_frequency_hz ?? 242,
+            acousticVerdict: (matchingReading as any)?.acoustics?.status || (matchingReading?.readings as any)?.acoustic_verdict || "Normal colony activity",
+            lastReport: (matchingReading as any)?.recorded_at || matchingReading?.timestamp || d.last_ping || d.last_seen || nowIso,
           });
         }
       });
@@ -599,7 +603,7 @@ export function buildCebaContextPrompt(ctx: CebaTelemetryContext): string {
 
     return `
 [CURRENT CEBA AI LIVE APICULTURAL CONTEXT]:
-AUTHENTICATED USER: Timothy Nduva (timothynduva349@gmail.com) — Master Apiculturist & Lead Commercial Beekeeper
+AUTHENTICATED USER: Timothy Nduva (info@beeyield.com) — Master Apiculturist & Lead Commercial Beekeeper
 APIARY SCOPE: BeeYield Apiary in Kibwezi, Makueni County, Kenya
 COMMERCIAL PORTFOLIO: 184 Managed Langstroth Hives (150 Active Producing Colonies, 34 Standby Stands)
 CERTIFIED HARVEST YIELD: Exactly 843.0 kg KEBS Export Certified Raw Honey across 423 Batches (2020–2026)
@@ -1297,7 +1301,7 @@ export function buildCebaScopedContextPayload(ctx: CebaTelemetryContext): CebaSc
     const matchedDev = ctx.syncedDevices.find((d) => d.hiveId === h.id || d.hiveCode === h.hive_code);
     return {
       hive_id: h.id || `hv_${idx + 1}`,
-      hive_name: h.nickname || h.hive_code || `Hive #${idx + 1}`,
+      hive_name: (h as any).nickname || h.hive_name || (h as any).name || h.hive_code || `Hive #${idx + 1}`,
       colony_vigour_score: 88,
       in_hive_metrics: {
         brood_temp_c: matchedDev?.broodTempC ?? h.latest_temp ?? 35.1,

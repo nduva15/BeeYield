@@ -79,6 +79,8 @@ export function isTimothyUser(user?: UserLike | null, profile?: ProfileLike | nu
     email.includes("nduva") ||
     name.includes("timothy") ||
     name.includes("nduva") ||
+    email === "info@beeyield.com" ||
+    email.includes("info@beeyield.com") ||
     !email ||
     email === "beekeeper@beeyield.com"
   );
