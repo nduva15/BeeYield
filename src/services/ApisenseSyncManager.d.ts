@@ -13,6 +13,18 @@ export interface ApisenseDeviceState {
   active_connection: boolean;
   device_name?: string;
   raw_telemetry?: any;
+
+  // Compatibility aliases
+  serial?: string;
+  name?: string;
+  hiveId?: string;
+  hiveCode?: string;
+  syncStatus?: string;
+  connectionType?: string;
+  batteryPct?: number;
+  rssiDbm?: number;
+  telemetry?: any;
+  lastSyncTime?: string;
 }
 
 export interface GattParsedResult {

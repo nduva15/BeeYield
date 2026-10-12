@@ -48,6 +48,7 @@ export interface ProductVariant {
     price_kes: number;
     stock_quantity: number;
     is_available: boolean;
+    batch_code?: string;
 }
 
 export interface Product {
@@ -1601,7 +1602,7 @@ export const addPaymentMethod = async (paymentMethod: any): Promise<PaymentMetho
 
     // 2. Get active user from Supabase client
     const client = getShopClient();
-    let user = null;
+    let user: any = null;
     try {
         const { data: authData } = await client.auth.getUser();
         user = authData?.user;
