@@ -44,11 +44,11 @@ const LEADERS: Leader[] = [
     linkedin: "https://linkedin.com/company/beeyield",
   },
   {
-    name: "Agatha Mathuva",
+    name: "Agatha Ndinda",
     role: "Co-Founder & Chief Technology Officer (CTO)",
     department: "Engineering & IT Systems",
     description: "IT graduate on a mission to save bees.",
-    linkedin: "https://linkedin.com/company/beeyield",
+    linkedin: "https://www.linkedin.com/in/agatha-ndinda-11843b3b6/",
   },
 ];
 

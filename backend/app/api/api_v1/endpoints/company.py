@@ -92,11 +92,11 @@ async def team_members(token: Optional[str] = Depends(get_token)):
         },
         { 
             "id": "team-3",
-            "name": "Agatha Nduva", 
+            "name": "Agatha Ndinda", 
             "role": "Chief IT Head & Co-founder", 
             "bio": "Leading technology infrastructure and digital innovation at BeeYield.",
             "image_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=400",
-            "linkedin_url": "#",
+            "linkedin_url": "https://www.linkedin.com/in/agatha-ndinda-11843b3b6/",
             "is_leadership": True,
             "display_order": 3,
             "is_active": True,

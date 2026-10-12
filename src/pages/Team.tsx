@@ -174,12 +174,12 @@ const Team = () => {
             achievements: ["Ops Scalability", "Partner Systems", "Logistics Core", "Smallholder Network"]
         },
         {
-            name: "Agatha Mathuva",
+            name: "Agatha Ndinda",
             role: "Co-Founder & Chief Technology Officer (CTO)",
             department: "Engineering & IT Systems",
             description: "IT graduate on a mission to save bees.",
             image: undefined as string | undefined,
-            linkedin: "https://linkedin.com/company/beeyield",
+            linkedin: "https://www.linkedin.com/in/agatha-ndinda-11843b3b6/",
             email: undefined as string | undefined,
             achievements: ["System Integrity", "Data Security", "Protocol Lead", "Telemetry Architecture"]
         },
