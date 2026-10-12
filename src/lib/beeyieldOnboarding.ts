@@ -16,6 +16,55 @@ export interface BeeYieldDashboardTarget {
 const STORAGE_KEY = 'beeyieldPendingOnboarding';
 const MAX_ONBOARDING_AGE_MS = 1000 * 60 * 60 * 24 * 7;
 
+/**
+ * Onboarding Cutoff: Any client account created before October 11, 2026 18:15:00 UTC (21:15 local time)
+ * is an existing client and MUST NOT be shown the onboarding wizard.
+ */
+export const BEE_YIELD_ONBOARDING_CUTOFF_MS = new Date('2026-10-11T18:15:00Z').getTime();
+
+export const isBeeYieldNewSignup = (
+    user?: { id?: string; created_at?: string } | null,
+    userEmail?: string | null
+): boolean => {
+    if (!user || !user.id) return false;
+
+    // Check localStorage completion or dismissal flags
+    if (
+        localStorage.getItem(`beeyield_onboarding_completed_${user.id}`) === 'true' ||
+        localStorage.getItem(`beeyield_onboarding_dismissed_${user.id}`) === 'true'
+    ) {
+        return false;
+    }
+
+    // Existing client check: if no creation timestamp, safely assume existing client
+    if (!user.created_at) {
+        return false;
+    }
+
+    const createdAtMs = new Date(user.created_at).getTime();
+    if (Number.isNaN(createdAtMs) || createdAtMs < BEE_YIELD_ONBOARDING_CUTOFF_MS) {
+        // Existing client created before today's cutoff — mark as completed so it never prompts
+        try {
+            localStorage.setItem(`beeyield_onboarding_completed_${user.id}`, 'true');
+        } catch {
+            // ignore storage errors
+        }
+        return false;
+    }
+
+    // Must be within recent onboarding window (7 days)
+    if ((Date.now() - createdAtMs) > MAX_ONBOARDING_AGE_MS) {
+        try {
+            localStorage.setItem(`beeyield_onboarding_completed_${user.id}`, 'true');
+        } catch {
+            // ignore
+        }
+        return false;
+    }
+
+    return true;
+};
+
 const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() || '';
 
 const isFreshOnboardingState = (createdAt?: string) => {

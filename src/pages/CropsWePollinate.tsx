@@ -161,8 +161,7 @@ const CropsWePollinate = () => {
       </section>
 
 
-      {/* Every crop gets its own program */}
-      <CropProgramSection />
+
 
       {/* Expert Section */}
       <section className="py-20 bg-secondary/30">

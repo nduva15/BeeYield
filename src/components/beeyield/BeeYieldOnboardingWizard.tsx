@@ -25,7 +25,7 @@ import Logo from '@/assets/Logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import beeyieldService, { Apiary, Hive } from '@/services/beeyieldService';
 import { useAuth } from '@/contexts/AuthContext';
-import { BeeYieldOnboardingStep } from '@/lib/beeyieldOnboarding';
+import { BeeYieldOnboardingStep, isBeeYieldNewSignup } from '@/lib/beeyieldOnboarding';
 
 interface BeeYieldOnboardingWizardProps {
   step: BeeYieldOnboardingStep;
@@ -47,6 +47,13 @@ export const BeeYieldOnboardingWizard: React.FC<BeeYieldOnboardingWizardProps> =
   const { user, beeyieldUser } = useAuth();
   const effectiveUser = beeyieldUser || user;
   const userName = (effectiveUser?.user_metadata?.full_name || effectiveUser?.email?.split('@')[0] || 'Beekeeper').split(' ')[0];
+
+  // Safety: Existing clients as of today must never see this onboarding wizard
+  useEffect(() => {
+    if (effectiveUser && !isBeeYieldNewSignup(effectiveUser)) {
+      onComplete();
+    }
+  }, [effectiveUser, onComplete]);
 
   const [currentStep, setCurrentStep] = useState<BeeYieldOnboardingStep>(initialStep);
   const [createdApiaryId, setCreatedApiaryId] = useState<string>(apiaries[0]?.id || '');

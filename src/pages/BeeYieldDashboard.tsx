@@ -30,6 +30,8 @@ import {
     getBeeYieldPendingOnboarding,
     resolveBeeYieldOnboardingStep,
     setBeeYieldPendingOnboarding,
+    isBeeYieldNewSignup,
+    BEE_YIELD_ONBOARDING_CUTOFF_MS,
 } from '@/lib/beeyieldOnboarding';
 
 // View Imports
@@ -157,7 +159,7 @@ const BeeYieldDashboard: React.FC = () => {
         [effectiveEmail]
     );
 
-    // Enforce 3-step sequence for new signups:
+    // Enforce 3-step sequence ONLY for brand new signups:
     // Step 1: Register primary Apiary
     // Step 2: Register Hives with initial Harvest logging
     // Step 3: Log IoT Devices (with skip option)
@@ -165,6 +167,17 @@ const BeeYieldDashboard: React.FC = () => {
         if (authLoading || loading) return null;
         if (!effectiveUser) return null;
         if (hasCompletedOnboarding) return null;
+
+        // CRITICAL: Ensure existing clients as of today do NOT see this wizard.
+        // Only brand new signups created on or after today's cutoff are eligible.
+        if (!isBeeYieldNewSignup(effectiveUser, effectiveEmail)) {
+            return null;
+        }
+
+        // If an existing client already has apiaries or hives, do not trap them in device step unless they are in an active pending signup session
+        if (apiaries.length > 0 && hives.length > 0 && !pendingOnboarding) {
+            return null;
+        }
 
         // Step 1: Register Apiary (if no apiaries exist)
         if (apiaries.length === 0) {
@@ -176,14 +189,17 @@ const BeeYieldDashboard: React.FC = () => {
             return 'hive';
         }
 
-        // Step 3: Log Devices (unless skipped)
+        // Step 3: Log Devices (unless skipped, and only if user is in an active pending onboarding flow)
         const hasSkippedDevices = localStorage.getItem(`beeyield_skipped_devices_${effectiveUser.id}`) === 'true';
         if (devices.length === 0 && !hasSkippedDevices) {
-            return 'device';
+            if (pendingOnboarding) {
+                return 'device';
+            }
+            return null;
         }
 
         return null;
-    }, [authLoading, loading, effectiveUser, hasCompletedOnboarding, apiaries.length, hives.length, devices.length]);
+    }, [authLoading, loading, effectiveUser, effectiveEmail, hasCompletedOnboarding, apiaries.length, hives.length, devices.length, pendingOnboarding]);
 
     const [, startTabTransition] = React.useTransition();
 
@@ -222,10 +238,16 @@ const BeeYieldDashboard: React.FC = () => {
     React.useEffect(() => {
         if (authLoading || loading) return;
         const pendingState = effectiveEmail ? getBeeYieldPendingOnboarding(effectiveEmail) : null;
-        if (!pendingState || !effectiveUser?.created_at) return;
+        if (!pendingState || !effectiveUser) return;
 
-        const accountCreatedAtMs = new Date(effectiveUser.created_at).getTime();
-        if (Number.isNaN(accountCreatedAtMs) || (Date.now() - accountCreatedAtMs) > NEW_ACCOUNT_ONBOARDING_WINDOW_MS) {
+        // Existing clients must never be redirected into onboarding flows
+        if (!isBeeYieldNewSignup(effectiveUser, effectiveEmail)) {
+            clearBeeYieldPendingOnboarding();
+            return;
+        }
+
+        const accountCreatedAtMs = effectiveUser.created_at ? new Date(effectiveUser.created_at).getTime() : NaN;
+        if (Number.isNaN(accountCreatedAtMs) || (Date.now() - accountCreatedAtMs) > NEW_ACCOUNT_ONBOARDING_WINDOW_MS || accountCreatedAtMs < BEE_YIELD_ONBOARDING_CUTOFF_MS) {
             clearBeeYieldPendingOnboarding();
             return;
         }
