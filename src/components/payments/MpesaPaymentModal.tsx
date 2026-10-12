@@ -95,6 +95,7 @@ export const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({
       stopPolling();
     }
     return () => stopPolling();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, orderId, checkoutRequestId]);
 
   // Countdown timer

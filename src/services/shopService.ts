@@ -1003,7 +1003,7 @@ export const isOrderPaid = (order: Order): boolean => {
     if (payStatus === "paid" || payStatus === "completed" || payStatus === "success") {
         return true;
     }
-    if (Boolean(order.mpesa_code && order.mpesa_code.trim())) {
+    if (order.mpesa_code && order.mpesa_code.trim()) {
         return true;
     }
     if (["delivered", "completed"].includes(orderStatus) && payStatus !== "pending" && payStatus !== "unpaid" && payStatus !== "failed") {

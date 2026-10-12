@@ -126,8 +126,8 @@ const Checkout = () => {
                 city: meta.city || prev.city,
                 county: meta.county || prev.county,
             }));
-            if (meta.phone && !paymentDetails.mpesaNumber) {
-                setPaymentDetails(prev => ({ ...prev, mpesaNumber: meta.phone }));
+            if (meta.phone) {
+                setPaymentDetails(prev => (!prev.mpesaNumber ? { ...prev, mpesaNumber: meta.phone } : prev));
             }
 
             // Fetch saved cards

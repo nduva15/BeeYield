@@ -19,12 +19,12 @@ import { glass } from '@/components/beeyield/GlassTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const NumberField = ({ label, value, min, max, step = 1, suffix, onChange }: { label: string; value: number; min?: number; max?: number; step?: number; suffix?: string; onChange: (value: number) => void }) => (
+const NumberField = ({ label, value, min, max, step = 1, suffix, onChange }: { label: string; value?: number; min?: number; max?: number; step?: number; suffix?: string; onChange: (value: number) => void }) => (
     <label className="space-y-2">
         <span className="text-[10px] font-black uppercase tracking-widest text-[#1A1A1A]">{label}</span>
         <div className={cn(glass.input, "px-4 py-3 border-transparent bg-white/50")}>
             <div className="flex items-center justify-between gap-3">
-                <input type="number" value={value} min={min} max={max} step={step} onChange={(event) => onChange(Number(event.target.value))} className="w-full bg-transparent text-lg font-black text-[#1A1A1A] outline-none" />
+                <input type="number" value={value ?? ''} min={min} max={max} step={step} onChange={(event) => onChange(Number(event.target.value))} className="w-full bg-transparent text-lg font-black text-[#1A1A1A] outline-none" />
                 {suffix && <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{suffix}</span>}
             </div>
         </div>
@@ -88,7 +88,7 @@ const PollinationCalcs: React.FC = () => {
                             />
                             <NumberField 
                                 label="Target FPA" 
-                                value={calcInputs.targetFpa} 
+                                value={calcInputs.targetFpa ?? 10} 
                                 min={4} 
                                 max={16} 
                                 step={1} 

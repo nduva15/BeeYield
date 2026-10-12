@@ -282,7 +282,7 @@ const BeeYieldDashboard: React.FC = () => {
             params.set('action', target.action);
             window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
         }
-    }, [authLoading, loading, effectiveEmail, effectiveUser?.created_at, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
+    }, [authLoading, loading, effectiveEmail, effectiveUser, apiaries.length, hives.length, devices.length, activeTab, viewParams?.action]);
 
     const navItems: NavItem[] = React.useMemo(() => [
         { id: 'home', label: 'Home', icon: Home },
