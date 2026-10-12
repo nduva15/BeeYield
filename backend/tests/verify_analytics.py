@@ -1,6 +1,5 @@
 import urllib.request
 import json
-import time
 
 BASE_URL = "http://localhost:8000/api/v1"
 ANALYTICS_URL = f"{BASE_URL}/analytics"

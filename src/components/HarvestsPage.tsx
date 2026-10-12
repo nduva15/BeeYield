@@ -299,17 +299,17 @@ export default function HarvestsPage({
   const hivesSummary = useMemo(() => {
     const map = new Map<string, { batches: number; kg: number; avgMoisture: number; lastDate: string; honeyTypes: Set<string>; hasColony: boolean }>();
     
-    // Seed Timothy's 184 hives so standby boxes (KIB-151 to KIB-184) are represented
+    // Seed Timothy's 184 hives
     if (isTimothy) {
-      TIMOTHY_HIVES.forEach((label, i) => {
-        const hasColony = i < 150;
+      TIMOTHY_HIVES.forEach((label) => {
+        const hasColony = true;
         map.set(label, {
           batches: 0,
           kg: 0,
           avgMoisture: 0,
-          lastDate: hasColony ? "—" : "Standby (No Extraction)",
+          lastDate: "—",
           honeyTypes: new Set(),
-          hasColony,
+          hasColony: true,
         });
       });
     }
@@ -375,7 +375,7 @@ export default function HarvestsPage({
       marketValue: `KES ${marketValueKes.toLocaleString()}`,
       totalBatches: uniqueRows.length,
       managedHives: isTimothy ? 184 : hivesSummary.length,
-      activeColonies: isTimothy ? 150 : hivesSummary.filter(h => h.hasColony).length,
+      activeColonies: isTimothy ? 184 : hivesSummary.filter(h => h.hasColony).length,
     };
   }, [rows, hivesSummary, isTimothy]);
 
@@ -648,7 +648,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
               Harvest Batches & Production Ledger
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-              Cryptographically verified batch extractions across <strong className="text-foreground">{isTimothy ? "184 managed Langstroth hives (150 Active Colonies, 34 Standby Stands)" : `${stats.managedHives} managed hives`}</strong>. Cumulative extraction total: <strong className="text-honey font-bold">{isTimothy ? "843.0 kg" : `${stats.totalYield} kg`}</strong> export-grade raw honey. Primary Forage: <strong className="text-foreground">Acacia, Neem, Maize, Mango & Forest Multifloral</strong>.
+              Cryptographically verified batch extractions across <strong className="text-foreground">{isTimothy ? "184 managed Langstroth hives (184 Active Producing Colonies)" : `${stats.managedHives} managed hives`}</strong>. Cumulative extraction total: <strong className="text-honey font-bold">{isTimothy ? "843.0 kg" : `${stats.totalYield} kg`}</strong> export-grade raw honey. Primary Forage: <strong className="text-foreground">Acacia, Neem, Maize, Mango & Forest Multifloral</strong>.
             </p>
           </div>
 
@@ -682,7 +682,7 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Managed Hives</span>
-            <p className="font-bold text-base font-display text-foreground">{isTimothy ? "184 Hives (150 Active)" : `${stats.managedHives} Hives`}</p>
+            <p className="font-bold text-base font-display text-foreground">{isTimothy ? "184 Hives (184 Active)" : `${stats.managedHives} Hives`}</p>
           </div>
           <div>
             <span className="text-[11px] uppercase tracking-wider text-muted-foreground">Standard Batch</span>
@@ -830,9 +830,9 @@ Provide: (1) Official Codex/KEBS compliance verdict, (2) Shelf-stability & moist
                   }}
                   className="w-full bg-background border border-border rounded-lg px-2.5 py-2 font-semibold text-foreground"
                 >
-                  {TIMOTHY_HIVES.map((h, i) => (
+                  {TIMOTHY_HIVES.map((h) => (
                     <option key={h} value={h}>
-                      {h} {i >= 150 ? "• Standby Stand (Unoccupied)" : "• Active Producing Colony"}
+                      {h} • Active Producing Colony
                     </option>
                   ))}
                 </select>

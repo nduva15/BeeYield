@@ -4,19 +4,15 @@ Verifies Acceptance Criteria AC-1 through AC-4, FR-1.1, FR-1.2, and Section 5 Sc
 """
 
 import pytest
-import asyncio
-from datetime import datetime, timezone
 from fastapi import HTTPException
 
 from app.services.ceba_context_engine import (
-    AccountContext,
     ScopedContextPayload,
     extract_tenant_context,
     sanitize_user_prompt,
     fetch_scoped_context,
     execute_ceba_ai_engine,
     build_system_security_prompt,
-    CebaChatRequest,
 )
 
 # ------------------------------------------------------------------------------

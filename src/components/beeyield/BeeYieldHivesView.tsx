@@ -267,9 +267,7 @@ function hivePdf(
   outsideTemp?: number
 ) {
   const frameCount = h.frame_count || 10;
-  const numMatch = h.hive_code.match(/\d+/);
-  const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
-  const hasColony = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
+  const hasColony = (h.status || "").toLowerCase() === "active";
 
   downloadReportPdf({
     kind: "hive_colony",
@@ -587,8 +585,7 @@ export default function BeeYieldHivesView({
         frameFilter === "all" || String(totalFrames) === String(frameFilter);
 
       const numMatch = h.hive_code.match(/\d+/);
-      const hiveNum = numMatch ? parseInt(numMatch[0], 10) : 1;
-      const isColonyActive = (h.status || "").toLowerCase() === "active" && hiveNum <= 150;
+      const isColonyActive = (h.status || "").toLowerCase() === "active";
 
       const matchesStatus =
         statusFilter === "all" ||
@@ -610,7 +607,7 @@ export default function BeeYieldHivesView({
     });
   }, [hives, selectedPlace, frameFilter, statusFilter, searchQuery, apiaries]);
 
-  // Stats calculation (150 active colonies across 184 stands, 34 standby boxes, 0 IoT sensors connected)
+  // Stats calculation (184 active colonies across 184 stands, 0 IoT sensors connected)
   const stats = useMemo(() => {
     const total = hives.length;
     const active = hives.filter((h) => (h.status || "").toLowerCase() === "active").length;

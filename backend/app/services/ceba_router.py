@@ -169,7 +169,7 @@ class ComplexityRouter:
             confidence=0.92,
         )
 
-    async def execute_student(
+    async def execute_student_inference(
         self,
         query: str,
         context: ScopedContextPayload
@@ -214,58 +214,13 @@ class ComplexityRouter:
                     if response_text:
                         return response_text
         except Exception as e:
-            logger.info("Local student LLM not accessible (%s). Falling back to edge deterministic engine.", e)
+            logger.warning("Local edge student model unreachable via Ollama (%s). Returning None to escalate without guessing.", e)
+            return None
 
-        # Fallback local diagnostic generator when Ollama service is not running
-        return self._generate_edge_fallback_diagnostic(query, context)
+        return None
 
-    def _generate_edge_fallback_diagnostic(
-        self,
-        query: str,
-        context: ScopedContextPayload
-    ) -> str:
-        """
-        Deterministic lightweight edge diagnostic generator ensuring 100% offline
-        uptime when the local Ollama LLM process is starting or cycling.
-        """
-        hives = context.queried_hives_telemetry or []
-        apiaries = context.active_apiaries or []
-        user_name = context.account_context.user_name
-
-        if not hives:
-            return (
-                f"### 🐝 CEBA AI Edge Diagnostic — {user_name}\n\n"
-                f"**System Status**: Nominal edge operations active.\n"
-                f"**Fleet Overview**: {len(apiaries)} apiaries monitored. All telemetry nodes responding within expected thresholds.\n\n"
-                f"**Action Plan**:\n"
-                f"1. Routine sensor health check: Green.\n"
-                f"2. Maintain scheduled apiary monitoring interval."
-            )
-
-        primary_hive = hives[0]
-        m = primary_hive.in_hive_metrics
-
-        return (
-            f"### 🐝 CEBA AI Edge Student (8B) — Colony Diagnostic\n\n"
-            f"**Colony**: {primary_hive.hive_name} (Vigour Score: {primary_hive.colony_vigour_score}/100)\n"
-            f"**In-Hive Telemetry**:\n"
-            f"- Brood Temperature: **{m.brood_temp_c}°C** (Target: 34.5°C - 35.5°C)\n"
-            f"- Daily Weight Delta: **{m.daily_weight_delta_kg:+.2f} kg/24h**\n"
-            f"- Acoustic Frequency: **{m.acoustic_frequency_hz} Hz**\n"
-            f"- Pest Status: **{m.pest_flag}**\n\n"
-            f"**Diagnostic Rationale**: Telemetry values are within stabilized agronomic bands. "
-            f"Colony acoustics and brood thermoregulation show active worker regulation.\n\n"
-            f"```json\n"
-            f"{{\n"
-            f'  "alert_level": "INFO",\n'
-            f'  "primary_issue": "Nominal Colony Maintenance",\n'
-            f'  "action_plan": [\n'
-            f'    "Continue monitoring brood thermoregulation",\n'
-            f'    "Next scheduled hive inspection in 7 days"\n'
-            f"  ]\n"
-            f"}}\n"
-            f"```"
-        )
+    # Alias for backward compatibility
+    execute_student = execute_student_inference
 
     async def log_distillation_candidate(
         self,
@@ -312,7 +267,7 @@ class ComplexityRouter:
 
         if decision.target == "STUDENT":
             logger.info("ComplexityRouter: Routing to Student (Llama 3.1 8B). Reason: %s", decision.reason)
-            res = await self.execute_student(query, context)
+            res = await self.execute_student_inference(query, context)
             if res:
                 response_text = res
                 model_used = f"{settings.CEBA_STUDENT_MODEL} (Edge Student)"

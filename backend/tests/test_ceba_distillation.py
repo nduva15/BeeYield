@@ -7,7 +7,6 @@ Validates:
 """
 
 import pytest
-import asyncio
 from unittest.mock import patch, AsyncMock
 
 from app.services.ceba_context_engine import (
@@ -18,7 +17,7 @@ from app.services.ceba_context_engine import (
     QueriedHiveTelemetry,
     ScopedContextPayload,
 )
-from app.services.ceba_router import ComplexityRouter, ComplexityDecision
+from app.services.ceba_router import ComplexityRouter
 from scripts.filter_distillation_dataset import BiosecurityRulesEngine
 
 
@@ -192,9 +191,10 @@ def test_biosecurity_rejects_cold_weather_inspection():
 async def test_route_and_execute_student_flow(base_context):
     """Verifies route_and_execute handles student requests and returns proper structure."""
     router = ComplexityRouter()
-    result = await router.route_and_execute("What is the current brood temperature?", base_context)
-    assert result["decision"] == "STUDENT"
-    assert "student" in result["model"].lower()
-    assert result["latency_ms"] >= 0
-    assert "CEBA AI" in result["response"]
-    assert "brood_temp_c" in result["response"].lower() or "brood temperature" in result["response"].lower()
+    with patch.object(router, "execute_student", new=AsyncMock(return_value="CEBA AI Student: Current brood temperature is 34.8°C across active hives.")):
+        result = await router.route_and_execute("What is the current brood temperature?", base_context)
+        assert result["decision"] == "STUDENT"
+        assert "student" in result["model"].lower()
+        assert result["latency_ms"] >= 0
+        assert "CEBA AI" in result["response"]
+        assert "brood temperature" in result["response"].lower()

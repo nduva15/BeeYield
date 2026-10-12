@@ -3102,7 +3102,7 @@ function ShopDashboardInner({
                 <p className="font-bold text-foreground text-sm line-clamp-1">
                   {customerProfile?.apiary_affiliation || "Kibwezi Forest Apiary"}
                 </p>
-                <p className="text-[10px] text-honey font-medium">150 Managed Hives</p>
+                <p className="text-[10px] text-honey font-medium">184 Managed Hives</p>
               </div>
 
               <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 space-y-1">
@@ -3396,7 +3396,7 @@ function ShopDashboardInner({
                   type="text"
                   value={profileDraft.apiary_affiliation || ""}
                   onChange={(e) => setProfileDraft({ ...profileDraft, apiary_affiliation: e.target.value })}
-                  placeholder="e.g. Kibwezi Forest Apiary (150 Active Hives)"
+                  placeholder="e.g. Kibwezi Forest Apiary (184 Active Hives)"
                   className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:ring-1 focus:ring-honey outline-none"
                 />
               </div>

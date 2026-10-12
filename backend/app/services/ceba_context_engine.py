@@ -657,15 +657,23 @@ def synthesize_scoped_response(query: str, context: ScopedContextPayload) -> str
             return f"No matching records found for Hive #{hive_match.group(1)} in your account."
 
         m = found_hive.in_hive_metrics
+        temp_status = "Optimal (34.5°C–35.5°C)" if 34.5 <= m.brood_temp_c <= 35.5 else (
+            f"Below normal threshold ({m.brood_temp_c}°C < 34.5°C)" if m.brood_temp_c < 34.5 else f"Above normal threshold ({m.brood_temp_c}°C > 35.5°C)"
+        )
+        weight_status = (
+            f"Net gain (+{m.daily_weight_delta_kg:.2f} kg/24h)" if m.daily_weight_delta_kg > 0 else (
+                f"Net loss ({m.daily_weight_delta_kg:.2f} kg/24h)" if m.daily_weight_delta_kg < 0 else "Neutral (0.00 kg/24h)"
+            )
+        )
         return (
             f"### 🐝 CEBA AI Diagnostic: {found_hive.hive_name}\n\n"
             f"* **Colony Vigour Score**: {found_hive.colony_vigour_score}/100\n"
-            f"* **Brood Temperature**: {m.brood_temp_c}°C (Optimal thermoregulation: 34.5°C–35.5°C)\n"
+            f"* **Brood Temperature**: {m.brood_temp_c}°C ({temp_status})\n"
             f"* **Relative Humidity**: {m.humidity_pct}%\n"
-            f"* **Current Weight**: {m.weight_kg} kg (24h Net Delta: {m.daily_weight_delta_kg:+.1f} kg)\n"
-            f"* **Acoustic Frequency**: {m.acoustic_frequency_hz} Hz (Normal queenright harmonic range)\n"
+            f"* **Current Weight**: {m.weight_kg} kg ({weight_status})\n"
+            f"* **Acoustic Frequency**: {m.acoustic_frequency_hz} Hz\n"
             f"* **Pest Detection**: {m.pest_flag}\n\n"
-            f"**Agronomic Assessment**: The colony demonstrates stable metabolic thermoregulation and positive net nectar storage."
+            f"**Agronomic Assessment**: Metrics reported strictly from recorded in-hive sensors without extrapolation."
         )
 
     if "macadamia" in q_lower or "harvest" in q_lower or "batch" in q_lower:

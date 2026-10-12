@@ -171,7 +171,7 @@ def filter_dataset(input_file: str, output_file: str) -> Dict[str, int]:
         for item in approved_samples:
             f.write(json.dumps(item) + "\n")
 
-    print(f"\nDistillation Filter Summary:")
+    print("\nDistillation Filter Summary:")
     print(f"- Total Raw Records: {stats['total']}")
     print(f"- Approved for SFT:  {stats['approved']}")
     print(f"- Rejected Biosecurity: {stats['rejected_biosecurity']}")

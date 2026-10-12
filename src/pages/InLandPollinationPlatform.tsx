@@ -642,7 +642,7 @@ const InLandPollination = () => {
                             },
                             {
                                 title: "Certified Yield Ledger",
-                                desc: "184 managed hives with 150 active colonies and 843.0 KG certified yield verified across 401 blockchain batches.",
+                                desc: "184 managed hives with 184 active colonies and 843.0 KG certified yield verified across 423 blockchain batches.",
                                 icon: Shield,
                             },
                         ].map((item, index) => (
