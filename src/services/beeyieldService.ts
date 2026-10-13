@@ -1464,17 +1464,31 @@ function mapHiveRecord(record: any): Hive {
 
 export function getNormalizedHarvestKey(h: any): string {
   if (!h) return "";
-  const rawBatch = String(h.batch_code || h.batch || "")
+  const allIdSources = [h.id, h.batch_id, h.traceability_code, h.notes]
+    .filter(Boolean)
+    .join(" ");
+  const seqMatch =
+    allIdSources.match(/(?:harv|TRC)[-_](\d{4})[-_](\d{1,4})/i) ||
+    allIdSources.match(/(\d{4})[-_]\d{1,2}[-_](\d{1,4})/);
+
+  if (seqMatch) {
+    return `BATCH_${seqMatch[1]}_${parseInt(seqMatch[2], 10)}`;
+  }
+
+  const rawBatch = String(h.batch_code || h.batch || h.retail_batch_code || "")
     .trim()
     .toUpperCase();
   if (rawBatch) {
-    const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
+    const clean = rawBatch.replace(/[^A-Z0-9]/g, "");
+    const m = clean.match(/BEE(\d{4})\d{4}[A-Z]*(\d{1,4})/);
     if (m) {
-      const dateStr = m[1];
-      const num = parseInt(m[2], 10);
-      return `BATCH_${dateStr}_${num}`;
+      return `BATCH_${m[1]}_${parseInt(m[2], 10)}`;
     }
-    return `BATCH_${rawBatch}`;
+    const m2 = clean.match(/BEE(\d{4})[A-Z]*(\d{1,4})/);
+    if (m2) {
+      return `BATCH_${m2[1]}_${parseInt(m2[2], 10)}`;
+    }
+    return `BATCH_${clean}`;
   }
   const date = String(h.harvest_date || h.harvested_on || h.date || "").slice(0, 10);
   const hive = String(h.hive_code || h.hive_label || h.hive_id || "")
@@ -1662,7 +1676,8 @@ async function getBatchesFromSupabase(filters?: {
   for (const record of dbBatches) {
     const batch = mapBatchRecord(record);
     const harvest = harvestByBatchCode.get(batch.batch_code);
-    if (batch.batch_code) seenCodes.add(batch.batch_code);
+    const key = getNormalizedHarvestKey(batch);
+    if (key) seenCodes.add(key);
     result.push({
       ...batch,
       harvest,
@@ -1677,8 +1692,9 @@ async function getBatchesFromSupabase(filters?: {
 
   // Include any harvest batches that are not yet in the honey_batches table
   for (const harvest of harvests) {
-    if (harvest.batch_code && !seenCodes.has(harvest.batch_code)) {
-      seenCodes.add(harvest.batch_code);
+    const key = getNormalizedHarvestKey(harvest);
+    if (key && !seenCodes.has(key)) {
+      seenCodes.add(key);
       result.push({
         id: harvest.batch_code,
         batch_code: harvest.batch_code,

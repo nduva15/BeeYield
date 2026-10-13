@@ -27,6 +27,7 @@ import {
   YEAR_PLANS,
   TIMOTHY_HIVES,
   CANONICAL_TIMOTHY_HARVESTS,
+  getNormalizedHarvestKey,
 } from "@/data/canonicalHarvests";
 
 export type Harvest = {
@@ -236,7 +237,7 @@ export default function HarvestsPage({
         const canonicalDeduplicated: Harvest[] = [];
 
         userCustomBatches.forEach((b) => {
-          const k = b.batch || b.id;
+          const k = getNormalizedHarvestKey(b) || b.batch || b.id;
           if (!seenBatchKeys.has(k)) {
             seenBatchKeys.add(k);
             canonicalDeduplicated.push(b);
@@ -244,7 +245,7 @@ export default function HarvestsPage({
         });
 
         DEFAULT_HARVESTS.forEach((d) => {
-          const k = d.batch || d.id;
+          const k = getNormalizedHarvestKey(d) || d.batch || d.id;
           if (!seenBatchKeys.has(k)) {
             seenBatchKeys.add(k);
             canonicalDeduplicated.push(d);
