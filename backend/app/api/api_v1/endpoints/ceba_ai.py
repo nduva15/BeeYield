@@ -50,10 +50,17 @@ async def ceba_scoped_chat(
 
     # 4. CEBA AI Engine Execution (Edge Student vs Cloud Teacher via Complexity Router)
     model_used = "claude-3-5-sonnet"
+    standardized_response = None
+    target_decision = None
+    routing_reason = None
+
     if getattr(settings, "CEBA_ROUTER_ENABLED", True):
         router_result = await get_complexity_router().route_and_execute(sanitized_query, context_payload)
         ai_response = router_result.get("response") or ""
         model_used = router_result.get("model_used", "claude-3-5-sonnet")
+        standardized_response = router_result.get("diagnostic")
+        target_decision = router_result.get("decision")
+        routing_reason = router_result.get("reason")
     else:
         ai_response = await execute_ceba_ai_engine(sanitized_query, context_payload)
 
@@ -76,6 +83,9 @@ async def ceba_scoped_chat(
         latency_ms=latency_ms,
         model=model_used,
         audit_logged=True,
+        target_decision=target_decision,
+        routing_reason=routing_reason,
+        standardized_response=standardized_response,
     )
 
 

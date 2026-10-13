@@ -3820,8 +3820,11 @@ export const beeyieldService = {
       const full = await apiGet<any>("/settings/full", undefined, { headers });
       const prefs = full?.preferences || {};
       const global = full?.global_thresholds || {};
+      const profile = full?.profile || {};
       return {
+        ...profile,
         ...prefs,
+        unit_system: profile?.unit_system === "imperial" ? "Imperial" : (profile?.unit_system === "metric" ? "Metric" : (prefs?.unit_system || "Metric")),
         temp_threshold_high: global?.temp_high,
         temp_threshold_low: global?.temp_low,
         weight_drop_threshold: global?.weight_drop,
@@ -3832,15 +3835,22 @@ export const beeyieldService = {
     }
   },
 
-  async updateSettings(settings: UserSettingsUpdate): Promise<{ data: any; error: any }> {
+  async updateSettings(
+    settings: UserSettingsUpdate,
+    options?: { silent?: boolean }
+  ): Promise<{ data: any; error: any }> {
     try {
       const headers = await getAuthHeaders();
       const res = await apiPut<any>("/settings/preferences", settings as any, { headers });
-      toast.success("Preferences updated");
+      if (!options?.silent) {
+        toast.success("Preferences updated");
+      }
       return { data: res?.data ?? res, error: null };
     } catch (error) {
       console.error("updateSettings:", error);
-      toast.error("Failed to update preferences");
+      if (!options?.silent) {
+        toast.error("Failed to update preferences");
+      }
       return { data: null, error };
     }
   },

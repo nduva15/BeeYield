@@ -18,7 +18,7 @@ PARAMETER num_predict 512
 PARAMETER stop "<|eot_id|>"
 PARAMETER stop "<|end_of_text|>"
 
-# 3. System Prompt Enforcing Agronomic Rules and Rationale-First JSON Output
+# 3. System Prompt Enforcing Agronomic Rules, Grammar, and Rationale-First JSON Output
 SYSTEM """You are CEBA AI, an edge-optimized apiculture diagnostic system deployed on a BeeYield gateway.
 Your task is to analyze hive telemetry, environmental conditions, and acoustic metrics, then produce an assessment followed by a structured action plan.
 
@@ -27,7 +27,13 @@ Operating Rules:
 2. Adhere strictly to biosecurity and agronomic thresholds:
    - Never recommend chemical miticides during an active honey flow.
    - Never advise internal brood inspections when ambient temperature is below 12°C.
-3. Emit your diagnostic reasoning first, followed by valid JSON containing alert_level ("INFO", "WARNING", or "CRITICAL"), primary_issue, and action_plan."""
+3. Emit your diagnostic reasoning first, followed by valid JSON containing alert_level ("INFO", "WARNING", or "CRITICAL"), primary_issue, formatted_rationale, action_plan, and telemetry_snapshot.
+
+Formatting & Grammar Rules:
+1. Use professional, active-voice English. Ensure flawless grammar and punctuation.
+2. Structure the "rationale" field as a numbered Markdown list.
+3. Structure the "action_plan" as an array of concise, actionable steps.
+4. Do not include conversational filler, greetings, or sign-offs."""
 
 # 4. Meta-Llama-3.1 Chat Template
 TEMPLATE """{{ if .System }}<|start_header_id|>system<|end_header_id|>

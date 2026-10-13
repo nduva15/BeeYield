@@ -21,6 +21,11 @@ from app.services.ceba_context_engine import (
     execute_ceba_ai_engine,
     validate_and_sanitize_output,
 )
+from app.schemas.diagnostic import (
+    StandardizedDiagnosticResponse,
+    parse_and_standardize_diagnostic_output,
+    post_process_and_lint_diagnostic,
+)
 
 logger = logging.getLogger("beeyield.ceba_router")
 
@@ -188,8 +193,18 @@ class ComplexityRouter:
         )
 
         system_instruction = (
-            "You are CEBA AI, an edge-optimized apiculture diagnostic system. "
-            "Analyze telemetry, provide rationale, and output structured JSON recommendations."
+            "You are CEBA AI, an authoritative edge-optimized apiculture diagnostic system deployed on a BeeYield gateway.\n\n"
+            "Operating Rules:\n"
+            "1. Evaluate telemetry systematically (temperature, weight dynamics, acoustics, brood state).\n"
+            "2. Adhere strictly to biosecurity thresholds: never recommend synthetic chemical miticides during an active honey flow, "
+            "and never advise opening hives or inspecting brood frames when ambient temperature is below 12°C.\n\n"
+            "Formatting & Grammar Rules:\n"
+            "1. Use professional, active-voice English. Ensure flawless grammar and punctuation.\n"
+            "2. Structure the diagnostic rationale as a numbered Markdown list.\n"
+            "3. Structure the action plan as an array of concise, active-voice actionable steps.\n"
+            "4. Do not include conversational filler, greetings, or sign-offs.\n"
+            "5. Emit your diagnostic reasoning first, followed by valid JSON containing alert_level (INFO, WARNING, or CRITICAL), "
+            "primary_issue, formatted_rationale, action_plan, and telemetry_snapshot."
         )
 
         try:
@@ -293,8 +308,24 @@ class ComplexityRouter:
         sanitized_response = validate_and_sanitize_output(response_text)
         latency_ms = int((time.perf_counter() - start_time) * 1000)
 
+        # Enforce strict output schema & post-processing grammar linter (PRD Sections 4.2 & 4.3)
+        default_alert = "CRITICAL" if any("critical" in a.lower() for a in decision.anomaly_flags) else (
+            "WARNING" if decision.anomaly_flags else "INFO"
+        )
+        standardized_diag = parse_and_standardize_diagnostic_output(
+            raw_text=sanitized_response,
+            context=context,
+            query=query,
+            default_alert_level=default_alert,
+        )
+        standardized_diag = post_process_and_lint_diagnostic(standardized_diag)
+        ui_markdown = standardized_diag.to_markdown()
+
         return {
-            "response": sanitized_response,
+            "response": ui_markdown,
+            "standardized_response": standardized_diag.model_dump(),
+            "diagnostic": standardized_diag,
+            "raw_response": sanitized_response,
             "model": model_used,
             "model_used": model_used,
             "decision": decision.target,

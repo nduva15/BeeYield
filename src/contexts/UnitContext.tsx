@@ -44,9 +44,13 @@ export const UnitProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
             localStorage.setItem(STORAGE_KEY_TEMP, unit);
             // Optionally sync with backend unit_system
-            void beeyieldService.updateSettings({
-                unit_system: unit === 'celsius' ? 'Metric' : 'Imperial',
-            }).catch(() => {});
+            void beeyieldService.updateSettings(
+                {
+                    unit_system: unit === 'celsius' ? 'Metric' : 'Imperial',
+                    temp_unit: unit,
+                },
+                { silent: true }
+            ).catch(() => {});
         } catch {}
     };
 
@@ -54,9 +58,13 @@ export const UnitProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setWeightUnitState(unit);
         try {
             localStorage.setItem(STORAGE_KEY_WEIGHT, unit);
-            void beeyieldService.updateSettings({
-                unit_system: unit === 'kg' ? 'Metric' : 'Imperial',
-            }).catch(() => {});
+            void beeyieldService.updateSettings(
+                {
+                    unit_system: unit === 'kg' ? 'Metric' : 'Imperial',
+                    weight_unit: unit,
+                },
+                { silent: true }
+            ).catch(() => {});
         } catch {}
     };
 

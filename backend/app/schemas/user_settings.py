@@ -41,10 +41,28 @@ class UserPreferencesSchema(BaseModel):
         from_attributes = True
 
 class UserPreferencesUpdate(BaseModel):
+    # Notification & feature preferences
     email_device_alerts: Optional[bool] = None
     email_ai_tips: Optional[bool] = None
     email_marketing: Optional[bool] = None
     app_tips_enabled: Optional[bool] = None
+
+    # Regional & unit preferences
+    unit_system: Optional[str] = None
+    temp_unit: Optional[str] = None
+    temperature_unit: Optional[str] = None
+    weight_unit: Optional[str] = None
+    language: Optional[str] = None
+    theme: Optional[str] = None
+    timezone: Optional[str] = None
+
+    # Global thresholds
+    temp_threshold_high: Optional[float] = None
+    temp_threshold_low: Optional[float] = None
+    weight_drop_threshold: Optional[float] = None
+
+    class Config:
+        extra = "ignore"
 
 # --- Alert Thresholds ---
 class ThresholdSchema(BaseModel):

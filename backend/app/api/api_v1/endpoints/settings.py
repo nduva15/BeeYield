@@ -190,6 +190,10 @@ async def update_profile(
     if not clean_data:
         raise HTTPException(status_code=400, detail="No valid fields provided")
         
+    if "unit_system" in clean_data and clean_data["unit_system"] is not None:
+        unit_str = str(clean_data["unit_system"]).lower()
+        clean_data["unit_system"] = "imperial" if unit_str in ("imperial", "fahrenheit", "lbs") else "metric"
+        
     res = await db_update("profiles", clean_data, {"id": user_id}, token=token)
     if not res.get("success"):
          raise HTTPException(status_code=500, detail="Failed to update profile")
@@ -203,22 +207,90 @@ async def update_preferences(
     user_id: str = Depends(get_user_id),
     token: Optional[str] = Depends(get_token)
 ):
-    """Update user notification preferences"""
-    payload = data.dict(exclude_unset=True)
+    """Update user notification and regional unit preferences (unit_system, language, theme, etc.)"""
+    payload = data.model_dump(exclude_unset=True) if hasattr(data, "model_dump") else data.dict(exclude_unset=True)
     if not payload:
         raise HTTPException(status_code=400, detail="No data")
-        
-    existing = await db_select("user_preferences", filters={"user_id": user_id}, token=token)
-    if existing:
-        res = await db_update("user_preferences", payload, {"user_id": user_id}, token=token)
-    else:
-        payload["user_id"] = user_id
-        res = await db_insert("user_preferences", payload, token=token)
-        
-    if not res.get("success"):
-        raise HTTPException(status_code=500, detail="Failed to update preferences")
-        
-    return {"message": "Preferences updated", "data": res.get("data")}
+
+    updated_data = {}
+
+    # 1. Normalize unit_system if provided directly or via temp_unit / temperature_unit / weight_unit
+    unit_input = payload.get("unit_system") or payload.get("temp_unit") or payload.get("temperature_unit") or payload.get("weight_unit")
+    normalized_profile_unit = None
+    normalized_user_settings_unit = None
+    if unit_input is not None:
+        unit_str = str(unit_input).lower()
+        if unit_str in ("imperial", "fahrenheit", "lbs"):
+            normalized_profile_unit = "imperial"
+            normalized_user_settings_unit = "Imperial"
+        else:
+            normalized_profile_unit = "metric"
+            normalized_user_settings_unit = "Metric"
+
+    # 2. Update profiles table (for unit_system, language, theme)
+    profile_payload = {}
+    if normalized_profile_unit:
+        profile_payload["unit_system"] = normalized_profile_unit
+    if "language" in payload and payload["language"] is not None:
+        profile_payload["language"] = payload["language"]
+    if "theme" in payload and payload["theme"] is not None:
+        profile_payload["theme"] = str(payload["theme"]).lower()
+
+    if profile_payload:
+        profile_res = await db_update("profiles", profile_payload, {"id": user_id}, token=token)
+        if profile_res.get("success"):
+            updated_data["profile"] = profile_res.get("data")
+        else:
+            profile_payload["id"] = user_id
+            insert_res = await db_insert("profiles", profile_payload, token=token)
+            if insert_res.get("success"):
+                updated_data["profile"] = insert_res.get("data")
+
+    # 3. Update user_settings table if present
+    us_payload = {}
+    if normalized_user_settings_unit:
+        us_payload["unit_system"] = normalized_user_settings_unit
+    if "language" in payload and payload["language"] is not None:
+        us_payload["language"] = payload["language"]
+    if "theme" in payload and payload["theme"] is not None:
+        us_payload["theme"] = payload["theme"].capitalize() if isinstance(payload["theme"], str) else "System"
+    if "timezone" in payload and payload["timezone"] is not None:
+        us_payload["timezone"] = payload["timezone"]
+    if "temp_threshold_high" in payload and payload["temp_threshold_high"] is not None:
+        us_payload["temp_threshold_high"] = payload["temp_threshold_high"]
+    if "temp_threshold_low" in payload and payload["temp_threshold_low"] is not None:
+        us_payload["temp_threshold_low"] = payload["temp_threshold_low"]
+    if "weight_drop_threshold" in payload and payload["weight_drop_threshold"] is not None:
+        us_payload["weight_drop_threshold"] = payload["weight_drop_threshold"]
+
+    if us_payload:
+        try:
+            existing_us = await db_select("user_settings", filters={"user_id": user_id}, token=token)
+            if existing_us:
+                await db_update("user_settings", us_payload, {"user_id": user_id}, token=token)
+            else:
+                us_payload["user_id"] = user_id
+                await db_insert("user_settings", us_payload, token=token)
+        except Exception:
+            pass
+
+    # 4. Update user_preferences table (notification flags)
+    pref_fields = ["email_device_alerts", "email_ai_tips", "email_marketing", "app_tips_enabled"]
+    pref_payload = {k: v for k, v in payload.items() if k in pref_fields and v is not None}
+
+    if pref_payload:
+        existing = await db_select("user_preferences", filters={"user_id": user_id}, token=token)
+        if existing:
+            res = await db_update("user_preferences", pref_payload, {"user_id": user_id}, token=token)
+        else:
+            pref_payload["user_id"] = user_id
+            res = await db_insert("user_preferences", pref_payload, token=token)
+            
+        if not res.get("success"):
+            raise HTTPException(status_code=500, detail="Failed to update preferences")
+        updated_data["preferences"] = res.get("data")
+
+    return {"message": "Preferences updated", "data": updated_data or payload}
 
 # --- PRD: New Settings Endpoints ---
 
