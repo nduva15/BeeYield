@@ -168,6 +168,46 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     
 
     const userHarvests = React.useMemo(() => {
+        if (isTimothy) {
+            // Guarantee Timothy Nduva's authoritative 423 certified batches (843.0 KG)
+            // Plus any genuine new custom user batches (usr-/custom-)
+            const customBatches: Harvest[] = [];
+            const seenCustom = new Set<string>();
+
+            // 1. Check local custom harvests
+            try {
+                const rawCustom = localStorage.getItem("beeyield_user_custom_harvests_v1");
+                if (rawCustom) {
+                    const parsed = JSON.parse(rawCustom);
+                    if (Array.isArray(parsed)) {
+                        for (const item of parsed) {
+                            if (item && item.id && (item.id.startsWith("usr-") || item.id.startsWith("custom-"))) {
+                                const k = item.id;
+                                if (!seenCustom.has(k)) {
+                                    seenCustom.add(k);
+                                    customBatches.push(item);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch {}
+
+            // 2. Check server harvests for genuine custom user records only (never duplicate historical 2020-2026 batches)
+            const rawServer = harvestsQuery.data || [];
+            for (const h of rawServer) {
+                const hid = String(h.id || "");
+                if (hid.startsWith("usr-") || hid.startsWith("custom-") || (h as any).is_user_custom) {
+                    if (!seenCustom.has(hid)) {
+                        seenCustom.add(hid);
+                        customBatches.push(h);
+                    }
+                }
+            }
+
+            return [...customBatches, ...CANONICAL_TIMOTHY_HARVESTS];
+        }
+
         const raw = harvestsQuery.data || [];
         const seen = new Set<string>();
         const deduped: Harvest[] = [];
@@ -178,17 +218,6 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                 seen.add(code);
                 deduped.push(h);
             }
-        }
-
-        if (isTimothy) {
-            CANONICAL_TIMOTHY_HARVESTS.forEach((c) => {
-                const code = getNormalizedHarvestKey(c);
-                if (code && !seen.has(code)) {
-                    seen.add(code);
-                    deduped.push(c);
-                }
-            });
-            return deduped;
         }
 
         if (effectiveUser?.id) {
@@ -208,6 +237,27 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     }, [harvestsQuery.data, isTimothy, effectiveUser?.id, loadedHives]);
 
     const userBatches = React.useMemo(() => {
+        if (isTimothy) {
+            // For Timothy, batches are derived 1:1 from userHarvests (exactly 423 verified batches on ledger)
+            return userHarvests.map(h => ({
+                id: h.batch_code || h.batch || h.id,
+                batch_code: h.batch_code || h.batch || h.id,
+                honey_type: h.honey_type || "Forest Multifloral",
+                harvest_date: h.harvest_date || h.harvested_on,
+                quantity_kg: Number(h.quantity_kg ?? (h as any).weight_kg ?? 2.0),
+                color_grade: h.color_grade || "Amber",
+                apiary: h.apiary || h.hive?.apiary || null,
+                apiary_name: h.apiary?.name || h.hive?.apiary?.name || "BeeYield Apiary in Kibwezi Kenya",
+                farmer: h.farmer || null,
+                farmer_name: h.farmer?.name || "Timothy Nduva",
+                hive: h.hive || null,
+                verification_status: 'verified',
+                blockchain_verified: true,
+                status: 'verified',
+                harvest: h,
+            } as any));
+        }
+
         const raw = batchesQuery.data || [];
         const seen = new Set<string>();
         const deduped: BatchView[] = [];
@@ -236,21 +286,12 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                     farmer: h.farmer || null,
                     farmer_name: h.farmer?.name,
                     hive: h.hive || null,
-                    verification_status: isTimothy ? 'verified' : (h.is_verified ? 'verified' : 'pending'),
-                    blockchain_verified: isTimothy ? true : Boolean(h.is_verified),
-                    status: isTimothy ? 'verified' : (h.is_verified ? 'verified' : 'pending'),
+                    verification_status: h.is_verified ? 'verified' : 'pending',
+                    blockchain_verified: Boolean(h.is_verified),
+                    status: h.is_verified ? 'verified' : 'pending',
                     harvest: h,
                 } as any);
             }
-        }
-
-        if (isTimothy) {
-            return deduped.map(b => ({
-                ...b,
-                verification_status: 'verified',
-                blockchain_verified: true,
-                status: 'verified',
-            }));
         }
 
         if (effectiveUser?.id) {
@@ -930,7 +971,7 @@ const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
                         {[
                             { label: 'Apiaries', value: loadedApiaries.length, icon: MapPin, hint: primaryApiary?.name || (loadedApiaries.length > 0 ? 'Active Station' : 'No apiaries registered') },
-                            { label: 'Managed Hives', value: loadedHives.length, icon: Hexagon, hint: `${loadedHives.length} Langstroth hives` },
+                            { label: 'Managed Hives', value: isTimothy ? 184 : loadedHives.length, icon: Hexagon, hint: `${isTimothy ? 184 : loadedHives.length} Langstroth hives` },
                             { label: 'Certified Yield', value: `${productionSummary.totalHarvestedKg.toFixed(1)} KG`, icon: Scale, hint: `${userHarvests.length} harvest logs recorded` },
                             { label: 'Batches', value: userBatches.length, icon: Binary, hint: userBatches.length > 0 ? `${productionSummary.verifiedBatches} verified on ledger` : 'No batches logged' },
                         ].map((card) => (

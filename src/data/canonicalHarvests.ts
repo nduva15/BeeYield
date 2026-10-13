@@ -198,22 +198,7 @@ export const CANONICAL_TIMOTHY_HARVESTS: Harvest[] = generateTimothyHarvestBatch
 export function getNormalizedHarvestKey(h: any): string {
   if (!h) return "";
 
-  // 1. Primary identifier: distinct batch code or retail batch code
-  const rawBatch = String(h.batch_code || h.batch || h.retail_batch_code || "").trim().toUpperCase();
-  if (rawBatch) {
-    const m = rawBatch.match(/BEE-(\d{8})-?[A-Z]*(\d{1,4})/);
-    if (m) {
-      return `BATCH_${m[1]}_${parseInt(m[2], 10)}`;
-    }
-    return `BATCH_${rawBatch}`;
-  }
-
-  // 2. Explicit ID if available
-  if (h.id && String(h.id).trim()) {
-    return `ID_${String(h.id).trim()}`;
-  }
-
-  // 3. Fallback: Year & Sequence (e.g. harv-2026-001, TRC-2026-001-001)
+  // 1. Check ID first if it's a known canonical id like harv-2025-001 or TRC-2025-001-001
   const allIdSources = [h.id, h.batch_id, h.traceability_code, h.notes]
     .filter(Boolean)
     .join(" ");
@@ -222,7 +207,28 @@ export function getNormalizedHarvestKey(h: any): string {
     allIdSources.match(/(\d{4})[-_]\d{1,2}[-_](\d{1,4})/);
 
   if (seqMatch) {
-    return `SEQ_${seqMatch[1]}_${parseInt(seqMatch[2], 10)}`;
+    return `BATCH_${seqMatch[1]}_${parseInt(seqMatch[2], 10)}`;
+  }
+
+  // 2. Primary identifier: distinct batch code or retail batch code
+  const rawBatch = String(h.batch_code || h.batch || h.retail_batch_code || "").trim().toUpperCase();
+  if (rawBatch) {
+    const clean = rawBatch.replace(/[^A-Z0-9]/g, "");
+    // Matches BEE20250615001, BEE20250615B001, BEE20250618B001, BEE2026010401, etc.
+    const m = clean.match(/BEE(\d{4})\d{4}[A-Z]*(\d{1,4})/);
+    if (m) {
+      return `BATCH_${m[1]}_${parseInt(m[2], 10)}`;
+    }
+    const m2 = clean.match(/BEE(\d{4})[A-Z]*(\d{1,4})/);
+    if (m2) {
+      return `BATCH_${m2[1]}_${parseInt(m2[2], 10)}`;
+    }
+    return `BATCH_${clean}`;
+  }
+
+  // 3. Explicit ID if available (e.g. usr- / custom-)
+  if (h.id && String(h.id).trim()) {
+    return `ID_${String(h.id).trim()}`;
   }
 
   // 4. Fallback: Canonical date & specific hive code
@@ -247,7 +253,8 @@ export function getNormalizedHarvestKey(h: any): string {
   const hiveNum = hiveMatch ? parseInt(hiveMatch[1], 10) : null;
 
   if (dateStr && hiveNum !== null) {
-    return `HARV_${dateStr}_HIVE_${hiveNum}`;
+    const year = dateStr.slice(0, 4);
+    return `BATCH_${year}_${hiveNum}`;
   }
 
   return `RAW_${dateStr}_${String(h.id || Math.random())}`;

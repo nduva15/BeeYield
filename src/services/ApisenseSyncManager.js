@@ -74,24 +74,9 @@ class ApisenseSyncManager {
       }
     }
 
-    // Always ensure Primary Anchor Device H26110038001 is present and initialized
-    if (!this.devices.has(PRIMARY_DEVICE_SERIAL)) {
-      const primaryAnchor = {
-        serial_number: PRIMARY_DEVICE_SERIAL,
-        hive_id: PRIMARY_HIVE_ID,
-        hive_code: PRIMARY_HIVE_CODE,
-        connection_type: "bluetooth_le",
-        rssi_dbm: -70,
-        battery_percentage: 42,
-        last_report: "2026-09-30T19:50:00",
-        last_measurement: "2026-09-30T19:00:00",
-        hardware_version: "4.1.0",
-        software_version: "1.8.8",
-        sync_status: "fully_synced",
-        active_connection: true,
-        device_name: "Apisense Brood Sentinel H26110038001"
-      };
-      this.devices.set(PRIMARY_DEVICE_SERIAL, primaryAnchor);
+    // Ensure anchor device H26110038001 is removed so no connected device is present by default
+    if (this.devices.has(PRIMARY_DEVICE_SERIAL)) {
+      this.devices.delete(PRIMARY_DEVICE_SERIAL);
       this.saveToStorage();
     }
   }
@@ -160,11 +145,32 @@ class ApisenseSyncManager {
   }
 
   /**
-   * Get primary anchor unit H26110038001
-   * @returns {ApisenseDeviceState}
+   * Get primary anchor unit or first active device
+   * @returns {ApisenseDeviceState | undefined}
    */
   getPrimaryDevice() {
     return this.devices.get(PRIMARY_DEVICE_SERIAL) || this.getAllDevices()[0];
+  }
+
+  /**
+   * Remove a registered device by serial
+   * @param {string} serialNumber
+   */
+  removeDevice(serialNumber) {
+    if (this.devices.has(serialNumber)) {
+      this.devices.delete(serialNumber);
+      this.saveToStorage();
+      this.notify();
+    }
+  }
+
+  /**
+   * Clear all registered devices
+   */
+  clearAllDevices() {
+    this.devices.clear();
+    this.saveToStorage();
+    this.notify();
   }
 
   /**

@@ -44,7 +44,9 @@ export class ApisenseSyncManager {
   notify(): void;
   getAllDevices(): ApisenseDeviceState[];
   getDevice(serialNumber?: string): ApisenseDeviceState | undefined;
-  getPrimaryDevice(): ApisenseDeviceState;
+  getPrimaryDevice(): ApisenseDeviceState | undefined;
+  removeDevice(serialNumber: string): void;
+  clearAllDevices(): void;
   updateDevice(serialNumber: string, updates: Partial<ApisenseDeviceState>): void;
   parseGattNotification(characteristicUuid: string | number, dataView: DataView, rssiValue?: number | null): GattParsedResult;
   isBluetoothSupported(): boolean;

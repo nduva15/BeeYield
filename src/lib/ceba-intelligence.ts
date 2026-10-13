@@ -378,7 +378,12 @@ export async function getCebaTelemetryContext(
   // 5. IoT Sensor Telemetry & Hardware Nodes
   const syncedDevices: SyncedDeviceMetric[] = [];
   if (isTimothy) {
-    const liveDevices = apisenseSyncManager.getAllDevices();
+    // Timothy operates 184 managed Langstroth hive stands with zero connected hardware IoT devices
+    // All hive health, colony vigour, and honey extractions are driven by verified biological field ledger records
+    const liveDevices = apisenseSyncManager.getAllDevices().filter((d: any) => {
+      const s = String(d.serial || d.serial_number || "");
+      return s && s !== "H26110038001";
+    });
     if (liveDevices.length > 0) {
       liveDevices.forEach((d: any) => {
         syncedDevices.push({
@@ -388,7 +393,7 @@ export async function getCebaTelemetryContext(
           hiveCode: d.hiveCode || d.hive_code || "KIB-001",
           syncStatus: d.syncStatus || d.sync_status || "fully_synced",
           connectionType: d.connectionType || d.connection_type || "BLE / LoRaWAN Gateway",
-          batteryPct: d.batteryPct ?? d.battery_percentage ?? 42,
+          batteryPct: d.batteryPct ?? d.battery_percentage ?? 95,
           rssiDbm: d.rssiDbm ?? d.rssi_dbm ?? -70,
           broodTempC: d.telemetry?.broodTemperatureC ?? d.raw_telemetry?.broodTemperatureC ?? 34.8,
           internalHumidityPct: d.telemetry?.internalHumidityPct ?? d.raw_telemetry?.internalHumidityPct ?? 54.0,
@@ -397,23 +402,6 @@ export async function getCebaTelemetryContext(
           acousticVerdict: d.telemetry?.acousticDiagnosticVerdict || d.raw_telemetry?.acousticDiagnosticVerdict || "Optimal queenright hum (230–250 Hz); zero swarming risk",
           lastReport: d.lastSyncTime || d.last_report || d.last_measurement || nowIso,
         });
-      });
-    } else {
-      syncedDevices.push({
-        serial: "H26110038001",
-        name: "Apisense Sentinel Core 01",
-        hiveId: "hive-kib-001",
-        hiveCode: "KIB-001",
-        syncStatus: "fully_synced",
-        connectionType: "BLE / LoRaWAN Gateway",
-        batteryPct: 42,
-        rssiDbm: -70,
-        broodTempC: 34.8,
-        internalHumidityPct: 54.0,
-        hiveWeightKg: 44.5,
-        acousticHz: 245,
-        acousticVerdict: "Optimal queenright hum (230–250 Hz); zero swarming risk",
-        lastReport: nowIso,
       });
     }
   } else if (!isGuest) {
@@ -629,7 +617,7 @@ ${sampleHarvests}
 ${weatherList || "Weather telemetry synchronized for Kibwezi Apiary (-2.409, 37.967)."}
 
 ### 📡 4. IOT SENSOR DATA & SYNCED HARDWARE
-${sensorSummaries || "Apisense Sentinel H26110038001 synced to KIB-001."}
+${sensorSummaries || "Zero IoT hardware sensors connected. All 184 stands monitored via verified physical biological inspections and certified extraction records."}
 `.trim();
   }
 
@@ -807,29 +795,26 @@ export function synthesizeCebaAnswer(query: string, ctx: CebaTelemetryContext): 
       };
 
       const deviceRows = ctx.syncedDevices.map((d) => {
-        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz (${d.acousticVerdict}) |`;
-      }).join("\n");
-
-      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
+        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **$      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
 
 **Master Apiculturist**: Timothy Nduva (Commercial Lead)  
 **Primary Apiary**: **BeeYield Apiary in Kibwezi**, Makueni County, Kenya  
-**Commercial Fleet**: **184 Managed Langstroth Hives** (150 Active Producing Colonies, 34 Standby Stands)  
+**Commercial Fleet**: **184 Managed Langstroth Hives** (184 Active Producing Colonies)  
 **Total Certified Harvest**: **843.0 kg KEBS Export Certified Raw Honey** across **423 Batches** (2020–2026)  
-**Hardware Network**: **Apisense Sentinel Core 01 (H26110038001)** Synced to KIB-001  
+**Hardware Network**: **Zero Connected Hardware IoT Sensors** (All 184 stands monitored via verified physical biological inspections and certified extraction records)  
 
 ---
 
-#### 1. Apiary & Hives Fleet Status (184 Stands, 150 Active Colonies)
+#### 1. Apiary & Hives Fleet Status (184 Active Producing Colonies)
 | Stand Code | Architecture | Status | Frames (Brood) | Internal Temp | Scale Weight | Sensor Link |
 |:---|:---|:---|:---|:---|:---|:---|
-| **KIB-001** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.8°C | 44.5 kg | ✅ H26110038001 |
-| **KIB-002** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 35.1°C | 42.1 kg | ✅ Apisense Core |
-| **KIB-003** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.6°C | 43.8 kg | Manual Sentinel |
-| **KIB-030** | Langstroth 10-Frame | ✅ Active Production | 10 (8 Brood) | 34.9°C | 45.2 kg | Manual Sentinel |
-| **KIB-060** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 35.0°C | 44.0 kg | Manual Sentinel |
-| **KIB-150** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 34.7°C | 41.5 kg | Manual Sentinel |
-| **KIB-151–184** | Langstroth 10-Frame | ⏳ Standby Stands (34) | 10 Frames Drawn | Ambient | Empty Stand | Ready for splits |
+| **KIB-001** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.8°C | 44.5 kg | Field Monitored |
+| **KIB-002** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 35.1°C | 42.1 kg | Field Monitored |
+| **KIB-003** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.6°C | 43.8 kg | Field Monitored |
+| **KIB-030** | Langstroth 10-Frame | ✅ Active Production | 10 (8 Brood) | 34.9°C | 45.2 kg | Field Monitored |
+| **KIB-060** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 35.0°C | 44.0 kg | Field Monitored |
+| **KIB-150** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 34.7°C | 41.5 kg | Field Monitored |
+| **KIB-151–184** | Langstroth 10-Frame | ✅ Active Production (34) | 10 Frames Drawn | Ambient | Normal Brood | Field Monitored |
 
 ---
 
@@ -847,16 +832,14 @@ export function synthesizeCebaAnswer(query: string, ctx: CebaTelemetryContext): 
 
 ---
 
-#### 4. IoT Sensor Telemetry & Synced Apisense Devices
-| Device Serial | Assigned Hive | Link Status | Battery | Brood Temp | Core Humidity | Hive Scale Weight | Acoustic Frequency |
-|:---|:---|:---|:---|:---|:---|:---|:---|
-${deviceRows || "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"}
+#### 4. IoT Sensor Telemetry & Hardware Nodes
+${deviceRows || "*Zero connected hardware IoT sensors. All 184 stands in Kibwezi are monitored via biological field inspections and certified digital harvest ledger.*"}
 
 ---
 
 #### 5. 48-Hour Apiary Management Directives
 1. **Super Expansion:** Honey flow is active in Kibwezi; monitor top super fills on KIB-001 through KIB-030.
-2. **Device Maintenance:** Anchor Node H26110038001 battery is at 42% (~45 days autonomous runtime remaining).`;
+2. **Apiary Operations:** All 184 Langstroth stands operated via verified biological field inspections; zero connected IoT hardware devices.`;
     }
 
     if (!user.isGuest && user.totalHives === 0) {
@@ -1137,6 +1120,24 @@ To receive live microclimate telemetry, ambient temperature ranges, and foraging
   // ---------------------------------------------------------------
   if (domain === "sensors") {
     if (user.isTimothy) {
+      if (ctx.syncedDevices.length === 0) {
+        return `### 📡 Ceba AI IoT Sensor Telemetry & Hardware — Timothy Nduva
+
+**Hardware Network**: Zero Connected Hardware Devices  
+**Active Synced Nodes**: None connected (All 184 Langstroth stands in Kibwezi are managed via direct biological field inspections and certified digital harvest ledger).
+
+---
+
+#### 1. Hardware Status
+No IoT sensors, brood sentinels, or scale gateways currently paired to Kibwezi stands. Hive weight, queenright health, and colony productivity are verified through physical ledger records and certified harvest extractions.
+
+---
+
+#### 2. Apiary Management Directives
+1. **Biological Fleet Monitoring**: Continue bi-weekly physical frame and brood pattern assessments across all 184 active Langstroth stands.
+2. **Hardware Pairing**: When ready to deploy physical Apisense nodes, pair new hardware via the **Apiary Stations** or **Sensor Sync** dashboard.`;
+      }
+
       const deviceRows = ctx.syncedDevices.map((d) => {
         return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz (${d.acousticVerdict}) |`;
       }).join("\n");
@@ -1144,23 +1145,19 @@ To receive live microclimate telemetry, ambient temperature ranges, and foraging
       return `### 📡 Ceba AI IoT Sensor Telemetry & Hardware — Timothy Nduva
 
 **Hardware Network**: Apisense Brood Sentinels & Scale Gateway  
-**Active Synced Nodes**: Apisense Node H26110038001 linked to KIB-001  
+**Active Synced Nodes**: ${ctx.syncedDevices.length} node(s) connected  
 
 ---
 
 #### 1. Live Telemetry Readings
 | Device Serial | Linked Stand | Status | Battery | Brood Temp | Core Humidity | Hive Weight | Acoustic Diagnostics |
 |:---|:---|:---|:---|:---|:---|:---|:---|
-${deviceRows || "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"}
+${deviceRows}
 
 ---
 
 #### 2. Biometric Vital Signs Interpretation
-* **Brood Core Temperature**: **34.8°C** (Optimal brood nest range: 34.5°C – 35.5°C; zero chilling risk)
-* **Internal Relative Humidity**: **54.0% RH** (Prevents comb dry-out while averting condensation)
-* **Scale Weight**: **44.5 kg** (Net positive daily trajectory during active acacia nectar flow)
-* **Acoustic Frequency**: **245 Hz** (Calm queenright colony frequency; swarming agitation index <5%)
-* **Hardware Health**: Battery at **42%** (~45 days autonomous runtime remaining) | RSSI: **-70 dBm**`;
+* **Fleet Vital Signs**: Live readings streaming from ${ctx.syncedDevices.length} paired hardware unit(s).`;
     }
 
     if (!user.isGuest && ctx.syncedDevices.length === 0) {
