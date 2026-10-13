@@ -60,12 +60,12 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "Dec 2020",
     title: "Humble Beginnings",
-    subtitle: "4 hives, ¼ acre, and a dream — 13 kg harvested",
+    subtitle: "4 hives, 1/2 acre, and a dream — 13 kg harvested",
     color: "from-amber-600 to-yellow-500",
     stats: [
       { label: "Hives", value: "4 → 20" },
       { label: "Honey Sold", value: "13 kg" },
-      { label: "Land", value: "¼ acre" },
+      { label: "Land", value: "1/2 acre" },
       { label: "Batches", value: "7" },
     ],
     highlights: [
@@ -77,7 +77,7 @@ const TIMELINE: YearMilestone[] = [
       "Zero external funding — every shilling came from honey sales and personal savings",
     ],
     quote:
-      "We had nothing but 4 hives, a quarter acre of land, and the stubborn belief that we could build something extraordinary from it.",
+      "We had nothing but 4 hives, a half-acre of land, and the stubborn belief that we could build something extraordinary from it.",
   },
   {
     year: "2021",
@@ -87,12 +87,12 @@ const TIMELINE: YearMilestone[] = [
     stats: [
       { label: "Hives", value: "35" },
       { label: "Honey Sold", value: "60 kg" },
-      { label: "Land Acquired", value: "1 acre" },
+      { label: "Land Total", value: "1.5 acres" },
       { label: "Trees Planted", value: "76" },
     ],
     highlights: [
       "Set ambitious goal of 35 hives and 60 kg of honey across 30 batches — and hit both targets",
-      "Acquired our first full acre of land using only honey sale proceeds and savings",
+      "Acquired our first full acre of land using only honey sale proceeds and savings, growing to 1.5 acres",
       "Planted 76 trees — mostly acacia, neem, and sunflower — to make our land bee-friendly",
       "Identified water and packaging as our biggest challenges — issues we're still solving today",
       "Maintained our commitment to harvesting only 50% of honey, leaving the rest for the bees",
@@ -328,11 +328,11 @@ const OurStory = () => {
               title: "It started as a honey business",
               body: [
                 "BeeYield did not start with pollination. It started as a small business selling honey.",
-                "Our father gave us four hives on a quarter acre. We harvested them and sold the honey jar by jar to neighbours. There was no brand and no plan, just honey people trusted because they knew where it came from.",
+                "Our father gave us four hives on a half-acre. We harvested them and sold the honey jar by jar to neighbours. There was no brand and no plan, just honey people trusted because they knew where it came from.",
               ],
               image: STORY_IMAGES.savannahHangingHive,
               alt: "Traditional log hive hanging in an acacia tree in Kibwezi, Kenya",
-              caption: "4 hives · ¼ acre · 40 kg first harvest",
+              caption: "4 hives · 1/2 acre · 13 kg first harvest (7 batches)",
             },
             {
               kicker: "2021 – 2024 · Reinvesting every shilling",
