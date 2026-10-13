@@ -18,9 +18,7 @@ from app.schemas.diagnostic import (
     lint_formatted_rationale,
     lint_primary_issue,
     remove_conversational_filler,
-    post_process_and_lint_diagnostic,
     parse_and_standardize_diagnostic_output,
-    extract_telemetry_snapshot_from_context,
 )
 from app.services.ceba_context_engine import (
     AccountContext,

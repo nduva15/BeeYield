@@ -92,7 +92,7 @@ def lint_formatted_rationale(rationale: str) -> str:
     cleaned_text = remove_conversational_filler(rationale)
 
     # Split lines and identify list items or paragraphs
-    raw_lines = [l.strip() for l in cleaned_text.splitlines() if l.strip()]
+    raw_lines = [ln.strip() for ln in cleaned_text.splitlines() if ln.strip()]
     if not raw_lines:
         return "1. Telemetry metrics evaluated within nominal parameters."
 
@@ -393,21 +393,21 @@ def parse_and_standardize_diagnostic_output(
             primary_issue = " ".join(words[:5]).capitalize()
 
     # Split lines into rationale vs action items
-    lines = [l.strip() for l in cleaned_raw.splitlines() if l.strip()]
+    lines = [ln.strip() for ln in cleaned_raw.splitlines() if ln.strip()]
     rationale_lines = []
     action_lines = []
     in_actions = False
 
-    for l in lines:
-        l_lower = l.lower()
-        if "action plan" in l_lower or "recommendation" in l_lower or "next steps" in l_lower:
+    for ln in lines:
+        ln_lower = ln.lower()
+        if "action plan" in ln_lower or "recommendation" in ln_lower or "next steps" in ln_lower:
             in_actions = True
             continue
 
         if in_actions:
-            action_lines.append(l)
+            action_lines.append(ln)
         else:
-            rationale_lines.append(l)
+            rationale_lines.append(ln)
 
     if not action_lines:
         # If no explicit action plan header, check lines that start with verbs or bullet points
