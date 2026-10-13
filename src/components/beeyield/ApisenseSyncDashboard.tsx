@@ -19,6 +19,7 @@ import {
   Sparkles,
   Loader2,
   Box,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import apisenseSyncManager, { ApisenseDeviceState } from "@/services/ApisenseSyncManager";
@@ -48,9 +49,18 @@ export default function ApisenseSyncDashboard({
     };
   }, []);
 
-  const primaryDevice = devices.find((d) => d.serial_number === "H26110038001") || devices[0];
+  const primaryDevice = devices[0];
 
-  const handleScanBle = async (serial = "H26110038001") => {
+  const handleRemoveDevice = (serial: string) => {
+    apisenseSyncManager.removeDevice(serial);
+    toast.success(`Removed device ${serial}`);
+  };
+
+  const handleScanBle = async (serial?: string) => {
+    if (!serial) {
+      toast.info("Please pair a device first.");
+      return;
+    }
     setIsScanningBle(true);
     try {
       toast.info(`Opening Web Bluetooth scanner for ${serial}... Select your Apisense sensor in the browser dialog.`);
@@ -67,7 +77,11 @@ export default function ApisenseSyncDashboard({
     }
   };
 
-  const handleSyncProxy = async (serial = "H26110038001") => {
+  const handleSyncProxy = async (serial?: string) => {
+    if (!serial) {
+      toast.info("Please pair a device first.");
+      return;
+    }
     setIsSyncingProxy(true);
     try {
       const result = await apisenseSyncManager.syncWithCloudProxy(serial);
@@ -149,139 +163,173 @@ export default function ApisenseSyncDashboard({
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Top Banner: Anchor Unit Status & Controls */}
-      <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-amber-500/5 via-card to-background p-6 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-mono text-xs font-bold uppercase tracking-wider">
-                Unit 1 Master Anchor
-              </span>
-              {getSyncBadge(primaryDevice?.sync_status)}
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-md">
-                <Box className="w-3.5 h-3.5 text-primary" />
-                {primaryDevice?.hive_code || "Hive 001"}
-              </span>
-            </div>
-
-            <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-              Apisense Device {primaryDevice?.serial_number || "H26110038001"}
-            </h3>
-            <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-              Real-time synchronization engine verifying that BeeYield data accurately mirrors your connected Apisense mobile app.
-              Anchored to <strong>Hive 001</strong> via dual Web Bluetooth LE and Cloud Proxy sync.
+      {!primaryDevice ? (
+        <div className="rounded-3xl border border-dashed border-border/80 bg-gradient-to-br from-muted/30 via-card to-background p-8 text-center space-y-4 shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
+            <Radio className="w-6 h-6" />
+          </div>
+          <div className="space-y-1.5 max-w-lg mx-auto">
+            <h3 className="text-lg font-bold text-foreground">Zero Connected Hardware IoT Sensors</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Operating 184 Langstroth hive stands via verified biological field inspections and certified honey extractions. No hardware IoT sensors are currently connected or paired.
             </p>
           </div>
-
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => handleScanBle(primaryDevice?.serial_number)}
-              disabled={isScanningBle}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
-            >
-              {isScanningBle ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Bluetooth className="w-4 h-4" />
-              )}
-              Direct Web BLE Sync
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSyncProxy(primaryDevice?.serial_number)}
-              disabled={isSyncingProxy}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold text-xs shadow-sm hover:bg-muted/80 transition cursor-pointer disabled:opacity-50"
-            >
-              {isSyncingProxy ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Cloud className="w-4 h-4 text-blue-500" />
-              )}
-              Cloud Proxy Sync
-            </button>
-
+          <div>
             <button
               type="button"
               onClick={handleAddNextDevice}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow transition cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow hover:bg-primary/90 transition cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Add Next Device
+              Pair New Apisense Unit
             </button>
           </div>
         </div>
+      ) : (
+        <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-amber-500/5 via-card to-background p-6 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-mono text-xs font-bold uppercase tracking-wider">
+                  Primary Hardware Unit
+                </span>
+                {getSyncBadge(primaryDevice.sync_status)}
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-md">
+                  <Box className="w-3.5 h-3.5 text-primary" />
+                  {primaryDevice.hive_code || "Hive 001"}
+                </span>
+              </div>
 
-        {/* Primary Anchor State Metrics Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-border/50 mt-6">
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Battery Level</span>
-              <Battery className={`w-4 h-4 ${primaryDevice?.battery_percentage <= 20 ? 'text-red-500' : 'text-emerald-500'}`} />
+              <h3 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                Apisense Device {primaryDevice.serial_number}
+              </h3>
+              <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
+                Real-time synchronization engine verifying that BeeYield data accurately mirrors your connected Apisense mobile app.
+                Anchored to <strong>{primaryDevice.hive_code}</strong> via dual Web Bluetooth LE and Cloud Proxy sync.
+              </p>
             </div>
-            <div className="text-lg font-bold text-foreground">
-              {primaryDevice?.battery_percentage ?? 42}%
+
+            {/* Quick Action Buttons */}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => handleScanBle(primaryDevice.serial_number)}
+                disabled={isScanningBle}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
+              >
+                {isScanningBle ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Bluetooth className="w-4 h-4" />
+                )}
+                Direct Web BLE Sync
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSyncProxy(primaryDevice.serial_number)}
+                disabled={isSyncingProxy}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold text-xs shadow-sm hover:bg-muted/80 transition cursor-pointer disabled:opacity-50"
+              >
+                {isSyncingProxy ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Cloud className="w-4 h-4 text-blue-500" />
+                )}
+                Cloud Proxy Sync
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleRemoveDevice(primaryDevice.serial_number)}
+                className="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border border-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold text-xs transition cursor-pointer"
+                title="Remove this device"
+              >
+                <Trash2 className="w-4 h-4" />
+                Remove
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAddNextDevice}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow transition cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                Add Next Device
+              </button>
             </div>
-            <div className="text-[10px] text-muted-foreground">Mobile App: 42%</div>
           </div>
 
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Signal Strength</span>
-              <Signal className="w-4 h-4 text-primary" />
+          {/* Primary Anchor State Metrics Bar */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-border/50 mt-6">
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Battery Level</span>
+                <Battery className={`w-4 h-4 ${primaryDevice.battery_percentage <= 20 ? 'text-red-500' : 'text-emerald-500'}`} />
+              </div>
+              <div className="text-lg font-bold text-foreground">
+                {primaryDevice.battery_percentage}%
+              </div>
+              <div className="text-[10px] text-muted-foreground">Mobile App Sync</div>
             </div>
-            <div className="text-lg font-bold text-foreground">
-              {primaryDevice?.rssi_dbm ?? -70} dBm
-            </div>
-            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Optimal BLE Range</div>
-          </div>
 
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Hardware Rev</span>
-              <Cpu className="w-4 h-4 text-indigo-500" />
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Signal Strength</span>
+                <Signal className="w-4 h-4 text-primary" />
+              </div>
+              <div className="text-lg font-bold text-foreground">
+                {primaryDevice.rssi_dbm} dBm
+              </div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Optimal BLE Range</div>
             </div>
-            <div className="text-lg font-bold text-foreground font-mono">
-              v{primaryDevice?.hardware_version || "4.1.0"}
-            </div>
-            <div className="text-[10px] text-muted-foreground">Apisense PCB</div>
-          </div>
 
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Firmware</span>
-              <Radio className="w-4 h-4 text-purple-500" />
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Hardware Rev</span>
+                <Cpu className="w-4 h-4 text-indigo-500" />
+              </div>
+              <div className="text-lg font-bold text-foreground font-mono">
+                v{primaryDevice.hardware_version || "4.1.0"}
+              </div>
+              <div className="text-[10px] text-muted-foreground">Apisense PCB</div>
             </div>
-            <div className="text-lg font-bold text-foreground font-mono">
-              v{primaryDevice?.software_version || "1.8.8"}
-            </div>
-            <div className="text-[10px] text-muted-foreground">BLE Stack 1.8.8</div>
-          </div>
 
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Last Report</span>
-              <Clock className="w-4 h-4 text-amber-500" />
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Firmware</span>
+                <Radio className="w-4 h-4 text-purple-500" />
+              </div>
+              <div className="text-lg font-bold text-foreground font-mono">
+                v{primaryDevice.software_version || "1.8.8"}
+              </div>
+              <div className="text-[10px] text-muted-foreground">BLE Stack</div>
             </div>
-            <div className="text-xs font-bold text-foreground truncate" title={primaryDevice?.last_report}>
-              {formatTimestamp(primaryDevice?.last_report)}
-            </div>
-            <div className="text-[10px] text-muted-foreground">30.09.2026 19:50</div>
-          </div>
 
-          <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
-            <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
-              <span>Last Measure</span>
-              <Clock className="w-4 h-4 text-cyan-500" />
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Last Report</span>
+                <Clock className="w-4 h-4 text-amber-500" />
+              </div>
+              <div className="text-xs font-bold text-foreground truncate" title={primaryDevice.last_report}>
+                {formatTimestamp(primaryDevice.last_report)}
+              </div>
+              <div className="text-[10px] text-muted-foreground">Automated Sync</div>
             </div>
-            <div className="text-xs font-bold text-foreground truncate" title={primaryDevice?.last_measurement}>
-              {formatTimestamp(primaryDevice?.last_measurement)}
+
+            <div className="rounded-2xl bg-card border border-border/60 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-muted-foreground text-[11px] font-medium">
+                <span>Last Measure</span>
+                <Clock className="w-4 h-4 text-cyan-500" />
+              </div>
+              <div className="text-xs font-bold text-foreground truncate" title={primaryDevice.last_measurement}>
+                {formatTimestamp(primaryDevice.last_measurement)}
+              </div>
+              <div className="text-[10px] text-muted-foreground">Core Telemetry</div>
             </div>
-            <div className="text-[10px] text-muted-foreground">30.09.2026 19:00</div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Grid of All Units (Device 1 through 30) */}
       <div className="space-y-4">
@@ -306,7 +354,7 @@ export default function ApisenseSyncDashboard({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {devices.map((device, index) => {
-            const isMaster = device.serial_number === "H26110038001";
+            const isMaster = index === 0;
             return (
               <div
                 key={device.serial_number}
@@ -324,7 +372,7 @@ export default function ApisenseSyncDashboard({
                       </span>
                       {isMaster && (
                         <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
-                          Master
+                          Primary
                         </span>
                       )}
                     </div>
@@ -383,6 +431,14 @@ export default function ApisenseSyncDashboard({
                     className="flex-1 py-1.5 px-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground font-semibold text-[11px] transition text-center cursor-pointer"
                   >
                     Cloud Proxy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveDevice(device.serial_number)}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition cursor-pointer"
+                    title="Remove Device"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>

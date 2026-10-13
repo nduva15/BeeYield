@@ -31,20 +31,8 @@ class SensorTelemetryUpdate(BaseModel):
     software_version: Optional[str] = None
     sync_status: Optional[str] = None
 
-# In-memory verified registry seeded with anchor device H26110038001
-_SENSORS_REGISTRY: Dict[str, Dict[str, Any]] = {
-    "H26110038001": {
-        "serial_number": "H26110038001",
-        "connection_type": "bluetooth_le",
-        "rssi_dbm": -70,
-        "battery_percentage": 42,
-        "last_report": "2026-09-30T19:50:00",
-        "last_measurement": "2026-09-30T19:00:00",
-        "hardware_version": "4.1.0",
-        "software_version": "1.8.8",
-        "sync_status": "fully_synced",
-    }
-}
+# In-memory verified registry (clean, no default hardware nodes seeded)
+_SENSORS_REGISTRY: Dict[str, Dict[str, Any]] = {}
 
 @router.get("/{serial_number}/telemetry", response_model=SensorTelemetryResponse)
 async def get_sensor_telemetry(serial_number: str):

@@ -812,30 +812,25 @@ Surrounding forage baseline: **{florage_list}** (Abundance Multiplier: **{florag
                 "flightViability": "optimal",
                 "flightViabilityReason": "Temperature >18°C and wind speed <15 km/h provide prime foraging flight dynamics."
             }
-            dev_rows = "\n".join([
-                f"| **{d.get('serial', 'H26110038001')}** | {d.get('hiveCode', 'KIB-001')} | **{d.get('syncStatus', 'active').upper()}** | {d.get('batteryPct', 42)}% | **{d.get('broodTempC', 34.8)}°C** | {d.get('internalHumidityPct', 54.0)}% | **{d.get('hiveWeightKg', 44.5)} kg** | {d.get('acousticHz', 245)} Hz |"
-                for d in synced_devices
-            ]) or "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"
-
             return f"""### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
 
 **Master Apiculturist**: Timothy Nduva (Commercial Lead)  
 **Primary Apiary**: **BeeYield Apiary in Kibwezi**, Makueni County, Kenya  
 **Commercial Fleet**: **184 Managed Langstroth Hives** (150 Active Producing Colonies, 34 Standby Stands)  
 **Total Certified Harvest**: **843.0 kg KEBS Export Certified Raw Honey** across **423 Batches** (2020–2026)  
-**Hardware Network**: **Apisense Sentinel Core 01 (H26110038001)** Synced to KIB-001  
+**Hardware Network**: **Zero Connected Hardware IoT Sensors** (All 184 stands monitored via verified physical biological inspections and certified extraction records)  
 
 ---
 
 #### 1. Apiary & Hives Fleet Status (184 Stands, 150 Active Colonies)
 | Stand Code | Architecture | Status | Frames (Brood) | Internal Temp | Scale Weight | Sensor Link |
 |:---|:---|:---|:---|:---|:---|:---|
-| **KIB-001** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.8°C | 44.5 kg | ✅ H26110038001 |
-| **KIB-002** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 35.1°C | 42.1 kg | ✅ Apisense Core |
-| **KIB-003** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.6°C | 43.8 kg | Manual Sentinel |
-| **KIB-030** | Langstroth 10-Frame | ✅ Active Production | 10 (8 Brood) | 34.9°C | 45.2 kg | Manual Sentinel |
-| **KIB-060** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 35.0°C | 44.0 kg | Manual Sentinel |
-| **KIB-150** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 34.7°C | 41.5 kg | Manual Sentinel |
+| **KIB-001** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.8°C | 44.5 kg | Field Monitored |
+| **KIB-002** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 35.1°C | 42.1 kg | Field Monitored |
+| **KIB-003** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 34.6°C | 43.8 kg | Field Monitored |
+| **KIB-030** | Langstroth 10-Frame | ✅ Active Production | 10 (8 Brood) | 34.9°C | 45.2 kg | Field Monitored |
+| **KIB-060** | Langstroth 10-Frame | ✅ Active Production | 10 (7 Brood) | 35.0°C | 44.0 kg | Field Monitored |
+| **KIB-150** | Langstroth 10-Frame | ✅ Active Production | 10 (6 Brood) | 34.7°C | 41.5 kg | Field Monitored |
 | **KIB-151–184** | Langstroth 10-Frame | ⏳ Standby Stands (34) | 10 Frames Drawn | Ambient | Empty Stand | Ready for splits |
 
 ---
@@ -855,15 +850,14 @@ Surrounding forage baseline: **{florage_list}** (Abundance Multiplier: **{florag
 ---
 
 #### 4. IoT Sensor Telemetry & Synced Apisense Devices
-| Device Serial | Assigned Hive | Link Status | Battery | Brood Temp | Core Humidity | Hive Scale Weight | Acoustic Frequency |
-|:---|:---|:---|:---|:---|:---|:---|:---|
-{dev_rows}
+* **Status**: **Zero Connected Hardware IoT Sensors**
+* **Operating Mode**: All 184 Langstroth stands operated via verified physical biological inspections and certified extraction records. No hardware devices connected.
 
 ---
 
 #### 5. 48-Hour Apiary Management Directives
 1. **Super Expansion:** Honey flow is active in Kibwezi; monitor top super fills on KIB-001 through KIB-030.
-2. **Device Maintenance:** Anchor Node H26110038001 battery is at 42% (~45 days autonomous runtime remaining)."""
+2. **Apiary Operations:** All 184 Langstroth stands operated via verified biological field inspections; zero connected IoT hardware devices."""
 
         if not is_guest and len(hives) == 0:
             return f"""### 🐝 Ceba AI Apiary Workspace — Welcome {user_name}
@@ -1126,31 +1120,17 @@ To receive live microclimate telemetry, ambient temperature ranges, and foraging
     # 4.5 IoT Sensor Data & Synced Hardware
     if is_sensor:
         if is_timothy:
-            dev_rows = "\n".join([
-                f"| **{d.get('serial', 'H26110038001')}** | {d.get('hiveCode', 'KIB-001')} | **{str(d.get('syncStatus', 'active')).upper()}** | {d.get('batteryPct', 42)}% | **{d.get('broodTempC', 34.8)}°C** | {d.get('internalHumidityPct', 54.0)}% | **{d.get('hiveWeightKg', 44.5)} kg** | {d.get('acousticHz', 245)} Hz |"
-                for d in synced_devices
-            ]) or "| **H26110038001** | KIB-001 | **FULLY SYNCED** | 42% | **34.8°C** | 54.0% RH | **44.5 kg** | 245 Hz (Optimal) |"
+            return """### 📡 Ceba AI IoT Sensor Telemetry & Hardware — Timothy Nduva
 
-            return f"""### 📡 Ceba AI IoT Sensor Telemetry & Hardware — Timothy Nduva
-
-**Hardware Network**: Apisense Brood Sentinels & Scale Gateway  
-**Active Synced Nodes**: Apisense Node H26110038001 linked to KIB-001  
+**Hardware Network**: Zero Connected Hardware IoT Sensors  
+**Operating Mode**: Verified physical biological inspections & certified harvest records across all 184 Langstroth stands  
 
 ---
 
-#### 1. Live Telemetry Readings
-| Device Serial | Linked Stand | Status | Battery | Brood Temp | Core Humidity | Hive Weight | Acoustic Diagnostics |
-|:---|:---|:---|:---|:---|:---|:---|:---|
-{dev_rows}
+#### 1. Hardware Status
+Timothy operates all 184 managed Langstroth hive stands via verified biological field inspections and certified extraction records with **zero connected hardware IoT devices**.
 
----
-
-#### 2. Biometric Vital Signs Interpretation
-* **Brood Core Temperature**: **34.8°C** (Optimal brood nest range: 34.5°C – 35.5°C; zero chilling risk)
-* **Internal Relative Humidity**: **54.0% RH** (Prevents comb dry-out while averting condensation)
-* **Scale Weight**: **44.5 kg** (Net positive daily trajectory during active acacia nectar flow)
-* **Acoustic Frequency**: **245 Hz** (Calm queenright colony frequency; swarming agitation index <5%)
-* **Hardware Health**: Battery at **42%** (~45 days autonomous runtime remaining) | RSSI: **-70 dBm**"""
+No connected Apisense nodes or hardware scale telemetry sensors are currently active or paired for this commercial operation."""
 
         if not is_guest and len(synced_devices) == 0:
             return f"""### 📡 Ceba AI IoT Sensor Telemetry — {user_name}

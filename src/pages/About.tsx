@@ -138,7 +138,7 @@ const TIMELINE: YearMilestone[] = [
     color: "from-amber-600 to-yellow-500",
     stats: [
       { label: "Hives", value: "4 → 20" },
-      { label: "Honey Harvested", value: "40 kg" },
+      { label: "Honey Sold", value: "13 kg" },
       { label: "Land", value: "¼ acre" },
     ],
     highlights: [
@@ -146,7 +146,7 @@ const TIMELINE: YearMilestone[] = [
       "Timothy was in his 2nd year studying Finance & Marketing at Strathmore University",
       "We were only keeping bees for the honey — no grand plans, just ambition and hope",
       "Grew from 4 to 20 hives by year-end through pure grit",
-      "First harvest: 40 kg of pure, traceable honey sold entirely through word of mouth",
+      "First harvest: 13 kg of pure, traceable honey across 7 batches sold entirely through word of mouth",
       "Zero external funding — every shilling came from honey sales and personal savings",
     ],
     quote:
@@ -155,18 +155,18 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2021",
     title: "Bigger Ambitions",
-    subtitle: "35 hives, first acre, first trees planted",
+    subtitle: "35 hives, first acre, 60 kg harvested",
     image: "/images/story/2021-growing-apiary.jpg",
     imageAlt: "Growing our apiary — 35 hives and our first tree-planting initiative",
     color: "from-green-600 to-emerald-500",
     stats: [
       { label: "Hives", value: "35" },
-      { label: "Honey Sold", value: "70 kg" },
+      { label: "Honey Sold", value: "60 kg" },
       { label: "Land Acquired", value: "1 acre" },
       { label: "Trees Planted", value: "76" },
     ],
     highlights: [
-      "Set ambitious goal of 35 hives and 70 kg of honey — and hit both targets",
+      "Set ambitious goal of 35 hives and 60 kg of honey across 30 batches — and hit both targets",
       "Acquired our first full acre of land using only honey sale proceeds and savings",
       "Planted 76 trees — mostly acacia, neem, and sunflower — to make our land bee-friendly",
       "Identified water and packaging as our biggest challenges — issues we're still solving today",
@@ -177,13 +177,13 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2022",
     title: "The Team Forms",
-    subtitle: "3 siblings, 1 mission — 95 kg harvested",
+    subtitle: "3 siblings, 1 mission — 55 kg harvested",
     image: "/images/story/2022-team-formation.jpg",
     imageAlt: "Timothy, Agatha, and Carole — the three siblings behind BeeYield",
     color: "from-blue-600 to-indigo-500",
     stats: [
       { label: "Hives", value: "45" },
-      { label: "Honey Sold", value: "95 kg" },
+      { label: "Honey Sold", value: "55 kg" },
       { label: "Land Total", value: "2.5 acres" },
       { label: "Yield/Hive", value: "2 kg (50%)" },
     ],
@@ -191,7 +191,7 @@ const TIMELINE: YearMilestone[] = [
       "Agatha and Carole joined the dream — both Strathmore University graduates",
       "Agatha brought IT expertise; Carole brought Project Management and Sales/Finance skills",
       "BeeYield became a true family operation — three siblings, three different skill sets, one mission",
-      "Harvested 95 kg from 45 hives — averaging 2 kg per hive while only harvesting 50%",
+      "Harvested 55 kg across 28 batches from 45 hives while strictly leaving 50% for colony sustenance",
       "Acquired another acre, bringing total land to 2.5 acres — all from honey money",
       "This was the year BeeYield stopped being a hobby and became a company",
     ],
@@ -201,19 +201,19 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2023",
     title: "The Fruitful Year",
-    subtitle: "150 kg of traceable honey — linear, steady growth",
+    subtitle: "105 kg of traceable honey — linear, steady growth",
     image: "/images/story/2023-fruitful-year.jpg",
-    imageAlt: "150 kg of pure traceable honey — our most fruitful year of linear growth",
+    imageAlt: "105 kg of pure traceable honey — our fruitful year of linear growth",
     color: "from-amber-500 to-orange-500",
     stats: [
       { label: "Hives", value: "75" },
-      { label: "Honey Sold", value: "150 kg" },
+      { label: "Honey Sold", value: "105 kg" },
       { label: "Land Total", value: "3.5 acres" },
       { label: "Trees Planted", value: "113" },
     ],
     highlights: [
-      "Our most fruitful year yet — 150 kg of pure, traceable honey from 75 hives",
-      "Growth remained linear and steady: hives doubled, honey doubled, trust doubled",
+      "Our fruitful year — 105 kg of pure, traceable honey across 53 batches from 75 hives",
+      "Growth remained linear and steady: hives scaled, honey yield expanded, trust doubled",
       "Timothy graduated from Strathmore with a Second Class Honours in Finance & Marketing",
       "Timothy got employed and saved almost his entire salary to fuel BeeYield's growth",
       "Reinvested all profits to acquire another acre — total land now 3.5 acres",
@@ -224,18 +224,18 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "2024",
     title: "Our Best Harvest Yet",
-    subtitle: "210 kg harvested — domain acquired — digital ambitions begin",
+    subtitle: "250 kg harvested — domain acquired — digital ambitions begin",
     image: "/images/story/2024-best-year.jpg",
-    imageAlt: "210 kg harvest — our best year yet, with hives stretching across 5 acres",
+    imageAlt: "250 kg harvest — our best year yet, with hives stretching across 5 acres",
     color: "from-yellow-500 to-amber-600",
     stats: [
       { label: "Hives", value: "105+" },
-      { label: "Honey Sold", value: "210 kg" },
+      { label: "Honey Sold", value: "250 kg" },
       { label: "Land Total", value: "5 acres" },
       { label: "Trees Planted", value: "250+" },
     ],
     highlights: [
-      "Best harvest year — 210 kg of honey, our highest volume to date",
+      "Best harvest year — 250 kg of honey across 125 documented batches, our highest annual volume to date",
       "Acquired 30 more hives, pushing our colony count past 100",
       "Reinvested revenue in acquiring 1.5 more acres — total land now 5 acres, fully fenced",
       "Planted 250+ more trees, deepening our commitment to biodiversity",
@@ -255,7 +255,7 @@ const TIMELINE: YearMilestone[] = [
       "IoT sensors deployed on hives — the moment BeeYield pivoted to precision pollination",
     color: "from-red-500 to-rose-600",
     stats: [
-      { label: "Honey Harvested", value: "240 kg" },
+      { label: "Honey Sold", value: "300 kg" },
       { label: "Pollination Started", value: "July 28" },
       { label: "Farmer Partners", value: "40" },
       { label: "Part-Time Staff", value: "2" },
@@ -267,7 +267,7 @@ const TIMELINE: YearMilestone[] = [
       "July 28th: BeeYield pivoted from honey-only to precision pollination as a primary revenue stream",
       "Started pollination using traditional methods on family and neighbor farms — noticed real yield improvements",
       "Timothy began building beeyield.com webapp and learning IoT, leveraging his Strathmore IT diploma",
-      "Managed to harvest 150+ kg despite colony losses — all documented in our traceability system",
+      "Harvested 300 kg across 150 documented batches — all registered in our traceability records",
       "Hired Peter George and Ngumbau as part-time employees for field work, farmer partnerships, and harvesting",
       "Started the farmer partner program in late 2025 — 40 farmers enrolled for hive checkups, harvesting, and education",
       "Timothy also graduated his diploma in IT from Strathmore — now armed with Finance, Marketing, and IT",
@@ -287,7 +287,7 @@ const TIMELINE: YearMilestone[] = [
       { label: "IoT Devices", value: "22" },
       { label: "Acres Pollinated", value: "105 & Counting" },
       { label: "Data Points/Day", value: "2,000+ & Growing" },
-      { label: "Honey to Date", value: "988 kg" },
+      { label: "Honey Sold", value: "60 kg (843 total)" },
     ],
     highlights: [
       "July 2026: BeeYield officially founded as an IoT precision pollination company — uniting intelligent sensors, acoustic bio-analytics, and precision pollination",
@@ -304,7 +304,7 @@ const TIMELINE: YearMilestone[] = [
       "9–18% average yield increase for pollinated farms",
       "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
       "Started mobile app development on August 3rd for full audience experience",
-      "203 kg honey harvested so far this year, bringing total to 988 kg lifetime",
+      "60 kg honey harvested in early spring acacia bloom across 30 batches, bringing verified lifetime honey sold to 843 kg across 423 batches",
       "Managing 205+ additional hives from partner farmers",
       "Planted 2,500 trees so far toward our 45,000-tree goal, and started our own nursery for our apiary and partner apiaries",
       "Got water to apiary (bucket storage — borehole still a dream)",
@@ -314,7 +314,7 @@ const TIMELINE: YearMilestone[] = [
       "Marketing launch planned for September 14th, 2026 — the world is about to hear from us",
     ],
     quote:
-      "988 kg of honey from a 3-person team that's never branded a jar, never ran an ad, never took a cent from investors. All word of mouth. Imagine what happens when we actually start marketing.",
+      "843 kg of honey across 423 batches from a 3-person team that's never branded a jar, never ran an ad, never took a cent from investors. All word of mouth. Imagine what happens when we actually start marketing.",
   },
 ];
 
@@ -323,7 +323,7 @@ const TIMELINE: YearMilestone[] = [
 /* ------------------------------------------------------------------ */
 const IMPACT_STATS = [
   { icon: Hexagon, label: "Hives Owned", value: 184, suffix: "" },
-  { icon: Scale, label: "Honey Sold (kg)", value: 988, suffix: " kg" },
+  { icon: Scale, label: "Honey Sold (kg)", value: 843, suffix: " kg" },
   { icon: Users, label: "Partner Farmers", value: 40, suffix: "" },
   { icon: MapPin, label: "Acres Pollinated & Counting", value: 105, suffix: "+" },
   { icon: Wifi, label: "IoT Devices Active", value: 22, suffix: "" },
@@ -661,7 +661,7 @@ export default function About() {
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
                   <div>
                     <span className="font-bold text-stone-950">Honey Sales: $3,000+ USD</span>{" "}
-                    — 988 kg sold through word of mouth alone. Never branded, never packaged, never
+                    — 843 kg sold across 423 batches through word of mouth alone. Never branded, never packaged, never
                     advertised. All profits reinvested in land, hives, trees, and research.
                   </div>
                 </div>
@@ -1382,16 +1382,16 @@ export default function About() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {[
-                    { year: "Dec 2020", hives: "4 → 20", honey: "40", land: "¼ acre", trees: "—" },
-                    { year: "2021", hives: "35", honey: "70", land: "1.25 acres", trees: "76" },
-                    { year: "2022", hives: "45", honey: "95", land: "2.5 acres", trees: "—" },
-                    { year: "2023", hives: "75", honey: "150", land: "3.5 acres", trees: "113" },
-                    { year: "2024", hives: "105+", honey: "210", land: "5 acres", trees: "250+" },
-                    { year: "2025", hives: "150+", honey: "240", land: "5 acres", trees: "800+" },
+                    { year: "Dec 2020", hives: "4 → 20", honey: "13", land: "¼ acre", trees: "—" },
+                    { year: "2021", hives: "35", honey: "60", land: "1.25 acres", trees: "76" },
+                    { year: "2022", hives: "45", honey: "55", land: "2.5 acres", trees: "—" },
+                    { year: "2023", hives: "75", honey: "105", land: "3.5 acres", trees: "113" },
+                    { year: "2024", hives: "105+", honey: "250", land: "5 acres", trees: "250+" },
+                    { year: "2025", hives: "150+", honey: "300", land: "5 acres", trees: "800+" },
                     {
                       year: "2026*",
                       hives: "184",
-                      honey: "203*",
+                      honey: "60*",
                       land: "5 acres",
                       trees: "1,500+",
                     },
@@ -1409,7 +1409,7 @@ export default function About() {
                   <tr className="bg-amber-500/10 font-bold">
                     <td className="px-4 py-3 text-amber-400">TOTAL</td>
                     <td className="px-4 py-3 text-right text-foreground">184 owned</td>
-                    <td className="px-4 py-3 text-right text-foreground">988 kg</td>
+                    <td className="px-4 py-3 text-right text-foreground">843 kg</td>
                     <td className="px-4 py-3 text-right text-foreground">5 acres</td>
                     <td className="px-4 py-3 text-right text-foreground">1,500+</td>
                   </tr>
@@ -1452,7 +1452,7 @@ export default function About() {
               },
               {
                 title: "Branding & Packaging",
-                desc: "988 kg of honey sold with no brand, no packaging, no label. We haven't reached our desired threshold yet. Costs for professional packaging are significant.",
+                desc: "843 kg of honey sold with no brand, no packaging, no label. We haven't reached our desired threshold yet. Costs for professional packaging are significant.",
                 emoji: "📦",
               },
               {
@@ -1506,7 +1506,7 @@ export default function About() {
               This Is Just The Beginning
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-              988 kg of honey. 105 and counting acres pollinated. 2,500 of 45,000 trees planted. 3 tons of CO₂ offset. 40
+              843 kg of honey. 105 and counting acres pollinated. 2,500 of 45,000 trees planted. 3 tons of CO₂ offset. 40
               partner farmers. 22 IoT devices. 2 global partnerships. Zero external funding.
               <br />
               <br />
