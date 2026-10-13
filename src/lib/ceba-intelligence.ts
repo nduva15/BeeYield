@@ -1334,13 +1334,32 @@ export function buildCebaScopedContextPayload(ctx: CebaTelemetryContext): CebaSc
   };
 }
 
+export interface StandardizedDiagnosticResponse {
+  alert_level: "INFO" | "WARNING" | "CRITICAL";
+  primary_issue: string;
+  formatted_rationale: string;
+  action_plan: string[];
+  telemetry_snapshot: Record<string, string | number>;
+}
+
+export interface CebaChatResponse {
+  response: string;
+  context_payload: CebaScopedContextPayload;
+  latency_ms: number;
+  model: string;
+  audit_logged?: boolean;
+  target_decision?: "STUDENT" | "TEACHER";
+  routing_reason?: string;
+  standardized_response?: StandardizedDiagnosticResponse;
+}
+
 /**
  * Executes a scoped CEBA AI query against the backend /api/v1/ceba/chat endpoint
  */
 export async function executeCebaScopedChat(
   query: string,
   token?: string
-): Promise<{ response: string; context_payload: CebaScopedContextPayload; latency_ms: number }> {
+): Promise<CebaChatResponse> {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
@@ -1358,4 +1377,5 @@ export async function executeCebaScopedChat(
 
   return await res.json();
 }
+
 
