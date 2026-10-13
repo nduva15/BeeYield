@@ -795,7 +795,10 @@ export function synthesizeCebaAnswer(query: string, ctx: CebaTelemetryContext): 
       };
 
       const deviceRows = ctx.syncedDevices.map((d) => {
-        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **$      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
+        return `| **${d.serial}** | ${d.hiveCode || "KIB-001"} | **${d.syncStatus.toUpperCase()}** | ${d.batteryPct}% | **${d.broodTempC}°C** | ${d.internalHumidityPct}% | **${d.hiveWeightKg} kg** | ${d.acousticHz} Hz |`;
+      }).join("\n");
+
+      return `### 🐝 Ceba AI Apiary Conditions & Colony Intelligence — Timothy Nduva
 
 **Master Apiculturist**: Timothy Nduva (Commercial Lead)  
 **Primary Apiary**: **BeeYield Apiary in Kibwezi**, Makueni County, Kenya  
