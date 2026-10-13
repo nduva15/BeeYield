@@ -132,14 +132,14 @@ const TIMELINE: YearMilestone[] = [
   {
     year: "Dec 2020",
     title: "Humble Beginnings",
-    subtitle: "4 hives, ¼ acre, and a dream",
+    subtitle: "4 hives, 1/2 acre, and a dream",
     image: "/images/story/2020-humble-beginnings.jpg",
-    imageAlt: "Our first 4 hives on a quarter acre in rural Kenya — where it all started",
+    imageAlt: "Our first 4 hives on a half-acre in rural Kenya — where it all started",
     color: "from-amber-600 to-yellow-500",
     stats: [
       { label: "Hives", value: "4 → 20" },
       { label: "Honey Sold", value: "13 kg" },
-      { label: "Land", value: "¼ acre" },
+      { label: "Land", value: "1/2 acre" },
     ],
     highlights: [
       "Received 4 hives from our father — our entire inheritance and the seed of BeeYield",
@@ -150,7 +150,7 @@ const TIMELINE: YearMilestone[] = [
       "Zero external funding — every shilling came from honey sales and personal savings",
     ],
     quote:
-      "We had nothing but 4 hives, a quarter acre of land, and the stubborn belief that we could build something extraordinary from it.",
+      "We had nothing but 4 hives, a half-acre of land, and the stubborn belief that we could build something extraordinary from it.",
   },
   {
     year: "2021",
@@ -162,12 +162,12 @@ const TIMELINE: YearMilestone[] = [
     stats: [
       { label: "Hives", value: "35" },
       { label: "Honey Sold", value: "60 kg" },
-      { label: "Land Acquired", value: "1 acre" },
+      { label: "Land Total", value: "1.5 acres" },
       { label: "Trees Planted", value: "76" },
     ],
     highlights: [
       "Set ambitious goal of 35 hives and 60 kg of honey across 30 batches — and hit both targets",
-      "Acquired our first full acre of land using only honey sale proceeds and savings",
+      "Acquired our first full acre of land using only honey sale proceeds and savings, growing to 1.5 acres",
       "Planted 76 trees — mostly acacia, neem, and sunflower — to make our land bee-friendly",
       "Identified water and packaging as our biggest challenges — issues we're still solving today",
       "Maintained our commitment to harvesting only 50% of honey, leaving the rest for the bees",
@@ -518,7 +518,7 @@ export default function About() {
           </FadeIn>
           <FadeIn delay={300}>
             <p className="text-lg md:text-xl text-neutral-600 leading-relaxed max-w-2xl mx-auto mb-8">
-              Three siblings. A quarter acre to five fenced acres. Zero external funding — just pure
+              Three siblings. A half-acre to five fenced acres. Zero external funding — just pure
               grit, savings, and a 50% ethical harvest promise. Reimagining the future of African
               apiculture through IoT and AI.
             </p>
@@ -934,7 +934,7 @@ export default function About() {
               Our Journey — Year by Year
             </h2>
             <p className="text-center text-stone-600 font-medium max-w-xl mx-auto mb-16">
-              From 4 hives on a quarter acre to 184 hives, 22 IoT devices, and global partnerships —
+              From 4 hives on a half-acre to 184 hives, 22 IoT devices, and global partnerships —
               in less than 6 years.
             </p>
           </FadeIn>
@@ -1382,8 +1382,8 @@ export default function About() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {[
-                    { year: "Dec 2020", hives: "4 → 20", honey: "13", land: "¼ acre", trees: "—" },
-                    { year: "2021", hives: "35", honey: "60", land: "1.25 acres", trees: "76" },
+                    { year: "Dec 2020", hives: "4 → 20", honey: "13", land: "1/2 acre", trees: "—" },
+                    { year: "2021", hives: "35", honey: "60", land: "1.5 acres", trees: "76" },
                     { year: "2022", hives: "45", honey: "55", land: "2.5 acres", trees: "—" },
                     { year: "2023", hives: "75", honey: "105", land: "3.5 acres", trees: "113" },
                     { year: "2024", hives: "105+", honey: "250", land: "5 acres", trees: "250+" },
