@@ -1,28 +1,12 @@
-import { useState, useEffect } from "react";
+import { useTheme as useThemeContext } from "@/contexts/ThemeContext";
 
-type Theme = "light" | "dark";
-
+/**
+ * Legacy hook kept for existing imports. It delegates to the single
+ * ThemeContext so there is ONE source of truth. Default is always light;
+ * the phone's system dark mode is intentionally ignored.
+ */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("beeyield-theme") as Theme | null;
-      if (stored) return stored;
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
-    return "light";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("beeyield-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
-
+  const { theme, setTheme } = useThemeContext();
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
   return { theme, setTheme, toggleTheme };
 }

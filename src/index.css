@@ -72,7 +72,7 @@ All colors MUST be HSL.
     --accent-foreground: 0 0% 100%;
 
     --muted: 45 33% 92%;
-    --muted-foreground: 0 0% 40%;
+    --muted-foreground: 0 0% 25%;
 
     --border: 48 89% 20% / 0.1; /* Muted gold border */
     --input: 48 89% 20% / 0.1;
