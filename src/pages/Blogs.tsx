@@ -29,6 +29,7 @@ import beeyieldLogo from "@/assets/beeyield-logo.png";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { BLOG_POSTS, type BlogPost } from "@/data/blogPosts";
 import SEO from "@/components/SEO";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 export default function BlogsPage() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
@@ -572,6 +573,15 @@ export default function BlogsPage() {
               ))}
             </div>
           </div>
+
+          {/* Real Apiary & Field Research Gallery */}
+          <ApiaryGallerySection 
+            initialCategory="blogs" 
+            title="Field Research & Apiary Case Studies Gallery" 
+            subtitle="Authentic photographic field documentation accompanying our research on traditional log hive acoustics, acacia bloom phenology, and dryland pollinator corridors." 
+            limit={8} 
+            className="my-12 rounded-3xl" 
+          />
 
           {/* Panda Miti Ecological Initiative Banner */}
           <div className="my-6 text-center"><Button variant="outline" asChild className="rounded-full border-emerald-500/30 text-emerald-700 dark:text-emerald-300"><Link to="/panda-miti">Explore Project Panda Miti (45,000 Trees) <ArrowRight className="w-4 h-4 ml-2" /></Link></Button></div>

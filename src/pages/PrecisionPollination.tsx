@@ -22,6 +22,7 @@ import { FramesPerAcreExplainer } from "@/components/FramesPerAcreExplainer";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 import {
   SHOWCASE_SLIDES,
@@ -46,18 +47,18 @@ const HARDWARE_SLIDES: SlideItem[] = [
     description: 'Relays telemetry data from all in-hive sensor nodes across the apiary yard directly to the cloud via cellular uplink.',
   },
   {
-    image: '/images/story/deployed-hive-antenna-1.png',
-    title: 'Weatherproof Hive Antenna Station',
-    subtitle: 'Galvanized tin lid mount on traditional Kenyan beehive stand',
-    badge: '22 Deployed Hives',
-    description: 'Autonomous transmission station standing in active Kenyan apiary yard, operating continuously in harsh semi-arid weather.',
+    image: '/images/apiary/beeyield-apiary-29.jpg',
+    title: 'Sheltered Langstroth Apiary Yard',
+    subtitle: 'Three yellow Langstroth hives on anti-termite raised stands under shade',
+    badge: '184 Hives Scaled',
+    description: 'Autonomous transmission station and monitored colonies operating continuously in harsh semi-arid weather.',
   },
   {
-    image: '/images/story/deployed-hive-antenna-2.png',
-    title: 'Kenyan Top-Bar Hive Stand Deployment',
-    subtitle: 'Anti-termite pole mount with solar transmission unit',
-    badge: '45 Acres Served',
-    description: 'Field station deployed at mango and citrus orchard boundaries to monitor foraging flight density during peak flowering.',
+    image: '/images/apiary/beeyield-apiary-34.jpg',
+    title: 'Anti-Termite Stand Close-Up',
+    subtitle: 'Anti-termite pole mount with zinc sheeting and weatherized timber',
+    badge: 'Hardware Rig',
+    description: 'Field station deployed at farm boundaries to monitor foraging flight density during peak flowering while protecting hives from ground termites.',
   },
 ];
 
@@ -894,6 +895,16 @@ const PrecisionPollination = () => {
             </p>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          IN-HIVE REAL APIARY ARCHITECTURE GALLERY
+      ═══════════════════════════════════════════════════════════════ */}
+      <ApiaryGallerySection 
+        initialCategory="in_hive" 
+        title="In-Hive Architecture & Protected Apiary Stations" 
+        subtitle="Field evidence of our sensor-instrumented log cavities, raised anti-termite stands, and yellow Langstroth apiaries driving high-density crop pollination." 
+        limit={8} 
+      />
 
       {/* ═══════════════════════════════════════════════════════════════
           FINAL CTA

@@ -61,6 +61,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 import LOGO from "@/assets/Logo.png";
 
@@ -122,6 +123,27 @@ const FIELD_INSPECTION_PHOTOS = [
         subtitle: "Industrial load cell mounted below wooden hive floor for continuous weight tracking",
         tag: "Weight Telemetry",
         detail: "Tracks daily honey accumulation, nectar flow dynamics, robbing events, and colony biomass in real time."
+    },
+    {
+        src: "/images/apiary/beeyield-apiary-06.jpg",
+        title: "Tree Trunk Predator Guard Sheet",
+        subtitle: "Corrugated metal shield wrapped around acacia trunk",
+        tag: "Predator Defense",
+        detail: "Galvanized tin sheet prevents climbing pests like honey badgers (Mellivora capensis), safari ants, and termites from reaching canopy hives."
+    },
+    {
+        src: "/images/apiary/beeyield-apiary-21.jpg",
+        title: "Heavy-Gauge Pest Barrier",
+        subtitle: "Full-circumference trunk shield defending apiary trees",
+        tag: "Biosecurity",
+        detail: "Field-tested physical barrier eliminating climbing predator intrusions across 5+ years of savannah operations."
+    },
+    {
+        src: "/images/apiary/beeyield-apiary-34.jpg",
+        title: "Anti-Termite Elevated Stand",
+        subtitle: "Zinc-collared timber poles for Langstroth hives",
+        tag: "Termite Barrier",
+        detail: "Mechanical barrier protecting timber hive bodies from destructive ground termites and damp soil pathogen transmission."
     },
     {
         src: "/images/diseases/hive-comb-inspection-6.png",
@@ -1641,6 +1663,16 @@ const Diseases = () => {
                     </div>
                 </div>
             </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+                PEST, PREDATOR & FIELD BIOSECURITY ARCHIVE
+            ═══════════════════════════════════════════════════════════════ */}
+            <ApiaryGallerySection 
+                initialCategory="diseases" 
+                title="Pest, Predator & Colony Biosecurity Gallery" 
+                subtitle="Field evidence of BeeYield's multi-layered defense: corrugated tree-trunk shields preventing honey badger attacks, anti-termite raised stands, and thermal log cavity regulation." 
+                limit={8} 
+            />
 
             {/* ═══════════════════════════════════════════════════════════════
                 FAQ + CONTACT

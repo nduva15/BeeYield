@@ -16,6 +16,7 @@ import { ThreePhotoSlideshow, SlideItem } from "@/components/ThreePhotoSlideshow
 import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 import { GlobalPartnerNetworkSection } from "@/components/beeyield/GlobalPartnerNetworkSection";
 import { LeadershipSection } from "@/components/beeyield/LeadershipSection";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -34,15 +35,16 @@ const STORY_IMAGES = {
   fieldInspection1: '/images/diseases/hive-inspection-1.png',
   fieldInspection2: '/images/diseases/hive-inspection-2.png',
   /* ── Real Hive Photos — Our Apiary Growth ──────────── */
-  apiaryLangstrothRow: '/images/story/hives/apiary-langstroth-row.jpg',
-  yellowLangstrothCloseup: '/images/story/hives/yellow-langstroth-closeup.jpg',
-  savannahLogHiveTree: '/images/story/hives/savannah-log-hive-tree.jpg',
-  hangingLogHivesCanopy: '/images/story/hives/hanging-log-hives-canopy.jpg',
-  apiaryHiveField1: '/images/story/hives/apiary-hive-field-1.jpg',
-  apiaryHiveField2: '/images/story/hives/apiary-hive-field-2.jpg',
-  acaciaTreeLogHive: '/images/story/hives/acacia-tree-log-hive.jpg',
-  savannahHangingHive: '/images/story/hives/savannah-hanging-hive.jpg',
-  beekeeperInspection: '/images/story/hives/beekeeper-inspection-twilight.jpg',
+  apiaryLangstrothRow: '/images/apiary/beeyield-apiary-29.jpg',
+  yellowLangstrothCloseup: '/images/apiary/beeyield-apiary-34.jpg',
+  savannahLogHiveTree: '/images/apiary/beeyield-apiary-05.jpg',
+  hangingLogHivesCanopy: '/images/apiary/beeyield-apiary-01.jpg',
+  apiaryHiveField1: '/images/apiary/beeyield-apiary-10.jpg',
+  apiaryHiveField2: '/images/apiary/beeyield-apiary-25.jpg',
+  acaciaTreeLogHive: '/images/apiary/beeyield-apiary-37.jpg',
+  savannahHangingHive: '/images/apiary/beeyield-apiary-04.jpg',
+  beekeeperInspection: '/images/apiary/beeyield-apiary-41.jpg',
+  predatorGuardTrunk: '/images/apiary/beeyield-apiary-06.jpg',
 };
 
 
@@ -795,6 +797,16 @@ const OurStory = () => {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════════════════════════════════════════════
+          7B. REAL APIARY ARCHIVE GALLERY
+      ═══════════════════════════════════════════════════════════════ */}
+      <ApiaryGallerySection 
+        initialCategory="story" 
+        title="From 4 Inherited Hives to 184 Smart Colonies" 
+        subtitle="The authentic photographic journey of BeeYield: traditional Kamba canopy log hives received from our father, tree-trunk predator guards, and modern sheltered Langstroth yards." 
+        limit={8} 
+      />
 
       {/* ═══════════════════════════════════════════════════════════════
           8. CTA SECTION

@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -760,6 +761,16 @@ const InLandPollination = () => {
                     </p>
                 </div>
             </section>
+
+            {/* ═══════════════════════════════════════════════════════════════
+          IN-LAND REAL APIARY & SAVANNA FIELD GALLERY
+      ═══════════════════════════════════════════════════════════════ */}
+            <ApiaryGallerySection 
+                initialCategory="in_land" 
+                title="In-Land Apiary Deployments & Savanna Forage Stations" 
+                subtitle="Field evidence of our acacia canopy hives, sheltered Langstroth yards, and savanna floral corridors powering precision pollination across East African crops." 
+                limit={8} 
+            />
 
             {/* ═══════════════════════════════════════════════════════════════
           FINAL CTA

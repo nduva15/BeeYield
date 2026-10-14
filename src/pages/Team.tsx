@@ -55,6 +55,7 @@ import SEO from "@/components/SEO";
 
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
 import LOGO from "@/assets/Logo.png";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 const Team = () => {
     const [selectedMember, setSelectedMember] = useState<any | null>(null);
@@ -63,7 +64,7 @@ const Team = () => {
 
     const originPhotos = [
         {
-            src: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
+            src: "/images/apiary/beeyield-apiary-01.jpg",
             title: "Ancestral Acacia Canopy Apiary",
             subtitle: "Mature acacia tree with traditional log hives in canopy",
             badge: "Kibwezi Roots • Dec 2020",
@@ -71,23 +72,23 @@ const Team = () => {
             description: "Where our journey started: 4 traditional log hives received from our father, suspended high in the branches of savannah acacia trees safe from ground pests and sun."
         },
         {
-            src: "/images/team/timothy-beekeeper-suit.jpg",
-            title: "Field Operations in Official Suit",
-            subtitle: "Timothy conducting evening apiary inspections",
+            src: "/images/apiary/beeyield-apiary-41.jpg",
+            title: "Field Operations & Protected Stand",
+            subtitle: "Frontline inspection of yellow Langstroth hives on anti-termite stand",
             badge: "Hands-On Leadership",
             location: "Kibwezi Apiary Site",
-            description: "Hands-on beekeeping in the Kibwezi bush. Timothy wearing the official BeeYield suit at dusk, assessing brood comb health and hive weight balance."
+            description: "Hands-on beekeeping in the Kibwezi bush: inspecting yellow Langstroth hives on anti-termite poles with official protective veil and gear."
         },
         {
-            src: "/images/team/beekeeper-field-inspection.jpg",
-            title: "Twilight Colony Assessment",
-            subtitle: "Listening to colony acoustics & entrance traffic",
+            src: "/images/apiary/beeyield-apiary-02.jpg",
+            title: "Protective Apiary Gear",
+            subtitle: "Official suit and mesh veil for twilight colony inspection",
             badge: "Colony Health",
             location: "Makueni Demonstration Yard",
-            description: "Field beekeepers observing flight entrance activity at sunset when African honeybees settle for the night, checking queen vitality and cluster strength."
+            description: "Field gear prepared for dusk assessments when African honeybees settle for the night, checking queen vitality and cluster strength."
         },
         {
-            src: "/images/story/hives/savannah-hanging-hive.jpg",
+            src: "/images/apiary/beeyield-apiary-04.jpg",
             title: "Suspended Savannah Log Hive",
             subtitle: "Traditional Kamba hive hanging by wire",
             badge: "Heritage Craft",
@@ -95,54 +96,54 @@ const Team = () => {
             description: "Suspended high in acacia branches to protect the colony against termites, army ants, and honey badgers — an ancient tradition enhanced with modern telemetry."
         },
         {
-            src: "/images/story/hives/acacia-tree-log-hive.jpg",
-            title: "Acacia Tree Fork Nesting",
-            subtitle: "Hand-carved cedar trunk hive",
-            badge: "Natural Insulation",
-            location: "Kibwezi Bushland",
-            description: "Thick hand-carved wood provides natural thermal regulation during 35°C+ daytime heat, creating ideal brood conditions for wild African bees."
-        },
-        {
-            src: "/images/story/hives/apiary-langstroth-row.jpg",
-            title: "Modern Langstroth Apiary",
-            subtitle: "Scaled from 4 to 184+ colonies",
+            src: "/images/apiary/beeyield-apiary-29.jpg",
+            title: "Modern Yellow Langstroth Apiary Row",
+            subtitle: "Sheltered Langstroth hives on elevated anti-termite frames",
             badge: "Modern Scale",
             location: "Central Apiary Hub",
-            description: "Today's apiary with yellow Langstroth hives on anti-termite stands operating alongside 22 smart IoT monitoring units and digital load scales."
+            description: "Today's apiary with yellow Langstroth hives on anti-termite stands operating under acacia shade alongside smart IoT monitoring units and digital load scales."
+        },
+        {
+            src: "/images/apiary/beeyield-apiary-25.jpg",
+            title: "Fence Line Apiary Array",
+            subtitle: "Three hand-carved hives strung along protected perimeter",
+            badge: "Perimeter Stewardship",
+            location: "Kibwezi Perimeter",
+            description: "Frontline perimeter hives maintained by local apiary stewards creating natural pollinator corridors and farm protection."
         }
     ];
 
     const fieldOperationHighlights = [
         {
-            image: "/images/team/timothy-beekeeper-suit.jpg",
+            image: "/images/apiary/beeyield-apiary-41.jpg",
             title: "Frontline Apiary Stewardship",
             role: "Timothy Nduva (CEO & Founder)",
             badge: "Field Leadership",
-            desc: "Leadership rooted in the dirt and the smoke. Timothy regularly leads evening hive inspections, testing new sensors directly in active colonies."
+            desc: "Leadership rooted in the dirt and the smoke. Timothy regularly leads hive inspections, testing new sensors directly in active colonies."
         },
         {
-            image: "/images/story/hives/acacia-canopy-traditional-hives.jpg",
+            image: "/images/apiary/beeyield-apiary-01.jpg",
             title: "The Kibwezi Acacia Canopy",
             role: "Family Apiary Origins",
             badge: "Ancestral Heritage",
             desc: "The sacred acacia trees where BeeYield's first four hives were hung in December 2020. These mature canopies continue to house thriving colonies today."
         },
         {
-            image: "/images/team/beekeeper-field-inspection.jpg",
-            title: "Twilight Hive Inspections",
+            image: "/images/apiary/beeyield-apiary-02.jpg",
+            title: "Protective Gear & Stewardship",
             role: "Beekeeping Specialists",
             badge: "Biological Integrity",
-            desc: "African honeybees (Apis mellifera scutellata) are fierce defenders. Evening inspections minimize colony stress while checking comb health."
+            desc: "African honeybees (Apis mellifera scutellata) are fierce defenders. Protective gear ensures thorough, gentle inspections without stressing the colony."
         },
         {
-            image: "/images/story/hives/savannah-hanging-hive.jpg",
-            title: "Savannah Wire-Suspended Hives",
-            role: "Traditional Engineering",
+            image: "/images/apiary/beeyield-apiary-06.jpg",
+            title: "Tree Trunk Predator Barrier",
+            role: "Biosecurity Engineering",
             badge: "Predator Protection",
-            desc: "Suspended by heavy wire to thwart badgers and safari ants, representing centuries of indigenous Kamba apicultural ingenuity."
+            desc: "Corrugated metal sheets wrapped around tree trunks prevent climbing honey badgers and safari ants from reaching colonies high in the canopy."
         },
         {
-            image: "/images/story/hives/apiary-langstroth-row.jpg",
+            image: "/images/apiary/beeyield-apiary-29.jpg",
             title: "Langstroth Fleet at 184 Hives",
             role: "Modern Scaling",
             badge: "IoT Integration",
@@ -728,6 +729,14 @@ const Team = () => {
                     </div>
                 </div>
             </section>
+
+                        {/* REAL APIARY GALLERY ARCHIVE */}
+            <ApiaryGallerySection 
+                initialCategory="team" 
+                title="Team Apiary Operations & Field Stewardship Archive" 
+                subtitle="Authentic photography from our field yards in Makueni and Kibwezi — traditional Kamba canopy beekeeping, frontline inspections, predator defenses, and modern Langstroth stations." 
+                limit={8}
+            />
 
                         {/* FINAL CTA */}
             <section className="bg-neutral-50 py-24 border-t border-neutral-200 text-center">

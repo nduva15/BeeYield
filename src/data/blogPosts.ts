@@ -68,8 +68,8 @@ export const BLOG_POSTS: BlogPost[] = [
       "Kenya Apiculture"
     ],
     featured: true,
-    coverImage: "/images/story/hives/apiary-langstroth-row.jpg",
-    coverAlt: "Organized Langstroth hive rows with HoneyTrace digital tracking in East Africa",
+    coverImage: "/images/apiary/beeyield-apiary-29.jpg",
+    coverAlt: "Organized Langstroth hive rows on anti-termite stands with HoneyTrace digital tracking in East Africa",
     author: TIMOTHY_AUTHOR,
     stats: [
       { label: "Adulteration Risk", value: "-98%", sub: "Eliminated via digital batch ledger" },
@@ -79,13 +79,13 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
     mediaGallery: [
       {
-        src: "/images/story/hives/apiary-langstroth-row.jpg",
-        alt: "Organized Langstroth hive rows with HoneyTrace batch barcodes",
+        src: "/images/apiary/beeyield-apiary-29.jpg",
+        alt: "Organized yellow Langstroth hive rows with HoneyTrace batch barcodes",
         caption: "Instrumented apiary rows in Makueni, Kenya: every colony is registered with unique GPS coordinates and hive health telemetry.",
       },
       {
-        src: "/images/story/hives/beekeeper-inspection-twilight.jpg",
-        alt: "Beekeeper inspecting comb frames during harvest window",
+        src: "/images/apiary/beeyield-apiary-41.jpg",
+        alt: "Beekeeper veil and gear inspecting yellow Langstroth station",
         caption: "Precision comb inspection: beekeepers log harvest batch weight and moisture content at extraction point.",
       },
       {
@@ -106,7 +106,7 @@ Honey is one of nature’s most miraculous gifts. For millennia, raw honey has b
 
 Yet behind the golden amber glow of retail honey shelves lies a harsh and escalating global scandal: **honey is now the third most faked and adulterated food commodity on planet Earth**, trailing only milk and olive oil. 
 
-![Beekeeper inspecting comb frames during harvest window](/images/story/hives/beekeeper-inspection-twilight.jpg)
+![Beekeeper inspecting comb frames during harvest window](/images/apiary/beeyield-apiary-41.jpg)
 
 Industrial food fraudsters dilute genuine raw honey with cheap corn, rice, and beet syrups. They pass unripened nectar through resin-adsorption columns to chemically mask floral origins, blast away natural pollen grains with aggressive ultrafiltration, and execute complex origin-laundering schemes through transshipment hubs.
 
@@ -157,7 +157,7 @@ When a customer can scan a QR code on a jar of **BeeYield Raw Acacia Honey** and
 
 ## The 5 Critical Stages of Honey Traceability
 
-![Organized Langstroth hive rows with HoneyTrace digital tracking in East Africa](/images/story/hives/apiary-langstroth-row.jpg)
+![Organized Langstroth hive rows with HoneyTrace digital tracking in East Africa](/images/apiary/beeyield-apiary-29.jpg)
 
 To build unshakeable trust from hive to home, traceability must be embedded into every step of the apicultural lifecycle:
 

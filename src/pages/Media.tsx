@@ -42,6 +42,7 @@ import {
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
+import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
 
 const Media = () => {
   const location = useLocation();
@@ -65,7 +66,7 @@ const Media = () => {
       badgeColor: "bg-amber-500/15 text-amber-800 border-amber-300 dark:text-amber-200",
       description:
         "We move 184 hives into wild Acacia woodlands when trees are in full bloom. Every hive has its own QR code and location record so you can see exactly where your honey came from.",
-      image: "/images/story/hives/apiary-langstroth-row.jpg",
+      image: "/images/apiary/beeyield-apiary-29.jpg",
       thumbLabel: "Moving Hives",
       cropType: "Wild Acacia",
       provenanceHighlights: [
@@ -87,7 +88,7 @@ const Media = () => {
       badgeColor: "bg-emerald-600/15 text-emerald-800 border-emerald-300 dark:text-emerald-200",
       description:
         "We weigh honeycomb frames and spin them at normal room temperature (below 35°C). We never boil or overheat our honey, so all natural bee enzymes and healthy nutrients stay alive.",
-      image: "/images/story/hives/yellow-langstroth-closeup.jpg",
+      image: "/images/apiary/beeyield-apiary-34.jpg",
       thumbLabel: "Cold Spinning",
       cropType: "Raw Honey",
       provenanceHighlights: [
@@ -131,7 +132,7 @@ const Media = () => {
       badgeColor: "bg-purple-500/15 text-purple-800 border-purple-300 dark:text-purple-200",
       description:
         "Local beekeepers use our simple mobile app to track their hives and receive fair payments directly to their phones as soon as they deliver honey.",
-      image: "/images/story/hives/beekeeper-inspection-twilight.jpg",
+      image: "/images/apiary/beeyield-apiary-41.jpg",
       thumbLabel: "Our Beekeepers",
       cropType: "Community Farming",
       provenanceHighlights: [
@@ -153,7 +154,7 @@ const Media = () => {
       badgeColor: "bg-teal-500/15 text-teal-800 border-teal-300 dark:text-teal-200",
       description:
         "Our golden rule: we always leave at least half the honey in the hive so bees have plenty of food during dry seasons. We never feed bees artificial sugar water or use harsh chemicals.",
-      image: "/images/story/hives/savannah-hanging-hive.jpg",
+      image: "/images/apiary/beeyield-apiary-04.jpg",
       thumbLabel: "50/50 Promise",
       cropType: "Bee-Friendly Harvest",
       provenanceHighlights: [
@@ -1966,6 +1967,14 @@ const Media = () => {
       </section>
     </div>
   )}
+
+  {/* Full 41-Photo Real Apiary & Field Photography Gallery */}
+  <ApiaryGallerySection 
+    initialCategory="all" 
+    title="BeeYield Apiary Field & High-Resolution Archive" 
+    subtitle="All 41 authentic field photographs from our Kibwezi and Makueni apiaries: ancestral log canopy hives, tree trunk predator shields, protected yellow Langstroth yards, and flowering savanna corridors." 
+    showFilters={true} 
+  />
 
   {/* Bottom CTA Banner (Adapts for Bee vs Honey) */}
   <section className="py-20 bg-gradient-to-t from-secondary/40 via-background to-background border-t border-border/40 text-center">
