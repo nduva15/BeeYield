@@ -1328,33 +1328,68 @@ const Traceability = () => {
                       </div>
                     </Card>
 
-                    <Card className="shadow-xl rounded-[2.5rem] p-8 bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-neutral-900 border border-emerald-100">
-                      <div className="flex items-center justify-between mb-6">
+                    <Card className="shadow-xl rounded-[2.5rem] p-6 sm:p-8 bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-neutral-900 border border-emerald-100">
+                      <div className="flex items-center justify-between gap-3 mb-6">
                         <h3 className="text-2xl font-black tracking-tighter">Hive & Harvest Details</h3>
                         <Badge className="bg-white text-neutral-900 border-emerald-200 font-bold">
                           {textOrMissing(traceData?.verification_status)}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        {[
-                          { label: "Record Status", value: textOrMissing(traceData?.blockchain_status?.overall) },
-                          { label: "Verification URL", value: textOrMissing(traceData?.verification_url) },
-                          ...sensorFacts,
-                          ...weatherFacts,
-                          { label: "Health status", value: textOrMissing(traceData?.health_snapshot?.status) },
-                          {
-                            label: "Completeness",
-                            value: traceData?.completeness
-                              ? `${traceData.completeness.present} present, ${traceData.completeness.derivable} derivable, ${traceData.completeness.missing} missing`
-                              : missingDataLabel,
-                          },
-                        ].map((item) => (
-                          <div key={item.label} className={item.label === "Verification URL" || item.label === "Completeness" ? "col-span-2" : ""}>
-                            <p className="text-[10px] font-black text-neutral-500 mb-1">{item.label}</p>
-                            <p className="font-semibold break-all">{item.value}</p>
-                          </div>
-                        ))}
+
+                      {/* Record */}
+                      <div className="rounded-2xl bg-white/80 border border-emerald-100 p-4 mb-4 space-y-3">
+                        <p className="text-[10px] font-black tracking-[0.18em] uppercase text-emerald-700 flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Record</p>
+                        <div className="flex justify-between gap-4 text-sm">
+                          <span className="text-neutral-500 font-semibold">Status</span>
+                          <span className="font-bold text-right">{textOrMissing(traceData?.blockchain_status?.overall)}</span>
+                        </div>
+                        <div className="flex justify-between gap-4 text-sm">
+                          <span className="text-neutral-500 font-semibold">Health</span>
+                          <span className="font-bold text-right">{textOrMissing(traceData?.health_snapshot?.status)}</span>
+                        </div>
+                        <div className="text-sm">
+                          <span className="block text-neutral-500 font-semibold mb-0.5">Verification link</span>
+                          <span className="block font-mono text-[11px] break-all text-neutral-800">{textOrMissing(traceData?.verification_url)}</span>
+                        </div>
                       </div>
+
+                      {/* In-hive sensors */}
+                      <div className="rounded-2xl bg-white/80 border border-slate-200 p-4 mb-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-[10px] font-black tracking-[0.18em] uppercase text-slate-600 flex items-center gap-1.5"><Cpu className="h-3.5 w-3.5" /> In-hive sensors</p>
+                          <Badge variant="outline" className="text-[10px] font-bold border-slate-300 text-slate-500">No devices yet</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          {sensorFacts.map((item) => (
+                            <div key={item.label} className="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-3">
+                              <p className="text-[10px] font-black text-slate-400 mb-1">{item.label}</p>
+                              <p className="text-xs font-semibold text-slate-500">{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Today's in-land weather */}
+                      <div className="rounded-2xl bg-white/80 border border-sky-100 p-4 mb-4">
+                        <p className="text-[10px] font-black tracking-[0.18em] uppercase text-sky-700 mb-3 flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5" /> Today's in-land weather</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {weatherFacts.map((item) => (
+                            <div key={item.label} className={item.label === "Weather checked" ? "col-span-2" : ""}>
+                              <p className="text-[10px] font-black text-slate-400 mb-0.5">{item.label}</p>
+                              <p className="text-sm font-bold text-neutral-900">{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-neutral-600 font-medium">
+                        Data completeness:{" "}
+                        <span className="font-bold text-neutral-900">
+                          {traceData?.completeness
+                            ? `${traceData.completeness.present} present, ${traceData.completeness.derivable} derivable, ${traceData.completeness.missing} missing`
+                            : missingDataLabel}
+                        </span>
+                      </p>
                     </Card>
                   </div>
 
@@ -1387,10 +1422,10 @@ const Traceability = () => {
                           Flowers for this batch: <span className="font-black text-[#1A1A1A]">{traceData?.apiary?.flora_types?.length ? traceData.apiary.flora_types.join(", ") : textOrMissing(traceData?.florage_type)}</span>.
                         </p>
                         <p>
-                          Weather record: <span className="font-black text-[#1A1A1A]">{weatherFacts.find((item) => item.label === "Recorded harvest weather")?.value || missingDataLabel}</span>.
+                          Today's weather at the apiary: <span className="font-black text-[#1A1A1A]">{weatherFacts.find((item) => item.label === "Today's weather")?.value || missingDataLabel}</span>.
                         </p>
                         <p>
-                          Latest sensor sync tied to this trace: <span className="font-black text-[#1A1A1A]">{sensorFacts.find((item) => item.label === "Last sensor sync")?.value || missingDataLabel}</span>.
+                          In-hive sensors: <span className="font-black text-[#1A1A1A]">No device installed yet</span>.
                         </p>
                       </div>
                     </Card>

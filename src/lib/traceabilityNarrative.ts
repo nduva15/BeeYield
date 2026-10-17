@@ -183,18 +183,26 @@ export const buildPurityAssuranceFacts = (traceData: TraceResponse | null) => [
   { label: "Harvest record", value: "Fully Verified from Hive to Jar" },
 ];
 
+const formatKg = (value: number) => `${Number(value.toFixed(2))}kg`;
+
+/** Harvested kg for this batch (people's half); the bees' half is always equal to it (50/50). */
+export const getHarvestedKg = (traceData: TraceResponse | null): number | null => {
+  const raw = Number(traceData?.impact_stats?.total_honey_kg);
+  return Number.isFinite(raw) && raw > 0 ? raw : null;
+};
+
 export const buildConservationFacts = (traceData: TraceResponse | null) => [
   {
-    label: "Honey left for bees",
-    value: typeof traceData?.extra_metadata?.quantity_left_for_bees_kg === "number"
-      ? `${traceData?.extra_metadata?.quantity_left_for_bees_kg}kg`
-      : formatTraceText(traceData?.extra_metadata?.quantity_left_for_bees_kg),
+    label: "50/50 reserve left for bees",
+    value: getHarvestedKg(traceData) !== null
+      ? formatKg(getHarvestedKg(traceData) as number)
+      : TRACEABILITY_MISSING,
   },
   {
     label: "Harvested amount",
-    value: typeof traceData?.impact_stats?.total_honey_kg === "number"
-      ? `${traceData?.impact_stats?.total_honey_kg}kg`
-      : formatTraceText(traceData?.impact_stats?.total_honey_kg),
+    value: getHarvestedKg(traceData) !== null
+      ? formatKg(getHarvestedKg(traceData) as number)
+      : TRACEABILITY_MISSING,
   },
   { label: "50/50 promise", value: formatTraceText(traceData?.sustainability?.status, "Active (50% Reserved)") },
   {
@@ -211,30 +219,34 @@ export const buildConservationFacts = (traceData: TraceResponse | null) => [
   },
 ];
 
-export const buildSensorFacts = (traceData: TraceResponse | null) => [
-  { label: "Hive temperature", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_temp, "°C", 1) },
-  { label: "Hive humidity", value: formatTraceNumber(traceData?.sensor_snapshot?.avg_humidity, "%", 1) },
-  { label: "Hive weight", value: formatTraceNumber(traceData?.sensor_snapshot?.weight_kg, "kg", 1) },
-  { label: "Last sensor update", value: formatTraceDate(traceData?.sensor_snapshot?.sync_time) },
+export const NO_DEVICE_LABEL = "No device installed yet";
+
+/** Hives have no IoT devices yet, so in-hive readings are not reported. */
+export const buildSensorFacts = (_traceData: TraceResponse | null) => [
+  { label: "Hive temperature", value: NO_DEVICE_LABEL },
+  { label: "Hive humidity", value: NO_DEVICE_LABEL },
+  { label: "Hive pressure", value: NO_DEVICE_LABEL },
+  { label: "Hive weight", value: NO_DEVICE_LABEL },
 ];
 
 export const buildWeatherFacts = (
-  traceData: TraceResponse | null,
+  _traceData: TraceResponse | null,
   weather?: {
     current?: {
       condition?: unknown;
       temperature_c?: unknown;
       humidity_pct?: unknown;
+      pressure_hpa?: unknown;
       wind_speed_kmh?: unknown;
       wind_speed_kph?: unknown;
       last_observed_at?: unknown;
     };
   } | null,
 ) => [
-  { label: "Harvest weather", value: formatTraceText(traceData?.extra_metadata?.weather_conditions) },
-  { label: "Farm weather", value: formatTraceText(weather?.current?.condition) },
-  { label: "Air temperature", value: formatTraceNumber(weather?.current?.temperature_c as number, "°C", 1) },
-  { label: "Air humidity", value: formatTraceNumber(weather?.current?.humidity_pct as number, "%", 1) },
+  { label: "Today's weather", value: formatTraceText(weather?.current?.condition) },
+  { label: "In-land temperature", value: formatTraceNumber(weather?.current?.temperature_c as number, "°C", 1) },
+  { label: "In-land humidity", value: formatTraceNumber(weather?.current?.humidity_pct as number, "%", 0) },
+  { label: "In-land pressure", value: formatTraceNumber(weather?.current?.pressure_hpa as number, " hPa", 0) },
   { label: "Wind speed", value: formatTraceNumber((weather?.current?.wind_speed_kmh ?? weather?.current?.wind_speed_kph) as number, " km/h", 1) },
-  { label: "Time checked", value: formatTraceDate(weather?.current?.last_observed_at) },
+  { label: "Weather checked", value: formatTraceDate(weather?.current?.last_observed_at) },
 ];
