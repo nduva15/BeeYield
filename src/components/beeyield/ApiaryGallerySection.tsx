@@ -87,22 +87,22 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
   };
 
   return (
-    <section className={cn("py-20 bg-neutral-900 text-white relative overflow-hidden", className)}>
+    <section className={cn("py-20 bg-[#FFF9F0] text-neutral-900 relative overflow-hidden", className)}>
       {/* Background glow effects */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-300/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-300/15 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16">
-          <Badge className="bg-amber-400/20 text-amber-300 border-amber-400/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider mb-4">
+          <Badge className="bg-amber-100 text-amber-800 border-amber-300 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider mb-4">
             <Camera className="w-3.5 h-3.5 mr-1.5" />
             {badgeText}
           </Badge>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-neutral-900 mb-4">
             {title}
           </h2>
-          <p className="text-base sm:text-lg text-neutral-300 leading-relaxed">
+          <p className="text-base sm:text-lg text-neutral-600 leading-relaxed">
             {subtitle}
           </p>
         </div>
@@ -120,8 +120,8 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 border",
                     isActive
-                      ? "bg-amber-500 text-neutral-950 border-amber-400 shadow-lg shadow-amber-500/20 scale-105"
-                      : "bg-neutral-800/80 text-neutral-300 border-neutral-700/60 hover:bg-neutral-700/80 hover:text-white"
+                      ? "bg-[#1B9157] text-white border-[#1B9157] shadow-lg shadow-green-900/10 scale-105"
+                      : "bg-white text-neutral-700 border-neutral-200 hover:bg-emerald-50 hover:text-[#1B9157]"
                   )}
                 >
                   <Icon className="w-3.5 h-3.5" />
@@ -142,17 +142,17 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: (i % 8) * 0.05 }}
               onClick={() => openLightbox(photo)}
-              className="group relative rounded-2xl overflow-hidden bg-neutral-800 border border-neutral-700/60 shadow-xl cursor-pointer hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300 flex flex-col"
+              className="group relative rounded-2xl overflow-hidden bg-white border border-neutral-200 shadow-lg cursor-pointer hover:border-[#1B9157]/50 hover:shadow-2xl hover:shadow-green-900/10 transition-all duration-300 flex flex-col"
             >
               {/* Image Frame */}
-              <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-950">
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100">
                 <img
                   src={photo.src}
                   alt={photo.title}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
                 
                 {/* Badge Top Left */}
                 <div className="absolute top-3 left-3">
@@ -183,20 +183,20 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
               </div>
 
               {/* Bottom Card Content */}
-              <div className="p-4 flex-1 flex flex-col justify-between bg-neutral-850">
+              <div className="p-4 flex-1 flex flex-col justify-between bg-white">
                 <div>
-                  <h3 className="font-bold text-base text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-1">
+                  <h3 className="font-bold text-base text-neutral-900 group-hover:text-[#1B9157] transition-colors line-clamp-1 mb-1">
                     {photo.title}
                   </h3>
-                  <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed">
                     {photo.subtitle}
                   </p>
                 </div>
-                <div className="mt-3 pt-3 border-t border-neutral-700/50 flex items-center justify-between text-[11px] text-neutral-500">
-                  <span className="capitalize font-medium text-neutral-400">
+                <div className="mt-3 pt-3 border-t border-neutral-200 flex items-center justify-between text-[11px] text-neutral-500">
+                  <span className="capitalize font-medium text-neutral-500">
                     {photo.category.replace('_', ' ')}
                   </span>
-                  <span className="text-amber-400/90 group-hover:translate-x-0.5 transition-transform font-bold">
+                  <span className="text-[#1B9157] group-hover:translate-x-0.5 transition-transform font-bold">
                     View photo →
                   </span>
                 </div>
@@ -207,11 +207,11 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
 
         {/* Lightbox Dialog */}
         <Dialog open={!!activePhoto} onOpenChange={(open) => !open && setActivePhoto(null)}>
-          <DialogContent className="max-w-4xl p-0 overflow-hidden bg-neutral-950 border border-neutral-800 text-white rounded-2xl shadow-2xl">
+          <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white border border-neutral-200 text-neutral-900 rounded-2xl shadow-2xl">
             {activePhoto && (
               <div className="relative flex flex-col lg:flex-row max-h-[90vh]">
                 {/* Image Section */}
-                <div className="relative flex-1 bg-black flex items-center justify-center min-h-[350px] lg:min-h-[500px]">
+                <div className="relative flex-1 bg-neutral-100 flex items-center justify-center min-h-[350px] lg:min-h-[500px]">
                   <img
                     src={activePhoto.src}
                     alt={activePhoto.title}
@@ -236,34 +236,34 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
                 </div>
 
                 {/* Sidebar details */}
-                <div className="w-full lg:w-80 p-6 flex flex-col justify-between bg-neutral-900 border-t lg:border-t-0 lg:border-l border-neutral-800 overflow-y-auto">
+                <div className="w-full lg:w-80 p-6 flex flex-col justify-between bg-white border-t lg:border-t-0 lg:border-l border-neutral-200 overflow-y-auto">
                   <div>
                     <div className="flex items-center justify-between mb-3">
-                      <Badge className="bg-amber-400/20 text-amber-300 border-amber-400/30 text-[10px] font-bold uppercase">
+                      <Badge className="bg-amber-100 text-amber-800 border-amber-300 text-[10px] font-bold uppercase">
                         {activePhoto.badge}
                       </Badge>
-                      <span className="text-xs font-mono text-neutral-400">
+                      <span className="text-xs font-mono text-neutral-500">
                         {lightboxIndex + 1} of {filteredPhotos.length}
                       </span>
                     </div>
 
-                    <h3 className="text-xl font-black text-white mb-2 leading-tight">
+                    <h3 className="text-xl font-black text-neutral-900 mb-2 leading-tight">
                       {activePhoto.title}
                     </h3>
-                    <p className="text-xs font-medium text-amber-300 mb-4 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                    <p className="text-xs font-medium text-[#1B9157] mb-4 flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#1B9157]" />
                       {activePhoto.location}
                     </p>
 
-                    <p className="text-xs text-neutral-300 leading-relaxed mb-4">
+                    <p className="text-xs text-neutral-600 leading-relaxed mb-4">
                       {activePhoto.description}
                     </p>
 
-                    <div className="p-3 bg-neutral-950/70 rounded-xl border border-neutral-800 mb-4">
-                      <div className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider mb-1">
+                    <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200 mb-4">
+                      <div className="text-[10px] uppercase font-bold text-neutral-500 tracking-wider mb-1">
                         Apiary Context
                       </div>
-                      <div className="text-xs text-neutral-300">
+                      <div className="text-xs text-neutral-600">
                         {activePhoto.subtitle}
                       </div>
                     </div>
@@ -271,21 +271,21 @@ export const ApiaryGallerySection: React.FC<ApiaryGallerySectionProps> = ({
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1.5">
                       {activePhoto.tags.map((t) => (
-                        <span key={t} className="px-2 py-0.5 rounded-md bg-neutral-800 text-[10px] text-neutral-400 border border-neutral-700">
+                        <span key={t} className="px-2 py-0.5 rounded-md bg-neutral-100 text-[10px] text-neutral-500 border border-neutral-200">
                           #{t}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
+                  <div className="mt-6 pt-4 border-t border-neutral-200 flex items-center justify-between">
                     <span className="text-[10px] text-neutral-500 font-mono">
                       File: {activePhoto.src.split('/').pop()}
                     </span>
                     <Button
                       size="sm"
                       variant="outline"
-                      className="text-xs border-neutral-700 hover:bg-neutral-800 text-white h-8"
+                      className="text-xs border-neutral-300 hover:bg-neutral-100 text-neutral-900 h-8"
                       onClick={() => window.open(activePhoto.src, '_blank')}
                     >
                       Full Res ↗

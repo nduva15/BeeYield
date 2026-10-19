@@ -180,8 +180,8 @@ const PollinationServices = () => {
                                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                                 className="absolute -top-10 -right-10 bg-[#FFF9F0]/95 backdrop-blur-md p-6 rounded-[2.5rem] shadow-2xl border border-amber-100/50 flex flex-col items-center justify-center gap-2"
                             >
-                                <div className="relative w-12 h-12 bg-neutral-900 rounded-2xl flex items-center justify-center shadow-lg">
-                                    <Shield className="w-6 h-6 text-[#F4D03F]" />
+                                <div className="relative w-12 h-12 bg-[#1B9157] rounded-2xl flex items-center justify-center shadow-lg">
+                                    <Shield className="w-6 h-6 text-white" />
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-xl font-black text-neutral-900">Verified</span>
