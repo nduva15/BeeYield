@@ -16,8 +16,43 @@ from app.services.ceba_context_engine import (
 )
 
 # ------------------------------------------------------------------------------
-# Test Fixtures: Two Distinct Authenticated Tenants
+# Test Fixtures: In-memory tenant-scoped DB + Two Distinct Authenticated Tenants
 # ------------------------------------------------------------------------------
+
+FAKE_DB = {
+    "apiaries": [
+        {"id": "ap_kib_1", "tenant_id": "tnt_kibwezi_farm", "name": "Kibwezi East Sector", "expected_hives": 2},
+        {"id": "ap_alice_1", "tenant_id": "tnt_alice_orchard", "name": "Nyeri Orchard Apiary", "expected_hives": 1},
+    ],
+    "inland_weather": [
+        {"tenant_id": "tnt_kibwezi_farm", "apiary_id": "ap_kib_1", "node_id": "node_w_kib",
+         "temp_c": 35.1, "humidity_pct": 40.0, "barometric_press_hpa": 1012.0, "bloom_status": "Acacia flowering"},
+    ],
+    "hives": [
+        {"id": "hv_204", "tenant_id": "tnt_kibwezi_farm", "hive_code": "204", "nickname": "Hive #204"},
+        {"id": "hv_kib_001", "tenant_id": "tnt_kibwezi_farm", "hive_code": "KIB-001", "nickname": "Hive #KIB-001"},
+        {"id": "hv_alice_1", "tenant_id": "tnt_alice_orchard", "hive_code": "A-1", "nickname": "Alice 1"},
+    ],
+    "iot_telemetry": [
+        {"tenant_id": "tnt_kibwezi_farm", "hive_id": "hv_204", "colony_vigour_score": 88,
+         "brood_temp_c": 34.9, "humidity_pct": 58.0, "weight_kg": 24.8, "daily_weight_delta_kg": 0.4,
+         "acoustic_frequency_hz": 210.0, "pest_flag": "Negative (No Varroa detected)"},
+    ],
+    "harvest_batches": [
+        {"tenant_id": "tnt_kibwezi_farm", "batch_id": "B-1", "crop_type": "Raw Honey",
+         "target_harvest_date": "2026-12-01", "compliance_passport_status": "Pending"},
+    ],
+}
+
+
+@pytest.fixture(autouse=True)
+def fake_db(monkeypatch):
+    async def _select(table, filters=None, **_kwargs):
+        rows = FAKE_DB.get(table, [])
+        return [r for r in rows if all(r.get(k) == v for k, v in (filters or {}).items())]
+
+    monkeypatch.setattr("app.services.ceba_context_engine.db_select", _select)
+
 
 @pytest.fixture
 def timothy_user():
@@ -310,3 +345,14 @@ def test_nfr_token_efficiency_payload_truncation(timothy_user):
     # Telemetry should be aggregated into top 3 + 1 summary hive
     assert len(truncated["queried_hives_telemetry"]) <= 4
     assert any("Aggregated Fleet Summary" in h["hive_name"] for h in truncated["queried_hives_telemetry"])
+
+
+@pytest.mark.asyncio
+async def test_missing_readings_stay_none(timothy_user):
+    """A hive with no telemetry row must report None, never invented defaults."""
+    tenant = extract_tenant_context(timothy_user)
+    payload = await fetch_scoped_context(tenant, "Status of hive KIB-001")
+    hive = next(h for h in payload.queried_hives_telemetry if h.hive_id == "hv_kib_001")
+    assert hive.colony_vigour_score is None
+    assert hive.in_hive_metrics.weight_kg is None
+    assert hive.in_hive_metrics.acoustic_frequency_hz is None

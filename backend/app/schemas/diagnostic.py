@@ -274,19 +274,25 @@ def extract_telemetry_snapshot_from_context(context: Any) -> Dict[str, Any]:
         h = hives[0]
         m = getattr(h, "in_hive_metrics", None)
         if m:
-            snapshot["Brood Temp"] = f"{m.brood_temp_c:.1f}°C"
-            snapshot["Weight"] = f"{m.weight_kg:.1f}kg"
-            snapshot["Weight Delta (24h)"] = f"{m.daily_weight_delta_kg:+.1f}kg"
-            snapshot["Acoustics"] = f"{m.acoustic_frequency_hz:.0f}Hz"
-            if m.pest_flag and "negative" not in m.pest_flag.lower():
+            if m.brood_temp_c is not None:
+                snapshot["Brood Temp"] = f"{m.brood_temp_c:.1f}°C"
+            if m.weight_kg is not None:
+                snapshot["Weight"] = f"{m.weight_kg:.1f}kg"
+            if m.daily_weight_delta_kg is not None:
+                snapshot["Weight Delta (24h)"] = f"{m.daily_weight_delta_kg:+.1f}kg"
+            if m.acoustic_frequency_hz is not None:
+                snapshot["Acoustics"] = f"{m.acoustic_frequency_hz:.0f}Hz"
+            if m.pest_flag and "negative" not in m.pest_flag.lower() and "no pest data" not in m.pest_flag.lower():
                 snapshot["Pest Flag"] = m.pest_flag
 
     apiaries = getattr(context, "active_apiaries", None) or []
     if apiaries:
         wx = getattr(apiaries[0], "inland_weather_node", None)
         if wx:
-            snapshot["Ambient Temp"] = f"{wx.temp_c:.1f}°C"
-            snapshot["Ambient RH"] = f"{wx.humidity_pct:.0f}%"
+            if wx.temp_c is not None:
+                snapshot["Ambient Temp"] = f"{wx.temp_c:.1f}°C"
+            if wx.humidity_pct is not None:
+                snapshot["Ambient RH"] = f"{wx.humidity_pct:.0f}%"
 
     return snapshot
 

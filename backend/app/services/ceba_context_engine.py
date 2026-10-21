@@ -29,31 +29,33 @@ class AccountContext(BaseModel):
 
 class InlandWeatherNode(BaseModel):
     node_id: str
-    temp_c: float
-    humidity_pct: float
-    barometric_press_hpa: float
-    bloom_status: str
-    recorded_at: Optional[str] = Field(default_factory=lambda: (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat())
+    # Readings are None when the weather node did not report them (never placeholder values).
+    temp_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    barometric_press_hpa: Optional[float] = None
+    bloom_status: Optional[str] = None
+    recorded_at: Optional[str] = None
 
 class ActiveApiary(BaseModel):
     apiary_id: str
     apiary_name: str
     hive_count: int
-    inland_weather_node: InlandWeatherNode
+    inland_weather_node: Optional[InlandWeatherNode] = None
 
 class InHiveMetrics(BaseModel):
-    brood_temp_c: float
-    humidity_pct: float
-    weight_kg: float
-    daily_weight_delta_kg: float
-    acoustic_frequency_hz: float
-    pest_flag: str
-    recorded_at: Optional[str] = Field(default_factory=lambda: (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat())
+    # Readings are None when no sensor reported them (never placeholder values).
+    brood_temp_c: Optional[float] = None
+    humidity_pct: Optional[float] = None
+    weight_kg: Optional[float] = None
+    daily_weight_delta_kg: Optional[float] = None
+    acoustic_frequency_hz: Optional[float] = None
+    pest_flag: str = "No pest data recorded"
+    recorded_at: Optional[str] = None
 
 class QueriedHiveTelemetry(BaseModel):
     hive_id: str
     hive_name: str
-    colony_vigour_score: int
+    colony_vigour_score: Optional[int] = None
     in_hive_metrics: InHiveMetrics
 
 class ActiveHarvestBatch(BaseModel):
@@ -199,13 +201,28 @@ def sanitize_user_prompt(prompt: str) -> str:
 # 4. FR-2: SCOPED DATA RETRIEVAL ENGINE
 # ==============================================================================
 
+def _num(row: Optional[Dict[str, Any]], key: str) -> Optional[float]:
+    """Returns row[key] as float, or None when absent/non-numeric (never an invented default)."""
+    if not row:
+        return None
+    value = row.get(key)
+    try:
+        return float(value) if value is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
 async def fetch_scoped_context(tenant: AccountContext, query: str = "") -> ScopedContextPayload:
     """
     FR-2.1, FR-2.2, FR-2.3: Deterministic Data Access Layer retrieval strictly filtered
     by `tenant_id = :auth_tenant_id`. Zero cross-tenant leakage.
+
+    Every account, including the founder's, is served only what the tenant-filtered database
+    returns. No seeded or synthetic records are injected, and readings a sensor did not report
+    stay None instead of being replaced with plausible-looking defaults.
     """
     tenant_id = tenant.tenant_id
-    is_timothy = tenant_id == "tnt_kibwezi_farm" or "timothy" in tenant.user_name.lower()
+    is_founder_tenant = tenant_id == "tnt_kibwezi_farm"
 
     # Detect if user is querying a specific hive (e.g. "Hive #204", "hv_204", "KIB-001")
     # Must match numeric ID or code pattern, not generic nouns like "weight", "temperature", "health"
@@ -216,189 +233,79 @@ async def fetch_scoped_context(tenant: AccountContext, query: str = "") -> Scope
     )
     queried_hive_identifier = hive_match.group(1).strip() if hive_match else None
 
-    # Check for cross-tenant adversarial queries (e.g., User A asking for Timothy's apiaries)
+    # Cross-tenant adversarial queries (e.g., another account asking for the founder's apiaries)
     is_asking_other_tenant = False
-    if not is_timothy:
+    if not is_founder_tenant:
         if re.search(r"timothy['’]?s?\s+(apiary|apiaries|hive|hives|yield|reading)", query, re.IGNORECASE):
             is_asking_other_tenant = True
 
-    # --------------------------------------------------------------------------
-    # FR-2.1 & FR-2.2: Active Apiaries & Inland Weather Nodes
-    # --------------------------------------------------------------------------
     active_apiaries: List[ActiveApiary] = []
-
-    if is_timothy:
-        # Timothy's canonical authorized apiaries
-        active_apiaries = [
-            ActiveApiary(
-                apiary_id="ap_01",
-                apiary_name="Kibwezi East Sector",
-                hive_count=184,
-                inland_weather_node=InlandWeatherNode(
-                    node_id="node_w_88",
-                    temp_c=28.4,
-                    humidity_pct=54.0,
-                    barometric_press_hpa=1012.1,
-                    bloom_status="Active Macadamia Flowering",
-                ),
-            )
-        ]
-    else:
-        # Query database for apiaries WHERE tenant_id = tenant.tenant_id
-        try:
-            apiary_rows = await db_select("apiaries", filters={"tenant_id": tenant_id})
-            weather_rows = await db_select("inland_weather", filters={"tenant_id": tenant_id})
-            
-            for row in apiary_rows or []:
-                ap_id = str(row.get("id", ""))
-                matching_w = next((w for w in (weather_rows or []) if str(w.get("apiary_id")) == ap_id), None)
-                active_apiaries.append(
-                    ActiveApiary(
-                        apiary_id=ap_id,
-                        apiary_name=row.get("name", "Registered Farm Apiary"),
-                        hive_count=int(row.get("expected_hives") or row.get("hive_count") or 0),
-                        inland_weather_node=InlandWeatherNode(
-                            node_id=matching_w.get("node_id", f"node_w_{ap_id[:6]}") if matching_w else "node_w_default",
-                            temp_c=float(matching_w.get("temp_c", 26.5)) if matching_w else 26.5,
-                            humidity_pct=float(matching_w.get("humidity_pct", 55.0)) if matching_w else 55.0,
-                            barometric_press_hpa=float(matching_w.get("barometric_press_hpa", 1013.0)) if matching_w else 1013.0,
-                            bloom_status=matching_w.get("bloom_status", "Active Seasonal Foraging") if matching_w else "Active Seasonal Foraging",
-                        ),
-                    )
-                )
-        except Exception:
-            # Fallback if DB unavailable or tenant has 0 records
-            active_apiaries = []
-
-    # --------------------------------------------------------------------------
-    # FR-2.1 & FR-4.2: Queried Hives Telemetry
-    # --------------------------------------------------------------------------
     queried_hives_telemetry: List[QueriedHiveTelemetry] = []
+    active_harvest_batches: List[ActiveHarvestBatch] = []
 
-    if is_asking_other_tenant:
-        # Cross-tenant query: return strictly empty set [] to prevent data leakage (FR-4.2 & UC-04)
-        queried_hives_telemetry = []
-    elif is_timothy:
-        # Timothy's authorized hives
-        if queried_hive_identifier:
-            norm_id = queried_hive_identifier.lower().replace("#", "")
-            # Check if requested hive is in Timothy's portfolio
-            if "204" in norm_id or "alpha" in norm_id:
-                queried_hives_telemetry = [
-                    QueriedHiveTelemetry(
-                        hive_id="hv_204",
-                        hive_name="Hive #204 - Queen Alpha",
-                        colony_vigour_score=88,
-                        in_hive_metrics=InHiveMetrics(
-                            brood_temp_c=35.1,
-                            humidity_pct=60.0,
-                            weight_kg=24.8,
-                            daily_weight_delta_kg=1.2,
-                            acoustic_frequency_hz=210.0,
-                            pest_flag="Negative (No Varroa detected)",
-                        ),
-                    )
-                ]
-            elif "001" in norm_id or "kib-001" in norm_id:
-                queried_hives_telemetry = [
-                    QueriedHiveTelemetry(
-                        hive_id="hv_kib_001",
-                        hive_name="Hive #001 - Kibwezi Sentinel",
-                        colony_vigour_score=94,
-                        in_hive_metrics=InHiveMetrics(
-                            brood_temp_c=34.8,
-                            humidity_pct=54.0,
-                            weight_kg=44.5,
-                            daily_weight_delta_kg=0.8,
-                            acoustic_frequency_hz=245.0,
-                            pest_flag="Negative (No Varroa detected)",
-                        ),
-                    )
-                ]
-            else:
-                # User asked for a hive not in Timothy's account -> empty list (FR-4.2)
-                queried_hives_telemetry = []
-        else:
-            # Default active telemetry snapshot for Timothy
-            queried_hives_telemetry = [
-                QueriedHiveTelemetry(
-                    hive_id="hv_204",
-                    hive_name="Hive #204 - Queen Alpha",
-                    colony_vigour_score=88,
-                    in_hive_metrics=InHiveMetrics(
-                        brood_temp_c=35.1,
-                        humidity_pct=60.0,
-                        weight_kg=24.8,
-                        daily_weight_delta_kg=1.2,
-                        acoustic_frequency_hz=210.0,
-                        pest_flag="Negative (No Varroa detected)",
-                    ),
-                ),
-                QueriedHiveTelemetry(
-                    hive_id="hv_kib_001",
-                    hive_name="Hive #001 - Kibwezi Sentinel",
-                    colony_vigour_score=94,
-                    in_hive_metrics=InHiveMetrics(
-                        brood_temp_c=34.8,
-                        humidity_pct=54.0,
-                        weight_kg=44.5,
-                        daily_weight_delta_kg=0.8,
-                        acoustic_frequency_hz=245.0,
-                        pest_flag="Negative (No Varroa detected)",
-                    ),
-                ),
-            ]
-    else:
-        # Non-Timothy tenant: strictly fetch from DB with WHERE tenant_id = tenant.tenant_id
+    # FR-2.1 & FR-2.2: Active Apiaries & Inland Weather Nodes
+    try:
+        apiary_rows = await db_select("apiaries", filters={"tenant_id": tenant_id})
+        weather_rows = await db_select("inland_weather", filters={"tenant_id": tenant_id})
+        for row in apiary_rows or []:
+            ap_id = str(row.get("id", ""))
+            matching_w = next((w for w in (weather_rows or []) if str(w.get("apiary_id")) == ap_id), None)
+            node = None
+            if matching_w:
+                node = InlandWeatherNode(
+                    node_id=str(matching_w.get("node_id") or f"node_w_{ap_id[:6]}"),
+                    temp_c=_num(matching_w, "temp_c"),
+                    humidity_pct=_num(matching_w, "humidity_pct"),
+                    barometric_press_hpa=_num(matching_w, "barometric_press_hpa"),
+                    bloom_status=matching_w.get("bloom_status"),
+                    recorded_at=matching_w.get("recorded_at"),
+                )
+            active_apiaries.append(
+                ActiveApiary(
+                    apiary_id=ap_id,
+                    apiary_name=row.get("name", "Registered Farm Apiary"),
+                    hive_count=int(row.get("expected_hives") or row.get("hive_count") or 0),
+                    inland_weather_node=node,
+                )
+            )
+    except Exception:
+        active_apiaries = []
+
+    # FR-2.1 & FR-4.2: Queried Hives Telemetry (empty for cross-tenant probes)
+    if not is_asking_other_tenant:
         try:
             filters = {"tenant_id": tenant_id}
             if queried_hive_identifier:
-                # Attempt to match hive_code or hive_id strictly within this tenant
                 filters["hive_code"] = queried_hive_identifier
-
             hive_rows = await db_select("hives", filters=filters)
             telemetry_rows = await db_select("iot_telemetry", filters={"tenant_id": tenant_id})
 
             for h in hive_rows or []:
                 h_id = str(h.get("id", ""))
                 h_code = str(h.get("hive_code", h_id))
-                matching_t = next((t for t in (telemetry_rows or []) if t.get("hive_id") in {h_id, h_code}), None)
-                
+                t = next((t for t in (telemetry_rows or []) if t.get("hive_id") in {h_id, h_code}), None)
+                vigour = _num(t, "colony_vigour_score")
                 queried_hives_telemetry.append(
                     QueriedHiveTelemetry(
                         hive_id=h_id,
                         hive_name=h.get("nickname") or f"Hive #{h_code}",
-                        colony_vigour_score=int(matching_t.get("colony_vigour_score", 85)) if matching_t else 85,
+                        colony_vigour_score=int(vigour) if vigour is not None else None,
                         in_hive_metrics=InHiveMetrics(
-                            brood_temp_c=float(matching_t.get("brood_temp_c", 34.8)) if matching_t else 34.8,
-                            humidity_pct=float(matching_t.get("humidity_pct", 58.0)) if matching_t else 58.0,
-                            weight_kg=float(matching_t.get("weight_kg", 38.0)) if matching_t else 38.0,
-                            daily_weight_delta_kg=float(matching_t.get("daily_weight_delta_kg", 0.5)) if matching_t else 0.5,
-                            acoustic_frequency_hz=float(matching_t.get("acoustic_frequency_hz", 240.0)) if matching_t else 240.0,
-                            pest_flag=matching_t.get("pest_flag", "Negative (No Varroa detected)") if matching_t else "Negative (No Varroa detected)",
+                            brood_temp_c=_num(t, "brood_temp_c"),
+                            humidity_pct=_num(t, "humidity_pct"),
+                            weight_kg=_num(t, "weight_kg"),
+                            daily_weight_delta_kg=_num(t, "daily_weight_delta_kg"),
+                            acoustic_frequency_hz=_num(t, "acoustic_frequency_hz"),
+                            pest_flag=(t.get("pest_flag") if t and t.get("pest_flag") else "No pest data recorded"),
+                            recorded_at=t.get("recorded_at") if t else None,
                         ),
                     )
                 )
         except Exception:
             queried_hives_telemetry = []
 
-    # --------------------------------------------------------------------------
-    # FR-2.3: Active Harvest Batches
-    # --------------------------------------------------------------------------
-    active_harvest_batches: List[ActiveHarvestBatch] = []
-
-    if is_asking_other_tenant:
-        active_harvest_batches = []
-    elif is_timothy:
-        active_harvest_batches = [
-            ActiveHarvestBatch(
-                batch_id="batch_mac_2026_04",
-                crop_type="Macadamia",
-                target_harvest_date="2026-10-25",
-                compliance_passport_status="Verified",
-            )
-        ]
-    else:
+    # FR-2.3: Active Harvest Batches (empty for cross-tenant probes)
+    if not is_asking_other_tenant:
         try:
             batch_rows = await db_select("harvest_batches", filters={"tenant_id": tenant_id})
             for b in batch_rows or []:
@@ -470,23 +377,26 @@ def truncate_or_aggregate_payload(payload_dict: dict, max_bytes: int = 50 * 1024
     if len(telemetry) > 5:
         top_hives = telemetry[:3]
         remaining = telemetry[3:]
-        avg_temp = round(sum(h["in_hive_metrics"]["brood_temp_c"] for h in remaining) / len(remaining), 1)
-        avg_humidity = round(sum(h["in_hive_metrics"]["humidity_pct"] for h in remaining) / len(remaining), 1)
-        total_weight = round(sum(h["in_hive_metrics"]["weight_kg"] for h in remaining), 1)
-        avg_delta = round(sum(h["in_hive_metrics"]["daily_weight_delta_kg"] for h in remaining) / len(remaining), 1)
+
+        def _avg(key: str) -> Optional[float]:
+            vals = [h["in_hive_metrics"].get(key) for h in remaining if h["in_hive_metrics"].get(key) is not None]
+            return round(sum(vals) / len(vals), 1) if vals else None
+
+        weights = [h["in_hive_metrics"].get("weight_kg") for h in remaining if h["in_hive_metrics"].get("weight_kg") is not None]
+        vigours = [h.get("colony_vigour_score") for h in remaining if h.get("colony_vigour_score") is not None]
 
         aggregated_hive = {
             "hive_id": f"agg_fleet_summary_{len(remaining)}_hives",
             "hive_name": f"Aggregated Fleet Summary ({len(remaining)} Managed Colonies)",
-            "colony_vigour_score": int(sum(h.get("colony_vigour_score", 85) for h in remaining) / len(remaining)),
+            "colony_vigour_score": int(sum(vigours) / len(vigours)) if vigours else None,
             "in_hive_metrics": {
-                "brood_temp_c": avg_temp,
-                "humidity_pct": avg_humidity,
-                "weight_kg": total_weight,
-                "daily_weight_delta_kg": avg_delta,
-                "acoustic_frequency_hz": 235.0,
-                "pest_flag": "Negative (Fleet Healthy)",
-                "recorded_at": (datetime.now(timezone.utc) - timedelta(minutes=2)).isoformat(),
+                "brood_temp_c": _avg("brood_temp_c"),
+                "humidity_pct": _avg("humidity_pct"),
+                "weight_kg": round(sum(weights), 1) if weights else None,
+                "daily_weight_delta_kg": _avg("daily_weight_delta_kg"),
+                "acoustic_frequency_hz": _avg("acoustic_frequency_hz"),
+                "pest_flag": "Aggregated summary; see individual hives for pest flags",
+                "recorded_at": None,
             },
         }
         payload_dict["queried_hives_telemetry"] = top_hives + [aggregated_hive]
@@ -676,21 +586,35 @@ def synthesize_scoped_response(query: str, context: ScopedContextPayload) -> str
             return f"No matching records found for Hive #{hive_match.group(1)} in your account."
 
         m = found_hive.in_hive_metrics
-        temp_status = "Optimal (34.5°C–35.5°C)" if 34.5 <= m.brood_temp_c <= 35.5 else (
-            f"Below normal threshold ({m.brood_temp_c}°C < 34.5°C)" if m.brood_temp_c < 34.5 else f"Above normal threshold ({m.brood_temp_c}°C > 35.5°C)"
-        )
-        weight_status = (
-            f"Net gain (+{m.daily_weight_delta_kg:.2f} kg/24h)" if m.daily_weight_delta_kg > 0 else (
-                f"Net loss ({m.daily_weight_delta_kg:.2f} kg/24h)" if m.daily_weight_delta_kg < 0 else "Neutral (0.00 kg/24h)"
-            )
-        )
+
+        def _v(value: Optional[float], unit: str, fmt: str = ".1f") -> str:
+            return "not reported" if value is None else f"{format(value, fmt)}{unit}"
+
+        if m.brood_temp_c is None:
+            temp_status = "No reading"
+        elif 34.5 <= m.brood_temp_c <= 35.5:
+            temp_status = "Optimal (34.5°C–35.5°C)"
+        elif m.brood_temp_c < 34.5:
+            temp_status = f"Below normal threshold ({m.brood_temp_c}°C < 34.5°C)"
+        else:
+            temp_status = f"Above normal threshold ({m.brood_temp_c}°C > 35.5°C)"
+
+        if m.daily_weight_delta_kg is None:
+            weight_status = "no 24h delta"
+        elif m.daily_weight_delta_kg > 0:
+            weight_status = f"Net gain (+{m.daily_weight_delta_kg:.2f} kg/24h)"
+        elif m.daily_weight_delta_kg < 0:
+            weight_status = f"Net loss ({m.daily_weight_delta_kg:.2f} kg/24h)"
+        else:
+            weight_status = "Neutral (0.00 kg/24h)"
+        vigour = f"{found_hive.colony_vigour_score}/100" if found_hive.colony_vigour_score is not None else "not reported"
         return (
             f"### 🐝 CEBA AI Diagnostic: {found_hive.hive_name}\n\n"
-            f"* **Colony Vigour Score**: {found_hive.colony_vigour_score}/100\n"
-            f"* **Brood Temperature**: {m.brood_temp_c}°C ({temp_status})\n"
-            f"* **Relative Humidity**: {m.humidity_pct}%\n"
-            f"* **Current Weight**: {m.weight_kg} kg ({weight_status})\n"
-            f"* **Acoustic Frequency**: {m.acoustic_frequency_hz} Hz\n"
+            f"* **Colony Vigour Score**: {vigour}\n"
+            f"* **Brood Temperature**: {_v(m.brood_temp_c, '°C')} ({temp_status})\n"
+            f"* **Relative Humidity**: {_v(m.humidity_pct, '%')}\n"
+            f"* **Current Weight**: {_v(m.weight_kg, ' kg')} ({weight_status})\n"
+            f"* **Acoustic Frequency**: {_v(m.acoustic_frequency_hz, ' Hz', '.0f')}\n"
             f"* **Pest Detection**: {m.pest_flag}\n\n"
             f"**Agronomic Assessment**: Metrics reported strictly from recorded in-hive sensors without extrapolation."
         )
@@ -701,11 +625,13 @@ def synthesize_scoped_response(query: str, context: ScopedContextPayload) -> str
         
         batch = context.active_harvest_batches[0]
         ap = context.active_apiaries[0] if context.active_apiaries else None
-        weather_info = (
-            f"Local weather node `{ap.inland_weather_node.node_id}` indicates {ap.inland_weather_node.temp_c}°C, "
-            f"{ap.inland_weather_node.humidity_pct}% RH, and {ap.inland_weather_node.bloom_status}."
-            if ap else "Weather node telemetry attached to your apiary."
-        )
+        node = ap.inland_weather_node if ap else None
+        if node and node.temp_c is not None:
+            humidity = f", {node.humidity_pct}% RH" if node.humidity_pct is not None else ""
+            bloom = f", {node.bloom_status}" if node.bloom_status else ""
+            weather_info = f"Local weather node `{node.node_id}` indicates {node.temp_c}°C{humidity}{bloom}."
+        else:
+            weather_info = "No live weather node reading is available for your apiary."
         return (
             f"### 🌾 CEBA AI Harvest Batch Readiness Report — {user_name}\n\n"
             f"* **Batch ID**: `{batch.batch_id}`\n"
@@ -722,10 +648,11 @@ def synthesize_scoped_response(query: str, context: ScopedContextPayload) -> str
 
         items = []
         for h in context.queried_hives_telemetry:
-            items.append(
-                f"* **{h.hive_name}**: Brood Temp: {h.in_hive_metrics.brood_temp_c}°C | "
-                f"Weight: {h.in_hive_metrics.weight_kg} kg | 24h Delta: {h.in_hive_metrics.daily_weight_delta_kg:+.1f} kg"
-            )
+            m = h.in_hive_metrics
+            temp = f"{m.brood_temp_c}°C" if m.brood_temp_c is not None else "not reported"
+            weight = f"{m.weight_kg} kg" if m.weight_kg is not None else "not reported"
+            delta = f"{m.daily_weight_delta_kg:+.1f} kg" if m.daily_weight_delta_kg is not None else "not reported"
+            items.append(f"* **{h.hive_name}**: Brood Temp: {temp} | Weight: {weight} | 24h Delta: {delta}")
         telemetry_str = "\n".join(items)
         return (
             f"### 📊 CEBA AI 24-Hour Telemetry Trend — {user_name}\n\n"

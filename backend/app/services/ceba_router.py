@@ -128,18 +128,19 @@ class ComplexityRouter:
             m = hive.in_hive_metrics
             hive_name = hive.hive_name
 
-            # Temperature checks
-            if m.brood_temp_c >= self.CRITICAL_TEMP_HIGH:
-                anomalies.append(f"{hive_name}: Critical high brood temp ({m.brood_temp_c}°C >= {self.CRITICAL_TEMP_HIGH}°C)")
-            elif m.brood_temp_c <= self.CRITICAL_TEMP_LOW:
-                anomalies.append(f"{hive_name}: Critical low brood temp ({m.brood_temp_c}°C <= {self.CRITICAL_TEMP_LOW}°C)")
+            # Temperature checks (skipped when no sensor reported a value)
+            if m.brood_temp_c is not None:
+                if m.brood_temp_c >= self.CRITICAL_TEMP_HIGH:
+                    anomalies.append(f"{hive_name}: Critical high brood temp ({m.brood_temp_c}°C >= {self.CRITICAL_TEMP_HIGH}°C)")
+                elif m.brood_temp_c <= self.CRITICAL_TEMP_LOW:
+                    anomalies.append(f"{hive_name}: Critical low brood temp ({m.brood_temp_c}°C <= {self.CRITICAL_TEMP_LOW}°C)")
 
             # Weight drop checks
-            if m.daily_weight_delta_kg <= -self.MAX_WEIGHT_DROP_24H:
+            if m.daily_weight_delta_kg is not None and m.daily_weight_delta_kg <= -self.MAX_WEIGHT_DROP_24H:
                 anomalies.append(f"{hive_name}: Severe 24h weight loss ({m.daily_weight_delta_kg}kg <= -{self.MAX_WEIGHT_DROP_24H}kg)")
 
             # Acoustic distress checks
-            if m.acoustic_frequency_hz >= self.CRITICAL_ACOUSTIC_HZ:
+            if m.acoustic_frequency_hz is not None and m.acoustic_frequency_hz >= self.CRITICAL_ACOUSTIC_HZ:
                 anomalies.append(f"{hive_name}: Elevated acoustic frequency ({m.acoustic_frequency_hz}Hz >= {self.CRITICAL_ACOUSTIC_HZ}Hz)")
 
             # Pest flag
@@ -150,7 +151,7 @@ class ComplexityRouter:
         # 3. Ambient Weather Constraints
         for apiary in context.active_apiaries or []:
             node = apiary.inland_weather_node
-            if node.temp_c < self.MIN_INSPECTION_TEMP_C and ("inspect" in lower_query or "open" in lower_query):
+            if node is not None and node.temp_c is not None and node.temp_c < self.MIN_INSPECTION_TEMP_C and ("inspect" in lower_query or "open" in lower_query):
                 anomalies.append(
                     f"{apiary.apiary_name}: Critical cold ambient risk: Inspection requested at cold ambient temp ({node.temp_c}°C < {self.MIN_INSPECTION_TEMP_C}°C)"
                 )

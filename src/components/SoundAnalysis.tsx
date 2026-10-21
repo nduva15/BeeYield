@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   X, AudioWaveform, Mic, Square, Upload, Loader2, Sparkles, Save, Trash2,
-  Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info, Github, ExternalLink,
+  Activity, ShieldAlert, Radio, Crown, FileDown, Cpu, Info, GitBranch, ExternalLink,
   Play, Disc3, Gauge, CheckCircle2, Database, Layers,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,7 +131,7 @@ function ModelCard() {
           <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS edge pipeline
         </span>
         <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
-          <Github className="w-3 h-3 text-honey" /> nduva15/BEE-SOUND-ANALYSIS
+          <GitBranch className="w-3 h-3 text-honey" /> nduva15/BEE-SOUND-ANALYSIS
         </span>
       </summary>
       <div className="mt-3 space-y-3.5 text-[11px] text-muted-foreground">
@@ -139,7 +139,7 @@ function ModelCard() {
         <div className="rounded-lg border border-honey/30 bg-honey/5 p-3 flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-0.5">
             <p className="text-foreground font-semibold flex items-center gap-1.5 text-xs">
-              <Github className="w-3.5 h-3.5 text-honey" /> Upstream Repository: nduva15/BEE-SOUND-ANALYSIS
+              <GitBranch className="w-3.5 h-3.5 text-honey" /> Upstream Repository: nduva15/BEE-SOUND-ANALYSIS
             </p>
             <p className="text-[11px] text-muted-foreground">
               Edge-quantized bioacoustic DSP pipeline for on-device bee health &amp; disease diagnostics.
@@ -662,7 +662,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card/80 hover:bg-card hover:border-honey/50 text-xs font-semibold text-foreground transition-all shadow-sm"
               title="Official nduva15/BEE-SOUND-ANALYSIS repository on GitHub"
             >
-              <Github className="w-3.5 h-3.5 text-honey" />
+              <GitBranch className="w-3.5 h-3.5 text-honey" />
               <span>nduva15/BEE-SOUND-ANALYSIS</span>
               <ExternalLink className="w-3 h-3 text-muted-foreground ml-0.5" />
             </a>
@@ -778,6 +778,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
           </div>
 
           {/* Dataset Reference Samples */}
+          {REFERENCE_CLIPS.length > 0 && (
           <div className="rounded-lg border border-honey/20 bg-honey/[0.04] p-3 mb-4 space-y-2">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
@@ -848,6 +849,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
               })}
             </div>
           </div>
+          )}
 
           <div className="rounded-lg border border-border bg-background p-3 mb-4">
             <canvas ref={canvasRef} width={1100} height={140} className="w-full h-[140px]" />
@@ -875,6 +877,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
           </div>
 
           {/* Reference Audio Benchmark Clips */}
+          {REFERENCE_CLIPS.length > 0 && (
           <div className="mt-4 pt-3 border-t border-border">
             <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
               <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
@@ -928,6 +931,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
               ))}
             </div>
           </div>
+          )}
 
           <p className="mt-3 text-[11px] text-muted-foreground">
             Record 10–30 s at the hive entrance with the phone 10 cm from the flight board. Bandpass 100 Hz–8 kHz,
