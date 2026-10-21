@@ -3,8 +3,8 @@
  *
  * Direct TypeScript port of the BEE-SOUND-ANALYSIS pipeline
  * (github.com/nduva15/BEE-SOUND-ANALYSIS) so the exact same signal chain and
- * decision thresholds that were validated against the ~300k-clip corpus
- * (NUHIVE / BeeTogether / OSBH folds) run client-side in the browser:
+ * decision thresholds run client-side in the browser (corpus-calibrated, not
+ * independently benchmarked — see docs/bee-sound-provenance.md):
  *
  *   pipeline/segmenter.py  -> segmentAudio()      2.0 s windows, 0.5 s overlap, 22 050 Hz
  *   pipeline/cleaner.py    -> bandpass()          Butterworth-equivalent 100 Hz – 8 kHz
@@ -42,6 +42,10 @@ export type SegmentFeatures = {
   dominantFreq: number;
   bandEnergy: Record<string, number>;
   pipingScore: number;
+  /** Summed spectral magnitude in the 200–300 Hz band (OSBH "250 Hz" reference). */
+  osbhLow: number;
+  /** Summed spectral magnitude in the 450–550 Hz band (OSBH "500 Hz" alert band). */
+  osbhHigh: number;
   mfcc: number[];
   modelVector: number[];
   classification: Classification;
@@ -80,11 +84,31 @@ export type AnalysisResult = {
     windowsRejected: number;
   };
   piping: { detected: boolean; confidence: number; events: number };
+  /** OSBH AudioHealth rule: 500 Hz / 250 Hz band-energy ratio (alert at ≥ OSBH_ALERT_RATIO). */
+  osbh: { state: "ACTIVE" | "QUEEN_MISSING" | "LOW_ACTIVITY"; ratio: number; thresholdMet: boolean };
   diseases: DiseaseRisk[];
   spectrum: { freq: number; magnitude: number }[];
   waveform: number[];
   inferenceMode: "corpus-gaussian-mfcc";
 };
+
+export const OSBH_ALERT_RATIO = 0.6;
+
+export type ReferenceClip = {
+  id: string;
+  name: string;
+  filename: string;
+  url: string;
+  expectedState: HealthState;
+  description: string;
+};
+
+/**
+ * Reference audio the user can load with one click. Intentionally empty: no clip
+ * URL has been verified to exist upstream. Add entries only after confirming the
+ * file is reachable and its label is documented; the UI hides the panel when empty.
+ */
+export const REFERENCE_CLIPS: ReferenceClip[] = [];
 
 /* ------------------------------------------------------------------ FFT ---- */
 
@@ -273,6 +297,10 @@ export function extractFeatures(segment: Float32Array, sr: number, index: number
   const neighbours = (bandEnergy["200-300"] ?? 0) + (bandEnergy["500-800"] ?? 0);
   const pipingScore = Math.max(0, Math.min(1, (pipingBand - neighbours * 0.5) * 3));
 
+  // osbh_engine: raw magnitude around 250 Hz and 500 Hz (ratio is computed clip-wide)
+  const osbhLow = bandSum(mag, sr, size, 200, 300);
+  const osbhHigh = bandSum(mag, sr, size, 450, 550);
+
   // health_state.extract_features port: 128-band log-mel -> DCT-II -> 13 MFCC
   const mel = melSpectrum(mag, sr, size);
   const mfcc = Array.from(mfccFromMel(mel));
@@ -307,6 +335,8 @@ export function extractFeatures(segment: Float32Array, sr: number, index: number
     dominantFreq: peakBin * binHz,
     bandEnergy,
     pipingScore,
+    osbhLow,
+    osbhHigh,
     mfcc: mfcc.map((v) => Number(v.toFixed(3))),
     modelVector: modelVector.map((v) => Number(v.toFixed(4))),
     classification: classifyFeatures(modelVector),
@@ -498,6 +528,17 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
   const species = identifySpecies(aggregate.dominantFreq);
   const diseases = inferDiseases(aggregate, health, piping);
 
+  // OSBH AudioHealth rule: clip-wide 500 Hz / 250 Hz energy ratio.
+  const lowSum = features.reduce((a, f) => a + f.osbhLow, 0);
+  const highSum = features.reduce((a, f) => a + f.osbhHigh, 0);
+  const osbhRatio = Number((highSum / Math.max(lowSum, 1e-9)).toFixed(3));
+  const thresholdMet = osbhRatio >= OSBH_ALERT_RATIO;
+  const osbh: AnalysisResult["osbh"] = {
+    state: thresholdMet ? "QUEEN_MISSING" : aggregate.rms < 0.01 ? "LOW_ACTIVITY" : "ACTIVE",
+    ratio: osbhRatio,
+    thresholdMet,
+  };
+
   // Display spectrum from the loudest segment
   const loudest = features.reduce((a, f) => (f.rms > a.rms ? f : a), features[0]);
   const seg = segs[loudest?.index ?? 0] ?? cleaned;
@@ -537,6 +578,7 @@ export function analyzeAudio(rawAudio: Float32Array, rawSr: number): AnalysisRes
     species,
     health,
     piping,
+    osbh,
     diseases,
     spectrum,
     waveform,

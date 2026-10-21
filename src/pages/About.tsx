@@ -302,7 +302,7 @@ const TIMELINE: YearMilestone[] = [
       "Pollinated 105 and counting acres — started with a goal of 15 acres, exceeded by 7x",
       "Mango bloom season in Makueni, Kenya — targeting 150 acres before year-end",
       "9–18% average yield increase for pollinated farms",
-      "Built Bee LLM and bee sound analysis — trained on 350K+ bee sounds via Kaggle for disease detection",
+      "Built Bee LLM and an on-device bee sound analysis model calibrated on public bee-sound corpora (NU-Hive/OSBH, To bee or not to bee, beepiping) for acoustic hive-health screening",
       "Started mobile app development on August 3rd for full audience experience",
       "60 kg honey harvested in early spring acacia bloom across 30 batches, bringing verified lifetime honey sold to 843 kg across 423 batches",
       "Managing 205+ additional hives from partner farmers",
@@ -1098,7 +1098,7 @@ export default function About() {
               {
                 icon: Volume2,
                 title: "Bee Sound Analysis",
-                desc: "Trained on 350K+ bee sounds via Kaggle — acoustic disease detection and colony mood",
+                desc: "Calibrated on public bee-sound corpora — acoustic hive-state screening and colony mood",
                 color: "text-green-400",
               },
               {

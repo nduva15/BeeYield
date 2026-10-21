@@ -532,12 +532,12 @@ Pollination Services:
 - Precision pollination data tracks which crops need bees, optimal hive placement distances, and economic value per hectare.
 
 Sound and Acoustic Analysis (BeeSound):
-- BeeYield integrates the BEE-SOUND-ANALYSIS trained model for acoustic hive diagnostics.
-- HealthStateClassifier: classifies hive audio as Healthy, Queenless, Swarming, or Stressed using MFCC features (13 coefficients plus deltas) with 94.2 percent accuracy.
-- EventDetector: detects queen piping (300 to 500 Hz frequency range) and defensive hissing with 98.1 percent recall.
-- Audio preprocessing uses Log-Mel Spectrogram extraction with 128 bins and 10 millisecond hop length.
-- Architecture: Convolutional Recurrent Neural Network (CRNN) specialized in high-frequency apiary vibrations.
-- The model was trained on the BeeSound-v2 dataset and exported to ONNX format for high-concurrency inference.
+- BeeYield integrates the BEE-SOUND-ANALYSIS pipeline for acoustic hive screening. The in-app model is corpus-calibrated (hand-set Gaussian class statistics informed by public bee-sound corpora), not a retrained neural network, and has not been independently benchmarked. Never quote accuracy, recall, or F1 figures for it.
+- Health state classifier: scores hive audio as Healthy, Queenless, Swarming, or Stressed using MFCC features (13 coefficients plus delta statistics).
+- Event detector: flags queen piping (300 to 500 Hz frequency range) and defensive hissing; no recall figure has been measured.
+- Audio preprocessing: 22.05 kHz mono, 100 Hz to 8 kHz bandpass, 2 second windows with 0.5 second overlap, 128-band mel filterbank.
+- Model type: per-class Gaussian classifier with a linear bee / not-bee gate, running on-device in the browser.
+- Statistics are calibrated from public corpora (NU-Hive/OSBH hive states, To bee or not to bee, beepiping); results are screening hints, not diagnoses.
 - Users can upload audio recordings of their hives through the SoundAnalysisView component for instant diagnostics.
 - The system generates structured reports with health state classification, confidence levels, detected events, and recommended actions.
 
@@ -636,8 +636,8 @@ AI Diagnostics and Analysis:
 2. Specific Audio Analysis:
 - Processes acoustic recordings from inside the hive.
 - Analyzes frequency variations to detect stress, queenlessness, or swarming preparation.
-- Uses the HealthStateClassifier (94.2 percent accuracy) to classify: Healthy, Queenless, Swarming, or Stressed.
-- Uses the EventDetector (98.1 percent recall) to identify queen piping (300 to 500 Hz) and defensive hissing.
+- Uses the corpus-calibrated health state classifier (not independently benchmarked) to classify: Healthy, Queenless, Swarming, or Stressed.
+- Uses the event detector to identify queen piping (300 to 500 Hz) and defensive hissing.
 - MFCC feature extraction with 13 coefficients plus delta and delta-delta features.
 - Reports include dominant frequency analysis, spectral centroid, temporal patterns, and comparison to baseline healthy hive signatures.
 

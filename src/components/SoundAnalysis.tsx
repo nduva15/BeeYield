@@ -7,7 +7,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useDeviceId } from "@/hooks/use-device-id";
 import { analyzeBlob, REFERENCE_CLIPS, type AnalysisResult, type ReferenceClip } from "@/lib/bee-sound";
-import { MODEL_META, BEE_SOUND_REPO_URL, TRAINING_MANIFEST_400K } from "@/lib/bee-sound-model";
+import { MODEL_META, BEE_SOUND_REPO_URL, CORPUS_MANIFEST } from "@/lib/bee-sound-model";
 import { downloadReportPdf, safeName, type ReportSection } from "@/lib/report-pdf";
 import { streamBeeGpt } from "@/lib/beegpt-stream";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -77,7 +77,7 @@ function auditPdf(opts: {
         ...(opts.osbhState ? [["OSBH Health State", opts.osbhState] as [string, string]] : []),
         ...(opts.osbhRatio !== undefined ? [["OSBH Alert Ratio (500Hz/250Hz)", `${opts.osbhRatio.toFixed(2)} (Alert threshold ≥ 0.60)`] as [string, string]] : []),
         ["Training Dataset Scale", MODEL_META.totalTrainingSamples],
-        ["Model Architecture", "BeeDeepArchitecture (ResNet-18) · SmoothFocalLoss"],
+        ["Model Architecture", MODEL_META.architecture],
         ["Model Benchmark", MODEL_META.benchmarkF1],
       ],
     },
@@ -128,7 +128,7 @@ function ModelCard() {
     <details className="rounded-xl border border-border bg-card p-4">
       <summary className="cursor-pointer text-xs font-semibold text-honey flex items-center justify-between">
         <span className="flex items-center gap-1.5">
-          <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS 400k+ edge architecture
+          <Cpu className="w-3.5 h-3.5" /> Model card &amp; BEE-SOUND-ANALYSIS edge pipeline
         </span>
         <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
           <Github className="w-3 h-3 text-honey" /> nduva15/BEE-SOUND-ANALYSIS
@@ -156,46 +156,42 @@ function ModelCard() {
           </a>
         </div>
 
-        {/* 400k Kaggle Training Corpus Badge & Stats */}
+        {/* Calibration corpora & provenance */}
         <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 space-y-2.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
               <Database className="w-4 h-4 text-amber-400" />
-              <span>400k+ Kaggle &amp; Repo Training Manifest</span>
+              <span>Calibration corpora &amp; provenance</span>
             </div>
             <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-              Macro F1: 94.2% · 229.4 Hours
+              Corpus-calibrated · not benchmarked
             </span>
           </div>
 
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            Trained on <strong className="text-foreground">412,850 segmented audio windows</strong> across Kaggle big-data corpora (NU-Hive, TBON, SBCM, BAD) and repository reference recordings using <strong className="text-foreground">BeeDeepArchitecture (ResNet-18)</strong> and <strong className="text-foreground">SmoothFocalLoss (γ=2.0)</strong> for class imbalance.
+            {CORPUS_MANIFEST.calibration} Per-class Gaussian statistics inform a {MODEL_META.featureDim}-feature classifier; no neural network was trained and no held-out F1 has been measured yet.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
             <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
-              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Windows</p>
-              <p className="text-xs font-bold text-foreground">412,850</p>
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Features</p>
+              <p className="text-xs font-bold text-foreground">{MODEL_META.featureDim}</p>
             </div>
             <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
-              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Audio Hours</p>
-              <p className="text-xs font-bold text-foreground">229.4 hrs</p>
+              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Classes</p>
+              <p className="text-xs font-bold text-foreground">{MODEL_META.classes.length}</p>
             </div>
-            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
+            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center col-span-2 sm:col-span-1">
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Held-out F1</p>
-              <p className="text-xs font-bold text-amber-400">0.942</p>
-            </div>
-            <div className="rounded-md border border-border/60 bg-background/80 p-2 text-center">
-              <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Class Imbalance</p>
-              <p className="text-xs font-bold text-foreground">750 : 1</p>
+              <p className="text-xs font-bold text-amber-400">Not yet measured</p>
             </div>
           </div>
 
           {/* Corpora List */}
           <div className="space-y-1.5 pt-1">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Trained Kaggle &amp; Academic Corpora</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Source corpora (public)</p>
             <div className="grid sm:grid-cols-2 gap-1.5">
-              {TRAINING_MANIFEST_400K.corpora.map((c) => (
+              {CORPUS_MANIFEST.corpora.map((c) => (
                 <a
                   key={c.name}
                   href={c.url}
@@ -204,13 +200,14 @@ function ModelCard() {
                   className="p-2 rounded-md border border-border/70 bg-background/90 hover:border-amber-500/50 transition-colors block text-[10px]"
                 >
                   <div className="flex items-center justify-between font-semibold text-foreground">
-                    <span className="truncate max-w-[170px] pointer-events-none select-none">{c.name.split(" ")[0]}</span>
-                    <span className="text-amber-400 font-mono">{c.samples.toLocaleString()} w</span>
+                    <span className="truncate max-w-[170px] pointer-events-none select-none">{c.name.split(" (")[0]}</span>
+                    <span className="text-amber-400 font-mono">{c.samples === null ? "n/r" : `${c.samples.toLocaleString()} w`}</span>
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{c.role}</p>
                 </a>
               ))}
             </div>
+            <p className="text-[9px] text-muted-foreground">n/r = window count not recorded in this repository.</p>
           </div>
         </div>
 
@@ -649,7 +646,7 @@ Give: (1) a plain-language verdict, (2) the most likely disease/condition with r
                   <Cpu className="w-3 h-3" /> On-Device DSP
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> 400k+ Kaggle &amp; Repo Trained · F1: 94.2%
+                  <Sparkles className="w-3 h-3" /> Corpus-calibrated · not yet benchmarked
                 </span>
               </div>
               <p className="text-xs text-muted-foreground">

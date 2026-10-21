@@ -222,14 +222,78 @@ export function voteClassifications(items: Classification[]): Classification {
 
 /* ------------------------------------------------------- provenance ---- */
 
+/** Upstream pipeline repository (training/inference code; weights/ ships empty). */
+export const BEE_SOUND_REPO_URL = "https://github.com/nduva15/BEE-SOUND-ANALYSIS";
+
+export type CorpusEntry = {
+  name: string;
+  role: string;
+  /** Public project / code page for the corpus. */
+  url: string;
+  /**
+   * Number of 2 s windows used. `null` = no verified count is recorded in this
+   * repository. Never fill this in without a reproducible count (see
+   * scripts/eval-bee-sound.ts and docs/bee-sound-provenance.md).
+   */
+  samples: number | null;
+};
+
+/**
+ * Corpora whose published class statistics informed CLASS_MODELS / BEE_GATE.
+ * BeeYield did NOT retrain a neural network on these; the Gaussian parameters
+ * above are hand-set from the corpus papers' reported behaviour. Corpora that
+ * could not be traced to a public source (previously labelled "SBCM" and "BAD")
+ * are intentionally not listed.
+ */
+export const CORPUS_MANIFEST: { calibration: string; corpora: readonly CorpusEntry[] } = {
+  calibration: "Hand-set Gaussian statistics informed by published corpora — not a retrained neural checkpoint.",
+  corpora: [
+    {
+      name: "NU-Hive / OSBH (Nolasco et al., ICASSP 2019)",
+      role: "Active · missing queen · swarm hive-state statistics",
+      url: "https://github.com/inesnolas/Audio_based_identification_beehive_states",
+      samples: null,
+    },
+    {
+      name: "To bee or not to bee (Nolasco & Benetos, 2018)",
+      role: "Bee / not-bee gating stage",
+      url: "https://www.kaggle.com/search?q=to+bee+or+not+to+bee",
+      samples: null,
+    },
+    {
+      name: "beepiping (Fourer & Orlowska, DCASE 2022)",
+      role: "Queen piping, 300–500 Hz band",
+      url: "https://github.com/dfourer/beepiping",
+      samples: null,
+    },
+  ],
+};
+
 /**
  * Model card surfaced on the Acoustic Audit result screen, so every prediction
  * is traceable to the pipeline and corpora it came from.
  */
 export const MODEL_META = {
   name: "BeeYield Acoustic — corpus-Gaussian MFCC",
-  version: "1.2.0",
+  version: "1.3.0",
   inferenceMode: "corpus-gaussian-mfcc" as const,
+  repositoryName: "nduva15/BEE-SOUND-ANALYSIS",
+  repositoryUrl: BEE_SOUND_REPO_URL,
+  architecture: "Per-class diagonal-covariance Gaussian over 13 DSP features + linear bee/not-bee gate",
+  totalTrainingSamples: "None — no neural training run; Gaussian statistics are corpus-calibrated",
+  benchmarkF1: "Not independently benchmarked (run scripts/eval-bee-sound.ts on labelled data)",
+  osbhEngine: {
+    queenlessThreshold: "500 Hz / 250 Hz band-energy ratio ≥ 0.60 → queen-missing alert",
+  },
+  repoModules: [
+    { name: "Audio cleaner", path: "pipeline/cleaner.py", desc: "Bandpass + background removal", url: `${BEE_SOUND_REPO_URL}/blob/main/pipeline/cleaner.py` },
+    { name: "Segmenter", path: "pipeline/segmenter.py", desc: "2 s windows, 0.5 s overlap", url: `${BEE_SOUND_REPO_URL}/blob/main/pipeline/segmenter.py` },
+    { name: "Health state", path: "models/health_state.py", desc: "Hive state classifier (weights/ ships empty)", url: `${BEE_SOUND_REPO_URL}/blob/main/models/health_state.py` },
+    { name: "Event detector", path: "models/event_detector.py", desc: "Queen piping / hissing events", url: `${BEE_SOUND_REPO_URL}/blob/main/models/event_detector.py` },
+    { name: "Species ID", path: "models/species_id.py", desc: "Bee species identification", url: `${BEE_SOUND_REPO_URL}/blob/main/models/species_id.py` },
+    { name: "OSBH engine", path: "modules/osbh_engine.py", desc: "Queen-missing band-ratio rule", url: `${BEE_SOUND_REPO_URL}/blob/main/modules/osbh_engine.py` },
+    { name: "Train architecture", path: "tools/train_architecture.py", desc: "Produces checkpoints per deployment", url: `${BEE_SOUND_REPO_URL}/blob/main/tools/train_architecture.py` },
+  ],
   runsOn: "On-device (browser Web Audio + DSP) — no audio leaves the phone",
   pipeline:
     "22.05 kHz mono → 100 Hz–8 kHz bandpass → 2.0 s windows / 0.5 s overlap → 128-band mel filterbank → log power → DCT-II → 13 MFCC + delta statistics",
@@ -244,7 +308,7 @@ export const MODEL_META = {
     },
     {
       name: "NU-Hive / OSBH beehive states",
-      role: "Active · missing queen · swarm class statistics (~300k 2 s windows after segmentation)",
+      role: "Active · missing queen · swarm class statistics (window count not recorded in this repo)",
       source: "Audio-based identification of beehive states",
     },
     {
