@@ -17,6 +17,7 @@ import { AudienceSegmentsSection } from "@/components/AudienceSegmentsSection";
 import { GlobalPartnerNetworkSection } from "@/components/beeyield/GlobalPartnerNetworkSection";
 import { LeadershipSection } from "@/components/beeyield/LeadershipSection";
 import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
+import { WhatWeStandForSection } from "@/components/WhatWeStandForSection";
 
 /* ── Authentic Field Photo Assets (Zero AI Renders) ──────────── */
 const STORY_IMAGES = {
@@ -766,6 +767,9 @@ const OurStory = () => {
 
       {/* Building a global understanding of pollinators — partner network */}
       <GlobalPartnerNetworkSection />
+
+      {/* Who we are and what we stand for */}
+      <WhatWeStandForSection />
 
 
       {/* ═══════════════════════════════════════════════════════════════

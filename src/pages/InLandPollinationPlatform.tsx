@@ -16,6 +16,7 @@ import { PollinationContactForm } from "@/components/PollinationContactForm";
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { ApiaryGallerySection } from "@/components/beeyield/ApiaryGallerySection";
+import { WhatWeStandForSection } from "@/components/WhatWeStandForSection";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -745,6 +746,8 @@ const InLandPollination = () => {
                 </div>
             </section>
 
+            <WhatWeStandForSection />
+
             {/* ═══════════════════════════════════════════════════════════════
           CUSTOMER SUCCESS
       ═══════════════════════════════════════════════════════════════ */}
@@ -753,11 +756,19 @@ const InLandPollination = () => {
                     <h2 className="text-3xl lg:text-5xl font-bold text-neutral-900 tracking-tight mb-8">
                         We Don’t Succeed <span className="text-beeyield-green">Unless You Succeed</span>
                     </h2>
+                    <img
+                        src={TIMOTHY_PHOTO}
+                        alt="Nduva, Head of Customer Success"
+                        className="w-28 h-28 rounded-full object-cover mx-auto mb-6 border-4 border-beeyield-green/30 shadow-lg"
+                    />
                     <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                        We want our partnership with you to be as smooth and stress free as possible. Meet Alissa, Head of Customer Success; her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.
+                        We want our partnership with you to be as smooth and stress free as possible. Meet Nduva, Head of Customer Success; her team is ready to provide you with all the help you need, from onboarding, to making sure all your contract paperwork is buttoned up.
                     </p>
                     <p className="text-lg text-neutral-900 font-semibold mb-8">
                         Get in touch for any reason at all: <a href="mailto:info@beeyield.com" className="text-beeyield-green hover:underline">info@beeyield.com</a>
+                    </p>
+                    <p className="text-base text-muted-foreground leading-relaxed border-t border-neutral-100 pt-8">
+                        With PLIP you can compare the impact of pollination activity among different genetic strains of the same varietal, filter by different production practices and treatments, and track and correlate output rates, quality levels and germination rates.
                     </p>
                 </div>
             </section>

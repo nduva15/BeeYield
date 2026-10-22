@@ -18,7 +18,7 @@ import {
 import { BeeYieldPageShell } from "@/components/beeyield/BeeYieldUI";
 import SEO from "@/components/SEO";
 import { PollinationIntelligenceSection } from "@/components/pollination/PollinationIntelligenceSection";
-import { FramesPerAcreExplainer } from "@/components/FramesPerAcreExplainer";
+import { BeeMathGraphic } from "@/components/pollination/BeeMathGraphic";
 
 import LOGO from "@/assets/Logo.png";
 import TIMOTHY_PHOTO from "@/assets/timothy-nduva.png";
@@ -526,46 +526,12 @@ const PrecisionPollination = () => {
                   </p>
               </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 }}
-                      className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] border border-neutral-200 shadow-sm p-12 text-center group hover:shadow-md transition-all"
-                  >
-                      <div className="text-7xl md:text-8xl font-black text-beeyield-green mb-4 tracking-tighter flex items-center justify-center">
-                          <Calculator className="h-20 w-20 text-beeyield-green" />
-                      </div>
-                      <div className="h-1 w-16 bg-beeyield-green/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3 uppercase tracking-widest text-[10px]">Precision Calculation</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          Accurate frames-per-acre modeling based on live hive strength data.
-                      </p>
-                  </motion.div>
-
-                  <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.2 }}
-                      className="bg-white/90 backdrop-blur-xl rounded-[2.5rem] border border-neutral-200 shadow-sm p-12 text-center group hover:shadow-md transition-all"
-                  >
-                      <div className="text-7xl md:text-8xl font-black text-amber-400 mb-4 tracking-tighter flex items-center justify-center">
-                          <Shield className="h-20 w-20 text-amber-400" />
-                      </div>
-                      <div className="h-1 w-16 bg-amber-400/30 mx-auto mb-6 rounded-full" />
-                      <h3 className="text-xl font-bold mb-3 uppercase tracking-widest text-[10px]">Financial Prudence</h3>
-                      <p className="text-neutral-400 font-medium leading-relaxed text-sm">
-                          Stop paying for boxes and start paying for actual pollination power.
-                      </p>
-                  </motion.div>
-              </div>
+              <BeeMathGraphic />
+              <p className="text-center text-sm text-neutral-500 font-medium mt-12 max-w-xl mx-auto leading-relaxed">
+                  Bee math is different from regular math: a 16-frame hive has about 30% more foraging force than two 8-frame hives. Stop paying for boxes and start paying for actual pollination power.
+              </p>
           </div>
       </section>
-
-      {/* Frames per Acre — plain-language explainer (before the technical deep dive) */}
-      <FramesPerAcreExplainer variant="in_hive" />
 
 
       {/* ═══════════════════════════════════════════════════════════════
@@ -583,40 +549,6 @@ const PrecisionPollination = () => {
                   <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                       BeeYield Hives are equipped with the BeeHUB monitoring suite designed to measure activity and deliver analytics to growers without interfering with the natural process of the bees.
                   </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-8 mb-20 max-w-4xl mx-auto">
-                  <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
-                  >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                          <img src="/images/pollination/gateway-solar-node.png" alt="Solar LTE IoT Gateway node deployed on hive with dual antennas" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      </div>
-                      <div className="p-6 bg-white">
-                          <Badge className="bg-beeyield-green/10 text-beeyield-green border-none text-[9px] font-bold px-3 py-1 rounded-lg mb-3">Solar IoT Gateway Node</Badge>
-                          <h4 className="font-bold text-neutral-900 text-base mb-1">Autonomous Solar Field Transmission Hub</h4>
-                          <p className="text-sm text-neutral-500 font-medium leading-relaxed">Integrated solar harvest panel, dual high-gain cellular antennas, and continuous real-time data sync directly from apiary yards.</p>
-                      </div>
-                  </motion.div>
-                  <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.1 }}
-                      className="rounded-[2rem] overflow-hidden border border-neutral-100 shadow-[0_20px_60px_rgba(0,0,0,0.08)] group bg-white"
-                  >
-                      <div className="aspect-[4/3] overflow-hidden bg-neutral-100">
-                          <img src="/images/pollination/hive-scale-loadcell.png" alt="Precision load cell scale mounted under wooden hive" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                      </div>
-                      <div className="p-6 bg-white">
-                          <Badge className="bg-amber-500/10 text-amber-700 border-amber-200 text-[9px] font-bold px-3 py-1 rounded-lg mb-3">Under-Hive Load Cell</Badge>
-                          <h4 className="font-bold text-neutral-900 text-base mb-1">Continuous Precision Hive Scale</h4>
-                          <p className="text-sm text-neutral-500 font-medium leading-relaxed">Industrial load cell bar mounted directly under hive floor measuring diurnal nectar flows, foraging gains, and swarming weight departures.</p>
-                      </div>
-                  </motion.div>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
