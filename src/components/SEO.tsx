@@ -11,8 +11,31 @@ interface SEOProps {
   type?: string;
 }
 
+const SITE_ORIGIN = "https://www.beeyield.com";
+const BRAND = "BeeYield";
+const TAGLINE = "Your Partner in Pollination";
+const MAX_TITLE = 60;
+const MAX_DESCRIPTION = 160;
 const DEFAULT_DESCRIPTION =
-  "BeeYield is your partner in precision pollination, in-land pollination, and protecting bees. Optimize crop yields with data-backed hives per acre models, in-hive pollination tracking, and pure traceable honey.";
+  "BeeYield, Your Partner in Pollination: precision pollination, hives-per-acre models and in-hive monitoring that protect bees and lift crop yields.";
+
+function clamp(text: string, max: number): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:|&-]+$/, "")}…`;
+}
+
+/** Longest brand form that fits in 60 chars: tagline > brand > bare title. */
+function buildTitle(title: string): string {
+  const base = title.replace(/\s*\|\s*BeeYield.*$/i, "").trim();
+  const withTagline = `${base} | ${BRAND} - ${TAGLINE}`;
+  if (withTagline.length <= MAX_TITLE) return withTagline;
+  const withBrand = `${base} | ${BRAND}`;
+  if (withBrand.length <= MAX_TITLE) return withBrand;
+  return clamp(base, MAX_TITLE - BRAND.length - 3) + ` | ${BRAND}`;
+}
 const DEFAULT_KEYWORDS =
   "precision pollination, hives per acre model, bees, apiary, protecting bees, in hive pollination, in land pollination, BeeYield, honey traceability, sustainable beekeeping, Kibwezi, Makueni, Kenya honey, African agriculture, IoT hive monitoring";
 
@@ -57,12 +80,15 @@ const SEO = ({
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    const siteUrl = window.location.origin || "https://beeyield.com";
-    const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
+    const siteUrl = SITE_ORIGIN;
+    const path = url ?? (window.location.pathname === "/" ? "" : window.location.pathname.replace(/\/+$/, ""));
+    const fullUrl = `${siteUrl}${path}`;
     const fullImage = image.startsWith("http") ? image : `${siteUrl}${image}`;
     const canonicalUrl = canonical || fullUrl;
+    const fullTitle = buildTitle(title);
+    description = clamp(description, MAX_DESCRIPTION);
 
-    document.title = `${title} | BeeYield - Your Partner in Pollination`;
+    document.title = fullTitle;
 
     upsertMeta('meta[name="description"]', { name: "description", content: description });
     upsertMeta('meta[name="keywords"]', { name: "keywords", content: keywords });
@@ -78,7 +104,7 @@ const SEO = ({
 
     upsertMeta('meta[property="og:type"]', { property: "og:type", content: type });
     upsertMeta('meta[property="og:url"]', { property: "og:url", content: fullUrl });
-    upsertMeta('meta[property="og:title"]', { property: "og:title", content: `${title} | BeeYield - Your Partner in Pollination` });
+    upsertMeta('meta[property="og:title"]', { property: "og:title", content: fullTitle });
     upsertMeta('meta[property="og:description"]', { property: "og:description", content: description });
     upsertMeta('meta[property="og:image"]', { property: "og:image", content: fullImage });
     upsertMeta('meta[property="og:locale"]', { property: "og:locale", content: "en_KE" });
@@ -86,7 +112,7 @@ const SEO = ({
 
     upsertMeta('meta[property="twitter:card"]', { property: "twitter:card", content: "summary_large_image" });
     upsertMeta('meta[property="twitter:url"]', { property: "twitter:url", content: fullUrl });
-    upsertMeta('meta[property="twitter:title"]', { property: "twitter:title", content: `${title} | BeeYield - Your Partner in Pollination` });
+    upsertMeta('meta[property="twitter:title"]', { property: "twitter:title", content: fullTitle });
     upsertMeta('meta[property="twitter:description"]', { property: "twitter:description", content: description });
     upsertMeta('meta[property="twitter:image"]', { property: "twitter:image", content: fullImage });
     upsertMeta('meta[name="twitter:label1"]', { name: "twitter:label1", content: "Region" });
