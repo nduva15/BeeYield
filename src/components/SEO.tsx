@@ -17,7 +17,7 @@ const TAGLINE = "Your Partner in Pollination";
 const MAX_TITLE = 60;
 const MAX_DESCRIPTION = 160;
 const DEFAULT_DESCRIPTION =
-  "BeeYield, Your Partner in Pollination and traceable honey: we pollinate farms with healthy managed hives and trace every jar of honey from hive to table.";
+  "BeeYield, Your Partner in Pollination and traceable honey: we help pollinate farms with healthy colonies via our frames-per-acre model, tracing every jar.";
 
 function clamp(text: string, max: number): string {
   const clean = text.replace(/\s+/g, " ").trim();
