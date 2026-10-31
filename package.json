@@ -9,7 +9,7 @@
     "dev:backend:legacy": "python -m uvicorn main:app --reload --reload-exclude \".venv\" --reload-exclude \"backend/venv\" --port 8000 --app-dir backend",
     "dev:rust-db": "cd services/rust-db && cargo run",
     "dev:db-gateway:legacy": "python services\\db-gateway\\fallback_gateway.py",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
     "start": "vite preview",
     "build:dev": "vite build --mode development",
     "build:win": "node scripts/build-with-esbuild-path.js",
