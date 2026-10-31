@@ -140,7 +140,7 @@
       "defu": "6.1.6",
       "dompurify": ">=3.4.16",
       "esbuild": ">=0.28.1",
-      "follow-redirects": "1.16.0",
+      "follow-redirects": "1.16.1",
       "ip-address": ">=10.4.0",
       "nitropack": ">=2.13.4",
       "postcss": ">=8.5.18",
