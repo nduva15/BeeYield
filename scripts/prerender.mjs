@@ -3,6 +3,10 @@
  * Chromium (puppeteer) and writes the resulting HTML to dist/<route>/index.html
  * so crawlers see real content. Never fails the build: on any error the
  * regular SPA output in dist/ is left untouched.
+ *
+ * The process is always force-exited with code 0 (and has a hard global
+ * deadline) so a failed Chromium launch or a hung page can never keep the
+ * local HTTP server alive and stall the Vercel build.
  */
 import http from 'node:http';
 import fs from 'node:fs/promises';
@@ -21,8 +25,22 @@ const MIME = {
     '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml',
     '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.woff': 'font/woff',
 };
+const GLOBAL_DEADLINE_MS = 5 * 60 * 1000;
+const LAUNCH_TIMEOUT_MS = 30000;
+
+// Hard stop: whatever happens, never block the build for more than the deadline.
+const deadline = setTimeout(() => {
+    console.warn('[prerender] global deadline reached, keeping output written so far.');
+    process.exit(0);
+}, GLOBAL_DEADLINE_MS);
+deadline.unref();
 
 async function main() {
+    if (process.env.SKIP_PRERENDER === '1') {
+        console.log('[prerender] SKIP_PRERENDER=1, skipping.');
+        return;
+    }
+
     let puppeteer;
     try {
         puppeteer = (await import('puppeteer')).default;
@@ -48,40 +66,48 @@ async function main() {
             res.end(shell);
         }
     });
-    await new Promise((r) => server.listen(0, '127.0.0.1', r));
-    const base = `http://127.0.0.1:${server.address().port}`;
 
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    let browser;
+    try {
+        await new Promise((r) => server.listen(0, '127.0.0.1', r));
+        const base = `http://127.0.0.1:${server.address().port}`;
 
-    let ok = 0;
-    for (const route of ROUTES) {
-        const page = await browser.newPage();
-        try {
-            await page.goto(base + route, { waitUntil: 'networkidle2', timeout: 30000 });
-            // Wait until the splash is gone and the app has rendered real content.
-            await page.waitForFunction(
-                () => !document.getElementById('splash') && document.body.innerText.trim().split(/\s+/).length > 50,
-                { timeout: 15000 },
-            );
-            const html = '<!DOCTYPE html>' + (await page.evaluate(() => document.documentElement.outerHTML));
-            const out = route === '/' ? path.join(DIST, 'index.html') : path.join(DIST, route, 'index.html');
-            await fs.mkdir(path.dirname(out), { recursive: true });
-            await fs.writeFile(out, html);
-            ok++;
-            console.log(`[prerender] ${route}`);
-        } catch (e) {
-            console.warn(`[prerender] skipped ${route}: ${e.message}`);
-        } finally {
-            await page.close();
+        browser = await puppeteer.launch({
+            headless: true,
+            timeout: LAUNCH_TIMEOUT_MS,
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        });
+
+        let ok = 0;
+        for (const route of ROUTES) {
+            const page = await browser.newPage();
+            try {
+                await page.goto(base + route, { waitUntil: 'networkidle2', timeout: 20000 });
+                // Wait until the splash is gone and the app has rendered real content.
+                await page.waitForFunction(
+                    () => !document.getElementById('splash') && document.body.innerText.trim().split(/\s+/).length > 50,
+                    { timeout: 10000 },
+                );
+                const html = '<!DOCTYPE html>' + (await page.evaluate(() => document.documentElement.outerHTML));
+                const out = route === '/' ? path.join(DIST, 'index.html') : path.join(DIST, route, 'index.html');
+                await fs.mkdir(path.dirname(out), { recursive: true });
+                await fs.writeFile(out, html);
+                ok++;
+                console.log(`[prerender] ${route}`);
+            } catch (e) {
+                console.warn(`[prerender] skipped ${route}: ${e.message}`);
+            } finally {
+                await page.close().catch(() => {});
+            }
         }
+        console.log(`[prerender] done: ${ok}/${ROUTES.length} routes`);
+    } finally {
+        if (browser) await browser.close().catch(() => {});
+        server.close();
+        server.closeAllConnections?.();
     }
-
-    await browser.close();
-    server.close();
-    console.log(`[prerender] done: ${ok}/${ROUTES.length} routes`);
 }
 
-main().catch((e) => console.warn('[prerender] failed, keeping SPA output:', e.message));
+main()
+    .catch((e) => console.warn('[prerender] failed, keeping SPA output:', e.message))
+    .finally(() => process.exit(0));
